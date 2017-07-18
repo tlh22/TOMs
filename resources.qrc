@@ -1,0 +1,73 @@
+<RCC>
+    <qresource prefix="/plugins/Test5Class" >
+        <file>resources/mActionAddTrack.svg</file>
+        <file>resources/mActionFindShortestPath.svg</file>
+        <file>resources/greendot3.png</file>
+        <file>resources/mActionGetInfo.svg</file>
+        <file>resources/mActionDeleteTrack.svg</file>
+        <file>resources/mActionEdit.svg</file>
+        <file>resources/mActionSetStartPoint.svg</file>
+        <file>resources/mActionSetEndPoint.svg</file>
+    
+        <file>resources/select2lines.png</file>
+
+        <file>resources/point.png</file>
+
+        <file>resources/line.png</file>
+
+        <file>resources/pointandline.png</file>
+
+        <file>resources/select2vertex.png</file>
+    
+        <file>resources/select3points.png</file>
+   
+        <file>resources/arcintersectionpoint.png</file>
+        
+        <file>resources/ortho2.png</file>
+   
+        <file>resources/hvdigitizer.png</file>
+       
+        <file>resources/orthopointandline.png</file>
+    
+        <file>resources/select1vertex.png</file>
+     
+        <file>resources/select1line.png</file>
+  
+        <file>resources/selectvertexandsegment.png</file>
+     
+        <file>resources/selectthreevertex.png</file>
+
+        <file>resources/select1line_v2.png</file>
+   
+        <file>resources/orthopoint.png</file>
+  
+        <file>resources/horizontalline.png</file>
+    
+        <file>resources/orthogonaltraverse.png</file>
+   
+        <file>resources/orthogonaltraverse2.png</file>
+   
+        <file>resources/cadconsole2.png</file>
+       
+        <file>resources/cadconsole2.png</file>
+
+        <file>resources/showazimuth.png</file>
+
+        <file>resources/selectvertexandfeature.png</file>
+ 
+        <file>resources/rotatefeature.png</file>
+ 
+        <file>resources/parallel.png</file>
+ 
+        <file>resources/circulararc.png</file>
+ 
+        <file>resources/modifycirculararc.png</file>
+    
+        <file>resources/capturecirculararc.png</file>
+       
+        <file>resources/spline.png</file>
+       
+    </qresource>
+
+    
+</RCC>
