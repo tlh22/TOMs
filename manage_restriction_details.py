@@ -530,7 +530,7 @@ class manageRestrictionDetails():
         str = str + "; " + fieldName + ": " + strValue
             
     def doCreateRestriction(self):
-        QgsMessageLog.logMessage("In Create Restriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateRestriction - before creating shape", tag="TOMs panel")
         
         if self.actionCreateRestriction.isChecked():
             # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
@@ -555,7 +555,7 @@ class manageRestrictionDetails():
     def onCreateRestriction(self, newRestriction):
         """ Called by map tool when a restriction is created
         """
-        QgsMessageLog.logMessage("In Restriction Details", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
 
         self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 

@@ -291,8 +291,8 @@ class Test5Class:
         digitizeToolBar = self.iface.digitizeToolBar()
         digitizeToolBar.setVisible( False )
 
-        advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
-        advancedDigitizeToolBar.setVisible( False )
+        #advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
+        #advancedDigitizeToolBar.setVisible( False )
 
         # Panels not required are Browser, Layer Order
 		

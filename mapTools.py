@@ -13,6 +13,8 @@ from qgis.core import *
 from qgis.gui import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from qgis.utils import iface
+from qgis.gui import QgsMapToolCapture
 
 #from constants import *
 
@@ -25,7 +27,6 @@ class MapToolMixin:
         self.layer        = layer
         self.lastPlayTime = None
 
-
     def transformCoordinates(self, screenPt):
         """ Convert a screen coordinate to map and layer coordinates.
 
@@ -33,7 +34,6 @@ class MapToolMixin:
         """
         return (self.toMapCoordinates(screenPt),
                 self.toLayerCoordinates(self.layer, screenPt))
-    
 
     def calcTolerance(self, pos):
         """ Calculate the "tolerance" to use for a mouse-click.
@@ -53,7 +53,6 @@ class MapToolMixin:
         tolerance = layerPt2.x() - layerPt1.x()
 
         return tolerance
-
 
     def findFeatureAt(self, pos, excludeFeature=None):
     # def findFeatureAt(self, pos, excludeFeature=None):
@@ -91,7 +90,6 @@ class MapToolMixin:
 
         return None
 
-
     def findVertexAt(self, feature, pos):
         """ Find the vertex of the given feature close to the given position.
 
@@ -112,7 +110,6 @@ class MapToolMixin:
             return None
         else:
             return vertex
-
 
     def snapToNearestVertex(self, pos, trackLayer, excludeFeature=None):
         """ Attempt to snap the given point to the nearest vertex.
@@ -153,24 +150,6 @@ class MapToolMixin:
 
 #############################################################################
 
-class PanTool(QgsMapTool):
-    def __init__(self, mapCanvas):
-        QgsMapTool.__init__(self, mapCanvas)
-        self.setCursor(Qt.OpenHandCursor)
-        self.dragging = False
-
-    def canvasMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            self.dragging = True
-            self.canvas().panAction(event)
-
-    def canvasReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton and self.dragging:
-            self.canvas().panActionEnd(event.pos())
-            self.dragging = False
-
-#############################################################################
-
 class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
@@ -182,113 +161,103 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
         self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
-		
+
     def canvasReleaseEvent(self, event):
         # Return point under cursor  
         feature = self.findFeatureAt(event.pos())
-		
-        QgsMessageLog.logMessage(("In canvasReleaseEvent."), tag="TOMs panel")
+
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
         if feature == None:
             return
 
-        QgsMessageLog.logMessage(("In canvasReleaseEvent. Feature selected"), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected"), tag="TOMs panel")
 
         self.onDisplayRestrictionDetails(feature)
-'''
-class GetInfoTool(QgsMapTool, MapToolMixin):
-    def __init__(self, canvas, layer, onGetInfo):
-        QgsMapTool.__init__(self, canvas)
-        self.onGetInfo = onGetInfo
-        self.setLayer(layer)
-        self.setCursor(Qt.WhatsThisCursor)
 
-
-    def canvasReleaseEvent(self, event):
-        if event.button() != Qt.LeftButton: return
-
-        feature = self.findFeatureAt(event.pos())
-        if feature != None:
-            self.onGetInfo(feature)
-'''
 #############################################################################
 
-class CreateRestrictionTool(QgsMapTool, MapToolMixin):
+class CreateRestrictionTool(QgsMapToolCapture):
+    #class CreateRestrictionTool(QgsMapTool, MapToolMixin):
+    # helpful link - http://apprize.info/python/qgis/7.html
     def __init__(self, iface, layer, onCreateRestriction):
-        QgsMapTool.__init__(self, iface.mapCanvas())
-        # iface.mapCanvas()   = canvas
 
-        self.rubberBand     = None
-        self.tempRubberBand = None
-        self.capturedPoints = []
-        self.capturing      = False
+        QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
 
-        self.iface = iface
+        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
+        #https: // qgis.org / api / classQgsMapToolCapture.html
+        #iface.mapCanvas() = canvas
+
+        # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
+        # capture mode (... not sure if this has already been set? - or how to set it)
+        #self.setMode()
+
+        self.capturing = False
+
+        #self.iface = iface
+
         self.layer = layer
+
+        # set up function to be called when capture is complete
         self.onCreateRestriction = onCreateRestriction
 
-        self.setLayer(layer)
-        self.setCursor(Qt.CrossCursor)
+        #self.setLayer(layer)
 
-    def canvasReleaseEvent(self, event):
+    def activate(self):
+        QgsMessageLog.logMessage(("In Create - activate"), tag="TOMs panel")
+        # Not sure what should happen here. I guess that this should enable the panel.
+
+        pass
+
+    def cadCanvasReleaseEvent(self, event):
+        QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), tag="TOMs panel")
         if event.button() == Qt.LeftButton:
             if not self.capturing:
                 self.startCapturing()
-            self.addVertex(event.pos())
+            self.addVertex(self.toMapCoordinates(event.pos()))
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
             points = self.getCapturedPoints()
             self.stopCapturing()
             if points != None:
-                self.pointsCaptured(points)
-            # Need to think about the default action here if none of these buttons/keys are pressed. 
+                self.pointsCaptured(self.sketchPoints)
+            # Need to think about the default action here if none of these buttons/keys are pressed.
 
     def canvasDoubleClickEvent(self, event):
         # Include point and stop capture 
-        self.addVertex(event.pos())
-        points = self.getCapturedPoints()
-        self.stopCapturing()
-        if points != None:
-            self.pointsCaptured(points)
-        # Need to think about the default action here. 
+        pass
 
-    def canvasMoveEvent(self, event):
-        if self.tempRubberBand != None and self.capturing:
-            mapPt,layerPt = self.transformCoordinates(event.pos())
-            self.tempRubberBand.movePoint(mapPt)
-
+    def cadCanvasMoveEvent(self, event):
+        # probably need to add something here to show movement ...
+        pass
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete):
-            self.removeLastVertex()
-            event.ignore()
+            self.undo()
+            pass
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter or (event.key() == Qt.Key_Escape):
-            points = self.getCapturedPoints()
-            self.stopCapturing()
-            if points != None:
-                self.pointsCaptured(points)
+            pass
             # Need to think about the default action here if none of these buttons/keys are pressed. 
 
-
     def startCapturing(self):
-        color = QColor("red")
-        color.setAlphaF(0.78)
+        QgsMessageLog.logMessage(("In Create - startCapturing"), tag="TOMs panel")
+        # Not clear what is to be set up here
 
-        self.rubberBand = QgsRubberBand(self.iface.mapCanvas(), QGis.Line)
-        self.rubberBand.setWidth(2)
-        self.rubberBand.setColor(color)
-        self.rubberBand.show()
+        # I guess activate
+        self.activate()
 
-        self.tempRubberBand = QgsRubberBand(self.iface.mapCanvas(), QGis.Line)
-        self.tempRubberBand.setWidth(2)
-        self.tempRubberBand.setColor(color)
-        self.tempRubberBand.setLineStyle(Qt.DotLine)
-        self.tempRubberBand.show()
+        # I guess set up rubber band
+
+        self.rb = self.createRubberBand(QGis.Line)
+
+        # set up shape storage
+        self.sketchPoints = self.points()
+        self.setPoints(self.sketchPoints)
 
         self.capturing = True
 
-
     def stopCapturing(self):
+        QgsMessageLog.logMessage(("In Create - stopCapturing"), tag="TOMs panel")
         if self.rubberBand:
             self.iface.mapCanvas().scene().removeItem(self.rubberBand)
             self.rubberBand = None
@@ -299,47 +268,9 @@ class CreateRestrictionTool(QgsMapTool, MapToolMixin):
         self.capturedPoints = []
         self.iface.mapCanvas().refresh()
 
-
-    def addVertex(self, canvasPoint):
-        snappedPt = self.snapToNearestVertex(canvasPoint, self.layer)
-        mapPt = self.toMapCoordinates(self.layer, snappedPt)
-
-        self.rubberBand.addPoint(mapPt)
-        self.capturedPoints.append(snappedPt)
-
-        self.tempRubberBand.reset(QGis.Line)
-        self.tempRubberBand.addPoint(mapPt)
-
-
-    def removeLastVertex(self):
-        if not self.capturing: return
-
-        bandSize     = self.rubberBand.numberOfVertices()
-        tempBandSize = self.tempRubberBand.numberOfVertices()
-        numPoints    = len(self.capturedPoints)
-
-        if bandSize < 1 or numPoints < 1:
-            return
-
-        self.rubberBand.removePoint(-1)
-
-        if bandSize > 1:
-            if tempBandSize > 1:
-                point = self.rubberBand.getPoint(0, bandSize-2)
-                self.tempRubberBand.movePoint(tempBandSize-2, point)
-        else:
-            self.tempRubberBand.reset(QGis.Line)
-
-        del self.capturedPoints[-1]
-
-
-    def getCapturedPoints(self):
-        points = self.capturedPoints
-        if len(points) < 2:
-            return None
-        else:
-            return points
-
+    def setPoints(self, list_of_QgsPoint):
+        # should we assign a list of points to something here???
+        pass
 
     def pointsCaptured(self, points):
         print "in pointsCaptured"
@@ -347,17 +278,15 @@ class CreateRestrictionTool(QgsMapTool, MapToolMixin):
 
         feature = QgsFeature()
         feature.setFields(fields)
-		
-        feature.setGeometry(QgsGeometry.fromPolyline(points))
-		
-        '''
 
+        feature.setGeometry(QgsGeometry.fromPolyline(points))
+
+        '''
         feature.setAttribute("type",      TRACK_TYPE_ROAD)
         feature.setAttribute("status",    TRACK_STATUS_OPEN)
         feature.setAttribute("direction", TRACK_DIRECTION_BOTH)
 
         self.layer.addFeature(feature)
-
 
         self.layer.updateExtents()
         '''    
