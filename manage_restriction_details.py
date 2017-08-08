@@ -530,19 +530,26 @@ class manageRestrictionDetails():
         str = str + "; " + fieldName + ": " + strValue
             
     def doCreateRestriction(self):
-        QgsMessageLog.logMessage("In doCreateRestriction - before creating shape", tag="TOMs panel")
-        
+
         if self.actionCreateRestriction.isChecked():
             # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
             # self.actionCreateRestiction.setChecked(True)
 
+            # set TOMs layer as active layer (for editing)...
+
+            QgsMessageLog.logMessage("In doCreateRestriction - tool activated", tag="TOMs panel")
+
             self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+            iface.setActiveLayer(self.TOMslayer)
 
             self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
             self.mapTool.setAction(self.actionCreateRestriction)
             self.iface.mapCanvas().setMapTool(self.mapTool)
  
         else:
+
+            QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
             self.actionRestrictionDetails.setChecked(False)

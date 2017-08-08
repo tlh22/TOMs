@@ -178,8 +178,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 #############################################################################
 
 class CreateRestrictionTool(QgsMapToolCapture):
-    #class CreateRestrictionTool(QgsMapTool, MapToolMixin):
-    # helpful link - http://apprize.info/python/qgis/7.html
+     # helpful link - http://apprize.info/python/qgis/7.html
     def __init__(self, iface, layer, onCreateRestriction):
 
         QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
@@ -190,37 +189,36 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
         # capture mode (... not sure if this has already been set? - or how to set it)
-        #self.setMode()
+        self.setMode(CreateRestrictionTool.CaptureLine)
 
-        self.capturing = False
+        #self.sketchPoints = self.points()
+        #self.setPoints(self.sketchPoints)
 
+        # Set upi rubber band. In current implementation, it is not showing feeback for "next" location
+
+        self.rb = self.createRubberBand(QGis.Line)
         #self.iface = iface
 
         self.layer = layer
+        self.currLayer = self.currentVectorLayer()
+        QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer) + "Incoming: " + str(self.layer)), tag="TOMs panel")
 
         # set up function to be called when capture is complete
         self.onCreateRestriction = onCreateRestriction
 
-        #self.setLayer(layer)
-
-    def activate(self):
-        QgsMessageLog.logMessage(("In Create - activate"), tag="TOMs panel")
-        # Not sure what should happen here. I guess that this should enable the panel.
-
-        pass
-
     def cadCanvasReleaseEvent(self, event):
         QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), tag="TOMs panel")
         if event.button() == Qt.LeftButton:
-            if not self.capturing:
+            if not self.isCapturing():
                 self.startCapturing()
-            self.addVertex(self.toMapCoordinates(event.pos()))
+            self.result = self.addVertex(self.toMapCoordinates(event.pos()))
+            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result)), tag="TOMs panel")
+
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
-            points = self.getCapturedPoints()
-            self.stopCapturing()
-            if points != None:
-                self.pointsCaptured(self.sketchPoints)
+            #points = self.getCapturedPoints()
+            self.getPointsCaptured()
+
             # Need to think about the default action here if none of these buttons/keys are pressed.
 
     def canvasDoubleClickEvent(self, event):
@@ -239,58 +237,33 @@ class CreateRestrictionTool(QgsMapToolCapture):
             pass
             # Need to think about the default action here if none of these buttons/keys are pressed. 
 
-    def startCapturing(self):
-        QgsMessageLog.logMessage(("In Create - startCapturing"), tag="TOMs panel")
-        # Not clear what is to be set up here
+    def getPointsCaptured(self):
+        QgsMessageLog.logMessage(("In Create - getPointsCaptured"), tag="TOMs panel")
 
-        # I guess activate
-        self.activate()
+        # Check the number of points
+        self.nrPoints = self.size()
+        QgsMessageLog.logMessage(("In Create - getPointsCaptured; Stopping: " + str(self.nrPoints)),
+                                 tag="TOMs panel")
 
-        # I guess set up rubber band
+        # stop capture activity
+        self.stopCapturing()
 
-        self.rb = self.createRubberBand(QGis.Line)
+        if self.nrPoints > 0:
 
-        # set up shape storage
-        self.sketchPoints = self.points()
-        self.setPoints(self.sketchPoints)
+            # take points from the rubber band and copy them into the "feature"
 
-        self.capturing = True
+            fields = self.layer.dataProvider().fields()
+            feature = QgsFeature()
+            feature.setFields(fields)
 
-    def stopCapturing(self):
-        QgsMessageLog.logMessage(("In Create - stopCapturing"), tag="TOMs panel")
-        if self.rubberBand:
-            self.iface.mapCanvas().scene().removeItem(self.rubberBand)
-            self.rubberBand = None
-        if self.tempRubberBand:
-            self.iface.mapCanvas().scene().removeItem(self.tempRubberBand)
-            self.tempRubberBand = None
-        self.capturing = False
-        self.capturedPoints = []
-        self.iface.mapCanvas().refresh()
 
-    def setPoints(self, list_of_QgsPoint):
-        # should we assign a list of points to something here???
-        pass
+            feature.setGeometry(QgsGeometry.fromPolyline(self.points()))
+            #feature.setGeometry(QgsGeometry.addPart(self.captureCurve()))
 
-    def pointsCaptured(self, points):
-        print "in pointsCaptured"
-        fields = self.layer.dataProvider().fields()
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geometry prepared"),
+                                     tag="TOMs panel")
 
-        feature = QgsFeature()
-        feature.setFields(fields)
-
-        feature.setGeometry(QgsGeometry.fromPolyline(points))
-
-        '''
-        feature.setAttribute("type",      TRACK_TYPE_ROAD)
-        feature.setAttribute("status",    TRACK_STATUS_OPEN)
-        feature.setAttribute("direction", TRACK_DIRECTION_BOTH)
-
-        self.layer.addFeature(feature)
-
-        self.layer.updateExtents()
-        '''    
-        self.onCreateRestriction(feature)
+            self.onCreateRestriction(feature)
 
 #############################################################################
 
