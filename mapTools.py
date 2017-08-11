@@ -178,7 +178,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 #############################################################################
 
 class CreateRestrictionTool(QgsMapToolCapture):
-     # helpful link - http://apprize.info/python/qgis/7.html
+     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, onCreateRestriction):
 
         QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
@@ -191,13 +191,13 @@ class CreateRestrictionTool(QgsMapToolCapture):
         # capture mode (... not sure if this has already been set? - or how to set it)
         self.setMode(CreateRestrictionTool.CaptureLine)
 
-        #self.sketchPoints = self.points()
-        #self.setPoints(self.sketchPoints)
+        # Seems that this is important - or at least to create a point list that is used later to create Geometry
+        self.sketchPoints = self.points()
+        #self.setPoints(self.sketchPoints)  ... not sure when to use this ??
 
         # Set upi rubber band. In current implementation, it is not showing feeback for "next" location
 
         self.rb = self.createRubberBand(QGis.Line)
-        #self.iface = iface
 
         self.layer = layer
         self.currLayer = self.currentVectorLayer()
@@ -211,8 +211,12 @@ class CreateRestrictionTool(QgsMapToolCapture):
         if event.button() == Qt.LeftButton:
             if not self.isCapturing():
                 self.startCapturing()
-            self.result = self.addVertex(self.toMapCoordinates(event.pos()))
-            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result)), tag="TOMs panel")
+            #self.result = self.addVertex(self.toMapCoordinates(event.pos()))
+            self.currPoint = self.toLayerCoordinates(self.layer, event.pos())
+            self.result = self.addVertex(self.currPoint)
+            self.currPoint.x()
+
+            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), tag="TOMs panel")
 
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
@@ -245,6 +249,11 @@ class CreateRestrictionTool(QgsMapToolCapture):
         QgsMessageLog.logMessage(("In Create - getPointsCaptured; Stopping: " + str(self.nrPoints)),
                                  tag="TOMs panel")
 
+        self.sketchPoints = self.points()
+
+        for point in self.sketchPoints:
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured X:" + str(point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
+
         # stop capture activity
         self.stopCapturing()
 
@@ -256,13 +265,21 @@ class CreateRestrictionTool(QgsMapToolCapture):
             feature = QgsFeature()
             feature.setFields(fields)
 
+            #self.newGeom = QgsGeometry.fromPolyline(self.sketchPoints)
 
-            feature.setGeometry(QgsGeometry.fromPolyline(self.points()))
-            #feature.setGeometry(QgsGeometry.addPart(self.captureCurve()))
+            #feature.setGeometry(QgsGeometry.fromPolyline(self.points()))   # Not sure why this statement does not work ...
+            feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
 
-            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geometry prepared"),
+            # Currently geometry is not being created correct. Might be worth checking co-ord values ...
+
+            self.valid = feature.isValid()
+
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geome"
+                                      "try prepared; validity" + str(self.valid)),
                                      tag="TOMs panel")
 
+            # is there any other tidying to do ??
+            
             self.onCreateRestriction(feature)
 
 #############################################################################
