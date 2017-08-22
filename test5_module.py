@@ -244,11 +244,11 @@ class Test5Class:
         # Set up relevant parts of CadTools (from Stefan Ziegler)
         
         # Add toolbar 
-        self.CADtoolBar = self.iface.addToolBar("CAD-Tools")
-        self.CADtoolBar.setObjectName("CAD-Tools")
+        #self.CADtoolBar = self.iface.addToolBar("CAD-Tools")
+        #self.CADtoolBar.setObjectName("CAD-Tools")
         
-        self.lineintersector = LineIntersectionTool(self.iface,  self.CADtoolBar)
-        self.circleFromCentreMeasure = circleFromCentreTool(self.iface,  self.CADtoolBar)
+        #self.lineintersector = LineIntersectionTool(self.iface,  self.CADtoolBar)
+        #self.circleFromCentreMeasure = circleFromCentreTool(self.iface,  self.CADtoolBar)
 
         # Get the view date from the last session
         viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')

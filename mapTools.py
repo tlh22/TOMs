@@ -262,7 +262,8 @@ class CreateRestrictionTool(QgsMapToolCapture):
             # take points from the rubber band and copy them into the "feature"
 
             fields = self.layer.dataProvider().fields()
-            feature = QgsFeature()
+            # feature = QgsFeature()
+            feature = RestrictionType()
             feature.setFields(fields)
 
             #self.newGeom = QgsGeometry.fromPolyline(self.sketchPoints)
@@ -278,9 +279,32 @@ class CreateRestrictionTool(QgsMapToolCapture):
                                       "try prepared; validity" + str(self.valid)),
                                      tag="TOMs panel")
 
+            # set any geometry related attributes ...
+
+            feature.setRoadName()
+
             # is there any other tidying to do ??
-            
+
             self.onCreateRestriction(feature)
+
+#############################################################################
+
+class RestrictionType(QgsFeature):
+    # This is a test to see how subtype of QgsFeature might work
+
+    # Would be helpful to have different types of restrictions here - bays, lines, dropped kerbs, moving, ...
+
+    # Need to create fucntions to obtain these details
+
+    StreetName = "Test Road"
+    USRN = "1234"
+    AzimuthToRoadCentreLine = 90
+
+    def setRoadName(self):
+        self.setAttribute("RoadName", self.StreetName)
+        self.setAttribute("USRN", self.USRN)
+        self.setAttribute("AzimuthToRoadCentreLine", self.AzimuthToRoadCentreLine)
+        pass
 
 #############################################################################
 
