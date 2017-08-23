@@ -26,6 +26,7 @@ CREATE TABLE public."TOMs_Layer"
   "Orientation" character varying(254),
   "AzimuthToRoadCentreLine" character varying(254),
   "ChangeDate" character varying(254),
+  "USRN" character varying(254),
   CONSTRAINT "TOMs_Layer_pkey" PRIMARY KEY (id)
 )
 WITH (
