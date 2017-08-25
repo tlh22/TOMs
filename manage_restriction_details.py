@@ -645,6 +645,20 @@ class manageRestrictionDetails():
 
             # need to deselect the nodes ...
 
+            """
+            layer.committedGeometriesChanges.connect(onGeometryChanged)
+layer.committedGeometriesChanges.disconnect(onGeometryChanged)
+def onGeometryChanged(layer_id, geometry_map):
+	for geometry_change in geometry_map.iteritems():
+		print(str(geometry_change))
+layer.committedGeometriesChanges.disconnect(onGeometryChanged)
+Traceback (most recent call last):
+  File "<input>", line 1, in <module>
+TypeError: 'function' object is not connected
+layer.committedGeometriesChanges.connect(onGeometryChanged)
+(28L, <qgis._core.QgsGeometry object at 0x234574E0>)
+
+            """
         QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
 
         pass

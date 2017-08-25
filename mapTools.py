@@ -283,6 +283,14 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             feature.setRoadName()
 
+            feature = QgsFeature()
+            road = RestrictionTypeWrapper(feature)
+
+            road.setRoadName(xyz)
+
+            layer.addFeature(road.feature)
+
+
             # is there any other tidying to do ??
 
             self.onCreateRestriction(feature)
@@ -301,10 +309,28 @@ class RestrictionType(QgsFeature):
     AzimuthToRoadCentreLine = 90
 
     def setRoadName(self):
+        QgsMessageLog.logMessage("Set road name{}".format(self.StreetName), tag="TOMs panel")
         self.setAttribute("RoadName", self.StreetName)
         self.setAttribute("USRN", self.USRN)
         self.setAttribute("AzimuthToRoadCentreLine", self.AzimuthToRoadCentreLine)
         pass
+
+
+class RestrictionTypeWrapper():
+    def __init__(self, feature):
+        self.feature = feature
+
+    def setRoadName(self, name):
+        self.feature.setAttribute('RoadName', name)
+
+
+class RestrictionTypeUtils:
+    @classmethod
+    def prepareRoadFeature(feature):
+        feature.setAttribute()
+        return feature
+
+
 
 #############################################################################
 
