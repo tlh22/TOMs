@@ -98,16 +98,15 @@ def checkDegrees(Az):
 
 	return newAz
 
+""" ****************************** """
 
 @qgsfunction(args='auto', group='Custom')
-def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth, feature, parent):
+def generate_display_geometry(restTypeID, geomTypeID, AzimuthToCenterLine, offset, bayWidth, feature, parent):
 
 	QgsMessageLog.logMessage("In generate_display_geometry: New restriction ....................................................................", tag="TOMs panel")
 
-	geom = feature.geometry()
-
 	"""
-	Within expression areas use:  generate_display_geometry(  "geomTypeID",  "AzimuthToRoadCentreLine")
+	Within expression areas use:    generate_display_geometry(   "RestrictionTypeID" , "GeomTypeID",  "AzimuthToRoadCentreLine",  @BayOffsetFromKerb ,  @BayWidth )
 		
 	Logic is :
 	
@@ -126,6 +125,29 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 			Move for defined distance (typically 0.25m) along perpendicular and create last point
 	"""
 
+	# set up lists containing different restriction types
+
+	lineList = [48, 49]
+	bayList = [1, 2]
+
+	#QgsMessageLog.logMessage("In generate_display_geometry: geomTypeID = " + str(geomTypeID) + " lineList_len = " + str(len(lineList)), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In generate_display_geometry: geomTypeID = " + str(geomTypeID) + " bayList_len = " + str(len(bayList)), tag="TOMs panel")
+
+	# decide what type of feature we are dealing with - based on restTypeId and geomTypeID
+
+	if restTypeID in lineList:
+		restGeomType = 10
+	elif restTypeID in bayList:
+		restGeomType = geomTypeID
+	else:
+		pass
+		# there will be more types to deal with, e.g., dropped kerbs, areas and (perhaps) cycle lanes
+	QgsMessageLog.logMessage("In generate_display_geometry: geomTypeID = " + str(geomTypeID) + " restGeomType = " + str(restGeomType), tag="TOMs panel")
+
+	# get access to the vertices. NB: lines/bays are multiPolyline
+
+	geom = feature.geometry()
+
 	if geom.type() == QGis.Line:
 
 		lines = feature.geometry().asMultiPolyline()
@@ -139,6 +161,8 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 
 			ptsList = []
 			nextAz = 0
+
+			# now loop through each of the vertices and process as required. New geometry points are added to ptsList
 
 			for i in range(len(line)-1):
 
@@ -159,7 +183,7 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 					QgsMessageLog.logMessage("In generate_display_geometry: A geomType = " + str(geomTypeID), tag="TOMs panel")
 
 					# create start point(s)
-					if geomTypeID == 0:
+					if restGeomType == 0:
 						QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 0", tag="TOMs panel")
 						# standard bay
 						newAz = Az + Turn
@@ -175,7 +199,11 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 
 						ptsList.append(QgsPoint(line[i].x()+(float(offset)*cosa), line[i].y()+(float(offset)*cosb)))
 						QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
-						ptsList.append(QgsPoint(line[i].x() + (float(bayWidth) * cosa), line[i].y() + (float(bayWidth) * cosb)))
+
+						# set "extent of shape". In this case, it is the bay width
+						shpExtent = bayWidth
+
+						ptsList.append(QgsPoint(line[i].x() + (float(shpExtent) * cosa), line[i].y() + (float(shpExtent) * cosb)))
 						QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
 
 						#ptsList.append(newPoint)
@@ -183,12 +211,32 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 
 						#ptsList.append(QgsPoint(line[i].x()+(float(bayWidth)*cosa), line[i].y()+(float(bayWidth)*cosb)))
 
-					elif geomTypeID == 2:
+					elif restGeomType == 2:
 						pass
-					elif geomTypeID == 3:
+					elif restGeomType == 3:
 						pass
-					elif geomTypeID == 4:
+					elif restGeomType == 4:
 						pass
+					elif restGeomType == 10:
+
+						# standard line
+						newAz = Az + Turn
+						QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+						cosa, cosb = cosdir_azim(newAz)
+
+						#QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
+
+						#dx = float(offset) * cosa
+						#dy = float(offset) * cosb
+
+						#QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
+
+						ptsList.append(QgsPoint(line[i].x()+(float(offset)*cosa), line[i].y()+(float(offset)*cosb)))
+						QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+
+						# set "extent of shape". In this case, it is the offset
+						shpExtent = offset
+
 					else:
 						QgsMessageLog.logMessage("In generate_display_geometry: No geomType choosen", tag="TOMs panel")
 
@@ -202,7 +250,7 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 
 					QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel")
 
-					newAz, distWidth = calcBisector(prevAz, Az, Turn, bayWidth)
+					newAz, distWidth = calcBisector(prevAz, Az, Turn, shpExtent)
 
 					cosa, cosb = cosdir_azim(newAz)
 					ptsList.append(QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
@@ -218,24 +266,34 @@ def generate_display_geometry(geomTypeID, AzimuthToCenterLine, offset, bayWidth,
 
 			QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
 
-			if geomTypeID == 0:
+			if restGeomType == 0:
 				QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 0", tag="TOMs panel")
 				# standard bay
 				newAz = Az + Turn
 				QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
 				cosa, cosb = cosdir_azim(newAz)
 
-				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(bayWidth) * cosa), line[len(line)-1].y() + (float(bayWidth) * cosb)))
+				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(shpExtent) * cosa), line[len(line)-1].y() + (float(shpExtent) * cosb)))
 
 				# add end point
 				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(offset) * cosa), line[len(line)-1].y() + (float(offset) * cosb)))
 
-			elif geomTypeID == 2:
+			elif restGeomType == 2:
 				pass
-			elif geomTypeID == 3:
+			elif restGeomType == 3:
 				pass
-			elif geomTypeID == 4:
+			elif restGeomType == 4:
 				pass
+			elif restGeomType == 10:
+
+				QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 10", tag="TOMs panel")
+				# standard line
+				newAz = Az + Turn
+				QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+				cosa, cosb = cosdir_azim(newAz)
+				# add end point
+				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(offset) * cosa), line[len(line)-1].y() + (float(offset) * cosb)))
+
 			else:
 				QgsMessageLog.logMessage("In generate_display_geometry: No geomType choosen", tag="TOMs panel")
 

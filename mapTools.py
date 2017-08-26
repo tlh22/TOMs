@@ -283,13 +283,16 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             feature.setRoadName()
 
+            """  Additions from Matthias
+
             feature = QgsFeature()
+            
             road = RestrictionTypeWrapper(feature)
 
             road.setRoadName(xyz)
 
             layer.addFeature(road.feature)
-
+            """
 
             # is there any other tidying to do ??
 
