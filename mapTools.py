@@ -13,6 +13,8 @@ from qgis.core import *
 from qgis.gui import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from qgis.utils import iface
+from qgis.gui import QgsMapToolCapture
 
 #from constants import *
 
@@ -25,7 +27,6 @@ class MapToolMixin:
         self.layer        = layer
         self.lastPlayTime = None
 
-
     def transformCoordinates(self, screenPt):
         """ Convert a screen coordinate to map and layer coordinates.
 
@@ -33,7 +34,6 @@ class MapToolMixin:
         """
         return (self.toMapCoordinates(screenPt),
                 self.toLayerCoordinates(self.layer, screenPt))
-    
 
     def calcTolerance(self, pos):
         """ Calculate the "tolerance" to use for a mouse-click.
@@ -53,7 +53,6 @@ class MapToolMixin:
         tolerance = layerPt2.x() - layerPt1.x()
 
         return tolerance
-
 
     def findFeatureAt(self, pos, excludeFeature=None):
     # def findFeatureAt(self, pos, excludeFeature=None):
@@ -91,7 +90,6 @@ class MapToolMixin:
 
         return None
 
-
     def findVertexAt(self, feature, pos):
         """ Find the vertex of the given feature close to the given position.
 
@@ -112,7 +110,6 @@ class MapToolMixin:
             return None
         else:
             return vertex
-
 
     def snapToNearestVertex(self, pos, trackLayer, excludeFeature=None):
         """ Attempt to snap the given point to the nearest vertex.
@@ -153,24 +150,6 @@ class MapToolMixin:
 
 #############################################################################
 
-class PanTool(QgsMapTool):
-    def __init__(self, mapCanvas):
-        QgsMapTool.__init__(self, mapCanvas)
-        self.setCursor(Qt.OpenHandCursor)
-        self.dragging = False
-
-    def canvasMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            self.dragging = True
-            self.canvas().panAction(event)
-
-    def canvasReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton and self.dragging:
-            self.canvas().panActionEnd(event.pos())
-            self.dragging = False
-
-#############################################################################
-
 class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
@@ -182,186 +161,309 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
         self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
-		
+
     def canvasReleaseEvent(self, event):
         # Return point under cursor  
         feature = self.findFeatureAt(event.pos())
-		
-        QgsMessageLog.logMessage(("In canvasReleaseEvent."), tag="TOMs panel")
+
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
         if feature == None:
             return
 
-        QgsMessageLog.logMessage(("In canvasReleaseEvent. Feature selected"), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected"), tag="TOMs panel")
 
         self.onDisplayRestrictionDetails(feature)
-'''
-class GetInfoTool(QgsMapTool, MapToolMixin):
-    def __init__(self, canvas, layer, onGetInfo):
-        QgsMapTool.__init__(self, canvas)
-        self.onGetInfo = onGetInfo
-        self.setLayer(layer)
-        self.setCursor(Qt.WhatsThisCursor)
 
-
-    def canvasReleaseEvent(self, event):
-        if event.button() != Qt.LeftButton: return
-
-        feature = self.findFeatureAt(event.pos())
-        if feature != None:
-            self.onGetInfo(feature)
-'''
 #############################################################################
 
-class CreateRestrictionTool(QgsMapTool, MapToolMixin):
+class CreateRestrictionTool(QgsMapToolCapture):
+     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, onCreateRestriction):
-        QgsMapTool.__init__(self, iface.mapCanvas())
-        # iface.mapCanvas()   = canvas
 
-        self.rubberBand     = None
-        self.tempRubberBand = None
-        self.capturedPoints = []
-        self.capturing      = False
+        QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
 
-        self.iface = iface
+        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
+        #https: // qgis.org / api / classQgsMapToolCapture.html
+        #iface.mapCanvas() = canvas
+
+        # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
+        # capture mode (... not sure if this has already been set? - or how to set it)
+        self.setMode(CreateRestrictionTool.CaptureLine)
+
+        # Seems that this is important - or at least to create a point list that is used later to create Geometry
+        self.sketchPoints = self.points()
+        #self.setPoints(self.sketchPoints)  ... not sure when to use this ??
+
+        # Set upi rubber band. In current implementation, it is not showing feeback for "next" location
+
+        self.rb = self.createRubberBand(QGis.Line)
+
         self.layer = layer
+        self.currLayer = self.currentVectorLayer()
+        QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer) + "Incoming: " + str(self.layer)), tag="TOMs panel")
+
+        # set up function to be called when capture is complete
         self.onCreateRestriction = onCreateRestriction
 
-        self.setLayer(layer)
-        self.setCursor(Qt.CrossCursor)
-
-    def canvasReleaseEvent(self, event):
+    def cadCanvasReleaseEvent(self, event):
+        QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), tag="TOMs panel")
         if event.button() == Qt.LeftButton:
-            if not self.capturing:
+            if not self.isCapturing():
                 self.startCapturing()
-            self.addVertex(event.pos())
+            #self.result = self.addVertex(self.toMapCoordinates(event.pos()))
+            self.currPoint = self.toLayerCoordinates(self.layer, event.pos())
+            self.result = self.addVertex(self.currPoint)
+            self.currPoint.x()
+
+            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), tag="TOMs panel")
+
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
-            points = self.getCapturedPoints()
-            self.stopCapturing()
-            if points != None:
-                self.pointsCaptured(points)
-            # Need to think about the default action here if none of these buttons/keys are pressed. 
+            #points = self.getCapturedPoints()
+            self.getPointsCaptured()
+
+            # Need to think about the default action here if none of these buttons/keys are pressed.
 
     def canvasDoubleClickEvent(self, event):
         # Include point and stop capture 
-        self.addVertex(event.pos())
-        points = self.getCapturedPoints()
-        self.stopCapturing()
-        if points != None:
-            self.pointsCaptured(points)
-        # Need to think about the default action here. 
+        pass
 
-    def canvasMoveEvent(self, event):
-        if self.tempRubberBand != None and self.capturing:
-            mapPt,layerPt = self.transformCoordinates(event.pos())
-            self.tempRubberBand.movePoint(mapPt)
-
+    def cadCanvasMoveEvent(self, event):
+        # probably need to add something here to show movement ...
+        pass
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete):
-            self.removeLastVertex()
-            event.ignore()
+            self.undo()
+            pass
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter or (event.key() == Qt.Key_Escape):
-            points = self.getCapturedPoints()
-            self.stopCapturing()
-            if points != None:
-                self.pointsCaptured(points)
+            pass
             # Need to think about the default action here if none of these buttons/keys are pressed. 
 
+    def getPointsCaptured(self):
+        QgsMessageLog.logMessage(("In Create - getPointsCaptured"), tag="TOMs panel")
 
-    def startCapturing(self):
-        color = QColor("red")
-        color.setAlphaF(0.78)
+        # Check the number of points
+        self.nrPoints = self.size()
+        QgsMessageLog.logMessage(("In Create - getPointsCaptured; Stopping: " + str(self.nrPoints)),
+                                 tag="TOMs panel")
 
-        self.rubberBand = QgsRubberBand(self.iface.mapCanvas(), QGis.Line)
-        self.rubberBand.setWidth(2)
-        self.rubberBand.setColor(color)
-        self.rubberBand.show()
+        self.sketchPoints = self.points()
 
-        self.tempRubberBand = QgsRubberBand(self.iface.mapCanvas(), QGis.Line)
-        self.tempRubberBand.setWidth(2)
-        self.tempRubberBand.setColor(color)
-        self.tempRubberBand.setLineStyle(Qt.DotLine)
-        self.tempRubberBand.show()
+        for point in self.sketchPoints:
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured X:" + str(point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
 
-        self.capturing = True
+        # stop capture activity
+        self.stopCapturing()
+
+        if self.nrPoints > 0:
+
+            # take points from the rubber band and copy them into the "feature"
+
+            fields = self.layer.dataProvider().fields()
+            # feature = QgsFeature()
+            feature = RestrictionType()
+            feature.setFields(fields)
+
+            #self.newGeom = QgsGeometry.fromPolyline(self.sketchPoints)
+
+            #feature.setGeometry(QgsGeometry.fromPolyline(self.points()))   # Not sure why this statement does not work ...
+            feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
+
+            # Currently geometry is not being created correct. Might be worth checking co-ord values ...
+
+            self.valid = feature.isValid()
+
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geome"
+                                      "try prepared; validity" + str(self.valid)),
+                                     tag="TOMs panel")
+
+            # set any geometry related attributes ...
+
+            feature.setRoadName()
+            feature.setAzimuthToRoadCentreLine()
+
+            """  Additions from Matthias
+
+            feature = QgsFeature()
+            
+            road = RestrictionTypeWrapper(feature)
+
+            road.setRoadName(xyz)
+
+            layer.addFeature(road.feature)
+            """
+
+            # is there any other tidying to do ??
+
+            self.onCreateRestriction(feature)
+
+#############################################################################
+
+class RestrictionType(QgsFeature, MapToolMixin):
+    # This is a test to see how subtype of QgsFeature might work
+
+    # Would be helpful to have different types of restrictions here - bays, lines, dropped kerbs, moving, ...
+
+    # Need to create fucntions to obtain these details
+
+    StreetName = "Test Road"
+    USRN = "1234"
+    AzimuthToRoadCentreLine = 90
+
+    def setRoadName(self):
+
+        QgsMessageLog.logMessage("In setRoadName:", tag="TOMs panel")
+
+        self.RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+
+        # take the first point from the geometry
+        line = self.geometry().asPolyline()
+        nrPts = len(line)
+        QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
+
+        secondPt = line[1]   # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
+
+        # check for the feature within RoadCasement_NSG_StreetName layer
+        tolerance_nearby = 0.25  # somehow need to have this (and layer names) as global variables
+
+        nearestRC_feature = self.findFeatureAt2(secondPt, self.RoadCasementLayer, tolerance_nearby)
+
+        if nearestRC_feature:
+
+            #QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
+
+            #fields = self.RoadCasementLayer.dataProvider().fields()
+            #nearestRC_feature.setFields(fields)
+
+            #StreetName = nearestRC_feature.attributes("Street_Descriptor")
+            #USRN = nearestRC_feature.attributes("USRN")
+
+            idx_Street_Descriptor = self.RoadCasementLayer.fieldNameIndex('Street_Descriptor')
+            idx_USRN = self.RoadCasementLayer.fieldNameIndex('USRN')
+
+            self.StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
+            self.USRN = nearestRC_feature.attributes()[idx_USRN]
+
+            QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(self.StreetName), tag="TOMs panel")
+
+            self.setAttribute("RoadName", self.StreetName)
+            self.setAttribute("USRN", int(self.USRN))
+
+        pass
+
+    def setAzimuthToRoadCentreLine(self):
+
+        # find the shortest line from this point to the road centre line layer
+        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+
+        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine:", tag="TOMs panel")
+
+        self.RoadCentreLineLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
+
+        # take the first point from the geometry
+        line = self.geometry().asPolyline()
+        #nrPts = len(line)
+        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: nrPts = " + str(nrPts), tag="TOMs panel")
+
+        testPt = line[1]   # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+
+        # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
+
+        tolerance_roadwidth = 25
+        searchRect = QgsRectangle(testPt.x() - tolerance_roadwidth,
+                                  testPt.y() - tolerance_roadwidth,
+                                  testPt.x() + tolerance_roadwidth,
+                                  testPt.y() + tolerance_roadwidth)
+
+        request = QgsFeatureRequest()
+        request.setFilterRect(searchRect)
+        request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+        shortestDistance = float("inf")
+
+        # Loop through all features in the layer to find the closest feature
+        for f in self.RoadCentreLineLayer.getFeatures(request):
+            dist = f.geometry().distance(QgsGeometry.fromPoint(testPt))
+            if dist < shortestDistance:
+                shortestDistance = dist
+                closestFeature = f
+
+        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+
+        if closestFeature:
+            # now obtain the line between the testPt and the nearest feature
+            f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
+
+            # get the start point (we know the end point)
+            startPtV2 = f_lineToCL.geometry().startPoint()
+            startPt = QgsPoint()
+            startPt.setX(startPtV2.x())
+            startPt.setY(startPtV2.y())
+
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()), tag="TOMs panel")
+
+            Az = testPt.azimuth(startPt)
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
+
+            # now set the attribute
+            self.setAttribute("AzimuthToRoadCentreLine", int(Az))
+
+        pass
+
+    def findFeatureAt2(self, layerPt, layer, tolerance):
+    # def findFeatureAt(self, pos, excludeFeature=None):
+        """ Find the feature close to the given position.
+
+            'pos' is the position to check, in canvas coordinates.
+
+            if 'excludeFeature' is specified, we ignore this feature when
+            finding the clicked-on feature.
+
+            If no feature is close to the given coordinate, we return None.
+        """
+
+        self.layer = layer
+        #self.currLayer = self.currentVectorLayer()
+        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(self.layer), tag="TOMs panel")
+        #mapPt,layerPt = self.transformCoordinates(pos)
+        #tolerance = self.calcTolerance(pos)
+        #tolerance = 0.25  # where should we set this ??
+        searchRect = QgsRectangle(layerPt.x() - tolerance,
+                                  layerPt.y() - tolerance,
+                                  layerPt.x() + tolerance,
+                                  layerPt.y() + tolerance)
+
+        request = QgsFeatureRequest()
+        request.setFilterRect(searchRect)
+        request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+        for feature in self.layer.getFeatures(request):
+            QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel")
+            return feature # Return first matching feature.
+
+        return None
+
+class RestrictionTypeWrapper():
+    def __init__(self, feature):
+        self.feature = feature
+
+    def setRoadName(self, name):
+        self.feature.setAttribute('RoadName', name)
 
 
-    def stopCapturing(self):
-        if self.rubberBand:
-            self.iface.mapCanvas().scene().removeItem(self.rubberBand)
-            self.rubberBand = None
-        if self.tempRubberBand:
-            self.iface.mapCanvas().scene().removeItem(self.tempRubberBand)
-            self.tempRubberBand = None
-        self.capturing = False
-        self.capturedPoints = []
-        self.iface.mapCanvas().refresh()
+class RestrictionTypeUtils:
+    @classmethod
+    def prepareRoadFeature(feature):
+        feature.setAttribute()
+        return feature
 
 
-    def addVertex(self, canvasPoint):
-        snappedPt = self.snapToNearestVertex(canvasPoint, self.layer)
-        mapPt = self.toMapCoordinates(self.layer, snappedPt)
-
-        self.rubberBand.addPoint(mapPt)
-        self.capturedPoints.append(snappedPt)
-
-        self.tempRubberBand.reset(QGis.Line)
-        self.tempRubberBand.addPoint(mapPt)
-
-
-    def removeLastVertex(self):
-        if not self.capturing: return
-
-        bandSize     = self.rubberBand.numberOfVertices()
-        tempBandSize = self.tempRubberBand.numberOfVertices()
-        numPoints    = len(self.capturedPoints)
-
-        if bandSize < 1 or numPoints < 1:
-            return
-
-        self.rubberBand.removePoint(-1)
-
-        if bandSize > 1:
-            if tempBandSize > 1:
-                point = self.rubberBand.getPoint(0, bandSize-2)
-                self.tempRubberBand.movePoint(tempBandSize-2, point)
-        else:
-            self.tempRubberBand.reset(QGis.Line)
-
-        del self.capturedPoints[-1]
-
-
-    def getCapturedPoints(self):
-        points = self.capturedPoints
-        if len(points) < 2:
-            return None
-        else:
-            return points
-
-
-    def pointsCaptured(self, points):
-        print "in pointsCaptured"
-        fields = self.layer.dataProvider().fields()
-
-        feature = QgsFeature()
-        feature.setFields(fields)
-		
-        feature.setGeometry(QgsGeometry.fromPolyline(points))
-		
-        '''
-
-        feature.setAttribute("type",      TRACK_TYPE_ROAD)
-        feature.setAttribute("status",    TRACK_STATUS_OPEN)
-        feature.setAttribute("direction", TRACK_DIRECTION_BOTH)
-
-        self.layer.addFeature(feature)
-
-
-        self.layer.updateExtents()
-        '''    
-        self.onCreateRestriction(feature)
 
 #############################################################################
 

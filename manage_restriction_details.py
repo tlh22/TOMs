@@ -144,7 +144,7 @@ class manageRestrictionDetails():
         """ Select point and then display details
 		"""
         
-        QgsMessageLog.logMessage("In Restriction Details", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
         
         if not self.actionRestrictionDetails.isChecked():
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
@@ -213,12 +213,17 @@ class manageRestrictionDetails():
         idxMaxStayID = TOMsLayer.fieldNameIndex("MaxStayID")
         idxNoReturnID = TOMsLayer.fieldNameIndex("NoReturnID")
         idxPaymentTypeID = TOMsLayer.fieldNameIndex("PayTypeID")
-        idxGeomTypeID = TOMsLayer.fieldNameIndex("GeomTypeID")
+
         idxRescindDate = TOMsLayer.fieldNameIndex("RescindDate")
         idxEffectiveDate = TOMsLayer.fieldNameIndex("EffectiveDate")
         idxRestrictionStatusID = TOMsLayer.fieldNameIndex("RestrictionStatusID")
+
+        idxRoadName = TOMsLayer.fieldNameIndex("RoadName")
+        idxUSRN = TOMsLayer.fieldNameIndex("USRN")
+        idxGeomTypeID = TOMsLayer.fieldNameIndex("GeomTypeID")
         idxOrientation = TOMsLayer.fieldNameIndex("Orientation")
         idxAzimuthToRoadCentreline = TOMsLayer.fieldNameIndex("AzimuthToRoadCentreline")
+
         idxChangeNotes = TOMsLayer.fieldNameIndex("ChangeNotes")
         idxChangeDate = TOMsLayer.fieldNameIndex("ChangeDate")
         
@@ -298,13 +303,17 @@ class manageRestrictionDetails():
             currMaxStayID = -1
             currNoReturnID = -1
             currPaymentTypeID = -1
-            currRestrictionGeometryTypeID = -1
             currRestrictionStatusID = -1
-            currOrientation = NULL
-            currAzimuthToRoadCentreLine = NULL
+
             currEffectiveDate = currDate
             currRescindDate = NULL
-            
+
+            currRoadName = selectedFeature.attribute("RoadName")
+            currUSRN = selectedFeature.attribute("USRN")
+            currRestrictionGeometryTypeID = -1
+            currOrientation = NULL
+            currAzimuthToRoadCentreLine = selectedFeature.attribute("AzimuthToRoadCentreLine")
+
             featureChanged = True
             
         else:
@@ -315,14 +324,18 @@ class manageRestrictionDetails():
             currMaxStayID = selectedFeature.attribute("MaxStayID")
             currNoReturnID = selectedFeature.attribute("NoReturnID")
             currPaymentTypeID = selectedFeature.attribute("PayTypeID")
-            currRestrictionGeometryTypeID = selectedFeature.attribute("GeomTypeID")
             currRestrictionStatusID = selectedFeature.attribute("RestrictionStatusID")
-            currOrientation = selectedFeature.attribute("Orientation")
-            currAzimuthToRoadCentreLine = selectedFeature.attribute("AzimuthToRoadCentreLine")
+
             currEffectiveDate = selectedFeature.attribute("EffectiveDate")
             currRescindDate = selectedFeature.attribute("RescindDate")
-        
-        # Populate the form using the existing features - or else set to blank - and then write to string for inclusion in history  
+
+            currRoadName = selectedFeature.attribute("RoadName")
+            currUSRN = selectedFeature.attribute("USRN")
+            currRestrictionGeometryTypeID = selectedFeature.attribute("GeomTypeID")
+            currOrientation = selectedFeature.attribute("Orientation")
+            currAzimuthToRoadCentreLine = selectedFeature.attribute("AzimuthToRoadCentreLine")
+
+        # Populate the form using the existing features - or else set to blank - and then write to string for inclusion in history
         
         self.dlg.GeometryID.setText(currGeometryID)
         self.dlg.Length.setText(str(currLength))
@@ -332,15 +345,20 @@ class manageRestrictionDetails():
         self.dlg.cb_maxStayPeriod.setCurrentIndex(currMaxStayID)
         self.dlg.cb_noReturnPeriod.setCurrentIndex(currNoReturnID)
         self.dlg.cb_paymentType.setCurrentIndex(currPaymentTypeID)
-        self.dlg.cb_geometryType.setCurrentIndex(currRestrictionGeometryTypeID)
         self.dlg.cb_restrictionStatus.setCurrentIndex(currRestrictionStatusID)
-        self.dlg.txt_Orientation.setText(str(currOrientation))
-        self.dlg.txt_AzimuthToRoadCentreLine.setText(str(currAzimuthToRoadCentreLine))
-        self.dlg.effectiveDate.setDisplayFormat("yyyy-MM-dd")        
+
+        self.dlg.effectiveDate.setDisplayFormat("yyyy-MM-dd")
         self.dlg.effectiveDate.setDate(datetime.datetime.strptime(str(currEffectiveDate), '%Y-%m-%d'))
         self.dlg.rescindDate.setDisplayFormat("yyyy-MM-dd")        
         if currRescindDate != NULL:
             self.dlg.rescindDate.setDate(datetime.datetime.strptime(str(currRescindDate), '%Y-%m-%d'))
+
+        self.dlg.txt_RoadName.setText(str(currRoadName))
+        self.dlg.txt_USRN.setText(str(currUSRN))
+
+        self.dlg.cb_geometryType.setCurrentIndex(currRestrictionGeometryTypeID)
+        self.dlg.txt_Orientation.setText(str(currOrientation))
+        self.dlg.txt_AzimuthToRoadCentreLine.setText(str(currAzimuthToRoadCentreLine))
 
         # If there is an existing record, generate a string with the details for inclusion in history  
 
@@ -351,12 +369,16 @@ class manageRestrictionDetails():
             self.generateHistoryString(strHistory, "Max Stay", str(self.dlg.cb_maxStayPeriod.currentText()))
             self.generateHistoryString(strHistory, "No Return", str(self.dlg.cb_noReturnPeriod.currentText()))
             self.generateHistoryString(strHistory, "Payment type", str(self.dlg.cb_paymentType.currentText()))
-            self.generateHistoryString(strHistory, "Geometry type", str(self.dlg.cb_geometryType.currentText()))
-            self.generateHistoryString(strHistory, "Orientation", str(self.dlg.txt_Orientation.text()))
-            self.generateHistoryString(strHistory, "Azimuth to Road Centre Line", str(self.dlg.txt_AzimuthToRoadCentreLine.text()))
+
             self.generateHistoryString(strHistory, "Effective Date", str(self.dlg.effectiveDate.text()))
             self.generateHistoryString(strHistory, "Rescind Date", str(self.dlg.rescindDate.text()))
             self.generateHistoryString(strHistory, "Restriction status", str(self.dlg.cb_restrictionStatus.currentText()))
+
+            self.generateHistoryString(strHistory, "Geometry type", str(self.dlg.cb_geometryType.currentText()))
+            self.generateHistoryString(strHistory, "Orientation", str(self.dlg.txt_Orientation.text()))
+            self.generateHistoryString(strHistory, "Azimuth to Road Centre Line",
+                                       str(self.dlg.txt_AzimuthToRoadCentreLine.text()))
+
         else:
             strHistory = "Initial creation."
                         
@@ -369,6 +391,8 @@ class manageRestrictionDetails():
         
         # See if OK was pressed
         if result:
+
+            QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. OK Pressed. "), tag="TOMs panel")
             # Check to see if any changes have been made. Should be possible to use signals that indicate when index is changed
             newRestrictionTypeID = self.dlg.cb_restrictionTypes.currentIndex()
             if currRestrictionTypeID != newRestrictionTypeID:
@@ -394,12 +418,24 @@ class manageRestrictionDetails():
             if currPaymentTypeID != newPaymentTypeID:
                 featureChanged = True
                 strHistory = strHistory + " Payment type: " + str(self.dlg.cb_paymentType.currentText())
-                
+
+            # will need to check this as Road Name and USRN are already set ...
+
+            newRoadName = self.dlg.txt_RoadName.text()
+            if currRoadName != newRoadName:
+                featureChanged = True
+                strHistory = strHistory + " Road Name: " + str(self.dlg.txt_RoadName.text())
+
+            newUSRN = self.dlg.txt_USRN.text()
+            if currUSRN != newUSRN:
+                featureChanged = True
+                strHistory = strHistory + " USRN: " + str(self.dlg.txt_USRN.text())
+
             newRestrictionGeometryTypeID = self.dlg.cb_geometryType.currentIndex()
             if currRestrictionGeometryTypeID != newRestrictionGeometryTypeID:
                 featureChanged = True
                 strHistory = strHistory + " Restriction Geometry type: " + str(self.dlg.cb_geometryType.currentText())
-                
+
             newOrientation = str(self.dlg.txt_Orientation.text())
             if currOrientation != newOrientation:
                 featureChanged = True
@@ -430,81 +466,83 @@ class manageRestrictionDetails():
 
             if featureChanged == True:
                 #QMessageBox.information(self.iface.mainWindow(), "debug", dateChoosen + " " + tmpOrdersText + " " + filterString)
-                reply = QMessageBox.question(self.iface.mainWindow(), "Confirm", "Save changes to layer?",
-                QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+                #reply = QMessageBox.question(self.iface.mainWindow(), "Confirm", "Save changes to layer?",
+                #QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                 
-                if reply == QMessageBox.Yes:         
+                #if reply == QMessageBox.Yes:
                 
-                    # If this is an existing feature, duplicate the geometry - copy the geometry from the current feature to the new feature
-                    
+                # If this is an existing feature, duplicate the geometry - copy the geometry from the current feature to the new feature
+
+                if featureGeometryID != NULL:
+                    newRestriction = QgsFeature(self.TOMslayer.fields())
+                    self._geom_buffer = QgsGeometry(selectedFeature.geometry())
+                    newRestriction.setGeometry(QgsGeometry(self._geom_buffer))
+                else:
+                    newRestriction = selectedFeature
+
+                # Ensure that default values are placed into fields    default status is proposed (rather than -1)
+
+                if newTimePeriodID < 0:
+                    newTimePeriodID = -1
+                if newMaxStayID < 0:
+                    newMaxStayID = -1
+                if newNoReturnID < 0:
+                    newNoReturnID = -1
+
+                if newRestrictionStatusID < 0:
+                    newRestrictionStatusID = 0
+
+                newRestriction[idxGeometryID] = currGeometryID
+                newRestriction[idxRestrictionTypeID] = newRestrictionTypeID
+                newRestriction[idxTimePeriodID] = newTimePeriodID
+                newRestriction[idxMaxStayID] = newMaxStayID
+                newRestriction[idxNoReturnID] = newNoReturnID
+                newRestriction[idxPaymentTypeID] = newPaymentTypeID
+
+                newRestriction[idxRestrictionStatusID] = newRestrictionStatusID
+                newRestriction[idxEffectiveDate] = newEffectiveDate
+                newRestriction[idxRescindDate] = newRescindDate
+
+
+                newRestriction[idxRoadName] = newRoadName
+                newRestriction[idxUSRN] = newUSRN
+                newRestriction[idxGeomTypeID] = newRestrictionGeometryTypeID
+                newRestriction[idxOrientation] = newOrientation
+                newRestriction[idxAzimuthToRoadCentreline] = newAzimuthToRoadCentreLine
+
+                newRestriction[idxChangeNotes] = strHistory
+                newRestriction[idxChangeDate] = currDate
+
+                # Also need to think about some geometry related fields - feature length, shape length
+
+                try:
+
+                    self.TOMslayer.startEditing()
+
                     if featureGeometryID != NULL:
-                        newRestriction = QgsFeature(self.TOMslayer.fields())
-                        self._geom_buffer = QgsGeometry(selectedFeature.geometry())
-                        newRestriction.setGeometry(QgsGeometry(self._geom_buffer))		
-                    else:
-                        newRestriction = selectedFeature
-                        
-                        # Ensure that default values are placed into fields    default status is proposed (rather than -1)
-                    
-                        if newTimePeriodID < 0:
-                            newTimePeriodID = -1
-                        if newMaxStayID < 0:
-                            newMaxStayID = -1
-                        if newNoReturnID < 0:
-                            newNoReturnID = -1
+                        # Update the existing feature
+                        self.TOMslayer.changeAttributeValue(currRestrictionID, idxRescindDate, currDate)
+                        self.TOMslayer.changeAttributeValue(currRestrictionID, idxChangeDate, currDate)
+                        # self.TOMslayer.changeAttributeValue(currRestrictionID, idxChangeNotes, "Add details of change here ... ")
+                    QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. Attempting save. currDate: " + currDate + " Changes: " + strHistory), tag="TOMs panel")
 
-                        if newRestrictionStatusID < 0:
-                            newRestrictionStatusID = 0
+                    # Add a new row with the revised details
+                    self.TOMslayer.addFeatures([newRestriction])
 
+                    # QMessageBox.information(self.iface.mainWindow(),("Message", 'At this point we should set delete date for current record and add a new record to layer - with new create date and details'))
+                    # QMessageBox.information(self.iface.mainWindow(),"Message",'newID: ')
+                    # self.TOMslayer.rollBack()
+                    #self.TOMslayer.commitChanges()
 
+                except:
+                    # errorList = self.TOMslayer.commitErrors()
+                    for item in list(self.TOMslayer.commitErrors()):
+                        QMessageBox.information(self.iface.mainWindow(),"ERROR", ("Unexpected error: " + item))
+                    #self.TOMslayer.rollBack()
+                    raise
 
-
-                    newRestriction[idxGeometryID] = currGeometryID
-                    newRestriction[idxRestrictionTypeID] = newRestrictionTypeID
-                    newRestriction[idxTimePeriodID] = newTimePeriodID
-                    newRestriction[idxMaxStayID] = newMaxStayID
-                    newRestriction[idxNoReturnID] = newNoReturnID
-                    newRestriction[idxPaymentTypeID] = newPaymentTypeID
-                    newRestriction[idxGeomTypeID] = newRestrictionGeometryTypeID
-                    newRestriction[idxOrientation] = newOrientation
-                    newRestriction[idxAzimuthToRoadCentreline] = newAzimuthToRoadCentreLine
-                    
-                    newRestriction[idxRestrictionStatusID] = newRestrictionStatusID
-                    newRestriction[idxEffectiveDate] = newEffectiveDate
-                    newRestriction[idxRescindDate] = newRescindDate
-                    newRestriction[idxChangeNotes] = strHistory
-                    newRestriction[idxChangeDate] = currDate
-                    
-                      # Also need to think about some geometry related fields - feature length, shape length
-
-                    try:
-
-                        self.TOMslayer.startEditing()
-
-                        if featureGeometryID != NULL:
-                            # Update the existing feature
-                            self.TOMslayer.changeAttributeValue(currRestrictionID, idxRescindDate, currDate)
-                            self.TOMslayer.changeAttributeValue(currRestrictionID, idxChangeDate, currDate)
-                            # self.TOMslayer.changeAttributeValue(currRestrictionID, idxChangeNotes, "Add details of change here ... ")
-                        QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. Attempting save. currDate: " + currDate + " Changes: " + strHistory), tag="TOMs panel")
-
-                        # Add a new row with the revised details
-                        self.TOMslayer.addFeatures([newRestriction])
-
-                        # QMessageBox.information(self.iface.mainWindow(),("Message", 'At this point we should set delete date for current record and add a new record to layer - with new create date and details'))
-                        # QMessageBox.information(self.iface.mainWindow(),"Message",'newID: ')			
-                        # self.TOMslayer.rollBack()
-                        self.TOMslayer.commitChanges()
-          
-                    except:
-                        # errorList = self.TOMslayer.commitErrors()
-                        for item in list(self.TOMslayer.commitErrors()):
-                            QMessageBox.information(self.iface.mainWindow(),"ERROR", ("Unexpected error: " + item))
-                        self.TOMslayer.rollBack()
-                        raise
-
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "Information", "No changes were made")
+            #else:
+            #    QMessageBox.information(self.iface.mainWindow(), "Information", "No changes were made")
 
             # Now need to refresh to join details and display the results ...
 
@@ -530,19 +568,26 @@ class manageRestrictionDetails():
         str = str + "; " + fieldName + ": " + strValue
             
     def doCreateRestriction(self):
-        QgsMessageLog.logMessage("In Create Restriction", tag="TOMs panel")
-        
+
         if self.actionCreateRestriction.isChecked():
             # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
             # self.actionCreateRestiction.setChecked(True)
 
+            # set TOMs layer as active layer (for editing)...
+
+            QgsMessageLog.logMessage("In doCreateRestriction - tool activated", tag="TOMs panel")
+
             self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+            iface.setActiveLayer(self.TOMslayer)
 
             self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
             self.mapTool.setAction(self.actionCreateRestriction)
             self.iface.mapCanvas().setMapTool(self.mapTool)
  
         else:
+
+            QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
             self.actionRestrictionDetails.setChecked(False)
@@ -552,10 +597,11 @@ class manageRestrictionDetails():
         self.mapTool.setAction(self.actionRestrictionDetails)
         self.iface.mapCanvas().setMapTool(self.mapTool)
         '''
+
     def onCreateRestriction(self, newRestriction):
         """ Called by map tool when a restriction is created
         """
-        QgsMessageLog.logMessage("In Restriction Details", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
 
         self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
@@ -568,4 +614,58 @@ class manageRestrictionDetails():
         pass
 
     def doEditRestriction(self):
+
+        QgsMessageLog.logMessage("In doEditRestriction - starting", tag="TOMs panel")
+
+        if self.actionEditRestriction.isChecked():
+
+            # set TOMs layer as active layer (for editing)...
+
+            self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+            iface.setActiveLayer(self.TOMslayer)
+
+            # now set NodeTools to be active
+
+            iface.actionNodeTool().trigger()
+
+            QgsMessageLog.logMessage("In doEditRestriction - tool activated", tag="TOMs panel")
+
+            # now need to record details
+
+            self.TOMslayer.startEditing()
+
+            #self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
+            #self.mapTool.setAction(self.actionCreateRestriction)
+            #self.iface.mapCanvas().setMapTool(self.mapTool)
+
+        else:
+
+            QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+
+            #self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            #self.mapTool = None
+
+            # Need to uncheck NodeTool
+            iface.actionPan().trigger()
+
+            self.actionEditRestriction.setChecked(False)
+            iface.mapCanvas().refresh()
+            # need to deselect the nodes ...
+
+            """
+            layer.committedGeometriesChanges.connect(onGeometryChanged)
+layer.committedGeometriesChanges.disconnect(onGeometryChanged)
+def onGeometryChanged(layer_id, geometry_map):
+	for geometry_change in geometry_map.iteritems():
+		print(str(geometry_change))
+layer.committedGeometriesChanges.disconnect(onGeometryChanged)
+Traceback (most recent call last):
+  File "<input>", line 1, in <module>
+TypeError: 'function' object is not connected
+layer.committedGeometriesChanges.connect(onGeometryChanged)
+(28L, <qgis._core.QgsGeometry object at 0x234574E0>)
+
+            """
+        QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
+
         pass
