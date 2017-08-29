@@ -154,7 +154,7 @@ class manageRestrictionDetails():
         self.actionRestrictionDetails.setChecked(True)
 
 		# Define the layer as a QgsVectorLayer (rather than a dataProvider layer). This means that need to use transactions rather than auto commit
-        self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+        TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
         self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
         self.mapTool.setAction(self.actionRestrictionDetails)

@@ -178,14 +178,14 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 #############################################################################
 
 class CreateRestrictionTool(QgsMapToolCapture):
-     # helpful link - http://apprize.info/python/qgis/7.html ??
+    # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, onCreateRestriction):
 
         QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
         #https: // qgis.org / api / classQgsMapToolCapture.html
-        #iface.mapCanvas() = canvas
+        canvas = iface.mapCanvas()
 
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
         # capture mode (... not sure if this has already been set? - or how to set it)
@@ -195,13 +195,44 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.sketchPoints = self.points()
         #self.setPoints(self.sketchPoints)  ... not sure when to use this ??
 
-        # Set upi rubber band. In current implementation, it is not showing feeback for "next" location
+        # Set up rubber band. In current implementation, it is not showing feeback for "next" location
 
         self.rb = self.createRubberBand(QGis.Line)
 
         self.layer = layer
         self.currLayer = self.currentVectorLayer()
         QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer) + "Incoming: " + str(self.layer)), tag="TOMs panel")
+
+        # set up snapping configuration   *******************
+        """
+        TOMs_Layer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+
+        ConstructionLines = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+
+        snapping_layer1 = QgsSnappingUtils.LayerConfig(TOMs_Layer, QgsPointLocator.Vertex, 0.5,
+                                                       QgsTolerance.LayerUnits)
+        snapping_layer2 = QgsSnappingUtils.LayerConfig(RoadCasementLayer, QgsPointLocator.Vertex and QgsPointLocator.Edge, 0.5,
+                                                       QgsTolerance.LayerUnits)
+        snapping_layer3 = QgsSnappingUtils.LayerConfig(ConstructionLines, QgsPointLocator.Vertex and QgsPointLocator.Edge, 0.5,
+                                                       QgsTolerance.LayerUnits)
+        """
+        self.snappingUtils = QgsSnappingUtils()
+
+        #self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
+
+        self.snappingUtils.setSnapToMapMode(QgsSnappingUtils.SnapAdvanced)
+
+        # set up tracing configuration
+
+        RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+        self.tracer = QgsMapCanvasTracer(canvas)
+        #self.allowTracing = self.tracer.actionEnableTracing()
+
+        #traceLayerList = self.tracer.layers([RoadCasementLayer])
+        #self.tracer.setLayers(traceLayerList)
+
+        #self.tracer.setActionEnableTracing(self.allowTracing)
+
 
         # set up function to be called when capture is complete
         self.onCreateRestriction = onCreateRestriction
@@ -212,9 +243,25 @@ class CreateRestrictionTool(QgsMapToolCapture):
             if not self.isCapturing():
                 self.startCapturing()
             #self.result = self.addVertex(self.toMapCoordinates(event.pos()))
-            self.currPoint = self.toLayerCoordinates(self.layer, event.pos())
+            checkSnapping = event.isSnapped
+            QgsMessageLog.logMessage("In Create - cadCanvasReleaseEvent: checkSnapping = " + str(checkSnapping), tag="TOMs panel")
+
+            """tolerance_nearby = 0.5
+            tolerance = tolerance_nearby
+
+            searchRect = QgsRectangle(self.currPoint.x() - tolerance,
+                                      self.currPoint.y() - tolerance,
+                                      self.currPoint.x() + tolerance,
+                                      self.currPoint.y() + tolerance)"""
+
+            #locator = self.snappingUtils.snapToMap(self.currPoint)
+
+            # Now wanting to add point(s) to new shape. Take account of snapping and tracing
+            # self.toLayerCoordinates(self.layer, event.pos())
+            self.currPoint = event.snapPoint(1)    #  1 is value of QgsMapMouseEvent.SnappingMode (not sure where this is defined)
+            self.lastEvent = event
+            # If this is the first point, add and k
             self.result = self.addVertex(self.currPoint)
-            self.currPoint.x()
 
             QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), tag="TOMs panel")
 
@@ -262,13 +309,9 @@ class CreateRestrictionTool(QgsMapToolCapture):
             # take points from the rubber band and copy them into the "feature"
 
             fields = self.layer.dataProvider().fields()
-            # feature = QgsFeature()
-            feature = RestrictionType()
+            feature = QgsFeature()
             feature.setFields(fields)
 
-            #self.newGeom = QgsGeometry.fromPolyline(self.sketchPoints)
-
-            #feature.setGeometry(QgsGeometry.fromPolyline(self.points()))   # Not sure why this statement does not work ...
             feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
 
             # Currently geometry is not being created correct. Might be worth checking co-ord values ...
@@ -281,19 +324,8 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             # set any geometry related attributes ...
 
-            feature.setRoadName()
-            feature.setAzimuthToRoadCentreLine()
-
-            """  Additions from Matthias
-
-            feature = QgsFeature()
-            
-            road = RestrictionTypeWrapper(feature)
-
-            road.setRoadName(xyz)
-
-            layer.addFeature(road.feature)
-            """
+            RestrictionTypeUtils.setRoadName(feature)
+            RestrictionTypeUtils.setAzimuthToRoadCentreLine(feature)
 
             # is there any other tidying to do ??
 
@@ -301,169 +333,136 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
 #############################################################################
 
-class RestrictionType(QgsFeature, MapToolMixin):
-    # This is a test to see how subtype of QgsFeature might work
-
-    # Would be helpful to have different types of restrictions here - bays, lines, dropped kerbs, moving, ...
-
-    # Need to create fucntions to obtain these details
-
-    StreetName = "Test Road"
-    USRN = "1234"
-    AzimuthToRoadCentreLine = 90
-
-    def setRoadName(self):
-
-        QgsMessageLog.logMessage("In setRoadName:", tag="TOMs panel")
-
-        self.RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
-
-        # take the first point from the geometry
-        line = self.geometry().asPolyline()
-        nrPts = len(line)
-        QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
-
-        secondPt = line[1]   # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
-
-        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
-
-        # check for the feature within RoadCasement_NSG_StreetName layer
-        tolerance_nearby = 0.25  # somehow need to have this (and layer names) as global variables
-
-        nearestRC_feature = self.findFeatureAt2(secondPt, self.RoadCasementLayer, tolerance_nearby)
-
-        if nearestRC_feature:
-
-            #QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
-
-            #fields = self.RoadCasementLayer.dataProvider().fields()
-            #nearestRC_feature.setFields(fields)
-
-            #StreetName = nearestRC_feature.attributes("Street_Descriptor")
-            #USRN = nearestRC_feature.attributes("USRN")
-
-            idx_Street_Descriptor = self.RoadCasementLayer.fieldNameIndex('Street_Descriptor')
-            idx_USRN = self.RoadCasementLayer.fieldNameIndex('USRN')
-
-            self.StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
-            self.USRN = nearestRC_feature.attributes()[idx_USRN]
-
-            QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(self.StreetName), tag="TOMs panel")
-
-            self.setAttribute("RoadName", self.StreetName)
-            self.setAttribute("USRN", int(self.USRN))
-
-        pass
-
-    def setAzimuthToRoadCentreLine(self):
-
-        # find the shortest line from this point to the road centre line layer
-        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
-
-        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine:", tag="TOMs panel")
-
-        self.RoadCentreLineLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
-
-        # take the first point from the geometry
-        line = self.geometry().asPolyline()
-        #nrPts = len(line)
-        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: nrPts = " + str(nrPts), tag="TOMs panel")
-
-        testPt = line[1]   # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
-
-        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
-
-        # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
-
-        tolerance_roadwidth = 25
-        searchRect = QgsRectangle(testPt.x() - tolerance_roadwidth,
-                                  testPt.y() - tolerance_roadwidth,
-                                  testPt.x() + tolerance_roadwidth,
-                                  testPt.y() + tolerance_roadwidth)
-
-        request = QgsFeatureRequest()
-        request.setFilterRect(searchRect)
-        request.setFlags(QgsFeatureRequest.ExactIntersect)
-
-        shortestDistance = float("inf")
-
-        # Loop through all features in the layer to find the closest feature
-        for f in self.RoadCentreLineLayer.getFeatures(request):
-            dist = f.geometry().distance(QgsGeometry.fromPoint(testPt))
-            if dist < shortestDistance:
-                shortestDistance = dist
-                closestFeature = f
-
-        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
-
-        if closestFeature:
-            # now obtain the line between the testPt and the nearest feature
-            f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
-
-            # get the start point (we know the end point)
-            startPtV2 = f_lineToCL.geometry().startPoint()
-            startPt = QgsPoint()
-            startPt.setX(startPtV2.x())
-            startPt.setY(startPtV2.y())
-
-            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()), tag="TOMs panel")
-
-            Az = testPt.azimuth(startPt)
-            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
-
-            # now set the attribute
-            self.setAttribute("AzimuthToRoadCentreLine", int(Az))
-
-        pass
-
-    def findFeatureAt2(self, layerPt, layer, tolerance):
-    # def findFeatureAt(self, pos, excludeFeature=None):
-        """ Find the feature close to the given position.
-
-            'pos' is the position to check, in canvas coordinates.
-
-            if 'excludeFeature' is specified, we ignore this feature when
-            finding the clicked-on feature.
-
-            If no feature is close to the given coordinate, we return None.
-        """
-
-        self.layer = layer
-        #self.currLayer = self.currentVectorLayer()
-        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(self.layer), tag="TOMs panel")
-        #mapPt,layerPt = self.transformCoordinates(pos)
-        #tolerance = self.calcTolerance(pos)
-        #tolerance = 0.25  # where should we set this ??
-        searchRect = QgsRectangle(layerPt.x() - tolerance,
-                                  layerPt.y() - tolerance,
-                                  layerPt.x() + tolerance,
-                                  layerPt.y() + tolerance)
-
-        request = QgsFeatureRequest()
-        request.setFilterRect(searchRect)
-        request.setFlags(QgsFeatureRequest.ExactIntersect)
-
-        for feature in self.layer.getFeatures(request):
-            QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel")
-            return feature # Return first matching feature.
-
-        return None
-
-class RestrictionTypeWrapper():
-    def __init__(self, feature):
-        self.feature = feature
-
-    def setRoadName(self, name):
-        self.feature.setAttribute('RoadName', name)
-
-
 class RestrictionTypeUtils:
-    @classmethod
-    def prepareRoadFeature(feature):
-        feature.setAttribute()
-        return feature
+        @staticmethod
+        def setRoadName(feature):
 
+            QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel")
 
+            RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+
+            # take the first point from the geometry
+            line = feature.geometry().asPolyline()
+            nrPts = len(line)
+            QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
+
+            secondPt = line[
+                1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+            QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
+
+            # check for the feature within RoadCasement_NSG_StreetName layer
+            tolerance_nearby = 0.25  # somehow need to have this (and layer names) as global variables
+
+            nearestRC_feature = RestrictionTypeUtils.findFeatureAt2(feature, secondPt, RoadCasementLayer, tolerance_nearby)
+
+            if nearestRC_feature:
+                # QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
+
+                idx_Street_Descriptor = RoadCasementLayer.fieldNameIndex('Street_Descriptor')
+                idx_USRN = RoadCasementLayer.fieldNameIndex('USRN')
+
+                StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
+                USRN = nearestRC_feature.attributes()[idx_USRN]
+
+                QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
+
+                feature.setAttribute("RoadName", StreetName)
+                feature.setAttribute("USRN", int(USRN))
+
+            pass
+
+        @staticmethod
+        def setAzimuthToRoadCentreLine(feature):
+
+            # find the shortest line from this point to the road centre line layer
+            # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
+
+            RoadCentreLineLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
+
+            # take the a point from the geometry
+            line = feature.geometry().asPolyline()
+
+            testPt = line[
+                1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+
+            # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
+
+            tolerance_roadwidth = 25
+            searchRect = QgsRectangle(testPt.x() - tolerance_roadwidth,
+                                      testPt.y() - tolerance_roadwidth,
+                                      testPt.x() + tolerance_roadwidth,
+                                      testPt.y() + tolerance_roadwidth)
+
+            request = QgsFeatureRequest()
+            request.setFilterRect(searchRect)
+            request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+            shortestDistance = float("inf")
+
+            # Loop through all features in the layer to find the closest feature
+            for f in RoadCentreLineLayer.getFeatures(request):
+                dist = f.geometry().distance(QgsGeometry.fromPoint(testPt))
+                if dist < shortestDistance:
+                    shortestDistance = dist
+                    closestFeature = f
+
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),
+                                     tag="TOMs panel")
+
+            if closestFeature:
+                # now obtain the line between the testPt and the nearest feature
+                f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
+
+                # get the start point (we know the end point)
+                startPtV2 = f_lineToCL.geometry().startPoint()
+                startPt = QgsPoint()
+                startPt.setX(startPtV2.x())
+                startPt.setY(startPtV2.y())
+
+                QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
+                                         tag="TOMs panel")
+
+                Az = testPt.azimuth(startPt)
+                QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
+
+                # now set the attribute
+                feature.setAttribute("AzimuthToRoadCentreLine", int(Az))
+
+            pass
+
+        @staticmethod
+        def findFeatureAt2(feature, layerPt, layer, tolerance):
+            # def findFeatureAt(self, pos, excludeFeature=None):
+            """ Find the feature close to the given position.
+
+                'layerPt' is the position to check, in layer coordinates.
+                'layer' is specified layer
+                'tolerance' is search distance in layer units
+
+                If no feature is close to the given coordinate, we return None.
+            """
+
+            QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer), tag="TOMs panel")
+
+            searchRect = QgsRectangle(layerPt.x() - tolerance,
+                                      layerPt.y() - tolerance,
+                                      layerPt.x() + tolerance,
+                                      layerPt.y() + tolerance)
+
+            request = QgsFeatureRequest()
+            request.setFilterRect(searchRect)
+            request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+            for feature in layer.getFeatures(request):
+                QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel")
+                return feature  # Return first matching feature.
+
+            return None
 
 #############################################################################
 
