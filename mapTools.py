@@ -226,12 +226,12 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
         self.tracer = QgsMapCanvasTracer(canvas)
-        #self.allowTracing = self.tracer.actionEnableTracing()
+        self.allowTracing = self.tracer.actionEnableTracing()
 
-        #traceLayerList = self.tracer.layers([RoadCasementLayer])
-        #self.tracer.setLayers(traceLayerList)
+        traceLayerList = self.tracer.layers([RoadCasementLayer])
+        self.tracer.setLayers(traceLayerList)
 
-        #self.tracer.setActionEnableTracing(self.allowTracing)
+        self.tracer.setActionEnableTracing(self.allowTracing)
 
 
         # set up function to be called when capture is complete
