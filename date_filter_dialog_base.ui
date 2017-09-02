@@ -15,23 +15,13 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QDateEdit" name="filterDate">
-     <property name="displayFormat">
-      <string>yyyy-MM-dd</string>
-     </property>
-     <property name="calendarPopup">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
     <widget class="QCheckBox" name="includeTempOrders">
      <property name="text">
       <string>Include temporary orders</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
     <widget class="QDialogButtonBox" name="button_box">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

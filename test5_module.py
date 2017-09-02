@@ -36,10 +36,12 @@ from ui_TOMs import uiTOMs
 
 from manage_restriction_types import manageRestrictionTypes
 from filter_on_date import filterOnDate
+from proposals_panel import proposalsPanel
 from manage_restriction_details import manageRestrictionDetails
+from ProposalPanel_dockwidget import ProposalPanelDockWidget
 
-from tools.lineintersectiontool import LineIntersectionTool
-from tools.circleFromCentreTool import circleFromCentreTool
+#from tools.lineintersectiontool import LineIntersectionTool
+#from tools.circleFromCentreTool import circleFromCentreTool
 
 import os.path
 import time
@@ -222,12 +224,13 @@ class Test5Class:
             
             self.TOMsMenu.menuAction().setVisible( True )
 
-
+        # add items to menu
         # self.setupUi()
         self.doManageRestrictionTypes = manageRestrictionTypes(self.iface, self.TOMsMenu)
         self.TOMsMenu.addSeparator()
         self.doFilterOnDate = filterOnDate(self.iface, self.TOMsMenu)
         self.TOMsMenu.addSeparator()
+        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsMenu)
 
         # set up menu. Is there a generic way to do this? from an xml file?
         
@@ -272,6 +275,9 @@ class Test5Class:
         # remove the toolbar
         del self.TOMsToolbar
         self.restoreMenusToolbars()
+
+        # disconnect panel
+        #self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
 
     def hideMenusToolbars(self):
         ''' Remove the menus and toolbars that we don't want (e.g., the Edit menu)
@@ -374,4 +380,9 @@ class Test5Class:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+    def doProposalsPanel(self):
+        """Run method that loads and starts the plugin"""
+        QgsMessageLog.logMessage("In doProposalsPanel - not sure what should happen here ...", tag="TOMs panel")
+        pass
 

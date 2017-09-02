@@ -228,8 +228,8 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.tracer = QgsMapCanvasTracer(canvas)
         self.allowTracing = self.tracer.actionEnableTracing()
 
-        traceLayerList = self.tracer.layers([RoadCasementLayer])
-        self.tracer.setLayers(traceLayerList)
+        #traceLayerList = self.tracer.layers([RoadCasementLayer])
+        #self.tracer.setLayers(traceLayerList)
 
         self.tracer.setActionEnableTracing(self.allowTracing)
 
@@ -373,6 +373,20 @@ class RestrictionTypeUtils:
             pass
 
         @staticmethod
+        def checkDegrees(Az):
+
+            newAz = Az
+
+            if Az >= float(360):
+                newAz = Az - float(360)
+            elif Az < float(0):
+                newAz = Az + float(360)
+
+            QgsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), tag="TOMs panel")
+
+            return newAz
+
+        @staticmethod
         def setAzimuthToRoadCentreLine(feature):
 
             # find the shortest line from this point to the road centre line layer
@@ -427,7 +441,7 @@ class RestrictionTypeUtils:
                 QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
                                          tag="TOMs panel")
 
-                Az = testPt.azimuth(startPt)
+                Az = RestrictionTypeUtils.checkDegrees(testPt.azimuth(startPt))
                 QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
                 # now set the attribute
