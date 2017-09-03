@@ -101,16 +101,6 @@
     <string>Notes:</string>
    </property>
   </widget>
-  <widget class="QPlainTextEdit" name="ProposalNotes">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>150</y>
-     <width>241</width>
-     <height>141</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QDateEdit" name="ProposalCreateDate">
    <property name="geometry">
     <rect>
@@ -122,6 +112,16 @@
    </property>
    <property name="calendarPopup">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="ProposalNotes">
+   <property name="geometry">
+    <rect>
+     <x>123</x>
+     <y>150</y>
+     <width>231</width>
+     <height>141</height>
+    </rect>
    </property>
   </widget>
  </widget>

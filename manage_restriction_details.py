@@ -164,6 +164,8 @@ class manageRestrictionDetails():
         """ Called by map tool when a restriction is selected
         """
 
+        # May need to know the layer that the feature is on
+
         if QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer"):
             TOMsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
         else:
@@ -245,13 +247,13 @@ class manageRestrictionDetails():
         self.dlg = restrictionDetailsDialog()
 		
         # set up any details for the form title
-        viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
-        currDate = datetime.datetime.now().strftime("%Y-%m-%d")
+        #viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
+        #currDate = datetime.datetime.now().strftime("%Y-%m-%d")
 
         # show the dialog
         self.dlg.show()
 
-        self.dlg.l_ViewAtDate.setText(viewAtDate)
+        #self.dlg.l_ViewAtDate.setText(viewAtDate)
 
         # Prepare the comboBoxes. Probably a better way .... but this will do for the moment
 
@@ -397,56 +399,56 @@ class manageRestrictionDetails():
             newRestrictionTypeID = self.dlg.cb_restrictionTypes.currentIndex()
             if currRestrictionTypeID != newRestrictionTypeID:
                 featureChanged = True
-                strHistory = strHistory + " Restriction type: " + str(self.dlg.cb_restrictionTypes.currentText())
+                #strHistory = strHistory + " Restriction type: " + str(self.dlg.cb_restrictionTypes.currentText())
                 
             newTimePeriodID = self.dlg.cb_timePeriods.currentIndex()
             if currTimePeriodID != newTimePeriodID:
                 featureChanged = True
-                strHistory = strHistory + " New time period: " + str(self.dlg.cb_timePeriods.currentText())
+                #strHistory = strHistory + " New time period: " + str(self.dlg.cb_timePeriods.currentText())
                 
             newMaxStayID = self.dlg.cb_maxStayPeriod.currentIndex()
             if currMaxStayID != newMaxStayID:
                 featureChanged = True
-                strHistory = strHistory + " Max stay period: " + str(self.dlg.cb_maxStayPeriod.currentText())
+                #strHistory = strHistory + " Max stay period: " + str(self.dlg.cb_maxStayPeriod.currentText())
                 
             newNoReturnID = self.dlg.cb_noReturnPeriod.currentIndex()
             if currNoReturnID != newNoReturnID:
                 featureChanged = True
-                strHistory = strHistory + " No Return period: " + str(self.dlg.cb_noReturnPeriod.currentText())
+                #strHistory = strHistory + " No Return period: " + str(self.dlg.cb_noReturnPeriod.currentText())
                
             newPaymentTypeID = self.dlg.cb_paymentType.currentIndex()
             if currPaymentTypeID != newPaymentTypeID:
                 featureChanged = True
-                strHistory = strHistory + " Payment type: " + str(self.dlg.cb_paymentType.currentText())
+                #strHistory = strHistory + " Payment type: " + str(self.dlg.cb_paymentType.currentText())
 
             # will need to check this as Road Name and USRN are already set ...
 
             newRoadName = self.dlg.txt_RoadName.text()
             if currRoadName != newRoadName:
                 featureChanged = True
-                strHistory = strHistory + " Road Name: " + str(self.dlg.txt_RoadName.text())
+                #strHistory = strHistory + " Road Name: " + str(self.dlg.txt_RoadName.text())
 
             newUSRN = self.dlg.txt_USRN.text()
             if currUSRN != newUSRN:
                 featureChanged = True
-                strHistory = strHistory + " USRN: " + str(self.dlg.txt_USRN.text())
+                #strHistory = strHistory + " USRN: " + str(self.dlg.txt_USRN.text())
 
             newRestrictionGeometryTypeID = self.dlg.cb_geometryType.currentIndex()
             if currRestrictionGeometryTypeID != newRestrictionGeometryTypeID:
                 featureChanged = True
-                strHistory = strHistory + " Restriction Geometry type: " + str(self.dlg.cb_geometryType.currentText())
+                #strHistory = strHistory + " Restriction Geometry type: " + str(self.dlg.cb_geometryType.currentText())
 
             newOrientation = str(self.dlg.txt_Orientation.text())
             if currOrientation != newOrientation:
                 featureChanged = True
-                strHistory = strHistory + " Orientation: " + str(self.dlg.txt_Orientation.text())
+                #strHistory = strHistory + " Orientation: " + str(self.dlg.txt_Orientation.text())
                
             newAzimuthToRoadCentreLine = str(self.dlg.txt_AzimuthToRoadCentreLine.text())
             if currAzimuthToRoadCentreLine != newAzimuthToRoadCentreLine:
                 featureChanged = True
-                strHistory = strHistory + " Azimuth to CL: " + str(self.dlg.txt_AzimuthToRoadCentreLine.text())
+                #strHistory = strHistory + " Azimuth to CL: " + str(self.dlg.txt_AzimuthToRoadCentreLine.text())
                 
-            newEffectiveDate = str(self.dlg.effectiveDate.text())
+            """newEffectiveDate = str(self.dlg.effectiveDate.text())
             if currEffectiveDate != newEffectiveDate:
                 featureChanged = True
                 strHistory = strHistory + " Effective date: " + str(self.dlg.effectiveDate.text())
@@ -459,7 +461,7 @@ class manageRestrictionDetails():
             newRestrictionStatusID = self.dlg.cb_restrictionStatus.currentIndex()
             if currRestrictionStatusID != newRestrictionStatusID:
                 featureChanged = True
-                strHistory = strHistory + " Restriction Status: " + str(self.dlg.cb_restrictionStatus.currentText())
+                strHistory = strHistory + " Restriction Status: " + str(self.dlg.cb_restrictionStatus.currentText())"""
 
             # Store the new details  ** need to sort out error handling **
             QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. OK Pressed. " + strHistory), tag="TOMs panel")
@@ -471,8 +473,16 @@ class manageRestrictionDetails():
                 
                 #if reply == QMessageBox.Yes:
                 
-                # If this is an existing feature, duplicate the geometry - copy the geometry from the current feature to the new feature
+                # Need to check whether or not the restriction already exists within the table RestrictionsInProposals
 
+                """if restrictionInCurrentProposal(currRestrictionID, currLayerID, currProposalID):
+                    # simply make changes to the current restriction in the current layer
+                else:
+                    # need to:
+                    #    - enter the restriction into the table RestrictionInProposals, and 
+                    #    - make a copy of the restriction in the current layer (with the new details)
+                """
+                
                 if featureGeometryID != NULL:
                     newRestriction = QgsFeature(self.TOMslayer.fields())
                     self._geom_buffer = QgsGeometry(selectedFeature.geometry())
