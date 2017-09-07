@@ -700,30 +700,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="RestrictionHistory">
-    <attribute name="title">
-     <string>History</string>
-    </attribute>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>475</width>
-          <height>492</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">

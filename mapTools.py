@@ -14,7 +14,7 @@ from qgis.gui import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from qgis.utils import iface
-from qgis.gui import QgsMapToolCapture
+#from qgis.gui import QgsMapToolCapture
 
 #from constants import *
 
@@ -171,9 +171,9 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
         if feature == None:
             return
 
-        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected"), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + self.layer.name()), tag="TOMs panel")
 
-        self.onDisplayRestrictionDetails(feature)
+        self.onDisplayRestrictionDetails(feature, self.layer)
 
 #############################################################################
 
@@ -329,7 +329,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             # is there any other tidying to do ??
 
-            self.onCreateRestriction(feature)
+            self.onCreateRestriction(feature, self.layer)
 
 #############################################################################
 
@@ -477,6 +477,32 @@ class RestrictionTypeUtils:
                 return feature  # Return first matching feature.
 
             return None
+
+        @staticmethod
+        def restrictionInProposal (currRestrictionID, currRestrictionLayerID, proposalID):
+            # returns True if resstriction is in Proposal
+            QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel")
+
+            RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+            restrictionFound = False
+
+            # not sure if there is better way to search for something, .e.g., using SQL ??
+
+            for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures(request):
+                if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
+                    if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
+                        if restrictionInProposal.attribute("ProposalID") == proposalID:
+                            restrictionFound = True
+
+            return restrictionFound
+
+        @staticmethod
+        def addRestrictionToProposal(restrictionID, restrictionLayer, proposalID, proposedAction):
+            # adds restriction to the "RestrictionsInProposals" layer
+            QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
+
+            pass
 
 #############################################################################
 

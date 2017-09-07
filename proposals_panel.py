@@ -148,6 +148,10 @@ class proposalsPanel():
 
         QgsMessageLog.logMessage("In onChangeProposal. newProposalID: " + str(newProposalID) + " newProposalTitle: " + str(newProposalTitle), tag="TOMs panel")
 
+        # Set the project variable
+
+        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
+
         # Now revise the view based on proposal choosen
 
         self.filterView()
@@ -451,6 +455,10 @@ class proposalsPanel():
 
         if currProposalID > 0:   # need to consider a proposal
 
+            # Set Proposal as project variable
+
+            self.currProposalID = QgsExpressionContextUtils.projectScope().variable('currentProposal')
+
             # get list of restrictions to open within proposal
 
             if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2"):
@@ -480,6 +488,7 @@ class proposalsPanel():
                 restrictionsToClose = self.getRestrictionsInProposal(currRestrictionLayer, currProposalID, 2)   # Close is 2  ... need to get better looping ...
                 QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
+                # **** Assumption that there are some details in proposal ??
                 filterString = filterString + " AND ""id"" NOT IN ( " + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
@@ -511,7 +520,7 @@ class proposalsPanel():
         # Will return a (comma separated) string with the list of restrictions within a Proposal
         QgsMessageLog.logMessage("In getRestrictionsInProposal. proposalID: " + str(proposalID) + " proposedAction: " + str(proposedAction), tag="TOMs panel")
 
-        #restrictionsString = []
+        restrictionsString = ''
         firstRestriction = True
 
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):

@@ -18,9 +18,11 @@ import time
 import datetime
 
 from restrictionDetails_dialog import restrictionDetailsDialog
+from restrictionDetails_dialog2 import restrictionDetailsDialog2
 from mapTools import *
 from TOMsUtils import *
 from constants import *
+from qgis.gui import *
 
 class manageRestrictionDetails():
     
@@ -145,20 +147,31 @@ class manageRestrictionDetails():
 		"""
         
         QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
-        
+
         if not self.actionRestrictionDetails.isChecked():
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.actionRestrictionDetails.setChecked(False)
+            self.actionPan.connect()
+            return
+        """
+        if not self.actionRestrictionDetails.isChecked():
+            #self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
             return
+        """
+        self.actionIdentify.connect()
 
         self.actionRestrictionDetails.setChecked(True)
 
 		# Define the layer as a QgsVectorLayer (rather than a dataProvider layer). This means that need to use transactions rather than auto commit
-        TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+        self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
-        self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
+        iface.setActiveLayer(self.TOMslayer)
+
+        """
+        self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
         self.mapTool.setAction(self.actionRestrictionDetails)
         self.iface.mapCanvas().setMapTool(self.mapTool)
+        """
 
     def onDisplayRestrictionDetails(self, selectedFeature):
         """ Called by map tool when a restriction is selected
@@ -248,7 +261,7 @@ class manageRestrictionDetails():
 		
         # set up any details for the form title
         #viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
-        #currDate = datetime.datetime.now().strftime("%Y-%m-%d")
+        currDate = datetime.datetime.now().strftime("%Y-%m-%d")
 
         # show the dialog
         self.dlg.show()
@@ -461,7 +474,8 @@ class manageRestrictionDetails():
             newRestrictionStatusID = self.dlg.cb_restrictionStatus.currentIndex()
             if currRestrictionStatusID != newRestrictionStatusID:
                 featureChanged = True
-                strHistory = strHistory + " Restriction Status: " + str(self.dlg.cb_restrictionStatus.currentText())"""
+                #strHistory = strHistory + " Restriction Status: " + str(self.dlg.cb_restrictionStatus.currentText())
+            """
 
             # Store the new details  ** need to sort out error handling **
             QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. OK Pressed. " + strHistory), tag="TOMs panel")
@@ -475,14 +489,22 @@ class manageRestrictionDetails():
                 
                 # Need to check whether or not the restriction already exists within the table RestrictionsInProposals
 
-                """if restrictionInCurrentProposal(currRestrictionID, currLayerID, currProposalID):
+                """#***********
+                
+                # can use similar approach as used with Proposals where "OK" signal was intercepted
+                
+                if RestrictionTypeUtils.restrictionInProposal(currRestrictionID, currLayerID, currProposalID):
                     # simply make changes to the current restriction in the current layer
+                    self.TOMslayer.changeAttributeValue(currRestriction.id(), self.Proposals.fieldNameIndex("..."), self.dlg. ... .text())
                 else:
                     # need to:
                     #    - enter the restriction into the table RestrictionInProposals, and 
                     #    - make a copy of the restriction in the current layer (with the new details)
-                """
-                
+                    RestrictionTypeUtils.addRestrictionToProposal (restrictionID, restrictionLayer, proposalID, proposedAction)
+                    self.TOMslayer.addFeatures([newRestriction])
+
+                # ************************"""
+
                 if featureGeometryID != NULL:
                     newRestriction = QgsFeature(self.TOMslayer.fields())
                     self._geom_buffer = QgsGeometry(selectedFeature.geometry())
@@ -499,8 +521,8 @@ class manageRestrictionDetails():
                 if newNoReturnID < 0:
                     newNoReturnID = -1
 
-                if newRestrictionStatusID < 0:
-                    newRestrictionStatusID = 0
+                #if newRestrictionStatusID < 0:
+                #    newRestrictionStatusID = 0
 
                 newRestriction[idxGeometryID] = currGeometryID
                 newRestriction[idxRestrictionTypeID] = newRestrictionTypeID
@@ -509,9 +531,9 @@ class manageRestrictionDetails():
                 newRestriction[idxNoReturnID] = newNoReturnID
                 newRestriction[idxPaymentTypeID] = newPaymentTypeID
 
-                newRestriction[idxRestrictionStatusID] = newRestrictionStatusID
-                newRestriction[idxEffectiveDate] = newEffectiveDate
-                newRestriction[idxRescindDate] = newRescindDate
+                #newRestriction[idxRestrictionStatusID] = newRestrictionStatusID
+                #newRestriction[idxEffectiveDate] = newEffectiveDate
+                #newRestriction[idxRescindDate] = newRescindDate
 
 
                 newRestriction[idxRoadName] = newRoadName
@@ -520,7 +542,7 @@ class manageRestrictionDetails():
                 newRestriction[idxOrientation] = newOrientation
                 newRestriction[idxAzimuthToRoadCentreline] = newAzimuthToRoadCentreLine
 
-                newRestriction[idxChangeNotes] = strHistory
+                #newRestriction[idxChangeNotes] = strHistory
                 newRestriction[idxChangeDate] = currDate
 
                 # Also need to think about some geometry related fields - feature length, shape length
@@ -563,8 +585,75 @@ class manageRestrictionDetails():
             pass
         else:
             pass
-        
-    def checkRestrictionType(self):
+
+    def onDisplayRestrictionDetails2(self, currRestriction, currRestrictionLayer):
+        """ Called by map tool when a restriction is selected
+        """
+        self.currRestriction = currRestriction
+        self.currRestrictionLayer = currRestrictionLayer
+
+        QgsMessageLog.logMessage(("Start onDisplayRestrictionDetails2. currLayer: " + self.currRestrictionLayer.name() + " currType: "),
+                                 tag="TOMs panel")
+
+        self.currRestriction = currRestriction
+        self.currRestrictionLayer = currRestrictionLayer
+
+        # Get the current proposal from the session variables
+        self.currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+
+        # Choose the dialog based on the layer
+        self.dlg = restrictionDetailsDialog2()
+
+        # show the dialog
+        self.dlg.show()
+
+        QgsMessageLog.logMessage(("In onDisplayRestrictionDetails2. Waiting for changes to form."),
+                                 tag="TOMs panel")
+
+        # pick up a singal that something has changed (not sure which one)
+        # self.dlg.attributeChanged.connect(self.onProposalChanged)
+        # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
+        # Disconnect the signal that QGIS has wired up for the dialog to the button box.
+        self.dlg.button_box.accepted.disconnect()
+
+        # Wire up our own signals.
+        #self.newProposalRequired = False
+        self.dlg.button_box.accepted.connect(self.onSaveRestrictionDetails)   # would like to pass details here - not sure how ??
+
+        pass
+
+    def onSaveRestrictionDetails(self):
+        QgsMessageLog.logMessage("In onSaveRestrictionDetails.", tag="TOMs panel")
+
+        self.currRestrictionLayer.startEditing()
+
+        if RestrictionTypeUtils.restrictionInProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID):
+            # simply make changes to the current restriction in the current layer
+            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form.", tag="TOMs panel")
+            self.dlg.accept()
+
+        else:
+            # need to:
+            #    - enter the restriction into the table RestrictionInProposals, and
+            #    - make a copy of the restriction in the current layer (with the new details)
+            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Closing existing restriction.",
+                                     tag="TOMs panel")
+            RestrictionTypeUtils.addRestrictionToProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID,
+                                                          "Close")
+            newRestriction = QgsFeature(self.currRestrictionLayer.fields())
+            self._geom_buffer = QgsGeometry(self.currRestriction.geometry())
+            newRestriction.setGeometry(QgsGeometry(self._geom_buffer))
+            self.currRestrictionLayer.addFeatures([newRestriction])
+
+            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Opening existing restriction.",
+                                     tag="TOMs panel")
+            RestrictionTypeUtils.addRestrictionToProposal(self.newRestriction.id(), self.currRestrictionLayerID,
+                                                      self.currProposalID,
+                                                      "Open")
+
+        pass
+
+    """def checkRestrictionType(self):
         '''
         Check the restriction ID and set the relevant fields to read only
         '''
@@ -575,7 +664,7 @@ class manageRestrictionDetails():
         pass
             
     def generateHistoryString(self, str, fieldName, strValue):
-        str = str + "; " + fieldName + ": " + strValue
+        str = str + "; " + fieldName + ": " + strValue """
             
     def doCreateRestriction(self):
 
@@ -590,7 +679,7 @@ class manageRestrictionDetails():
             self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
             iface.setActiveLayer(self.TOMslayer)
 
-            self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
+            self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
             self.mapTool.setAction(self.actionCreateRestriction)
             self.iface.mapCanvas().setMapTool(self.mapTool)
  
