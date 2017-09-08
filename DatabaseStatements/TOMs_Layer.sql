@@ -15,8 +15,8 @@ CREATE TABLE public."TOMs_Layer"
   "GeomTypeID" bigint,
   "RoadName" character varying(254),
   "Length" numeric,
-  "EffectiveDate" character varying(254),
-  "RescindDate" character varying(254),
+  "OpenDate" character varying(254),
+  "CloseDate" character varying(254),
   "RestrictionStatusID" bigint,
   "LengthFeat" numeric,
   shape_leng numeric,
@@ -27,6 +27,9 @@ CREATE TABLE public."TOMs_Layer"
   "AzimuthToRoadCentreLine" character varying(254),
   "ChangeDate" character varying(254),
   "USRN" character varying(254),
+  "OpenDate2" date,
+  "CloseDate2" date,
+  "NrBays" smallint,
   CONSTRAINT "TOMs_Layer_pkey" PRIMARY KEY (id)
 )
 WITH (
