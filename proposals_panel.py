@@ -30,6 +30,8 @@ class proposalsPanel():
         self.acceptProposal = False
         self.newProposalRequired = False
 
+        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', "0")
+
     def onInitProposalsPanel(self):
         """Filter main layer based on date and state options"""
         
@@ -475,25 +477,32 @@ class proposalsPanel():
 
                 # get the layer from the name
 
-                currLayer = currLayerDetails["RestrictionLayerName"]
-                QgsMessageLog.logMessage("In filterMapOnDate. Considering layer: " + currLayer, tag="TOMs panel")
+                currLayerID = currLayerDetails["id"]
+                currLayerName = currLayerDetails["RestrictionLayerName"]
+                QgsMessageLog.logMessage("In filterMapOnDate. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
 
-                if QgsMapLayerRegistry.instance().mapLayersByName(currLayer):
-                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayer)[0]
+                if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                            ("Table " + currLayer + " is not present"))
+                                            ("Table " + currLayerName + " is not present"))
                     raise LayerNotPresent
 
-                restrictionsToClose = self.getRestrictionsInProposal(currRestrictionLayer, currProposalID, 2)   # Close is 2  ... need to get better looping ...
+                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, 2)   # Close is 2  ... need to get better looping ...
                 QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
                 # **** Assumption that there are some details in proposal ??
-                filterString = filterString + " AND ""id"" NOT IN ( " + restrictionsToClose + " ))"
+                if len(restrictionsToClose) > 0:
+                    filterString = filterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
-                restrictionsToOpen = self.getRestrictionsInProposal(currRestrictionLayer, currProposalID, 1)   # Open is 1
-                filterString = " ""id""  IN ( " + restrictionsToOpen + " ) OR ( " + filterString
+                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, 1)   # Open is 1
+
+                if len(restrictionsToOpen) > 0:
+                    filterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + filterString
+
+                    if len(restrictionsToClose) == 0:
+                        filterString = filterString + " ) "
 
             pass
 
@@ -516,9 +525,9 @@ class proposalsPanel():
 
         pass
 
-    def getRestrictionsInProposal(self, layer, proposalID, proposedAction):
+    def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
         # Will return a (comma separated) string with the list of restrictions within a Proposal
-        QgsMessageLog.logMessage("In getRestrictionsInProposal. proposalID: " + str(proposalID) + " proposedAction: " + str(proposedAction), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionsInProposal. layerID: " + str(layerID) + " proposalID: " + str(proposalID) + " proposedAction: " + str(proposedAction), tag="TOMs panel")
 
         restrictionsString = ''
         firstRestriction = True
@@ -533,22 +542,35 @@ class proposalsPanel():
 
         listRestrictionsInProposals = self.RestrictionsInProposals.getFeatures()
 
+        QgsMessageLog.logMessage(
+            "In getRestrictionsInProposal. START layerID: " + str(layerID) + " ProposalID: " + str(
+                proposalID) + " proposedAction: " + str(proposedAction) + " firstRestriction: " + str(firstRestriction),
+            tag="TOMs panel")
+
         for proposedChange in listRestrictionsInProposals:
 
             currProposalID = proposedChange["ProposalID"]
+            currRestrictionTableID = proposedChange["RestrictionTableID"]
             possAction = proposedChange["ActionOnProposalAcceptance"]
 
             # check to see if the current row is for the current proposal and for the correct proposedAction
 
-            QgsMessageLog.logMessage("In getRestrictionsInProposal. currProposalID: " + str(currProposalID) + " possAction: " + str(possAction), tag="TOMs panel")
-
             if proposalID == currProposalID:
-                if proposedAction == possAction:
-                    if not firstRestriction:
-                        restrictionsString = ", " + str(proposedChange["RestrictionID"])
-                    else:
-                        restrictionsString = str(proposedChange["RestrictionID"])
-                        firstRestriction = False
+                if layerID == currRestrictionTableID:
+                    if proposedAction == possAction:
+
+                        QgsMessageLog.logMessage(
+                            "In getRestrictionsInProposal. FOUND layerID: " + str(layerID) + " currProposalID: " + str(
+                                currProposalID) + " possAction: " + str(possAction) + " firstRestriction: " + str(firstRestriction), tag="TOMs panel")
+
+                        if not firstRestriction:
+                            restrictionsString = restrictionsString + ", '" + proposedChange["RestrictionID"] + "'"
+                            QgsMessageLog.logMessage(
+                                "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
+                                tag="TOMs panel")
+                        else:
+                            restrictionsString = "'" + str(proposedChange["RestrictionID"]) + "'"
+                            firstRestriction = False
 
             pass
 

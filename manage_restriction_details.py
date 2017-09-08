@@ -158,7 +158,7 @@ class manageRestrictionDetails():
             self.mapTool = None
             return
         """
-        self.actionIdentify.connect()
+        self.actionIdentify().trigger
 
         self.actionRestrictionDetails.setChecked(True)
 

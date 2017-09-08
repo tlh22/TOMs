@@ -23,6 +23,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 #from manage_restriction_details import manageRestrictionDetails
+import uuid
 
 nameField = None
 myDialog = None
@@ -66,6 +67,7 @@ def onSaveRestrictionDetails():
     currRestrictionLayerTableID = getRestrictionLayerTableID(currRestrictionLayer)
 
     if restrictionInProposal(currRestriction.id(), currRestrictionLayerTableID, currProposalID):
+
         # simply make changes to the current restriction in the current layer
         QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form.", tag="TOMs panel")
         restrictionsDialog.accept()
@@ -75,24 +77,27 @@ def onSaveRestrictionDetails():
         #    - enter the restriction into the table RestrictionInProposals, and
         #    - make a copy of the restriction in the current layer (with the new details)
 
-        # Check to see if this is a new feature
-
-        QgsMessageLog.logMessage("In onSaveRestrictionDetails. Closing existing restriction. ID: " + str(currRestriction.id()),
+        QgsMessageLog.logMessage("In onSaveRestrictionDetails. Adding existing restriction. ID: " + str(currRestriction.id()),
                                  tag="TOMs panel")
-        addRestrictionToProposal(currRestriction.id(), currRestrictionLayerTableID, currProposalID,
-                                                      "Close")
+
+        # Create a new feature
         newRestriction = QgsFeature(currRestrictionLayer.fields())
         _geom_buffer = QgsGeometry(currRestriction.geometry())
         newRestriction.setGeometry(QgsGeometry(_geom_buffer))
+
+        idxGeometryID = newRestriction.fieldNameIndex("GeometryID")
+        newRestriction[idxGeometryID] = str(uuid.uuid4())
 
         # add any calculated attributes here - Road Name, Az to CL
 
         currRestrictionLayer.addFeatures([newRestriction])
 
-        QgsMessageLog.logMessage("In onSaveRestrictionDetails. Opening existing restriction.",
-                                 tag="TOMs panel")
-        addRestrictionToProposal(newRestriction.id(), currRestrictionLayerTableID,
-                                                  currProposalID, "Open")
+        addRestrictionToProposal(newRestriction[idxGeometryID], currRestrictionLayerTableID,
+                                                  currProposalID, 1)  # Open = 1
+        if currRestriction.id() > 0:
+            # the feature already exists. We need to close the original
+            addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
+                                                      currProposalID, 2)  # Close = 2
 
     pass
 
