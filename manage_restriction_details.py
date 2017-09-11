@@ -150,7 +150,9 @@ class manageRestrictionDetails():
 
         if not self.actionRestrictionDetails.isChecked():
             self.actionRestrictionDetails.setChecked(False)
-            self.actionPan.connect()
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+            #self.actionPan.connect()
             return
         """
         if not self.actionRestrictionDetails.isChecked():
@@ -158,20 +160,25 @@ class manageRestrictionDetails():
             self.mapTool = None
             return
         """
-        self.actionIdentify().trigger
+        #self.actionIdentify().trigger
 
         self.actionRestrictionDetails.setChecked(True)
 
 		# Define the layer as a QgsVectorLayer (rather than a dataProvider layer). This means that need to use transactions rather than auto commit
         self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
-        iface.setActiveLayer(self.TOMslayer)
+        currLayer = self.TOMslayer # need to loop through the layers and choose closest to click point
+        iface.setActiveLayer(currLayer)
 
         """
         self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
         self.mapTool.setAction(self.actionRestrictionDetails)
         self.iface.mapCanvas().setMapTool(self.mapTool)
         """
+
+        self.mapTool = GeometryInfoMapTool(self.iface, currLayer)
+        self.mapTool.setAction(self.actionRestrictionDetails)
+        self.iface.mapCanvas().setMapTool(self.mapTool)
 
     def onDisplayRestrictionDetails(self, selectedFeature):
         """ Called by map tool when a restriction is selected
@@ -668,34 +675,46 @@ class manageRestrictionDetails():
             
     def doCreateRestriction(self):
 
-        if self.actionCreateRestriction.isChecked():
-            # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
-            # self.actionCreateRestiction.setChecked(True)
+        QgsMessageLog.logMessage("In doCreateRestriction", tag="TOMs panel")
 
-            # set TOMs layer as active layer (for editing)...
+        # Get the current proposal from the session variables
+        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
 
-            QgsMessageLog.logMessage("In doCreateRestriction - tool activated", tag="TOMs panel")
+        if currProposalID > 0:
 
-            self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-            iface.setActiveLayer(self.TOMslayer)
+            if self.actionCreateRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
 
-            self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
-            self.mapTool.setAction(self.actionCreateRestriction)
+                # set TOMs layer as active layer (for editing)...
+
+                QgsMessageLog.logMessage("In doCreateRestriction - tool activated", tag="TOMs panel")
+
+                self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+                iface.setActiveLayer(self.TOMslayer)
+
+                self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
+                self.mapTool.setAction(self.actionCreateRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            else:
+
+                QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionRestrictionDetails.setChecked(False)
+
+            '''
+            self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
+            self.mapTool.setAction(self.actionRestrictionDetails)
             self.iface.mapCanvas().setMapTool(self.mapTool)
- 
+            '''
         else:
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
 
-            QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
-
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            self.mapTool = None
-            self.actionRestrictionDetails.setChecked(False)
-
-        '''
-        self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
-        self.mapTool.setAction(self.actionRestrictionDetails)
-        self.iface.mapCanvas().setMapTool(self.mapTool)
-        '''
+        pass
 
     def onCreateRestriction(self, newRestriction):
         """ Called by map tool when a restriction is created

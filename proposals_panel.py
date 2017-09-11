@@ -154,6 +154,20 @@ class proposalsPanel():
 
         QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
 
+        # rollback any outstanding changes
+        """reply = QMessageBox.question(self.iface.mainWindow(), 'Confirm changes to Proposal',
+                                     'Are you you want to accept this proposal?. Accepting will make all the proposed changes permanent.',
+                                     QMessageBox.Yes, QMessageBox.No)"""
+
+        reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back", QMessageBox.Ok)
+
+        self.iface.actionRollbackAllEdits().trigger()
+        self.iface.actionCancelAllEdits().trigger()
+
+        # reset map tools, etc
+        #self.iface.mapCanvas().unsetMapTool(self.mapTool)
+        #self.mapTool = None
+
         # Now revise the view based on proposal choosen
 
         self.filterView()
@@ -577,3 +591,23 @@ class proposalsPanel():
         QgsMessageLog.logMessage("In getRestrictionsInProposal. restrictionsString: " + restrictionsString, tag="TOMs panel")
 
         return restrictionsString
+
+    def getRestrictionLayerTableID(currRestLayer):
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        # find the ID for the layer within the table "
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+
+        layersTableID = 0
+
+        # not sure if there is better way to search for something, .e.g., using SQL ??
+
+        for layer in RestrictionsLayers.getFeatures():
+            if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
+                layersTableID = layer.attribute("id")
+
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel")
+
+        return layersTableID
+
+

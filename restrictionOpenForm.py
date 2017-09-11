@@ -42,6 +42,7 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
     currRestriction = currRestrictionFeature
+    #origRestriction = currRestrictionFeature
 
     # Get the current proposal from the session variables
     currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
@@ -70,7 +71,7 @@ def onSaveRestrictionDetails():
 
         # simply make changes to the current restriction in the current layer
         QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form.", tag="TOMs panel")
-        restrictionsDialog.accept()
+        restrictionsDialog.save()
 
     else:
         # need to:
@@ -81,23 +82,41 @@ def onSaveRestrictionDetails():
                                  tag="TOMs panel")
 
         # Create a new feature
-        newRestriction = QgsFeature(currRestrictionLayer.fields())
-        _geom_buffer = QgsGeometry(currRestriction.geometry())
-        newRestriction.setGeometry(QgsGeometry(_geom_buffer))
 
-        idxGeometryID = newRestriction.fieldNameIndex("GeometryID")
-        newRestriction[idxGeometryID] = str(uuid.uuid4())
+        idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
+        idxOpenDate = currRestriction.fieldNameIndex("OpenDate2")
+        newGeometryID = str(uuid.uuid4())
 
-        # add any calculated attributes here - Road Name, Az to CL
+        if currRestriction.id() == 0:
+            # This is a feature that has just been created. It exists but doesn't have a GeometryID.
 
-        currRestrictionLayer.addFeatures([newRestriction])
+            currRestriction[idxGeometryID] = newGeometryID
+            restrictionsDialog.save  # accept all the details for the original feature
+            addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
+                                                      currProposalID, 1)  # Open = 1
 
-        addRestrictionToProposal(newRestriction[idxGeometryID], currRestrictionLayerTableID,
-                                                  currProposalID, 1)  # Open = 1
-        if currRestriction.id() > 0:
-            # the feature already exists. We need to close the original
+        else:
+            # this feature was created before this session, we need to:
+            #  - close it in the RestrictionsInProposals table
+            #  - clone it in the current Restrictions layer (with a new GeometryID and no OpenDate
+            #  - and then stop any changes to the original feature
+
             addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
                                                       currProposalID, 2)  # Close = 2
+
+            newRestriction = currRestriction
+            #_geom_buffer = QgsGeometry(currRestriction.geometry())
+            #newRestriction.setGeometry(_geom_buffer)
+
+            newRestriction[idxGeometryID] = newGeometryID
+            newRestriction[idxOpenDate] = None
+
+            currRestrictionLayer.addFeatures([newRestriction])
+
+            addRestrictionToProposal(newRestriction[idxGeometryID], currRestrictionLayerTableID,
+                                                      currProposalID, 1)  # Open = 1
+
+            restrictionsDialog.resetValues # remove any changes to the original feature
 
     pass
 

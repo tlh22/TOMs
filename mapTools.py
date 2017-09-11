@@ -32,8 +32,7 @@ class MapToolMixin:
 
             returns a (mapPt,layerPt) tuple.
         """
-        return (self.toMapCoordinates(screenPt),
-                self.toLayerCoordinates(self.layer, screenPt))
+        return (self.toMapCoordinates(screenPt))
 
     def calcTolerance(self, pos):
         """ Calculate the "tolerance" to use for a mouse-click.
@@ -48,14 +47,16 @@ class MapToolMixin:
         pt1 = QPoint(pos.x(), pos.y())
         pt2 = QPoint(pos.x() + 10, pos.y())
 
-        mapPt1,layerPt1 = self.transformCoordinates(pt1)
-        mapPt2,layerPt2 = self.transformCoordinates(pt2)
-        tolerance = layerPt2.x() - layerPt1.x()
+        mapPt1 = self.transformCoordinates(pt1)
+        mapPt2 = self.transformCoordinates(pt2)
+        tolerance = mapPt2.x() - mapPt1.x()
 
         return tolerance
 
-    def findFeatureAt(self, pos, excludeFeature=None):
-    # def findFeatureAt(self, pos, excludeFeature=None):
+    def findNearestFeatureAt(self, pos):
+        #  def findFeatureAt(self, pos, excludeFeature=None):
+        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+
         """ Find the feature close to the given position.
 
             'pos' is the position to check, in canvas coordinates.
@@ -65,12 +66,12 @@ class MapToolMixin:
 
             If no feature is close to the given coordinate, we return None.
         """
-        mapPt,layerPt = self.transformCoordinates(pos)
+        mapPt = self.transformCoordinates(pos)
         tolerance = self.calcTolerance(pos)
-        searchRect = QgsRectangle(layerPt.x() - tolerance,
-                                  layerPt.y() - tolerance,
-                                  layerPt.x() + tolerance,
-                                  layerPt.y() + tolerance)
+        searchRect = QgsRectangle(mapPt.x() - tolerance,
+                                  mapPt.y() - tolerance,
+                                  mapPt.x() + tolerance,
+                                  mapPt.y() + tolerance)
 
         request = QgsFeatureRequest()
         request.setFilterRect(searchRect)
@@ -82,13 +83,34 @@ class MapToolMixin:
                     continue
             return feature '''
 
-        for feature in self.layer.getFeatures(request):
-            if excludeFeature != None:
-                if feature.id() == excludeFeature.id():
-                    continue
-            return feature # Return first matching feature.
+        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
 
-        return None
+        #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
+        #iface.setActiveLayer(currLayer)
+
+        shortestDistance = float("inf")
+
+        for layerDetails in self.RestrictionLayers.getFeatures():
+
+            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
+
+            # Loop through all features in the layer to find the closest feature
+            for f in self.currLayer.getFeatures(request):
+                dist = f.geometry().distance(QgsGeometry.fromPoint(mapPt))
+                if dist < shortestDistance:
+                    shortestDistance = dist
+                    closestFeature = f
+                    closestLayer = self.currLayer
+
+        QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance),
+                                     tag="TOMs panel")
+
+        if shortestDistance < float("inf"):
+            return closestFeature, closestLayer
+        else:
+            return None, None
+
+        pass
 
     def findVertexAt(self, feature, pos):
         """ Find the vertex of the given feature close to the given position.
@@ -154,26 +176,33 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
 
-    def __init__(self, iface, layer, onDisplayRestrictionDetails):
+    def __init__(self, iface, layer):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
         self.iface = iface
         self.layer = layer
-        self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
+        #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
 
     def canvasReleaseEvent(self, event):
         # Return point under cursor  
-        feature = self.findFeatureAt(event.pos())
+        closestFeature, closestLayer = self.findNearestFeatureAt(event.pos())
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
-        if feature == None:
+        if closestFeature == None:
             return
 
-        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + self.layer.name()), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
 
-        self.onDisplayRestrictionDetails(feature, self.layer)
+        # Get the current proposal from the session variables
+        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+
+        if currProposalID > 0:
+            closestLayer.startEditing()
+
+        self.iface.openFeatureForm(closestLayer, closestFeature)
+        #self.onDisplayRestrictionDetails(feature, self.layer)
 
 #############################################################################
 
@@ -186,6 +215,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
         #https: // qgis.org / api / classQgsMapToolCapture.html
         canvas = iface.mapCanvas()
+        self.iface = iface
 
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
         # capture mode (... not sure if this has already been set? - or how to set it)
@@ -329,7 +359,8 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             # is there any other tidying to do ??
 
-            self.onCreateRestriction(feature, self.layer)
+            self.layer.startEditing()
+            self.iface.openFeatureForm(self.layer, feature)
 
 #############################################################################
 
@@ -352,7 +383,7 @@ class RestrictionTypeUtils:
             QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
 
             # check for the feature within RoadCasement_NSG_StreetName layer
-            tolerance_nearby = 0.25  # somehow need to have this (and layer names) as global variables
+            tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
 
             nearestRC_feature = RestrictionTypeUtils.findFeatureAt2(feature, secondPt, RoadCasementLayer, tolerance_nearby)
 
@@ -503,6 +534,22 @@ class RestrictionTypeUtils:
             QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
 
             pass
+
+        @staticmethod
+        def getRestrictionsLayer(currRestrictionTableRecord):
+            # return the layer given the row in "RestrictionLayers"
+            QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
+
+            RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+
+            idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
+
+            currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
+
+            RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
+
+            return RestrictionsLayers
+
 
 #############################################################################
 
