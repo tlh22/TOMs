@@ -729,6 +729,8 @@ class manageRestrictionDetails():
         # Create the dislay geometry ...
 
     def doRemoveRestriction(self):
+        # pass control to MapTool and then deal with Proposals issues from there ??
+
         pass
 
     def doEditRestriction(self):
@@ -737,7 +739,7 @@ class manageRestrictionDetails():
 
         if self.actionEditRestriction.isChecked():
 
-            # set TOMs layer as active layer (for editing)...
+            # set TOMs layer as active layer (for editing)...  *** actually need to decide which layer was being edited - sorted out in MapTool ???
 
             self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
             iface.setActiveLayer(self.TOMslayer)
@@ -764,9 +766,12 @@ class manageRestrictionDetails():
             #self.mapTool = None
 
             # Need to uncheck NodeTool
-            iface.actionPan().trigger()
+            #iface.actionPan().trigger()
 
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
             self.actionEditRestriction.setChecked(False)
+
             iface.mapCanvas().refresh()
             # need to deselect the nodes ...
 
@@ -785,5 +790,7 @@ layer.committedGeometriesChanges.connect(onGeometryChanged)
 
             """
         QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
+
+        # Somehow need to deal with Proposals from here. Not sure of best way ...
 
         pass

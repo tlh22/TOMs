@@ -67,7 +67,8 @@ class MapToolMixin:
             If no feature is close to the given coordinate, we return None.
         """
         mapPt = self.transformCoordinates(pos)
-        tolerance = self.calcTolerance(pos)
+        #tolerance = self.calcTolerance(pos)
+        tolerance = 0.5
         searchRect = QgsRectangle(mapPt.x() - tolerance,
                                   mapPt.y() - tolerance,
                                   mapPt.x() + tolerance,
@@ -268,6 +269,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.onCreateRestriction = onCreateRestriction
 
     def cadCanvasReleaseEvent(self, event):
+        QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
         QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), tag="TOMs panel")
         if event.button() == Qt.LeftButton:
             if not self.isCapturing():
@@ -301,14 +303,6 @@ class CreateRestrictionTool(QgsMapToolCapture):
             self.getPointsCaptured()
 
             # Need to think about the default action here if none of these buttons/keys are pressed.
-
-    def canvasDoubleClickEvent(self, event):
-        # Include point and stop capture 
-        pass
-
-    def cadCanvasMoveEvent(self, event):
-        # probably need to add something here to show movement ...
-        pass
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete):
@@ -420,6 +414,11 @@ class RestrictionTypeUtils:
         @staticmethod
         def setAzimuthToRoadCentreLine(feature):
 
+            # now set the attribute
+            feature.setAttribute("AzimuthToRoadCentreLine", RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature))
+
+        @staticmethod
+        def calculateAzimuthToRoadCentreLine(feature):
             # find the shortest line from this point to the road centre line layer
             # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
@@ -475,10 +474,9 @@ class RestrictionTypeUtils:
                 Az = RestrictionTypeUtils.checkDegrees(testPt.azimuth(startPt))
                 QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
-                # now set the attribute
-                feature.setAttribute("AzimuthToRoadCentreLine", int(Az))
-
-            pass
+                return Az
+            else:
+                return 0
 
         @staticmethod
         def findFeatureAt2(feature, layerPt, layer, tolerance):
