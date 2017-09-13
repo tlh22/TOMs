@@ -364,8 +364,9 @@ class RestrictionTypeUtils:
 
             newStreetName, newUSRN = RestrictionTypeUtils.determineRoadName(feature)
             # now set the attributes
-            feature.setAttribute("RoadName", newStreetName)
-            feature.setAttribute("USRN", int(newUSRN))
+            if newStreetName:
+                feature.setAttribute("RoadName", newStreetName)
+                feature.setAttribute("USRN", int(newUSRN))
 
             #feature.setAttribute("AzimuthToRoadCentreLine", int(RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature)))
 
@@ -459,6 +460,7 @@ class RestrictionTypeUtils:
             request.setFlags(QgsFeatureRequest.ExactIntersect)
 
             shortestDistance = float("inf")
+            featureFound = False
 
             # Loop through all features in the layer to find the closest feature
             for f in RoadCentreLineLayer.getFeatures(request):
@@ -466,11 +468,12 @@ class RestrictionTypeUtils:
                 if dist < shortestDistance:
                     shortestDistance = dist
                     closestFeature = f
+                    featureFound = True
 
             QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),
                                      tag="TOMs panel")
 
-            if closestFeature:
+            if featureFound:
                 # now obtain the line between the testPt and the nearest feature
                 f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
 
