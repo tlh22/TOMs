@@ -29,6 +29,7 @@ from qgis.gui import *
 import resources
 
 # Import the code for the dialog
+from core.restrictionmanager import TOMsRestrictionManager
 from test5_module_dialog import Test5ClassDialog
 
 
@@ -199,6 +200,8 @@ class Test5Class:
         
         QgsMessageLog.logMessage("In initGui", tag="TOMs panel")
 
+        self.restrictionManager = TOMsRestrictionManager()
+
         self.editing    = False
         self.curStartPt = None
         self.curEndPt   = None
@@ -230,7 +233,7 @@ class Test5Class:
         self.TOMsMenu.addSeparator()
         self.doFilterOnDate = filterOnDate(self.iface, self.TOMsMenu)
         self.TOMsMenu.addSeparator()
-        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsMenu)
+        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsMenu, self.restrictionManager)
 
         # set up menu. Is there a generic way to do this? from an xml file?
         
@@ -242,7 +245,7 @@ class Test5Class:
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")
         self.TOMsToolbar.setObjectName("TOMs Toolbar")
-        self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar)
+        self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.restrictionManager)
 
         # Set up relevant parts of CadTools (from Stefan Ziegler)
         

@@ -18,10 +18,11 @@ from proposal_details_dialog import proposalDetailsDialog
 
 class proposalsPanel():
     
-    def __init__(self, iface, TOMsMenu):
+    def __init__(self, iface, TOMsMenu, restrictionManager):
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
+        self.restrictionManager = restrictionManager
 
         self.actionProposalsPanel = QAction("Proposals Panel", self.iface.mainWindow())
         TOMsMenu.addAction(self.actionProposalsPanel)
@@ -29,8 +30,6 @@ class proposalsPanel():
 
         self.acceptProposal = False
         self.newProposalRequired = False
-
-        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', "0")
 
     def onInitProposalsPanel(self):
         """Filter main layer based on date and state options"""
@@ -45,6 +44,9 @@ class proposalsPanel():
 
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
+
+        self.restrictionManager.proposalChanged.connect(self.onProposalChanged)
+        self.restrictionManager.dateChanged.connect(self.onDateChanged)
 
         #self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
         self.dock.filterDate.setDisplayFormat("dd/MM/yyyy")
@@ -91,21 +93,17 @@ class proposalsPanel():
                 currProposalTitle = proposal.attribute("ProposalTitle")
                 self.dock.cb_ProposalsList.addItem( currProposalTitle, currProposalID )"""
 
-        # set up action for when the date is changed
-        self.dock.filterDate.dateChanged.connect(self.onChangeDate)
+        # set up action for when the date is changed from the user interface
+        self.dock.filterDate.dateChanged.connect(lambda: self.restrictionManager.setDate(self.dock.filterDate.date()))
 
         # set up action for when the proposal is changed
-        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onChangeProposal)
+        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.updateCurrentProposal)
 
         # set up action for "New Proposal"
         self.dock.btn_NewProposal.clicked.connect(self.onNewProposal)
 
         # set up action for "View Proposal"
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
-
-        # Set up filter for viewing at current date
-
-        self.filterView()
 
         pass
 
@@ -131,14 +129,6 @@ class proposalsPanel():
 
         pass
 
-    def onChangeDate(self):
-        QgsMessageLog.logMessage("In onChangeDate", tag="TOMs panel")
-
-        # Refresh based on the date provided
-
-        self.filterView()
-
-        pass
 
     def onChangeProposal(self):
         QgsMessageLog.logMessage("In onChangeProposal", tag="TOMs panel")
@@ -397,10 +387,19 @@ class proposalsPanel():
         pass
 
     def onProposalChanged(self):
-        QgsMessageLog.logMessage("In onProposalChanged", tag="TOMs panel")
+        currProposal = self.restrictionManager.currentProposal()
+        currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
+        self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
 
+    def updateCurrentProposal(self):
+        """Will be called whenever a new entry is selected in the combobox"""
+        currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
+        currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
+        self.restrictionManager.setCurrentProposal(currProposalID)
 
-        pass
+    def onDateChanged(self):
+        date = self.restrictionManager.date()
+        self.dock.filterDate.setDate(date)
 
     def onChangeProposalStatus(self):
         QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fieldNameIndex("ProposalStatusID")), tag="TOMs panel")
@@ -427,171 +426,6 @@ class proposalsPanel():
 
         return self.acceptProposal
 
-    def filterView(self):
-        """Filter main layer based on date and state options"""
-
-        QgsMessageLog.logMessage("In filterView", tag="TOMs panel")
-
-        displayDate = self.dock.filterDate.date()
-
-        # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
-        currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
-
-        if currProposal_cbIndex == 0:
-            currProposalID = 0
-        else:
-            currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
-            currProposalTitle = self.dock.cb_ProposalsList.currentText()
-
-        dateChoosen = displayDate.toString ("dd-MM-yyyy")
-
-        QgsMessageLog.logMessage("In filterView. filterDate: " + dateChoosen + " ProposalID: " + str(currProposalID), tag="TOMs panel")
-
-        # Filter the display based on the details provided
-
-        QgsExpressionContextUtils.setProjectVariable('ViewAtDate', dateChoosen)
-
-        dateChoosenFormatted = "'" + dateChoosen + "'"
-
-        #
-        #  http://gis.stackexchange.com/questions/121148/how-to-filter-qgis-layer-from-python
-        #
-        # Also note use of "#" is for use with Access. Filter syntax is provider dependent
-        #
-
-        # For Access
-        # filterString = '"CreateDate" <= #' + dateChoosen + '# AND ("DeleteDate" > #' + dateChoosen + '#  OR "DeleteDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
-
-        # For Spatialite
-        #filterString = '"EffectiveDate" <= ' + dateChoosenFormatted + ' AND ("RescindDate" > ' + dateChoosenFormatted + '  OR "RescindDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
-        # filterString = '"ResState" = 1'
-
-        # For PostGIS - "OpenDate2" <= '02-09-2017' AND ("CloseDate2" > '02-09-2017' OR "CloseDate2"  IS NULL)
-        filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND (" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
-
-        if currProposalID > 0:   # need to consider a proposal
-
-            # Set Proposal as project variable
-
-            self.currProposalID = QgsExpressionContextUtils.projectScope().variable('currentProposal')
-
-            # get list of restrictions to open within proposal
-
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2"):
-                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers2 is not present"))
-                raise LayerNotPresent
-
-            # loop through all the layers that might have restrictions
-
-            listRestrictionLayers = self.RestrictionLayers.getFeatures()
-
-            for currLayerDetails in listRestrictionLayers:
-
-                # get the layer from the name
-
-                currLayerID = currLayerDetails["id"]
-                currLayerName = currLayerDetails["RestrictionLayerName"]
-                QgsMessageLog.logMessage("In filterMapOnDate. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
-
-                if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
-                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]
-                else:
-                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                            ("Table " + currLayerName + " is not present"))
-                    raise LayerNotPresent
-
-                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, 2)   # Close is 2  ... need to get better looping ...
-                QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
-
-                # **** Assumption that there are some details in proposal ??
-                if len(restrictionsToClose) > 0:
-                    filterString = filterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
-
-                # get list of restrictions to close within proposal
-                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, 1)   # Open is 1
-
-                if len(restrictionsToOpen) > 0:
-                    filterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + filterString
-
-                    if len(restrictionsToClose) == 0:
-                        filterString = filterString + " ) "
-
-            pass
-
-        # QMessageBox.information(self.iface.mainWindow(), "debug", dateChoosen + " " + tmpOrdersText + " " + filterString)
-        QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
-        # filterString = 'date("CreateDate") <= ' + date(dateChoosenFormatted) + ' AND (date("DeleteDate") > ' + date(dateChoosenFormatted) + '  OR "DeleteDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
-        # QgsMessageLog.logMessage("Filter2: " + filterString, tag="TOMs panel")
-
-        #
-        # May need to apply filter to more than one layer. Currently just for one
-        #
-
-        self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-
-        #
-        #  http://gis.stackexchange.com/questions/121148/how-to-filter-qgis-layer-from-python
-        #
-
-        self.TOMslayer.setSubsetString(filterString)
-
-        pass
-
-    def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
-        # Will return a (comma separated) string with the list of restrictions within a Proposal
-        QgsMessageLog.logMessage("In getRestrictionsInProposal. layerID: " + str(layerID) + " proposalID: " + str(proposalID) + " proposedAction: " + str(proposedAction), tag="TOMs panel")
-
-        restrictionsString = ''
-        firstRestriction = True
-
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
-            raise LayerNotPresent
-
-        # Hopefully can use SQL to return the rows, but now sure about process.
-
-        listRestrictionsInProposals = self.RestrictionsInProposals.getFeatures()
-
-        QgsMessageLog.logMessage(
-            "In getRestrictionsInProposal. START layerID: " + str(layerID) + " ProposalID: " + str(
-                proposalID) + " proposedAction: " + str(proposedAction) + " firstRestriction: " + str(firstRestriction),
-            tag="TOMs panel")
-
-        for proposedChange in listRestrictionsInProposals:
-
-            currProposalID = proposedChange["ProposalID"]
-            currRestrictionTableID = proposedChange["RestrictionTableID"]
-            possAction = proposedChange["ActionOnProposalAcceptance"]
-
-            # check to see if the current row is for the current proposal and for the correct proposedAction
-
-            if proposalID == currProposalID:
-                if layerID == currRestrictionTableID:
-                    if proposedAction == possAction:
-
-                        QgsMessageLog.logMessage(
-                            "In getRestrictionsInProposal. FOUND layerID: " + str(layerID) + " currProposalID: " + str(
-                                currProposalID) + " possAction: " + str(possAction) + " firstRestriction: " + str(firstRestriction), tag="TOMs panel")
-
-                        if not firstRestriction:
-                            restrictionsString = restrictionsString + ", '" + proposedChange["RestrictionID"] + "'"
-                            QgsMessageLog.logMessage(
-                                "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
-                                tag="TOMs panel")
-                        else:
-                            restrictionsString = "'" + str(proposedChange["RestrictionID"]) + "'"
-                            firstRestriction = False
-
-            pass
-
-        QgsMessageLog.logMessage("In getRestrictionsInProposal. restrictionsString: " + restrictionsString, tag="TOMs panel")
-
-        return restrictionsString
-
     def getRestrictionLayerTableID(currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
@@ -609,5 +443,3 @@ class proposalsPanel():
         QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel")
 
         return layersTableID
-
-
