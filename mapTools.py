@@ -358,7 +358,7 @@ class RestrictionTypeUtils:
             # now set the attributes
             if newStreetName:
                 feature.setAttribute("RoadName", newStreetName)
-                feature.setAttribute("USRN", int(newUSRN))
+                feature.setAttribute("USRN", newUSRN)
 
             #feature.setAttribute("AzimuthToRoadCentreLine", int(RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature)))
 
