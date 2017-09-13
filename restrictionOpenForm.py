@@ -39,16 +39,18 @@ def onAttributeChanged(feature, fieldName, value):
 
 def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     QgsMessageLog.logMessage("In restrictionFormOpen", tag="TOMs panel")
-    global restrictionsDialog
+    #global restrictionsDialog
     restrictionsDialog = dialog
-    global currRestriction
-    global currRestrictionLayer
-    global currProposalID
-    global origRestriction
+    #global currRestriction
+    #global currRestrictionLayer
+    #global currProposalID
+    #global origRestriction
+
+    # This stops changes to the form being saved (unless explicitly enacted)
     dialog.disconnectButtonBox()
 
-    currRestrictionLayer = currRestLayer
-    QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+    #currRestrictionLayer = currRestLayer
+    QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(currRestLayer.name()), tag="TOMs panel")
 
     currRestriction = currRestrictionFeature
 
@@ -64,7 +66,7 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     # Disconnect the signal that QGIS has wired up for the dialog to the button box.
     # button_box.accepted.disconnect(restrictionsDialog.accept)
 
-
+    # To allow saving of the original feature, this fucntion follows changes to attributes within the table and records them to the current feature
     dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature))
 
     # Wire up our own signals.
@@ -79,6 +81,8 @@ def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
 
     currRestrictionLayer.startEditing()
 
+    currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+
     currRestrictionLayerTableID = getRestrictionLayerTableID(currRestrictionLayer)
     idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
 
@@ -86,15 +90,15 @@ def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
 
         # simply make changes to the current restriction in the current layer
         QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form.", tag="TOMs panel")
-        restrictionsDialog.save()
+        dialog.save()
 
     else:
         # need to:
         #    - enter the restriction into the table RestrictionInProposals, and
         #    - make a copy of the restriction in the current layer (with the new details)
 
-        QgsMessageLog.logMessage("In onSaveRestrictionDetails. Adding existing restriction. ID: " + str(currRestriction.id()),
-                                 tag="TOMs panel")
+        #QgsMessageLog.logMessage("In onSaveRestrictionDetails. Adding restriction. ID: " + str(currRestriction.id()),
+        #                         tag="TOMs panel")
 
         # Create a new feature using the current details
 
@@ -102,13 +106,24 @@ def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
         idxRestrictionTypeID = currRestriction.fieldNameIndex("RestrictionTypeID")
         newGeometryID = str(uuid.uuid4())
 
-        if currRestriction.id() == 0:
+        if currRestriction[idxGeometryID] is None:
             # This is a feature that has just been created. It exists but doesn't have a GeometryID.
 
+            currRestriction = dialog.feature()
             currRestriction[idxGeometryID] = newGeometryID
-            restrictionsDialog.save()  # accept all the details for the original feature
+            dialog.changeAttribute("GeometryID", str(currRestriction[idxGeometryID]))
+            #currRestrictionLayer.updateFeature(currRestriction)
+
+            QgsMessageLog.logMessage(
+                "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxGeometryID]),
+                tag="TOMs panel")
+
+            #restrictionsDialog.save()  # accept all the details for the original feature
             addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
                                                       currProposalID, 1)  # Open = 1
+
+            # Now need to save the feature ??
+            #dialog.save()
 
         else:
             # this feature was created before this session, we need to:
@@ -146,13 +161,16 @@ def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
                 tag="TOMs panel")
 
             # set existing restriction back to original form
-            currRestriction = origRestriction
+            #currRestriction = origRestriction
 
             #restrictionsDialog.resetValues # remove any changes to the original feature
-            restrictionsDialog.reject()  # return to the original feature
+            #restrictionsDialog.reject()  # return to the original feature
 
     pass
 
+    # refresh the view. Might be able to set up a signal to get the proposals_panel to intervine
+
+    #proposalsPanel.filterView()
 
 def getRestrictionLayerTableID(currRestLayer):
     QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")

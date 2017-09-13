@@ -216,8 +216,8 @@ class manageRestrictionDetails():
             QMessageBox.information(self.iface.mainWindow(),"ERROR", ("Table PaymentTypes is not present"))
             raise LayerNotPresent
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionGeometryTypes"):
-            self.RestrictionGeometryTypesLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionGeometryTypes")[0]
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionShapeTypes"):
+            self.RestrictionGeometryTypesLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionShapeTypes")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(),"ERROR", ("Table RestrictionGeometryTypes is not present"))
             raise LayerNotPresent

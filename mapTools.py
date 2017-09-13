@@ -362,6 +362,16 @@ class RestrictionTypeUtils:
         @staticmethod
         def setRoadName(feature):
 
+            newStreetName, newUSRN = RestrictionTypeUtils.determineRoadName(feature)
+            # now set the attributes
+            feature.setAttribute("RoadName", newStreetName)
+            feature.setAttribute("USRN", int(newUSRN))
+
+            #feature.setAttribute("AzimuthToRoadCentreLine", int(RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature)))
+
+        @staticmethod
+        def determineRoadName(feature):
+
             QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel")
 
             RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
@@ -392,8 +402,10 @@ class RestrictionTypeUtils:
 
                 QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
 
-                feature.setAttribute("RoadName", StreetName)
-                feature.setAttribute("USRN", int(USRN))
+                return StreetName, USRN
+
+            else:
+                return None, None
 
             pass
 
@@ -415,7 +427,7 @@ class RestrictionTypeUtils:
         def setAzimuthToRoadCentreLine(feature):
 
             # now set the attribute
-            feature.setAttribute("AzimuthToRoadCentreLine", RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature))
+            feature.setAttribute("AzimuthToRoadCentreLine", int(RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature)))
 
         @staticmethod
         def calculateAzimuthToRoadCentreLine(feature):
