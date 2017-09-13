@@ -185,7 +185,7 @@ class Test5Class:
             # Add action to the menu
 
             self.action = QAction(text, self.iface.mainWindow())
-            QObject.connect(self.action, SIGNAL("triggered()"), callback)
+            self.action.triggered.connect(callback)
             self.menu.addAction( self.action )
 
         self.actions.append(action)

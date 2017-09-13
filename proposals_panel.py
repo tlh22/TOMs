@@ -25,7 +25,7 @@ class proposalsPanel():
 
         self.actionProposalsPanel = QAction("Proposals Panel", self.iface.mainWindow())
         TOMsMenu.addAction(self.actionProposalsPanel)
-        QObject.connect(self.actionProposalsPanel, SIGNAL("triggered()"), self.onInitProposalsPanel)
+        self.actionProposalsPanel.triggered.connect(self.onInitProposalsPanel)
 
         self.acceptProposal = False
         self.newProposalRequired = False

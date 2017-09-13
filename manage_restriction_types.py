@@ -24,7 +24,7 @@ class manageRestrictionTypes():
 
             self.actionManageRestrictions = QAction("Manage Restrictions", self.iface.mainWindow())
             TOMsMenu.addAction(self.actionManageRestrictions)
-            QObject.connect(self.actionManageRestrictions, SIGNAL("triggered()"), self.run)
+            self.actionManageRestrictions.triggered.connect(self.run)
             '''          
             # Create actions 
             self.act_intersection= QAction(QIcon(":/plugins/cadtools/icons/pointandline.png"),  QCoreApplication.translate("ctools", "Intersection Point"),  self.iface.mainWindow())
