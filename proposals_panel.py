@@ -467,7 +467,7 @@ class proposalsPanel():
         # filterString = '"ResState" = 1'
 
         # For PostGIS - "OpenDate2" <= '02-09-2017' AND ("CloseDate2" > '02-09-2017' OR "CloseDate2"  IS NULL)
-        filterString = '"OpenDate2" <= ' + dateChoosenFormatted + ' AND ("CloseDate2" > ' + dateChoosenFormatted + '  OR "CloseDate2"  IS  NULL)'
+        filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND (" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
 
         if currProposalID > 0:   # need to consider a proposal
 
