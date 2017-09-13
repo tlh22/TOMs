@@ -26,10 +26,11 @@ from qgis.gui import *
 
 class manageRestrictionDetails():
     
-    def __init__(self, iface, TOMsToolbar):
+    def __init__(self, iface, TOMsToolbar, restrictionManager):
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
+        self.restrictionManager = restrictionManager
         '''
         self.actionFilterOnDate = QAction("View at Date", self.iface.mainWindow())
         TOMsMenu.addAction(self.actionFilterOnDate)
@@ -606,7 +607,7 @@ class manageRestrictionDetails():
         self.currRestrictionLayer = currRestrictionLayer
 
         # Get the current proposal from the session variables
-        self.currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+        self.currProposalID = self.restrictionManager.currentProposal()
 
         # Choose the dialog based on the layer
         self.dlg = restrictionDetailsDialog2()
@@ -678,7 +679,7 @@ class manageRestrictionDetails():
         QgsMessageLog.logMessage("In doCreateRestriction", tag="TOMs panel")
 
         # Get the current proposal from the session variables
-        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+        currProposalID = self.restrictionManager.currentProposal()
 
         if currProposalID > 0:
 
