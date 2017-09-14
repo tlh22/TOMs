@@ -257,7 +257,7 @@ class Test5Class:
         #self.circleFromCentreMeasure = circleFromCentreTool(self.iface,  self.CADtoolBar)
 
         # Get the view date from the last session
-        viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
+        #viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
 
        
     def unload(self):

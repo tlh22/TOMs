@@ -15,6 +15,7 @@ from qgis.core import *
 
 from ProposalPanel_dockwidget import ProposalPanelDockWidget
 from proposal_details_dialog import proposalDetailsDialog
+from core.restrictionmanager import *
 
 class proposalsPanel():
     
@@ -78,6 +79,10 @@ class proposalsPanel():
         idxProposalTitle = self.Proposals.fieldNameIndex("ProposalTitle")
 
         self.createProposalcb()
+
+        # set CurrentProposal to be 0
+
+        self.restrictionManager.setCurrentProposal(0)
 
         # set up a "NULL" field for "No proposals to be shown"
 

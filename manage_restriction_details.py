@@ -678,6 +678,8 @@ class manageRestrictionDetails():
 
         QgsMessageLog.logMessage("In doCreateRestriction", tag="TOMs panel")
 
+        self.mapTool = None
+
         # Get the current proposal from the session variables
         currProposalID = self.restrictionManager.currentProposal()
 
@@ -712,6 +714,12 @@ class manageRestrictionDetails():
             self.iface.mapCanvas().setMapTool(self.mapTool)
             '''
         else:
+
+            if self.actionCreateRestriction.isChecked():
+                self.actionCreateRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionCreateRestriction.setChecked(False)
+
             reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)
 
@@ -731,6 +739,79 @@ class manageRestrictionDetails():
 
     def doRemoveRestriction(self):
         # pass control to MapTool and then deal with Proposals issues from there ??
+        QgsMessageLog.logMessage("In doRemoveRestriction", tag="TOMs panel")
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.restrictionManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionRemoveRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
+
+                # set TOMs layer as active layer (for editing)...
+
+                QgsMessageLog.logMessage("In doRemoveRestriction - tool activated", tag="TOMs panel")
+
+                self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+                iface.setActiveLayer(self.TOMslayer)
+
+                self.mapTool = RemoveRestrictionTool(self.iface, self.TOMslayer)
+                self.mapTool.setAction(self.actionRemoveRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            else:
+
+                QgsMessageLog.logMessage("In doRemoveRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionRemoveRestriction.setChecked(False)
+
+            '''
+            self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
+            self.mapTool.setAction(self.actionRestrictionDetails)
+            self.iface.mapCanvas().setMapTool(self.mapTool)
+            '''
+        else:
+
+            if self.actionRemoveRestriction.isChecked():
+                self.actionRemoveRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionRemoveRestriction.setChecked(False)
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+
+        pass
+
+
+        pass
+
+    def onRemoveRestriction(self):
+        QgsMessageLog.logMessage("In onRemoveRestriction.", tag="TOMs panel")
+
+        self.currRestrictionLayer.startEditing()
+
+        if RestrictionTypeUtils.restrictionInProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID):
+            # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
+            # (NB: THis is the only case of a restriction being truly deleted
+
+            QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel")
+            #self.dlg.accept()
+
+        else:
+            # need to:
+            #    - enter the restriction into the table RestrictionInProposals as closed, and
+            #    - make a copy of the restriction in the current layer (with the new details)
+            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Closing existing restriction.",
+                                     tag="TOMs panel")
+
+            RestrictionTypeUtils.addRestrictionToProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID,
+                                                          "Close")
 
         pass
 

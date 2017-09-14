@@ -180,13 +180,14 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
     def __init__(self, iface, layer):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
         self.iface = iface
-        self.layer = layer
+        #self.layer = layer
         #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
 
     def canvasReleaseEvent(self, event):
-        # Return point under cursor  
+        # Return point under cursor
+
         closestFeature, closestLayer = self.findNearestFeatureAt(event.pos())
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
@@ -196,11 +197,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
 
-        # Get the current proposal from the session variables
-        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
-
-        if currProposalID > 0:
-            closestLayer.startEditing()
+        closestLayer.startEditing()
 
         self.iface.openFeatureForm(closestLayer, closestFeature)
         #self.onDisplayRestrictionDetails(feature, self.layer)
@@ -659,23 +656,31 @@ class EditRestrictionTool(QgsMapTool, MapToolMixin):
 #############################################################################
 
 class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
-    def __init__(self, canvas, layer, onTrackDeleted):
-        QgsMapTool.__init__(self, canvas)
-        self.onTrackDeleted = onTrackDeleted
+    def __init__(self, iface, layer):
+        QgsMapTool.__init__(self, iface.mapCanvas())
+        self.iface = iface
+        #self.layer = layer
+        #self.onTrackDeleted = onTrackDeleted
         self.feature        = None
-        self.setLayer(layer)
+        #self.setLayer(layer)
         self.setCursor(Qt.CrossCursor)
 
-
-    def canvasPressEvent(self, event):
-        self.feature = self.findFeatureAt(event.pos())
-
-
     def canvasReleaseEvent(self, event):
-        feature = self.findFeatureAt(event.pos())
-        if feature != None and feature.id() == self.feature.id():
-            self.layer.deleteFeature(self.feature.id())
-            self.onTrackDeleted()
+        # Return point under cursor
+        closestFeature, closestLayer = self.findNearestFeatureAt(event.pos())
+
+        QgsMessageLog.logMessage(("In Remove - canvasReleaseEvent."), tag="TOMs panel")
+
+        if closestFeature == None:
+            return
+
+        QgsMessageLog.logMessage(("In Remove - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
+
+        closestLayer.startEditing()
+
+        self.iface.openFeatureForm(closestLayer, closestFeature)
+        #self.onDisplayRestrictionDetails(feature, self.layer)
+
 
 #############################################################################
 
