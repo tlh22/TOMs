@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/plugins/Test5Class" >
         <file>resources/mActionAddTrack.svg</file>
+        <file>resources/mActionAddLine.svg</file>
         <file>resources/mActionFindShortestPath.svg</file>
         <file>resources/greendot3.png</file>
         <file>resources/mActionGetInfo.svg</file>

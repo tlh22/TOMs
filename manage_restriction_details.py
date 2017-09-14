@@ -42,30 +42,37 @@ class manageRestrictionDetails():
                                self.iface.mainWindow())
         self.actionRestrictionDetails.setCheckable(True)
 
-        self.actionCreateRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddTrack.svg"),
-                               QCoreApplication.translate("MyPlugin", "Create"),
+        self.actionCreateBayRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddTrack.svg"),
+                               QCoreApplication.translate("MyPlugin", "Create Bay"),
                                self.iface.mainWindow())
-        self.actionCreateRestriction.setCheckable(True)
+        self.actionCreateBayRestriction.setCheckable(True)
+
+        self.actionCreateLineRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddLine.svg"),
+                               QCoreApplication.translate("MyPlugin", "Create Line"),
+                               self.iface.mainWindow())
+        self.actionCreateLineRestriction.setCheckable(True)
 
         self.actionRemoveRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionDeleteTrack.svg"),
-                               QCoreApplication.translate("MyPlugin", "Remove"),
+                               QCoreApplication.translate("MyPlugin", "Remove Restriction"),
                                self.iface.mainWindow())
         self.actionRemoveRestriction.setCheckable(True)
 
         self.actionEditRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionEdit.svg"),
-                               QCoreApplication.translate("MyPlugin", "Edit"),
+                               QCoreApplication.translate("MyPlugin", "Edit Restriction"),
                                self.iface.mainWindow())
         self.actionEditRestriction.setCheckable(True)
 
         # Add actions to the toolbar
         TOMsToolbar.addAction(self.actionRestrictionDetails)
-        TOMsToolbar.addAction(self.actionCreateRestriction)
+        TOMsToolbar.addAction(self.actionCreateBayRestriction)
+        TOMsToolbar.addAction(self.actionCreateLineRestriction)
         TOMsToolbar.addAction(self.actionRemoveRestriction)
         TOMsToolbar.addAction(self.actionEditRestriction)
 
         # Connect action signals to slots
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
-        self.actionCreateRestriction.triggered.connect(self.doCreateRestriction)
+        self.actionCreateBayRestriction.triggered.connect(self.doCreateBayRestriction)
+        self.actionCreateLineRestriction.triggered.connect(self.doCreateLineRestriction)
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
         
@@ -674,9 +681,9 @@ class manageRestrictionDetails():
     def generateHistoryString(self, str, fieldName, strValue):
         str = str + "; " + fieldName + ": " + strValue """
             
-    def doCreateRestriction(self):
+    def doCreateBayRestriction(self):
 
-        QgsMessageLog.logMessage("In doCreateRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateBayRestriction", tag="TOMs panel")
 
         self.mapTool = None
 
@@ -685,40 +692,81 @@ class manageRestrictionDetails():
 
         if currProposalID > 0:
 
-            if self.actionCreateRestriction.isChecked():
+            if self.actionCreateBayRestriction.isChecked():
                 # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
                 # self.actionCreateRestiction.setChecked(True)
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doCreateRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateBayRestriction - tool activated", tag="TOMs panel")
 
-                self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-                iface.setActiveLayer(self.TOMslayer)
+                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
+                iface.setActiveLayer(self.currLayer)
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
-                self.mapTool.setAction(self.actionCreateRestriction)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails2)
+                self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
             else:
 
-                QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateBayRestriction - tool deactivated", tag="TOMs panel")
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
-                self.actionRestrictionDetails.setChecked(False)
+                self.actionCreateBayRestriction.setChecked(False)
 
-            '''
-            self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
-            self.mapTool.setAction(self.actionRestrictionDetails)
-            self.iface.mapCanvas().setMapTool(self.mapTool)
-            '''
         else:
 
-            if self.actionCreateRestriction.isChecked():
-                self.actionCreateRestriction.setChecked(False)
+            if self.actionCreateBayRestriction.isChecked():
+                self.actionCreateBayRestriction.setChecked(False)
                 if self.mapTool == None:
-                    self.actionCreateRestriction.setChecked(False)
+                    self.actionCreateBayRestriction.setChecked(False)
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+
+        pass
+
+    def doCreateLineRestriction(self):
+
+        QgsMessageLog.logMessage("In doCreateLineRestriction", tag="TOMs panel")
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.restrictionManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionCreateLineRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
+
+                # set TOMs layer as active layer (for editing)...
+
+                QgsMessageLog.logMessage("In doCreateLineRestriction - tool activated", tag="TOMs panel")
+
+                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
+                iface.setActiveLayer(self.currLayer)
+
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails2)
+                self.mapTool.setAction(self.actionCreateLineRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            else:
+
+                QgsMessageLog.logMessage("In doCreateLineRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionCreateLineRestriction.setChecked(False)
+
+        else:
+
+            if self.actionCreateLineRestriction.isChecked():
+                self.actionCreateLineRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionCreateLineRestriction.setChecked(False)
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)

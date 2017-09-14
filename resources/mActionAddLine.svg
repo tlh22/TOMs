@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   viewBox="6 100 45 46"
+   width="45pt"
+   height="46pt"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="mActionAddLine.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     id="namedview24"
+     showgrid="false"
+     inkscape:zoom="4.1043478"
+     inkscape:cx="28.125"
+     inkscape:cy="28.75"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g8" />
+  <metadata
+     id="metadata4">
+    <dc:date>2014-09-12 02:28Z</dc:date>
+    <!-- Produced by OmniGraffle Professional 5.4.4 -->
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6" />
+  <g
+     stroke="none"
+     stroke-opacity="1"
+     stroke-dasharray="none"
+     fill="none"
+     fill-opacity="1"
+     id="g8">
+    <title
+       id="title10">Canvas 1</title>
+    <g
+       id="g12"
+       style="fill:#f0ed00;fill-opacity:1;stroke:#e1a600;stroke-opacity:1">
+      <title
+         id="title14">Layer 1</title>
+      <path
+         d="M 18.007875 111.96851 L 38.68504 111.96851 C 39.237326 111.96851 39.68504 112.41622 39.68504 112.96851 L 39.68504 133.64567 C 39.68504 134.19796 39.237326 134.64567 38.68504 134.64567 L 18.007875 134.64567 C 17.45559 134.64567 17.007875 134.19796 17.007875 133.64567 L 17.007875 112.96851 C 17.007875 112.41622 17.45559 111.96851 18.007875 111.96851 Z"
+         fill="#6ca678"
+         id="path16"
+         style="fill:#f0ed00;fill-opacity:1;stroke:#e1a600;stroke-opacity:1" />
+      <path
+         d="M 18.007875 111.96851 L 38.68504 111.96851 C 39.237326 111.96851 39.68504 112.41622 39.68504 112.96851 L 39.68504 133.64567 C 39.68504 134.19796 39.237326 134.64567 38.68504 134.64567 L 18.007875 134.64567 C 17.45559 134.64567 17.007875 134.19796 17.007875 133.64567 L 17.007875 112.96851 C 17.007875 112.41622 17.45559 111.96851 18.007875 111.96851 Z"
+         stroke="#398145"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         stroke-width="2"
+         id="path18"
+         style="fill:#f0ed00;fill-opacity:1;stroke:#e1a600;stroke-opacity:1" />
+      <line
+         x1="21.259843"
+         y1="123.30709"
+         x2="35.433072"
+         y2="123.30709"
+         stroke="white"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         stroke-width="3"
+         id="line20"
+         style="fill:#f0ed00;fill-opacity:1;stroke:#e1a600;stroke-opacity:1" />
+      <line
+         x1="28.346457"
+         y1="116.220476"
+         x2="28.346457"
+         y2="130.393705"
+         stroke="white"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         stroke-width="3"
+         id="line22"
+         style="fill:#f0ed00;fill-opacity:1;stroke:#e1a600;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

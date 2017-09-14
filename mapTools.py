@@ -228,7 +228,9 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.rb = self.createRubberBand(QGis.Line)
 
         self.layer = layer
+
         self.currLayer = self.currentVectorLayer()
+
         QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer) + "Incoming: " + str(self.layer)), tag="TOMs panel")
 
         # set up snapping configuration   *******************

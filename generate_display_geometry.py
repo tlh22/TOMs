@@ -345,7 +345,7 @@ def getNextLineFromPolyline(feature, lineNr):
 
 	pass
 
-@qgsfunction(args='auto', group='Custom')
+@qgsfunction(args='auto', group='Custom', usesgeometry=True)
 def getAzimuthToRoadCentreLine(feature, parent):
 	# find the shortest line from this point to the road centre line layer
 	# http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
@@ -359,6 +359,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
 	if feature.geometry():
 		geom = feature.geometry()
 	else:
+		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", tag="TOMs panel")
 		return 0
 
 	if geom.type() == QGis.Line:
@@ -428,10 +429,176 @@ def getAzimuthToRoadCentreLine(feature, parent):
 			  return Az
 			else:
 				return 0
-
+	else:
+		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: No line geometry found",
+							  tag="TOMs panel")
+		return 0
 	pass
 
 @qgsfunction(args='auto', group='Custom')
 def getAzimuthTest(feature, parent):
 	QgsMessageLog.logMessage("In getAzimuthTest(helper):", tag="TOMs panel")
 	return 180
+
+@qgsfunction(args='auto', group='Custom', usesgeometry=True)
+def determineRoadName(feature, parent):
+	# Determine road name from the kerb line layer
+
+	QgsMessageLog.logMessage("In determineRoadName(helper):", tag="TOMs panel")
+
+	RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+
+	if feature.geometry():
+		QgsMessageLog.logMessage("In determineRoadName(helper): geometry FOUND", tag="TOMs panel")
+		geom = feature.geometry()
+	else:
+		QgsMessageLog.logMessage("In determineRoadName(helper): geometry not found", tag="TOMs panel")
+		return None
+
+	if geom.type() == QGis.Line:
+
+		QgsMessageLog.logMessage("In determineRoadName(helper): considering line", tag="TOMs panel")
+
+		lines = feature.geometry().asMultiPolyline()
+		nrLines = len(lines)
+
+		QgsMessageLog.logMessage("In determineRoadName(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+
+		for idxLine in range(nrLines):
+
+			line = lines[idxLine]
+			QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
+
+			# take the first point from the geometry
+			#line = feature.geometry().asPolyline()
+			nrPts = len(line)
+			QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
+
+			secondPt = line[1] # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+			QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
+
+			# check for the feature within RoadCasement_NSG_StreetName layer
+			tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
+
+			nearestRC_feature = findFeatureAt2(feature, secondPt, RoadCasementLayer, tolerance_nearby)
+
+			if nearestRC_feature:
+				# QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
+
+				idx_Street_Descriptor = RoadCasementLayer.fieldNameIndex('Street_Descriptor')
+				idx_USRN = RoadCasementLayer.fieldNameIndex('USRN')
+
+				StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
+				USRN = nearestRC_feature.attributes()[idx_USRN]
+
+				QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
+
+				return StreetName
+
+			else:
+				QgsMessageLog.logMessage("In setRoadName: No kerb nearby ", tag="TOMs panel")
+				return None
+
+	else:
+		QgsMessageLog.logMessage("In determineRoadName: No line geometry found",
+							  tag="TOMs panel")
+		return None
+	pass
+
+@qgsfunction(args='auto', group='Custom', usesgeometry=True)
+def determineUSRN(feature, parent):
+	# Determine road name from the kerb line layer
+
+	QgsMessageLog.logMessage("In determineRoadName(helper):", tag="TOMs panel")
+
+	RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+
+	if feature.geometry():
+		QgsMessageLog.logMessage("In determineRoadName(helper): geometry FOUND", tag="TOMs panel")
+		geom = feature.geometry()
+	else:
+		QgsMessageLog.logMessage("In determineRoadName(helper): geometry not found", tag="TOMs panel")
+		return None
+
+	if geom.type() == QGis.Line:
+
+		QgsMessageLog.logMessage("In determineRoadName(helper): considering line", tag="TOMs panel")
+
+		lines = feature.geometry().asMultiPolyline()
+		nrLines = len(lines)
+
+		QgsMessageLog.logMessage("In determineRoadName(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+
+		for idxLine in range(nrLines):
+
+			line = lines[idxLine]
+			QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
+
+			# take the first point from the geometry
+			#line = feature.geometry().asPolyline()
+			nrPts = len(line)
+			QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
+
+			secondPt = line[1] # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+			QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
+
+			# check for the feature within RoadCasement_NSG_StreetName layer
+			tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
+
+			nearestRC_feature = findFeatureAt2(feature, secondPt, RoadCasementLayer, tolerance_nearby)
+
+			if nearestRC_feature:
+				# QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
+
+				idx_Street_Descriptor = RoadCasementLayer.fieldNameIndex('Street_Descriptor')
+				idx_USRN = RoadCasementLayer.fieldNameIndex('USRN')
+
+				StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
+				USRN = nearestRC_feature.attributes()[idx_USRN]
+
+				QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
+
+				return USRN
+
+			else:
+				QgsMessageLog.logMessage("In setRoadName: No kerb nearby ", tag="TOMs panel")
+				return None
+
+	else:
+		QgsMessageLog.logMessage("In determineRoadName: No line geometry found",
+							  tag="TOMs panel")
+		return None
+	pass
+
+
+def findFeatureAt2(feature, layerPt, layer, tolerance):
+    # def findFeatureAt(self, pos, excludeFeature=None):
+    """ Find the feature close to the given position.
+
+        'layerPt' is the position to check, in layer coordinates.
+        'layer' is specified layer
+        'tolerance' is search distance in layer units
+
+        If no feature is close to the given coordinate, we return None.
+    """
+
+    QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer), tag="TOMs panel")
+
+    searchRect = QgsRectangle(layerPt.x() - tolerance,
+                              layerPt.y() - tolerance,
+                              layerPt.x() + tolerance,
+                              layerPt.y() + tolerance)
+
+    request = QgsFeatureRequest()
+    request.setFilterRect(searchRect)
+    request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+    for feature in layer.getFeatures(request):
+        QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel")
+        return feature  # Return first matching feature.
+
+    return None
+
+	pass
