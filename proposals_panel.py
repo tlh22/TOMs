@@ -77,6 +77,8 @@ class proposalsPanel():
         # Set up field details for table  ** what about errors here **
         idxProposalID = self.Proposals.fieldNameIndex("ProposalID")
         idxProposalTitle = self.Proposals.fieldNameIndex("ProposalTitle")
+        self.idxCreateDate = self.Proposals.fieldNameIndex("ProposalCreateDate")
+        self.idxOpenDate = self.Proposals.fieldNameIndex("ProposalOpenDate")
 
         self.createProposalcb()
 
@@ -100,6 +102,10 @@ class proposalsPanel():
 
         # set up action for when the date is changed from the user interface
         self.dock.filterDate.dateChanged.connect(lambda: self.restrictionManager.setDate(self.dock.filterDate.date()))
+
+        # set up action to refresh proposals list when a proposal is modified or created   Is this possible ????? *****************
+        #self.dlg = proposalDetailsDialog()
+        #self.dlg.accept().connect(lambda: self.dock.cb_ProposalsList.refresh())
 
         # set up action for when the proposal is changed
         self.dock.cb_ProposalsList.currentIndexChanged.connect(self.updateCurrentProposal)
@@ -174,10 +180,11 @@ class proposalsPanel():
 
         # display the dialog for proposals
 
-        self.dlg = proposalDetailsDialog()
+        #self.dlg = proposalDetailsDialog()
 
         # set up the combo box for Proposal Status
 
+        """
         if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
             self.ProposalStatusTypesLayer = \
             QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
@@ -189,15 +196,16 @@ class proposalsPanel():
             currID = type.attribute("id")
             currType = type.attribute("Description")
             self.dlg.ProposalStatusID.addItem( currType, currID )
+        """
 
         # add the values
 
-        self.dlg.ProposalStatusID.setCurrentIndex(1 - 1)  # remove one as index starts at 1
-        self.dlg.ProposalCreateDate.setDate(QDate.currentDate())
+        #self.dlg.ProposalStatusID.setCurrentIndex(1 - 1)  # remove one as index starts at 1
+        """self.dlg.ProposalCreateDate.setDate(QDate.currentDate())
 
         QgsMessageLog.logMessage("In onNewProposal. New Proposal created.", tag="TOMs panel")
 
-        self.dlg.show()
+         self.dlg.show()
 
         # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
         # Disconnect the signal that QGIS has wired up for the dialog to the button box.
@@ -205,7 +213,21 @@ class proposalsPanel():
 
         # Wire up our own signals.
         self.newProposalRequired = True
-        self.dlg.button_box.accepted.connect(self.onSaveProposalDetails)   # would like to pass details here - not sure how ??
+        self.dlg.button_box.accepted.connect(self.onSaveProposalDetails)   # would like to pass details here - not sure how ?? """
+
+        # create a new Proposal
+
+        newProposal = QgsFeature(self.Proposals.fields())
+        newProposal.setGeometry(QgsGeometry())
+        # self.Proposals.addFeatures([currProposal])
+
+
+        newProposal[self.idxCreateDate] = self.restrictionManager.date()
+        newProposal[self.idxOpenDate] = self.restrictionManager.date()
+
+        self.Proposals.startEditing()
+
+        self.iface.openFeatureForm(self.Proposals, newProposal, False)
 
         pass
 
@@ -330,6 +352,8 @@ class proposalsPanel():
             return  # there is nothing to see
 
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
+
+        """
         currProposalTitle = self.dock.cb_ProposalsList.currentText()
 
         QgsMessageLog.logMessage("In onProposalDetails. newProposalID: " + str(currProposalID) + " newProposalTitle: " + str(currProposalTitle), tag="TOMs panel")
@@ -388,6 +412,12 @@ class proposalsPanel():
         # Wire up our own signals.
         self.newProposalRequired = False
         self.dlg.button_box.accepted.connect(self.onSaveProposalDetails)   # would like to pass details here - not sure how ??
+        """
+
+        currProposal = self.getProposal(currProposalID)
+        self.Proposals.startEditing()
+
+        self.iface.openFeatureForm(self.Proposals, currProposal, False)
 
         pass
 
@@ -431,7 +461,7 @@ class proposalsPanel():
 
         return self.acceptProposal
 
-    def getRestrictionLayerTableID(currRestLayer):
+    def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
 
@@ -448,3 +478,18 @@ class proposalsPanel():
         QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel")
 
         return layersTableID
+
+    def getProposal(self, proposalID):
+        QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel")
+
+        proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+
+        # not sure if there is better way to search for something, .e.g., using SQL ??
+
+        for currProposal in proposalsLayer.getFeatures():
+            if currProposal.attribute("ProposalID") == proposalID:
+                return currProposal
+
+        return None
+
+        pass

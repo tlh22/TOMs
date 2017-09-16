@@ -56,6 +56,15 @@ class TOMsRestrictionManager(QObject):
             currProposal = 0
         return int(currProposal)
 
+    def currentProposalName(self):
+        """
+        Returns the current proposal
+        """
+        currProposal = QgsExpressionContextUtils.projectScope().variable('CurrentProposal')
+        if not currProposal:
+            currProposal = 0
+        return int(currProposal)
+
     def setCurrentProposal(self, value):
         """
         Set the current proposal
@@ -89,54 +98,64 @@ class TOMsRestrictionManager(QObject):
         # filterString = '"ResState" = 1'
 
         # For PostGIS - "OpenDate2" <= '02-09-2017' AND ("CloseDate2" > '02-09-2017' OR "CloseDate2"  IS NULL)
-        filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND (" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
+        filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
 
-        if currProposalID > 0:   # need to consider a proposal
-            # get list of restrictions to open within proposal
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2"):
+            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers2 is not present"))
+            return
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2"):
-                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        # loop through all the layers that might have restrictions
+
+        listRestrictionLayers = self.RestrictionLayers.getFeatures()
+
+        for currLayerDetails in listRestrictionLayers:
+
+            # get the layer from the name
+
+            currLayerID = currLayerDetails["id"]
+            currLayerName = currLayerDetails["RestrictionLayerName"]
+            QgsMessageLog.logMessage(
+                "In filterMapOnDate. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
+
+            if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+                currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
             else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers2 is not present"))
+                QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                        ("Table " + currLayerName + " is not present"))
                 return
 
-            # loop through all the layers that might have restrictions
+            layerFilterString = filterString
 
-            listRestrictionLayers = self.RestrictionLayers.getFeatures()
-
-            for currLayerDetails in listRestrictionLayers:
-
-                # get the layer from the name
-
-                currLayerID = currLayerDetails["id"]
-                currLayerName = currLayerDetails["RestrictionLayerName"]
-                QgsMessageLog.logMessage("In filterMapOnDate. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
-
-                if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
-                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]
-                else:
-                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                            ("Table " + currLayerName + " is not present"))
-                    return
+            if currProposalID > 0:   # need to consider a proposal
+                # get list of restrictions to open within proposal
 
                 restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, 2)   # Close is 2  ... need to get better looping ...
                 QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
                 # **** Assumption that there are some details in proposal ??
                 if len(restrictionsToClose) > 0:
-                    filterString = filterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
+                    layerFilterString = layerFilterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
                 restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, 1)   # Open is 1
 
                 if len(restrictionsToOpen) > 0:
-                    filterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + filterString
+                    layerFilterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + layerFilterString + ")"
 
-                    if len(restrictionsToClose) == 0:
-                        filterString = filterString + " ) "
+                if len(restrictionsToClose) == 0:
+                    layerFilterString = layerFilterString + ")"
+
+            else:
+                layerFilterString = layerFilterString + ")"
+
+            # Now apply filter to the layer
+            QgsMessageLog.logMessage("In filterMapOnDate. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
+            currRestrictionLayer.setSubsetString(layerFilterString)
 
         # QMessageBox.information(self.iface.mainWindow(), "debug", dateChoosen + " " + tmpOrdersText + " " + filterString)
-        QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
+        #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
         # filterString = 'date("CreateDate") <= ' + date(dateChoosenFormatted) + ' AND (date("DeleteDate") > ' + date(dateChoosenFormatted) + '  OR "DeleteDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
         # QgsMessageLog.logMessage("Filter2: " + filterString, tag="TOMs panel")
 
@@ -144,13 +163,13 @@ class TOMsRestrictionManager(QObject):
         # May need to apply filter to more than one layer. Currently just for one
         #
 
-        self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+        #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
         #
         #  http://gis.stackexchange.com/questions/121148/how-to-filter-qgis-layer-from-python
         #
 
-        self.TOMslayer.setSubsetString(filterString)
+        #self.TOMslayer.setSubsetString(filterString)
 
     def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
         # Will return a (comma separated) string with the list of restrictions within a Proposal

@@ -524,18 +524,45 @@ class RestrictionTypeUtils:
 
             # not sure if there is better way to search for something, .e.g., using SQL ??
 
-            for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures(request):
+            for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
                 if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
                     if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
                         if restrictionInProposal.attribute("ProposalID") == proposalID:
                             restrictionFound = True
 
+            QgsMessageLog.logMessage("In restrictionInProposal. restrictionFound: " + str(restrictionFound),
+                                     tag="TOMs panel")
+
             return restrictionFound
 
-        @staticmethod
-        def addRestrictionToProposal(restrictionID, restrictionLayer, proposalID, proposedAction):
+        @staticmethod    # NB: Duplicated from restrictionOpenForm.py - need to understand scope and how to reference !!!
+        def addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
             # adds restriction to the "RestrictionsInProposals" layer
             QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
+
+            RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+            idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
+            idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
+            idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
+            idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex(
+                "ActionOnProposalAcceptance")
+
+            RestrictionsInProposalsLayer.startEditing()
+
+            newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
+            newRestrictionsInProposal.setGeometry(QgsGeometry())
+
+            newRestrictionsInProposal[idxProposalID] = proposalID
+            newRestrictionsInProposal[idxRestrictionID] = restrictionID
+            newRestrictionsInProposal[idxRestrictionTableID] = restrictionLayerTableID
+            newRestrictionsInProposal[idxActionOnProposalAcceptance] = proposedAction
+
+            QgsMessageLog.logMessage(
+                "In addRestrictionToProposal. Before record create. RestrictionID: " + str(restrictionID),
+                tag="TOMs panel")
+
+            RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
 
             pass
 
@@ -554,6 +581,25 @@ class RestrictionTypeUtils:
 
             return RestrictionsLayers
 
+        @staticmethod
+        def getRestrictionLayerTableID(currRestLayer):
+            QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+            # find the ID for the layer within the table "
+
+            RestrictionsLayers2 = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+
+            layersTableID = 0
+
+            # not sure if there is better way to search for something, .e.g., using SQL ??
+
+            for layer in RestrictionsLayers2.getFeatures():
+                if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
+                    layersTableID = layer.attribute("id")
+
+            QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
+                                     tag="TOMs panel")
+
+            return layersTableID
 
 #############################################################################
 
@@ -658,7 +704,7 @@ class EditRestrictionTool(QgsMapTool, MapToolMixin):
 #############################################################################
 
 class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
-    def __init__(self, iface, layer):
+    def __init__(self, iface, onRemoveRestriction):
         QgsMapTool.__init__(self, iface.mapCanvas())
         self.iface = iface
         #self.layer = layer
@@ -666,6 +712,8 @@ class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
         self.feature        = None
         #self.setLayer(layer)
         self.setCursor(Qt.CrossCursor)
+        # set up function to be called when capture is complete
+        self.onRemoveRestriction = onRemoveRestriction
 
     def canvasReleaseEvent(self, event):
         # Return point under cursor
@@ -680,7 +728,7 @@ class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
 
         closestLayer.startEditing()
 
-        self.iface.openFeatureForm(closestLayer, closestFeature)
+        self.onRemoveRestriction(closestLayer, closestFeature)
         #self.onDisplayRestrictionDetails(feature, self.layer)
 
 

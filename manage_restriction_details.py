@@ -667,19 +667,6 @@ class manageRestrictionDetails():
                                                       "Open")
 
         pass
-
-    """def checkRestrictionType(self):
-        '''
-        Check the restriction ID and set the relevant fields to read only
-        '''
-        
-        # See if the restriction is a line type
-        # if self.dlg.cb_restrictionTypes.currentIndex() >= LINETYPES 
-        QgsMessageLog.logMessage("In checkRestrictionFields", tag="TOMs panel")
-        pass
-            
-    def generateHistoryString(self, str, fieldName, strValue):
-        str = str + "; " + fieldName + ": " + strValue """
             
     def doCreateBayRestriction(self):
 
@@ -792,9 +779,9 @@ class manageRestrictionDetails():
         self.mapTool = None
 
         # Get the current proposal from the session variables
-        currProposalID = self.restrictionManager.currentProposal()
+        self.currProposalID = self.restrictionManager.currentProposal()
 
-        if currProposalID > 0:
+        if self.currProposalID > 0:
 
             if self.actionRemoveRestriction.isChecked():
                 # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
@@ -804,10 +791,10 @@ class manageRestrictionDetails():
 
                 QgsMessageLog.logMessage("In doRemoveRestriction - tool activated", tag="TOMs panel")
 
-                self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-                iface.setActiveLayer(self.TOMslayer)
+                #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+                #iface.setActiveLayer(self.TOMslayer)
 
-                self.mapTool = RemoveRestrictionTool(self.iface, self.TOMslayer)
+                self.mapTool = RemoveRestrictionTool(self.iface, self.onRemoveRestriction)
                 self.mapTool.setAction(self.actionRemoveRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -839,14 +826,22 @@ class manageRestrictionDetails():
 
         pass
 
-    def onRemoveRestriction(self):
-        QgsMessageLog.logMessage("In onRemoveRestriction.", tag="TOMs panel")
+    def onRemoveRestriction(self, currRestrictionLayer, currRestriction):
+        QgsMessageLog.logMessage("In onRemoveRestriction. currLayer: " + str(currRestrictionLayer.id()) + " CurrFeature: " + str(currRestriction.id()), tag="TOMs panel")
 
-        self.currRestrictionLayer.startEditing()
+        #self.currRestrictionLayer = currRestrictionLayer
+        #self.currRestriction = currRestriction
 
-        if RestrictionTypeUtils.restrictionInProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID):
+        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+
+        currRestrictionLayer.startEditing()
+        currRestrictionLayerID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
+
+        idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
+
+        if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID):
             # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
-            # (NB: THis is the only case of a restriction being truly deleted
+            # NB: THis is the only case of a restriction being truly deleted
 
             QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel")
             #self.dlg.accept()
@@ -854,12 +849,12 @@ class manageRestrictionDetails():
         else:
             # need to:
             #    - enter the restriction into the table RestrictionInProposals as closed, and
-            #    - make a copy of the restriction in the current layer (with the new details)
+            #
             QgsMessageLog.logMessage("In onSaveRestrictionDetails. Closing existing restriction.",
                                      tag="TOMs panel")
 
-            RestrictionTypeUtils.addRestrictionToProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID,
-                                                          "Close")
+            RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID,
+                                                          2)  # 2 = Close
 
         pass
 

@@ -46,37 +46,20 @@
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="0">
     <rules key="{5e1ea33b-2b16-4512-a88f-15c10691064d}">
-      <rule checkstate="0" filter=" &quot;RestrictionTypeID&quot; IN (9, 10, 11, 12, 13, 14, 15)" key="{e0f519c6-b089-4aed-b576-4b4c07cf1214}" symbol="0" label="Crossing"/>
+      <rule filter=" &quot;RestrictionTypeID&quot; IN (9, 10, 11, 12, 13, 14, 15)" key="{e0f519c6-b089-4aed-b576-4b4c07cf1214}" symbol="0" label="Crossing"/>
       <rule filter=" &quot;RestrictionTypeID&quot; = 1" key="{97859899-5fc5-4e6d-a92d-dc8db3e7c197}" symbol="1" label="No Waiting (SYL) (Acceptable)"/>
       <rule checkstate="0" filter="(LineTypeDe = 'No Waiting (SYL) (Acceptable)' OR LineTypeDe = 'No Waiting (SYL) (Unacceptable)')&#xd;&#xa; AND &quot;NoLoadingT&quot; > 0" key="{61050846-bfe5-40a8-b92a-90a2faabbef2}" symbol="2" label="No Waiting (SYL) (Acceptable)"/>
       <rule filter=" &quot;RestrictionTypeID&quot; = 2" key="{c4f00ae0-d280-48bd-a0a8-2f6d862b0b8d}" symbol="3" label="No Waiting At Any Time (DYL)"/>
       <rule checkstate="0" filter="LineTypeDe = 'No Waiting At Any Time (DYL)' AND  &quot;NoLoadin_1&quot; > 0" key="{522825fd-4152-471d-86b1-e20c7e085a60}" symbol="4" label="No Waiting At Any Time (DYL)"/>
-      <rule checkstate="0" filter=" &quot;RestrictionTypeID&quot; IN (16, 20)" key="{c9ae42bf-07a8-4417-8244-a1249a3f36a7}" symbol="5" label="Unmarked Area (Acceptable)"/>
-      <rule checkstate="0" filter=" &quot;RestrictionTypeID&quot; IN (3, 4, 5, 6, 7, 8)" key="{7aa3e317-1477-49b9-92ed-05e52fa9070f}" symbol="6" label="Zig Zag"/>
+      <rule filter=" &quot;RestrictionTypeID&quot; IN (16, 20)" key="{c9ae42bf-07a8-4417-8244-a1249a3f36a7}" symbol="5" label="Unmarked Area (Acceptable)"/>
+      <rule filter=" &quot;RestrictionTypeID&quot; IN (3, 4, 5, 6, 7, 8)" key="{7aa3e317-1477-49b9-92ed-05e52fa9070f}" symbol="6" label="Zig Zag"/>
     </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="line" name="0">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="31,120,180,255"/>
-          <prop k="line_style" v="dash"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@0@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@0@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -84,9 +67,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_color" v="31,120,180,255"/>
+              <prop k="line_style" v="dash"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -111,7 +94,7 @@
               <prop k="joinstyle" v="bevel"/>
               <prop k="line_color" v="220,254,0,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.86"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -290,27 +273,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="5">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="180,78,31,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@5@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@5@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -318,9 +284,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="180,78,31,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -360,9 +326,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_color" v="255,127,0,255"/>
+              <prop k="line_style" v="dot"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>

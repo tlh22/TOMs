@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>373</width>
-    <height>342</height>
+    <width>404</width>
+    <height>374</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>80</width>
+    <height>38</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>524287</width>
+    <height>524287</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Proposal Details</string>
@@ -16,8 +28,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>310</y>
+     <x>207</x>
+     <y>340</y>
      <width>156</width>
      <height>23</height>
     </rect>
@@ -92,7 +104,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>150</y>
+     <y>180</y>
      <width>46</width>
      <height>13</height>
     </rect>
@@ -117,11 +129,37 @@
   <widget class="QTextEdit" name="ProposalNotes">
    <property name="geometry">
     <rect>
-     <x>123</x>
-     <y>150</y>
+     <x>120</x>
+     <y>180</y>
      <width>231</width>
      <height>141</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QDateEdit" name="ProposalOpenDate">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>140</y>
+     <width>110</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="calendarPopup">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>140</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Create date:</string>
    </property>
   </widget>
  </widget>

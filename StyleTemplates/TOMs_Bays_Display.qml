@@ -124,9 +124,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="230,22,22,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.86"/>
+              <prop k="line_color" v="255,127,0,255"/>
+              <prop k="line_style" v="dash"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -138,27 +138,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="10">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="51,160,44,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(    &quot;RestrictionTypeID&quot; ,  &quot;GeomShapeID&quot; ,  &quot;AzimuthToRoadCentreLine&quot; , @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@10@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@10@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -168,7 +151,7 @@
               <prop k="joinstyle" v="bevel"/>
               <prop k="line_color" v="51,160,44,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.86"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -180,27 +163,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="11">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="135,135,135,255"/>
-          <prop k="line_style" v="dash"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@11@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@11@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -208,9 +174,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_color" v="135,135,135,255"/>
+              <prop k="line_style" v="dash"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -222,54 +188,37 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="12">
-        <layer pass="0" class="SimpleLine" locked="1">
-          <prop k="capstyle" v="round"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="line_color" v="227,26,28,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="line_color" v="255,255,255,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="0.86"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@12@2">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@12@0">
             <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
+              <prop k="capstyle" v="round"/>
               <prop k="customdash" v="5;2"/>
               <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="joinstyle" v="round"/>
+              <prop k="line_color" v="227,26,28,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="round"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="round"/>
+              <prop k="line_color" v="255,255,255,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.86"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -320,15 +269,32 @@
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@13@2">
             <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
+              <prop k="capstyle" v="round"/>
               <prop k="customdash" v="5;2"/>
               <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="joinstyle" v="round"/>
+              <prop k="line_color" v="180,78,31,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="round"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="round"/>
+              <prop k="line_color" v="255,255,255,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.86"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -340,27 +306,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="14">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="74,224,212,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@14@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@14@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -368,9 +317,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="74,224,212,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -382,27 +331,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="15">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="174,47,206,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@15@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@15@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -410,9 +342,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="174,47,206,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -424,27 +356,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="2">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="35,118,29,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@2@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@2@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -452,9 +367,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="35,118,29,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -494,9 +409,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_color" v="31,120,180,255"/>
+              <prop k="line_style" v="dash"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -536,9 +451,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="31,120,180,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -550,44 +465,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="5">
-        <layer pass="0" class="SimpleLine" locked="1">
-          <prop k="capstyle" v="round"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="line_color" v="174,47,206,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="line_color" v="255,255,255,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="0.86"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@5@2">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@5@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -595,9 +476,26 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="174,47,206,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="square"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="line_color" v="255,255,255,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.86"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -637,9 +535,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="222,132,182,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.26"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -651,27 +549,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="7">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="249,1,167,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.66"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@7@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@7@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -679,9 +560,9 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="11,6,9,255"/>
+              <prop k="line_color" v="249,1,167,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.66"/>
+              <prop k="line_width" v="1.66"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -693,27 +574,10 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="line" name="8">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="166,206,227,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="1.26"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-        </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
           <prop k="geometryModifier" v="generate_display_geometry(    &quot;RestrictionTypeID&quot; ,  &quot;GeomShapeID&quot; ,  &quot;AzimuthToRoadCentreLine&quot; , @BayOffsetFromKerb ,  @BayWidth )"/>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="@8@1">
+          <symbol alpha="1" clip_to_extent="1" type="line" name="@8@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
               <prop k="customdash" v="5;2"/>
@@ -723,7 +587,7 @@
               <prop k="joinstyle" v="bevel"/>
               <prop k="line_color" v="166,206,227,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.86"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -748,7 +612,7 @@
               <prop k="joinstyle" v="bevel"/>
               <prop k="line_color" v="20,205,78,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.86"/>
+              <prop k="line_width" v="1.26"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -757,23 +621,6 @@
               <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
             </layer>
           </symbol>
-        </layer>
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="23,42,255,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="0.46"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
         </layer>
       </symbol>
     </symbols>
