@@ -54,12 +54,12 @@ def calcBisector(prevAz, currAz, Turn, WidthRest):
 	# function to return Az of bisector
 
 	#QgsMessageLog.logMessage("In calcBisector", tag="TOMs panel")
-	QgsMessageLog.logMessage("In calcBisector: prevAz: " + str(prevAz) + " currAz: " + str(currAz), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In calcBisector: prevAz: " + str(prevAz) + " currAz: " + str(currAz), tag="TOMs panel")
 
 	prevAzA = checkDegrees(prevAz + float(Turn))
 	currAzA = checkDegrees(currAz + float(Turn))
 
-	QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAz: " + str(currAzA), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAz: " + str(currAzA), tag="TOMs panel")
 
 	"""
 	if prevAz > 180:
@@ -72,16 +72,16 @@ def calcBisector(prevAz, currAz, Turn, WidthRest):
 
 	diffAz = checkDegrees(prevAzA - currAzA)
 
-	QgsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), tag="TOMs panel")
 
 	diffAngle = diffAz / float(2)
 	bisectAz = prevAzA - diffAngle
 
 	diffAngle_rad = math.radians(diffAngle)
-	QgsMessageLog.logMessage("In calcBisector: diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In calcBisector: diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel")
 	distToPt = float(WidthRest) / math.cos(diffAngle_rad)
 
-	QgsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), tag="TOMs panel")
 
 	return bisectAz, distToPt
 
@@ -94,7 +94,7 @@ def checkDegrees(Az):
 	elif Az < float(0):
 		newAz = Az + float(360)
 
-	QgsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), tag="TOMs panel")
 
 	return newAz
 
@@ -130,7 +130,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 	# decide what type of feature we are dealing with - based on restTypeId and geomTypeID
 
 		# there will be more types to deal with, e.g., dropped kerbs, areas and (perhaps) cycle lanes
-	QgsMessageLog.logMessage("In generate_display_geometry:  restGeomType = " + str(restGeomType), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In generate_display_geometry:  restGeomType = " + str(restGeomType), tag="TOMs panel")
 
 	# get access to the vertices. NB: lines/bays are multiPolyline
 
@@ -141,11 +141,11 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 		lines = feature.geometry().asMultiPolyline()
 		nrLines = len(lines)
 
-		QgsMessageLog.logMessage("In generate_display_geometry: restGeomType = " + str(restGeomType) + " AzToCL: " + str(AzimuthToCenterLine) + "; geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+		#QgsMessageLog.logMessage("In generate_display_geometry: restGeomType = " + str(restGeomType) + " AzToCL: " + str(AzimuthToCenterLine) + "; geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
 
 		for idxLine in range(nrLines):
 			line = lines[idxLine]
-			QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
+			#QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
 
 			ptsList = []
 			nextAz = 0
@@ -154,28 +154,28 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 			for i in range(len(line)-1):
 
-				QgsMessageLog.logMessage("In generate_display_geometry: i = " + str(i), tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: i = " + str(i), tag="TOMs panel")
 
 				Az = line[i].azimuth(line[i+1])
 
-				QgsMessageLog.logMessage("In generate_display_geometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
 
 				# if this is the first point
 
 				if i == 0:
 					# determine which way to turn towards CL
-					QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
+					#QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
 
 					Turn = turnToCL(Az, AzimuthToCenterLine)
 
-					QgsMessageLog.logMessage("In generate_display_geometry: A geomType = " + str(restGeomType), tag="TOMs panel")
+					#QgsMessageLog.logMessage("In generate_display_geometry: A geomType = " + str(restGeomType), tag="TOMs panel")
 
 					# create start point(s)
 					if restGeomType == 1:   # 1 = Parallel (bay)
-						QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 0", tag="TOMs panel")
+						#QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 0", tag="TOMs panel")
 						# standard bay
 						newAz = Az + Turn
-						QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+						#QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
 						cosa, cosb = cosdir_azim(newAz)
 
 						#QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
@@ -186,13 +186,13 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 						#QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
 
 						ptsList.append(QgsPoint(line[i].x()+(float(offset)*cosa), line[i].y()+(float(offset)*cosb)))
-						QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+						#QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
 
 						# set "extent of shape". In this case, it is the bay width
 						shpExtent = bayWidth
 
 						ptsList.append(QgsPoint(line[i].x() + (float(shpExtent) * cosa), line[i].y() + (float(shpExtent) * cosb)))
-						QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
+						#QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
 
 						#ptsList.append(newPoint)
 						#QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel")
@@ -209,7 +209,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 						# standard line
 						newAz = Az + Turn
-						QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+						#QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
 						cosa, cosb = cosdir_azim(newAz)
 
 						#QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
@@ -220,7 +220,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 						#QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
 
 						ptsList.append(QgsPoint(line[i].x()+(float(offset)*cosa), line[i].y()+(float(offset)*cosb)))
-						QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+						#QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
 
 						# set "extent of shape". In this case, it is the offset
 						shpExtent = offset
@@ -230,23 +230,24 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 					else:
 						QgsMessageLog.logMessage("In generate_display_geometry: No geomType choosen", tag="TOMs panel")
+						pass
 
 				else:
 
 					# now pass along the feature
 
-					QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
+					#QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
 
 					# need to work out half of bisected angle
 
-					QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel")
+					#QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel")
 
 					newAz, distWidth = calcBisector(prevAz, Az, Turn, shpExtent)
 
 					cosa, cosb = cosdir_azim(newAz)
 					ptsList.append(QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
-					QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
+					#QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
 
 				prevAz = Az
 
@@ -255,13 +256,13 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 			# have reached the end of the feature. Now need to deal with last point.
 			# Use Azimuth from last segment but change the points
 
-			QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
+			#QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
 
 			if restGeomType == 1:
-				QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 1", tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 1", tag="TOMs panel")
 				# standard bay
 				newAz = Az + Turn
-				QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
 				cosa, cosb = cosdir_azim(newAz)
 
 				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(shpExtent) * cosa), line[len(line)-1].y() + (float(shpExtent) * cosb)))
@@ -277,10 +278,10 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 				pass
 			elif restGeomType == 10:
 
-				QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 10", tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 10", tag="TOMs panel")
 				# standard line
 				newAz = Az + Turn
-				QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
 				cosa, cosb = cosdir_azim(newAz)
 				# add end point
 				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(offset) * cosa), line[len(line)-1].y() + (float(offset) * cosb)))
@@ -298,9 +299,9 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 				#for some reason, the len function is not returning the number of vertices
 
-			QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(ptsList)), tag="TOMs panel")
+			#QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(ptsList)), tag="TOMs panel")
 
-		QgsMessageLog.logMessage("In generate_display_geometry: end = " + str(nrLines), tag="TOMs panel")
+		#QgsMessageLog.logMessage("In generate_display_geometry: end = " + str(nrLines), tag="TOMs panel")
 
 	else:
 		QgsMessageLog.logMessage("In generate_display_geometry: Not line type", tag="TOMs panel")
@@ -314,11 +315,11 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 	newLine = QgsGeometry.fromPolyline(ptsList)
 
-	QgsMessageLog.logMessage("In generate_display_geometry: line created", tag="TOMs panel")
+	#QgsMessageLog.logMessage("In generate_display_geometry: line created", tag="TOMs panel")
 
 	# newGeometry = newLine
 
-	QgsMessageLog.logMessage("In generate_display_geometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
+	#QgsMessageLog.logMessage("In generate_display_geometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
 	return newLine
 
@@ -350,37 +351,37 @@ def getAzimuthToRoadCentreLine(feature, parent):
 	# find the shortest line from this point to the road centre line layer
 	# http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
-	QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
+	#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
 
 	RoadCentreLineLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
 
-	QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): Layer defined", tag="TOMs panel")
+	#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): Layer defined", tag="TOMs panel")
 
 	if feature.geometry():
 		geom = feature.geometry()
 	else:
-		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", tag="TOMs panel")
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", tag="TOMs panel")
 		return 0
 
 	if geom.type() == QGis.Line:
 
-		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): considering line", tag="TOMs panel")
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): considering line", tag="TOMs panel")
 
 		lines = feature.geometry().asMultiPolyline()
 		nrLines = len(lines)
 
-		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
 
 		for idxLine in range(nrLines):
 			line = lines[idxLine]
-			QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
+			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
 
 			# take the a point from the geometry
 			#line = feature.geometry().asPolyline()
 
 			testPt = line[1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
-			QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
 			# Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
@@ -405,8 +406,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
 				 closestFeature = f
 				 featureFound = True
 
-			QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),
-							  tag="TOMs panel")
+			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),  tag="TOMs panel")
 
 			if featureFound:
 			  # now obtain the line between the testPt and the nearest feature
@@ -418,11 +418,10 @@ def getAzimuthToRoadCentreLine(feature, parent):
 			  startPt.setX(startPtV2.x())
 			  startPt.setY(startPtV2.y())
 
-			  QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
-								 tag="TOMs panel")
+			  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()), tag="TOMs panel")
 
 			  Az = checkDegrees(testPt.azimuth(startPt))
-			  QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
+			  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
 			  # now set the attribute
 			  # feature.setAttribute("AzimuthToR", int(Az))
@@ -600,5 +599,3 @@ def findFeatureAt2(feature, layerPt, layer, tolerance):
         return feature  # Return first matching feature.
 
     return None
-
-	pass

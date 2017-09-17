@@ -159,7 +159,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Create date:</string>
+    <string>Open date:</string>
    </property>
   </widget>
  </widget>
