@@ -15,6 +15,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from qgis.utils import iface
 #from qgis.gui import QgsMapToolCapture
+from core.restrictionmanager import *
 
 #from constants import *
 
@@ -177,9 +178,10 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
 
-    def __init__(self, iface, layer):
+    def __init__(self, iface):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
         self.iface = iface
+        #self.restrictionManager = restrictionManager  ??? how to include ???
         #self.layer = layer
         #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
@@ -197,6 +199,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
 
+        # Need to chec
         closestLayer.startEditing()
 
         self.iface.openFeatureForm(closestLayer, closestFeature)

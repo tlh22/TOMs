@@ -172,11 +172,11 @@ class manageRestrictionDetails():
 
         self.actionRestrictionDetails.setChecked(True)
 
-		# Define the layer as a QgsVectorLayer (rather than a dataProvider layer). This means that need to use transactions rather than auto commit
+        """		# Define the layer as a QgsVectorLayer (rather than a dataProvider layer). This means that need to use transactions rather than auto commit
         self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
         currLayer = self.TOMslayer # need to loop through the layers and choose closest to click point
-        iface.setActiveLayer(currLayer)
+        iface.setActiveLayer(currLayer)"""
 
         """
         self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails2)
@@ -184,7 +184,7 @@ class manageRestrictionDetails():
         self.iface.mapCanvas().setMapTool(self.mapTool)
         """
 
-        self.mapTool = GeometryInfoMapTool(self.iface, currLayer)
+        self.mapTool = GeometryInfoMapTool(self.iface)
         self.mapTool.setAction(self.actionRestrictionDetails)
         self.iface.mapCanvas().setMapTool(self.mapTool)
 
