@@ -30,6 +30,7 @@ import resources
 
 # Import the code for the dialog
 from core.restrictionmanager import TOMsRestrictionManager
+from expressions import register_expressions, unregister_expressions
 from test5_module_dialog import Test5ClassDialog
 
 
@@ -200,6 +201,8 @@ class Test5Class:
         
         QgsMessageLog.logMessage("In initGui", tag="TOMs panel")
 
+        register_expressions()
+
         self.restrictionManager = TOMsRestrictionManager()
 
         self.editing    = False
@@ -263,6 +266,7 @@ class Test5Class:
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
+        unregister_expressions()
         # Remove TOMs menu
         self.menu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
         if self.menu:

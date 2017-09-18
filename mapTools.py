@@ -374,10 +374,9 @@ class RestrictionTypeUtils:
             # take the first point from the geometry
             line = feature.geometry().asPolyline()
             nrPts = len(line)
-            QgsMessageLog.logMessage("In setRoadName: nrPts = " + str(nrPts), tag="TOMs panel")
+            QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().exportToWkt()), tag="TOMs panel")
 
-            secondPt = line[
-                1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+            secondPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
             QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
 
@@ -437,7 +436,7 @@ class RestrictionTypeUtils:
             line = feature.geometry().asPolyline()
 
             testPt = line[
-                1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+                0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
             QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 

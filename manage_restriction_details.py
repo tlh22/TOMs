@@ -765,7 +765,7 @@ class manageRestrictionDetails():
         """
         QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
 
-        self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
+        #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
         # Obtain all the details for the restriction
 

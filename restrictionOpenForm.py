@@ -170,6 +170,7 @@ def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
 
     # refresh the view. Might be able to set up a signal to get the proposals_panel to intervine
 
+    #qgis.utils.plugins['TOMs'].restrictionManager
     #proposalsPanel.filterView()
 
 def getRestrictionLayerTableID(currRestLayer):
