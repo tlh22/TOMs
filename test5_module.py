@@ -30,7 +30,7 @@ import resources
 
 # Import the code for the dialog
 from core.restrictionmanager import TOMsRestrictionManager
-from expressions import register_expressions, unregister_expressions
+from expressions import registerFunctions, unregisterFunctions
 from test5_module_dialog import Test5ClassDialog
 
 
@@ -201,7 +201,7 @@ class Test5Class:
         
         QgsMessageLog.logMessage("In initGui", tag="TOMs panel")
 
-        register_expressions()
+        registerFunctions()   # Register the Expression functions that we need
 
         self.restrictionManager = TOMsRestrictionManager()
 
@@ -266,7 +266,7 @@ class Test5Class:
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
-        unregister_expressions()
+        unregisterFunctions()  # unregister all the Expression functions used
         # Remove TOMs menu
         self.menu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
         if self.menu:
