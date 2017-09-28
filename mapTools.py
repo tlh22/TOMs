@@ -650,6 +650,7 @@ class RestrictionTypeUtils:
         bayWidth = 2.0
         bayLength = 5.0
         bayOffsetFromKerb = 0.25
+        bayOrientation = 0
 
         """bayWidth = int(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
         QgsMessageLog.logMessage("In getDisplayGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
@@ -662,10 +663,9 @@ class RestrictionTypeUtils:
             geometryID), tag = "TOMs panel")
         restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = feature.attribute("AzimuthToRoadCentreLine")
-        bayOrientation = feature.attribute("BayOrientation")
 
         # Need to check feature class. If it is a bay, obtain the number
-        #nrBays = feature.attribute("AzimuthToCentreLine")
+        #nrBays = feature.attribute("nrBays")
 
         """
         Within expression areas use:    generate_display_geometry(   "RestrictionTypeID" , "GeomTypeID",  "AzimuthToRoadCentreLine",  @BayOffsetFromKerb ,  @BayWidth )
@@ -704,6 +704,7 @@ class RestrictionTypeUtils:
         elif restGeomType == 5: # 5 = Echelon
             offset = bayOffsetFromKerb
             shpExtent = bayLength
+            bayOrientation = feature.attribute("BayOrientation")
         elif restGeomType == 6: # 6 = Other
             offset = 0
             shpExtent = 0

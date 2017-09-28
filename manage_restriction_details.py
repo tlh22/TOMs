@@ -19,6 +19,9 @@ import datetime
 
 from restrictionDetails_dialog import restrictionDetailsDialog
 from restrictionDetails_dialog2 import restrictionDetailsDialog2
+
+from CadNodeTool.nodetool import NodeTool
+
 from mapTools import *
 from TOMsUtils import *
 from constants import *
@@ -862,58 +865,53 @@ class manageRestrictionDetails():
 
         QgsMessageLog.logMessage("In doEditRestriction - starting", tag="TOMs panel")
 
-        if self.actionEditRestriction.isChecked():
+        self.mapTool = None
 
-            # set TOMs layer as active layer (for editing)...  *** actually need to decide which layer was being edited - sorted out in MapTool ???
+        # Get the current proposal from the session variables
+        currProposalID = self.restrictionManager.currentProposal()
 
-            self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-            iface.setActiveLayer(self.TOMslayer)
+        if currProposalID > 0:
 
-            # now set NodeTools to be active
+            if self.actionEditRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
 
-            iface.actionNodeTool().trigger()
+                # set TOMs layer as active layer (for editing)...
 
-            QgsMessageLog.logMessage("In doEditRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In actionEditRestriction - tool activated", tag="TOMs panel")
 
-            # now need to record details
+                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
+                iface.setActiveLayer(self.currLayer)
 
-            self.TOMslayer.startEditing()
+                rasterMenu = self.iface.rasterMenu()
 
-            #self.mapTool = CreateRestrictionTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
-            #self.mapTool.setAction(self.actionCreateRestriction)
-            #self.iface.mapCanvas().setMapTool(self.mapTool)
+                # Need to obtain the selected layer
+
+                self.mapTool = NodeTool(self.iface.mapCanvas())    # This is where we use the Node Tool ... need canvas and panel??
+                self.mapTool.setAction(self.actionEditRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            else:
+
+                QgsMessageLog.logMessage("In doEditRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionEditRestriction.setChecked(False)
 
         else:
 
-            QgsMessageLog.logMessage("In doCreateRestriction - tool deactivated", tag="TOMs panel")
+            if self.actionEditRestriction.isChecked():
+                self.actionEditRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionEditRestriction.setChecked(False)
 
-            #self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            #self.mapTool = None
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                            "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
 
-            # Need to uncheck NodeTool
-            #iface.actionPan().trigger()
+        pass
 
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            self.mapTool = None
-            self.actionEditRestriction.setChecked(False)
-
-            iface.mapCanvas().refresh()
-            # need to deselect the nodes ...
-
-            """
-            layer.committedGeometriesChanges.connect(onGeometryChanged)
-layer.committedGeometriesChanges.disconnect(onGeometryChanged)
-def onGeometryChanged(layer_id, geometry_map):
-	for geometry_change in geometry_map.iteritems():
-		print(str(geometry_change))
-layer.committedGeometriesChanges.disconnect(onGeometryChanged)
-Traceback (most recent call last):
-  File "<input>", line 1, in <module>
-TypeError: 'function' object is not connected
-layer.committedGeometriesChanges.connect(onGeometryChanged)
-(28L, <qgis._core.QgsGeometry object at 0x234574E0>)
-
-            """
         QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
 
         # Somehow need to deal with Proposals from here. Not sure of best way ...
