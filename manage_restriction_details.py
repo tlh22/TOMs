@@ -887,7 +887,7 @@ class manageRestrictionDetails():
 
                 # Need to obtain the selected layer
 
-                self.mapTool = NodeTool(self.iface.mapCanvas())    # This is where we use the Node Tool ... need canvas and panel??
+                self.mapTool = NodeTool(self.iface.mapCanvas(), self.iface.cadDockWidget())    # This is where we use the Node Tool ... need canvas and panel??
                 self.mapTool.setAction(self.actionEditRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 

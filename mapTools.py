@@ -16,6 +16,8 @@ from PyQt4.QtCore import *
 from qgis.utils import iface
 #from qgis.gui import QgsMapToolCapture
 from core.restrictionmanager import *
+from cmath import rect, phase
+import numpy as np
 
 #from constants import *
 
@@ -363,11 +365,17 @@ class RestrictionTypeUtils:
         cosb = math.cos(az)
         return cosa, cosb
 
+    def cosdir_azim_rad(az):
+        #az = math.radians(azim)
+        cosa = math.sin(az)
+        cosb = math.cos(az)
+        return cosa, cosb
+
     @staticmethod
     def turnToCL(Az1, Az2):
         # function to determine direction of turn to road centre    *** needs to be checked carefully ***
         # Az1 = Az of current line; Az2 = Az to roadCentreline
-        QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
 
         AzCL = Az1 - 90.0
         if AzCL < 0:
@@ -386,14 +394,14 @@ class RestrictionTypeUtils:
 
         g = abs(float(AzCL) - float(Az2))
 
-        # QgsMessageLog.logMessage("In turnToCL Diff = " + str(g), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In turnToCL Diff = " + str(g), tag="TOMs panel")
 
         if g < 90:
             Turn = -90
         else:
             Turn = 90
 
-        QgsMessageLog.logMessage("In turnToCL Turn = " + str(Turn), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In turnToCL Turn = " + str(Turn), tag="TOMs panel")
 
         return Turn
 
@@ -508,16 +516,18 @@ class RestrictionTypeUtils:
         # - existence of geoemtry
         # - whether or not it is multi-part
 
-        QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel")
 
         geom = feature.geometry()
+        #line = QgsGeometry()
+
         if geom:
             if geom.type() == QGis.Line:
                 if geom.isMultipart():
                     lines = geom.asMultiPolyline()
                     nrLines = len(lines)
 
-                    QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+                    #QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
 
                     # take the first line as the one we are interested in
                     line = lines[0]
@@ -531,11 +541,11 @@ class RestrictionTypeUtils:
                 return line
 
             else:
-                QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
                 return 0
 
         else:
-            QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
             return 0
 
     @staticmethod
@@ -543,7 +553,7 @@ class RestrictionTypeUtils:
         # find the shortest line from this point to the road centre line layer
         # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
-        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
 
         RoadCentreLineLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
 
@@ -563,7 +573,7 @@ class RestrictionTypeUtils:
         testPt = line[
             0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
-        QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
         # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
@@ -588,8 +598,7 @@ class RestrictionTypeUtils:
                 closestFeature = f
                 featureFound = True
 
-        QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),
-                                 tag="TOMs panel")
+        #QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
 
         if featureFound:
             # now obtain the line between the testPt and the nearest feature
@@ -605,7 +614,7 @@ class RestrictionTypeUtils:
                                      tag="TOMs panel")
 
             Az = RestrictionTypeUtils.checkDegrees(testPt.azimuth(startPt))
-            QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
             return Az
         else:
@@ -641,28 +650,79 @@ class RestrictionTypeUtils:
         return None
 
     @staticmethod
-    def getDisplayGeometry(feature):
+    def getRestrictionGeometry(feature):
+        # Function to control creation of geometry for any restriction
+        QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
+
+        bayWidth = float(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
+        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
+        bayLength = float(QgsExpressionContextUtils.projectScope().variable("BayLength"))
+        bayOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
+        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
+
+        restGeomType = feature.attribute("GeomShapeID")
+
+        # set up parameters for different shapes
+
+        orientation = 0
+
+        if restGeomType == 1:  # 1 = Parallel (bay)
+            offset = bayOffsetFromKerb
+            shpExtent = bayWidth
+        elif restGeomType == 2: # 2 = half on/half off
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 3: # 3 = on pavement
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 4: # 4 = Perpendicular
+            offset = bayOffsetFromKerb
+            shpExtent = bayLength
+        elif restGeomType == 5: # 5 = Echelon
+            offset = bayOffsetFromKerb
+            shpExtent = bayLength
+            orientation = feature.attribute("BayOrientation")
+        elif restGeomType == 6: # 6 = Other
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 10: # 10 = Parallel (line)
+            offset = bayOffsetFromKerb
+            shpExtent = bayOffsetFromKerb
+        elif restGeomType == 11: # 11 = Parallel (line) with loading
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 12:  # 12 = Zig-Zag
+            offset = bayOffsetFromKerb
+            shpExtent = 0
+            wavelength = 1
+            amplitude = 0.1
+        else:
+            offset = 0
+            shpExtent = 0
+
+        # Now get the geometry
+
+        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+
+        if restGeomType == 12:   # ZigZag
+            outputGeometry =  RestrictionTypeUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset, shpExtent, orientation)
+        else:
+            outputGeometry = RestrictionTypeUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation)
+
+        return outputGeometry
+
+    @staticmethod
+    def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation):
         # Obtain relevant variables
         QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
 
         # Need to check why the project variable function is not working
 
-        bayWidth = 2.0
-        bayLength = 5.0
-        bayOffsetFromKerb = 0.25
-        bayOrientation = 0
-
-        """bayWidth = int(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
-        QgsMessageLog.logMessage("In getDisplayGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
-        bayLength = int(QgsExpressionContextUtils.projectScope().variable("BayLength"))
-        offset = int(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
-        QgsMessageLog.logMessage("In getDisplayGeometry - obtained variables", tag="TOMs panel")"""
-
         geometryID = feature.attribute("GeometryID")
-        QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(
-            geometryID), tag = "TOMs panel")
-        restGeomType = feature.attribute("GeomShapeID")
-        AzimuthToCentreLine = feature.attribute("AzimuthToRoadCentreLine")
+        #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(geometryID), tag = "TOMs panel")
+        #restGeomType = feature.attribute("GeomShapeID")
+        AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
+        #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
 
         # Need to check feature class. If it is a bay, obtain the number
         #nrBays = feature.attribute("nrBays")
@@ -687,46 +747,6 @@ class RestrictionTypeUtils:
                 Move for defined distance (typically 0.25m) along perpendicular and create last point
         """
 
-        # set up parameters for different shapes
-
-        if restGeomType == 1:  # 1 = Parallel (bay)
-            offset = bayOffsetFromKerb
-            shpExtent = bayWidth
-        elif restGeomType == 2: # 2 = half on/half off
-            offset = 0
-            shpExtent = 0
-        elif restGeomType == 3: # 3 = on pavement
-            offset = 0
-            shpExtent = 0
-        elif restGeomType == 4: # 4 = Perpendicular
-            offset = bayOffsetFromKerb
-            shpExtent = bayLength
-        elif restGeomType == 5: # 5 = Echelon
-            offset = bayOffsetFromKerb
-            shpExtent = bayLength
-            bayOrientation = feature.attribute("BayOrientation")
-        elif restGeomType == 6: # 6 = Other
-            offset = 0
-            shpExtent = 0
-        elif restGeomType == 10: # 10 = Parallel (line)
-            offset = bayOffsetFromKerb
-            shpExtent = bayOffsetFromKerb
-        elif restGeomType == 11: # 11 = Parallel (line) with loading
-            offset = 0
-            shpExtent = 0
-        else:
-            offset = 0
-            shpExtent = 0
-
-        # set up lists containing different restriction types
-
-        # decide what type of feature we are dealing with - based on restTypeId and geomTypeID
-
-        # there will be more types to deal with, e.g., dropped kerbs, areas and (perhaps) cycle lanes
-        #QgsMessageLog.logMessage("In getDisplayGeometry:  restGeomType = " + str(restGeomType) + " AzimuthToCentreLine: " + str(AzimuthToCenterLine), tag="TOMs panel")
-
-        # get access to the vertices. NB: lines/bays are multiPolyline
-
         line = RestrictionTypeUtils.getLineForAz(feature)
 
         #QgsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), tag="TOMs panel")
@@ -750,39 +770,37 @@ class RestrictionTypeUtils:
 
             Az = line[i].azimuth(line[i + 1])
 
-            QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
 
             # if this is the first point
 
             if i == 0:
                 # determine which way to turn towards CL
-                QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
 
                 Turn = RestrictionTypeUtils.turnToCL(Az, AzimuthToCentreLine)
 
-                QgsMessageLog.logMessage("In generate_display_geometry: A geomType = " + str(restGeomType), tag="TOMs panel")
-
                 newAz = Az + Turn
-                QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
                 cosa, cosb = RestrictionTypeUtils.cosdir_azim(newAz)
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
 
                 # dx = float(offset) * cosa
                 # dy = float(offset) * cosb
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
 
                 ptsList.append(
                     QgsPoint(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
-                QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
 
                 # Now add the point at the extent. If it is an echelon bay:
                 #   a. calculate the difference between the first Az and the echelon Az (??), and
                 #   b. adjust the angle
                 #   c. *** also need to adjust the length *** Not yet implemented
 
-                if restGeomType == 5:
+                if restGeomType == 5:   # echelon
                     diffEchelonAz = RestrictionTypeUtils.checkDegrees(bayOrientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
                     cosa, cosb = RestrictionTypeUtils.cosdir_azim(newAz)
@@ -802,7 +820,7 @@ class RestrictionTypeUtils:
 
                 # now pass along the feature
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
 
                 # need to work out half of bisected angle
 
@@ -823,7 +841,7 @@ class RestrictionTypeUtils:
         # have reached the end of the feature. Now need to deal with last point.
         # Use Azimuth from last segment but change the points
 
-        QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
 
         # QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 1", tag="TOMs panel")
         # standard bay
@@ -844,13 +862,111 @@ class RestrictionTypeUtils:
 
         newLine = QgsGeometry.fromPolyline(ptsList)
 
-        # QgsMessageLog.logMessage("In generate_display_geometry: line created", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generate_display_geometry: line created", tag="TOMs panel")
 
         # newGeometry = newLine
 
-        # QgsMessageLog.logMessage("In generate_display_geometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generate_display_geometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
         return newLine
+
+    @staticmethod
+    def zigzag(feature, wavelength, amplitude, restGeometryType, offset, shpExtent, orientation):
+        """
+            Taken from: https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=8&cad=rja&uact=8&ved=0ahUKEwi06c6nkMzWAhWCwxoKHWHMC34QFghEMAc&url=http%3A%2F%2Fwww.geoinformations.developpement-durable.gouv.fr%2Ffichier%2Fodt%2Fgenerateur_de_zigzag_v1_cle0d3366.odt%3Farg%3D177834503%26cle%3Df6f59e5a812d5c3e7a829f05497213f839936080%26file%3Dodt%252Fgenerateur_de_zigzag_v1_cle0d3366.odt&usg=AOvVaw0JoVM0llmrvSCdxOEaGCOH
+            www.geoinformations.developpement-durable.gouv.fr
+
+           transforme une geometrie lineaire en zigzag
+           <h4>Syntax</h4>
+           <pre>zigzag(geom, longueur, amplitude)</pre>
+
+           <h4>Exemple</h4>
+           zigzag($geometry,200,100)
+
+        """
+
+        QgsMessageLog.logMessage("In zigzag", tag="TOMs panel")
+
+        line = RestrictionTypeUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation)
+
+        QgsMessageLog.logMessage("In zigzag - have geometry + " + line.exportToWkt(), tag="TOMs panel")
+
+        length = line.length()
+        QgsMessageLog.logMessage("In zigzag - have geometry. Length = " + str(length) + " wavelength: " + str(wavelength), tag="TOMs panel")
+
+        segments = int(length / wavelength)
+        # Find equally spaced points that approximate the line
+        QgsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), tag="TOMs panel")
+
+        points = []
+        countSegments = 0
+        while countSegments <= segments:
+            #QgsMessageLog.logMessage("In zigzag - countSegment = " + str(countSegments), tag="TOMs panel")
+            interpolateDistance = int(countSegments * int(wavelength))
+            #QgsMessageLog.logMessage("In zigzag - interpolateDistance = " + str(interpolateDistance), tag="TOMs panel")
+            points.append (line.interpolate(float(interpolateDistance)).asPoint())
+            #QgsMessageLog.logMessage("In zigzag - added Point", tag="TOMs panel")
+            countSegments = countSegments + 1
+
+        QgsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), tag="TOMs panel")
+
+        # Calculate the azimuths of the approximating line segments
+
+        azimuths = []
+
+        for i in range(len(points) - 1):
+            #QgsMessageLog.logMessage("In zigzag - creating Az: i = " + str(i), tag="TOMs panel")
+            azimuths.append( (points[i].azimuth(points[i + 1])) )
+
+        QgsMessageLog.logMessage("In zigzag - after azimuths: i " + str(i) + " len(az): " + str(len(azimuths)), tag="TOMs panel")
+
+        # Average consecutive azimuths and rotate 90 deg counterclockwise
+
+        #newAz, distWidth = RestrictionTypeUtils.calcBisector(prevAz, Az, Turn, shpExtent)
+
+        zigzagazimuths = [azimuths[0] - math.pi / 2]
+        zigzagazimuths.extend([RestrictionTypeUtils.meanAngle(azimuths[i], azimuths[i - 1]) - math.pi / 2 for i in range(len(points) - 1)])
+        zigzagazimuths.append(azimuths[-1] - math.pi / 2)
+
+        QgsMessageLog.logMessage("In zigzag - about to create shape", tag="TOMs panel")
+
+        cosa = 0.0
+        cosb = 0.0
+
+        # Offset the points along the zigzagazimuths
+        zigzagpoints = []
+        for i in range(len(points)-1):
+            # Alternate the sign
+
+            QgsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i/2)), tag="TOMs panel")
+
+            #currX = points[i].x()
+            #currY = points[i].y()
+
+            dst = amplitude * 1 - 2 * (i - 2 * math.floor(i/2))    # b = a - m.*floor(a./m)  is the same as   b = mod( a , m )      Thus: i - 2 * math.floor(i/2)
+            QgsMessageLog.logMessage("In zigzag - dst: " + str(dst) + " Az: " + str(azimuths[i]), tag="TOMs panel")
+
+            #currAz = zigzagazimuths[i]
+            cosa, cosb = RestrictionTypeUtils.cosdir_azim(azimuths[i])
+
+            QgsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), tag="TOMs panel")
+
+            zigzagpoints.append(
+                QgsPoint(points[i].x() + (float(offset) * cosa), points[i].y() + (float(offset) * cosb)))
+
+            QgsMessageLog.logMessage("In zigzag - point added: " + str(i), tag="TOMs panel")
+            #zigzagpoints.append(QgsPoint(points[i][0] + math.sin(zigzagazimuths[i]) * dst, points[i][1] + math.cos(zigzagazimuths[i]) * dst))
+
+        # Create new feature from the list of zigzag points
+        gLine = QgsGeometry.fromPolyline(zigzagpoints)
+
+        QgsMessageLog.logMessage("In zigzag - shape created", tag="TOMs panel")
+
+        return gLine
+
+    @staticmethod
+    def meanAngle(a1, a2):
+        return phase((rect(1, a1) + rect(1, a2)) / 2.0)
 
     @staticmethod
     def restrictionInProposal (currRestrictionID, currRestrictionLayerID, proposalID):
