@@ -138,13 +138,22 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 	if geom.type() == QGis.Line:
 
+		#lines = feature.geometry().asMultiPolyline()
+		#nrLines = len(lines)
 		lines = feature.geometry().asMultiPolyline()
 		nrLines = len(lines)
 
-		#QgsMessageLog.logMessage("In generate_display_geometry: restGeomType = " + str(restGeomType) + " AzToCL: " + str(AzimuthToCenterLine) + "; geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+		QgsMessageLog.logMessage("In determineRoadName(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
 
 		for idxLine in range(nrLines):
+
 			line = lines[idxLine]
+
+			#QgsMessageLog.logMessage("In generate_display_geometry: restGeomType = " + str(restGeomType) + " AzToCL: " + str(AzimuthToCenterLine) + "; geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+
+			#for idxLine in range(nrLines):
+			line = feature.geometry().asMultiPolyline()
+			#line = lines[idxLine]
 			#QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
 
 			ptsList = []
@@ -271,11 +280,29 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 				ptsList.append(QgsPoint(line[len(line)-1].x() + (float(offset) * cosa), line[len(line)-1].y() + (float(offset) * cosb)))
 
 			elif restGeomType == 2:
-				pass
+				newline = QgsGeometry()
+				newline = line
+				return newline
 			elif restGeomType == 3:
-				pass
+				newline = QgsGeometry()
+				newline = line
+				return newline
 			elif restGeomType == 4:
-				pass
+				QgsMessageLog.logMessage("In generate_display_geometry: feature processed. geomShape = 4 ",
+										 tag="TOMs panel")
+				newline = QgsGeometry()
+				newline.setGeometry(line().geometry())
+				return newline
+			elif restGeomType == 5:
+				newline = QgsGeometry()
+				newline = line
+				return newline
+			elif restGeomType == 6:
+				QgsMessageLog.logMessage("In generate_display_geometry: feature processed. geomShape = 6 ",
+										 tag="TOMs panel")
+				newline = QgsGeometry()
+				newline = line
+				return newline
 			elif restGeomType == 10:
 
 				#QgsMessageLog.logMessage("In generate_display_geometry: Now in geomType 10", tag="TOMs panel")
@@ -299,7 +326,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
 				#for some reason, the len function is not returning the number of vertices
 
-			#QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(ptsList)), tag="TOMs panel")
+				#QgsMessageLog.logMessage("In generate_display_geometry: idxLine = " + str(idxLine) + " len: " + str(len(ptsList)), tag="TOMs panel")
 
 		#QgsMessageLog.logMessage("In generate_display_geometry: end = " + str(nrLines), tag="TOMs panel")
 
@@ -367,67 +394,61 @@ def getAzimuthToRoadCentreLine(feature, parent):
 
 		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): considering line", tag="TOMs panel")
 
-		lines = feature.geometry().asMultiPolyline()
-		nrLines = len(lines)
+		line = feature.geometry().asMultiPolyline()
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
 
-		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+		# take the a point from the geometry
+		#line = feature.geometry().asPolyline()
 
-		for idxLine in range(nrLines):
-			line = lines[idxLine]
-			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): idxLine = " + str(idxLine) + " len: " + str(len(line)), tag="TOMs panel")
+		testPt = line[1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
-			# take the a point from the geometry
-			#line = feature.geometry().asPolyline()
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
-			testPt = line[1]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+		# Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
-			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+		tolerance_roadwidth = 25
+		searchRect = QgsRectangle(testPt.x() - tolerance_roadwidth,
+						   testPt.y() - tolerance_roadwidth,
+						   testPt.x() + tolerance_roadwidth,
+						   testPt.y() + tolerance_roadwidth)
 
-			# Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
+		request = QgsFeatureRequest()
+		request.setFilterRect(searchRect)
+		request.setFlags(QgsFeatureRequest.ExactIntersect)
 
-			tolerance_roadwidth = 25
-			searchRect = QgsRectangle(testPt.x() - tolerance_roadwidth,
-							   testPt.y() - tolerance_roadwidth,
-							   testPt.x() + tolerance_roadwidth,
-							   testPt.y() + tolerance_roadwidth)
+		shortestDistance = float("inf")
+		featureFound = False
 
-			request = QgsFeatureRequest()
-			request.setFilterRect(searchRect)
-			request.setFlags(QgsFeatureRequest.ExactIntersect)
+		# Loop through all features in the layer to find the closest feature
+		for f in RoadCentreLineLayer.getFeatures(request):
+		  dist = f.geometry().distance(QgsGeometry.fromPoint(testPt))
+		  if dist < shortestDistance:
+			 shortestDistance = dist
+			 closestFeature = f
+			 featureFound = True
 
-			shortestDistance = float("inf")
-			featureFound = False
+		#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),  tag="TOMs panel")
 
-			# Loop through all features in the layer to find the closest feature
-			for f in RoadCentreLineLayer.getFeatures(request):
-			  dist = f.geometry().distance(QgsGeometry.fromPoint(testPt))
-			  if dist < shortestDistance:
-				 shortestDistance = dist
-				 closestFeature = f
-				 featureFound = True
+		if featureFound:
+		  # now obtain the line between the testPt and the nearest feature
+		  f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
 
-			#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance),  tag="TOMs panel")
+		  # get the start point (we know the end point)
+		  startPtV2 = f_lineToCL.geometry().startPoint()
+		  startPt = QgsPoint()
+		  startPt.setX(startPtV2.x())
+		  startPt.setY(startPtV2.y())
 
-			if featureFound:
-			  # now obtain the line between the testPt and the nearest feature
-			  f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPoint(testPt))
+		  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()), tag="TOMs panel")
 
-			  # get the start point (we know the end point)
-			  startPtV2 = f_lineToCL.geometry().startPoint()
-			  startPt = QgsPoint()
-			  startPt.setX(startPtV2.x())
-			  startPt.setY(startPtV2.y())
+		  Az = checkDegrees(testPt.azimuth(startPt))
+		  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
-			  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()), tag="TOMs panel")
-
-			  Az = checkDegrees(testPt.azimuth(startPt))
-			  #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
-
-			  # now set the attribute
-			  # feature.setAttribute("AzimuthToR", int(Az))
-			  return Az
-			else:
-				return 0
+		  # now set the attribute
+		  # feature.setAttribute("AzimuthToR", int(Az))
+		  return Az
+		else:
+			return 0
 	else:
 		QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: No line geometry found",
 							  tag="TOMs panel")

@@ -49,6 +49,9 @@ class CadNodeToolPlugin:
         self.iface.mapCanvas().setMapTool(self.tool)
 
     def onCurrentLayerChanged(self):
+
+        QgsMessageLog.logMessage("In NodeTool:onCurrentLayerChanged", tag="TOMs panel")
+
         if isinstance(self.current_layer, QgsVectorLayer):
             self.current_layer.editingStarted.disconnect(self.onEditingStartStop)
             self.current_layer.editingStopped.disconnect(self.onEditingStartStop)
@@ -59,4 +62,7 @@ class CadNodeToolPlugin:
             self.current_layer.editingStopped.connect(self.onEditingStartStop)
 
     def onEditingStartStop(self):
+
+        QgsMessageLog.logMessage("In NodeTool:onEditingStartStop", tag="TOMs panel")
+
         self.action.setEnabled(self.tool.can_use_current_layer())

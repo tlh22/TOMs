@@ -23,6 +23,8 @@ class TOMsRestrictionManager(QObject):
      - Current proposal
     """
 
+    # TH: orig code has reference to iface. Need to include ***
+
     dateChanged = pyqtSignal()
     """Signal will be emitted, when the current date is changed"""
     proposalChanged = pyqtSignal()
@@ -100,10 +102,10 @@ class TOMsRestrictionManager(QObject):
         # For PostGIS - "OpenDate2" <= '02-09-2017' AND ("CloseDate2" > '02-09-2017' OR "CloseDate2"  IS NULL)
         filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2"):
-            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers2 is not present"))
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
             return
 
         # loop through all the layers that might have restrictions

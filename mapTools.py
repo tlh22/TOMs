@@ -87,7 +87,7 @@ class MapToolMixin:
                     continue
             return feature '''
 
-        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
         #iface.setActiveLayer(currLayer)
@@ -236,7 +236,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         self.currLayer = self.currentVectorLayer()
 
-        QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer) + "Incoming: " + str(self.layer)), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer.name()) + "Incoming: " + str(self.layer)), tag="TOMs panel")
 
         # set up snapping configuration   *******************
         """
@@ -655,10 +655,10 @@ class RestrictionTypeUtils:
         QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
 
         bayWidth = float(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
-        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
         bayLength = float(QgsExpressionContextUtils.projectScope().variable("BayLength"))
         bayOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
-        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
 
         restGeomType = feature.attribute("GeomShapeID")
 
@@ -682,7 +682,12 @@ class RestrictionTypeUtils:
             offset = bayOffsetFromKerb
             shpExtent = bayLength
             orientation = feature.attribute("BayOrientation")
-        elif restGeomType == 6: # 6 = Other
+            if not orientation:
+                orientation = 0
+        elif restGeomType == 6:  # 6 = Perpendicular on pavement
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 7:  # 6 = Other
             offset = 0
             shpExtent = 0
         elif restGeomType == 10: # 10 = Parallel (line)
@@ -702,7 +707,7 @@ class RestrictionTypeUtils:
 
         # Now get the geometry
 
-        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:   # ZigZag
             outputGeometry =  RestrictionTypeUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset, shpExtent, orientation)
@@ -714,12 +719,12 @@ class RestrictionTypeUtils:
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation):
         # Obtain relevant variables
-        QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
 
         # Need to check why the project variable function is not working
 
         geometryID = feature.attribute("GeometryID")
-        #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(geometryID), tag = "TOMs panel")
+        QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(geometryID), tag = "TOMs panel")
         #restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
@@ -801,7 +806,8 @@ class RestrictionTypeUtils:
                 #   c. *** also need to adjust the length *** Not yet implemented
 
                 if restGeomType == 5:   # echelon
-                    diffEchelonAz = RestrictionTypeUtils.checkDegrees(bayOrientation - newAz)
+                    QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
+                    diffEchelonAz = RestrictionTypeUtils.checkDegrees(orientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
                     cosa, cosb = RestrictionTypeUtils.cosdir_azim(newAz)
                     pass
@@ -809,7 +815,7 @@ class RestrictionTypeUtils:
                 ptsList.append(
                     QgsPoint(line[i].x() + (float(shpExtent) * cosa),
                              line[i].y() + (float(shpExtent) * cosb)))
-                # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
 
                 # ptsList.append(newPoint)
                 # QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel")
@@ -1026,7 +1032,7 @@ class RestrictionTypeUtils:
         # return the layer given the row in "RestrictionLayers"
         QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
 
@@ -1041,13 +1047,13 @@ class RestrictionTypeUtils:
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
 
-        RestrictionsLayers2 = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         layersTableID = 0
 
         # not sure if there is better way to search for something, .e.g., using SQL ??
 
-        for layer in RestrictionsLayers2.getFeatures():
+        for layer in RestrictionsLayers.getFeatures():
             if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
                 layersTableID = layer.attribute("id")
 

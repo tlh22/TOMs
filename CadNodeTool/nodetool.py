@@ -16,9 +16,10 @@ from PyQt4.QtCore import *
 
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 
 from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
-
+from TOMs.mapTools import MapToolMixin
 
 class Vertex(object):
     def __init__(self, layer, fid, vertex_id):
@@ -80,9 +81,10 @@ def _is_circular_vertex(geom, vertex_index):
 
 
 
-class NodeTool(QgsMapToolAdvancedDigitizing):
+class NodeTool(QgsMapToolAdvancedDigitizing, MapToolMixin):
     def __init__(self, canvas, cadDock):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDock)
+        self.iface = iface
 
         self.snap_marker = QgsVertexMarker(canvas)
         self.snap_marker.setIconType(QgsVertexMarker.ICON_CROSS)
@@ -180,8 +182,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
 
     def can_use_current_layer(self):
+        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer", tag="TOMs panel")
+
         layer = self.canvas().currentLayer()
+
+        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+
         if not layer:
+            QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel")
             print "no active layer!"
             return False
 
@@ -192,6 +200,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         if not layer.isEditable():
             print "layer not editable!"
             return False
+
+        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - using current layer", tag="TOMs panel")
 
         return True
 
@@ -219,8 +229,30 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def cadCanvasPressEvent(self, e):
 
+        QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent", tag="TOMs panel")
+
+        # from the location, check that this is one of the restriction layers.
+        # If so, set make this the current layer and turn on editing
+
+        closestFeature, closestLayer = self.findNearestFeatureAt(e.pos())
+
+        if not closestLayer:   # if nothing was found
+            return
+
+        self.iface.setActiveLayer(closestLayer)  # returns bool
+        closestLayer.startEditing()
+
         if not self.can_use_current_layer():
             return
+
+        QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - can use layer ...", tag="TOMs panel")
+
+        # We now have a valid layer, for TOMs, we need to check
+        #  - whether or not the feature is part of the current proposal
+        #  - if not, we need to make a copy of the existing feature and add the GeometryID to the Proposal
+
+        if not restrictionInProposal(currRestrictionID, closestLayer, currProposal):
+            pass
 
         self.set_highlighted_nodes([])   # reset selection
 
@@ -550,6 +582,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def keyPressEvent(self, e):
 
+        QgsMessageLog.logMessage("In NodeTool:keyPressEvent", tag="TOMs panel")
+
         if not self.dragging and len(self.selected_nodes) == 0:
             return
 
@@ -703,6 +737,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                                                             0, match.point(), vindex)
                         self.matches.append(extra_match)
                 return True
+
+        QgsMessageLog.logMessage("In layer_vertices_snapped_to_point", tag="TOMs panel")
 
         myfilter = MyFilter(self)
         loc = self.canvas().snappingUtils().locatorForLayer(layer)

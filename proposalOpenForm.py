@@ -27,9 +27,7 @@ import uuid
 from qgis.core import *
 from qgis.gui import *
 
-from .mapTools import RestrictionTypeUtils
-
-#from qgis.utils.plugins.TOMs import *    # Not sure of path/scope here !!!!
+from TOMs.mapTools import RestrictionTypeUtils
 
 import functools
 
