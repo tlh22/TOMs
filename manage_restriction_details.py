@@ -20,7 +20,7 @@ import datetime
 from restrictionDetails_dialog import restrictionDetailsDialog
 from restrictionDetails_dialog2 import restrictionDetailsDialog2
 
-from CadNodeTool.nodetool import NodeTool
+from CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
 from mapTools import *
 from TOMsUtils import *
@@ -880,14 +880,16 @@ class manageRestrictionDetails():
 
                 QgsMessageLog.logMessage("In actionEditRestriction - tool activated", tag="TOMs panel")
 
-                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
-                iface.setActiveLayer(self.currLayer)
+                #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
+                #iface.setActiveLayer(self.currLayer)
 
-                rasterMenu = self.iface.rasterMenu()
+                #rasterMenu = self.iface.rasterMenu()
 
                 # Need to obtain the selected layer
 
-                self.mapTool = NodeTool(self.iface.mapCanvas(), self.iface.cadDockWidget())    # This is where we use the Node Tool ... need canvas and panel??
+                # Need to clear any other maptools ....
+
+                self.mapTool = TOMsNodeTool(self.iface, self.restrictionManager)    # This is where we use the Node Tool ... need canvas and panel??
                 self.mapTool.setAction(self.actionEditRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 

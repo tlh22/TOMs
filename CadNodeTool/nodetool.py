@@ -16,10 +16,8 @@ from PyQt4.QtCore import *
 
 from qgis.core import *
 from qgis.gui import *
-from qgis.utils import iface
 
 from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
-from TOMs.mapTools import MapToolMixin
 
 class Vertex(object):
     def __init__(self, layer, fid, vertex_id):
@@ -81,10 +79,9 @@ def _is_circular_vertex(geom, vertex_index):
 
 
 
-class NodeTool(QgsMapToolAdvancedDigitizing, MapToolMixin):
+class NodeTool(QgsMapToolAdvancedDigitizing):
     def __init__(self, canvas, cadDock):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDock)
-        self.iface = iface
 
         self.snap_marker = QgsVertexMarker(canvas)
         self.snap_marker.setIconType(QgsVertexMarker.ICON_CROSS)
@@ -231,28 +228,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing, MapToolMixin):
 
         QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent", tag="TOMs panel")
 
-        # from the location, check that this is one of the restriction layers.
-        # If so, set make this the current layer and turn on editing
-
-        closestFeature, closestLayer = self.findNearestFeatureAt(e.pos())
-
-        if not closestLayer:   # if nothing was found
-            return
-
-        self.iface.setActiveLayer(closestLayer)  # returns bool
-        closestLayer.startEditing()
-
         if not self.can_use_current_layer():
+            QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - NOT using current layer ...", tag="TOMs panel")
             return
 
         QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - can use layer ...", tag="TOMs panel")
 
-        # We now have a valid layer, for TOMs, we need to check
-        #  - whether or not the feature is part of the current proposal
-        #  - if not, we need to make a copy of the existing feature and add the GeometryID to the Proposal
-
-        if not restrictionInProposal(currRestrictionID, closestLayer, currProposal):
-            pass
+        # We now have a valid layer ...
 
         self.set_highlighted_nodes([])   # reset selection
 
@@ -271,6 +253,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing, MapToolMixin):
                 self.dragging_rect_start_pos = e.pos()
 
     def cadCanvasReleaseEvent(self, e):
+
+        QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent", tag="TOMs panel")
 
         if not self.can_use_current_layer():
             return
@@ -306,6 +290,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing, MapToolMixin):
             self.set_highlighted_nodes(nodes)
 
             self.stop_selection_rect()
+
+        # Check to see that changes have been made
 
         else:  # selection rect is not being dragged
             if e.button() == Qt.LeftButton:

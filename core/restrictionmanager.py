@@ -12,7 +12,7 @@ from PyQt4.QtGui import (
 from qgis.core import (
     QgsExpressionContextUtils,
     QgsMapLayerRegistry,
-    QgsMessageLog
+    QgsMessageLog, QgsFeature, QgsGeometry
 )
 
 class TOMsRestrictionManager(QObject):
@@ -225,3 +225,88 @@ class TOMsRestrictionManager(QObject):
         QgsMessageLog.logMessage("In getRestrictionsInProposal. restrictionsString: " + restrictionsString, tag="TOMs panel")
 
         return restrictionsString
+
+    def restrictionInProposal (self, currRestrictionID, currRestrictionLayerID, proposalID):
+        # returns True if restriction is in Proposal
+        QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel")
+
+        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+        restrictionFound = False
+
+        # not sure if there is better way to search for something, .e.g., using SQL ??
+
+        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
+            if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
+                if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
+                    if restrictionInProposal.attribute("ProposalID") == proposalID:
+                        restrictionFound = True
+
+        QgsMessageLog.logMessage("In restrictionInProposal. restrictionFound: " + str(restrictionFound),
+                                 tag="TOMs panel")
+
+        return restrictionFound
+
+    #@staticmethod    # NB: Duplicated from restrictionOpenForm.py - need to understand scope and how to reference !!!
+    def addRestrictionToProposal(self, restrictionID, restrictionLayerTableID, proposalID, proposedAction):
+        # adds restriction to the "RestrictionsInProposals" layer
+        QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
+
+        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex(
+            "ActionOnProposalAcceptance")
+
+        RestrictionsInProposalsLayer.startEditing()
+
+        newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
+        newRestrictionsInProposal.setGeometry(QgsGeometry())
+
+        newRestrictionsInProposal[idxProposalID] = proposalID
+        newRestrictionsInProposal[idxRestrictionID] = restrictionID
+        newRestrictionsInProposal[idxRestrictionTableID] = restrictionLayerTableID
+        newRestrictionsInProposal[idxActionOnProposalAcceptance] = proposedAction
+
+        QgsMessageLog.logMessage(
+            "In addRestrictionToProposal. Before record create. RestrictionID: " + str(restrictionID),
+            tag="TOMs panel")
+
+        RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
+
+        pass
+
+    def getRestrictionsLayer(self, currRestrictionTableRecord):
+        # return the layer given the row in "RestrictionLayers"
+        QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
+
+        currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
+
+        return RestrictionsLayers
+
+    def getRestrictionLayerTableID(self, currRestLayer):
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        # find the ID for the layer within the table "
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        layersTableID = 0
+
+        # not sure if there is better way to search for something, .e.g., using SQL ??
+
+        for layer in RestrictionsLayers.getFeatures():
+            if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
+                layersTableID = layer.attribute("id")
+
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
+                                 tag="TOMs panel")
+
+        return layersTableID
