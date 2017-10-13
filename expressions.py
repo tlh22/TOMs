@@ -25,9 +25,9 @@ import sys
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
-        QgsMessageLog.logMessage(
+        """QgsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel")
+                geometryID), tag="TOMs panel")"""
 
         res = RestrictionTypeUtils.getRestrictionGeometry(feature)
     except:

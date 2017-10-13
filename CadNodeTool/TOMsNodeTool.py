@@ -25,8 +25,23 @@ from TOMs.constants import TOMsConstants
 #from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
 
 from TOMs.mapTools import MapToolMixin
-#from TOMs.core.restrictionmanager import TOMsRestrictionManager
+from TOMs.core.restrictionmanager import TOMsRestrictionManager
 
+class originalFeature(object):
+    def __init__(self, feature=None):
+        self.savedFeature = None
+
+    def setFeature(self, feature):
+        self.savedFeature = QgsFeature(feature)
+        #self.printFeature()
+
+    def getFeature(self):
+        #self.printFeature()
+        return self.savedFeature
+
+    def printFeature(self):
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.attributes()),
+                                 tag="TOMs panel")
 # generate a subclass of Martin's class
 
 # class TOMsNodeTool(NodeTool, MapToolMixin, TOMsConstants):
@@ -41,6 +56,16 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         NodeTool.__init__(self, canvas, cadDock)
 
         self.restrictionManager = restrictionManager
+
+        self.constants = TOMsConstants()
+        self.origFeature = originalFeature()
+
+        #RestInProp = self.constants.RESTRICTIONS_IN_PROPOSALS_LAYER()
+        #QgsMessageLog.logMessage("In init: RestInProp: " + str(RestInProp.name()), tag="TOMs panel")
+
+        #RestInProp.editCommandEnded.connect(self.restrictionManager.updateMapCanvas())
+
+
 
     def __del__(self):
         pass
@@ -68,6 +93,10 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         currLayer = self.iface.activeLayer()
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. closestLayer: " + str(currLayer.name()), tag="TOMs panel")
+
+        currLayer.geometryChanged.disconnect()
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. geometryChange signal disconnected.", tag="TOMs panel")
+
         idxGeometryID = currLayer.fieldNameIndex("GeometryID")
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currProposal: " + str(self.restrictionManager.currentProposal()), tag="TOMs panel")
 
@@ -87,25 +116,36 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
             #  - add the details to RestrictionsInProposal
 
             newFeature = QgsFeature(currFeature)
-            #newFeature.setFields()
             newFeature.setGeometry(newGeometry)
             newGeometryID = str(uuid.uuid4())
 
             newFeature[idxGeometryID] = newGeometryID
 
+            idxOpenDate = currLayer.fieldNameIndex("OpenDate2")
+            newFeature[idxOpenDate] = None
+
             currLayer.addFeature(newFeature)
 
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - new feature created ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), tag="TOMs panel")
 
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + newFeature.geometry().exportToWkt(), tag="TOMs panel")
+
+            originalfeature = self.origFeature.getFeature()
+
+            QgsMessageLog.logMessage(
+                "In TOMsNodeTool:onGeometryChanged - originalGeom: " + originalfeature.geometry().exportToWkt(),
+                tag="TOMs panel")
+
+            originalGeomBuffer = QgsGeometry(originalfeature.geometry())
+            currLayer.changeGeometry(fid, originalGeomBuffer)
+
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
+
+            #self.newGeomBuffer = QgsGeometry(self.closestFeature.geometry())
 
             #self.originalFeature.setGeometry(QgsGeometry(originalGeomBuffer))
             #self.closestFeature.setGeometry(QgsGeometry(newGeometry))
 
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - originalGeom: " + currFeature.geometry().exportToWkt(), tag="TOMs panel")
-
-
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), tag="TOMs panel")
             #attributes = currFeature.attributes()
             #newFeature.setAttributes(currFeature.attributes())
 
@@ -113,8 +153,11 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
             #originalGeomBuffer = QgsGeometry(currFeature.geometry())
             #self.newGeomBuffer = QgsGeometry(self.closestFeature.geometry())
 
-            self.restrictionManager.addRestrictionToProposal(currFeature[idxGeometryID], self.restrictionManager.getRestrictionLayerTableID(currLayer), self.restrictionManager.currentProposal(), 1) # TOMsConstants.ACTION_CLOSE_RESTRICTION() close the original feature
-            self.restrictionManager.addRestrictionToProposal(newGeometryID, self.restrictionManager.getRestrictionLayerTableID(currLayer), self.restrictionManager.currentProposal(), 2) # TOMsConstants.ACTION_OPEN_RESTRICTION() open the new one
+            self.restrictionManager.addRestrictionToProposal(currFeature[idxGeometryID], self.restrictionManager.getRestrictionLayerTableID(currLayer), self.restrictionManager.currentProposal(), self.constants.ACTION_CLOSE_RESTRICTION()) # close the original feature
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", tag="TOMs panel")
+            self.restrictionManager.addRestrictionToProposal(newGeometryID, self.restrictionManager.getRestrictionLayerTableID(currLayer), self.restrictionManager.currentProposal(), self.constants.ACTION_OPEN_RESTRICTION()) # open the new one
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
+
             self.restrictionManager.updateMapCanvas()
 
         pass
@@ -135,6 +178,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         closestLayer.startEditing()
 
         # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
+
+        self.origFeature.setFeature(closestFeature)
 
         closestLayer.geometryChanged.connect(self.onGeometryChanged)
 

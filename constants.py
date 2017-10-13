@@ -2,18 +2,32 @@
 Constants for TOMs. Taken from Eric Westra ... and amended as appropriate
 '''
 
-LINETYPES = 28
+from PyQt4.QtGui import (
+    QMessageBox
+)
 
-# Various pixel widths:
+from qgis.core import (
+    QgsMapLayerRegistry, QgsMessageLog
+)
 
-ROAD_WIDTH  = 0.0001  # Width of a road, in map units.
-TRAIL_WIDTH = 0.00003 # Width of a trail, in map units.
-POINT_SIZE  = 0.0004  # Diameter of a start/end point, in map units.
+class TOMsConstants(object):
 
-class TOMsConstants():
+    def __init__(self):
 
-    def ACTION_CLOSE_RESTRICTION(self): return 1
-    def ACTION_OPEN_RESTRICTION(self): return 2
+        """QgsMessageLog.logMessage("In TOMsConstants. RESTRICTIONS_IN_PROPOSALS_LAYER", tag="TOMs panel")
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+            QgsMessageLog.logMessage("In TOMsConstants. layer: " + str(QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0].name()), tag="TOMs panel")
+            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
+            raise LayerNotPresent"""
+        pass
+
+    def ACTION_CLOSE_RESTRICTION(self): return 2
+    def ACTION_OPEN_RESTRICTION(self): return 1
+
+    #def RESTRICTIONS_IN_PROPOSALS_LAYER(self): return self.RestrictionsInProposals
+
 
 
 

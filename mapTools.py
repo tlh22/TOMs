@@ -651,7 +651,7 @@ class RestrictionTypeUtils:
     @staticmethod
     def getRestrictionGeometry(feature):
         # Function to control creation of geometry for any restriction
-        QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
 
         bayWidth = float(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
         #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
