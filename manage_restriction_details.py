@@ -20,7 +20,7 @@ import datetime
 from restrictionDetails_dialog import restrictionDetailsDialog
 from restrictionDetails_dialog2 import restrictionDetailsDialog2
 
-from CadNodeTool.TOMsNodeTool import TOMsNodeTool
+from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
 from mapTools import *
 from TOMsUtils import *
@@ -444,6 +444,8 @@ class manageRestrictionDetails():
 
                 # Need to clear any other maptools ....   ********
 
+                self.actionEditRestriction.setChecked(True)
+
                 self.mapTool = TOMsNodeTool(self.iface, self.restrictionManager)    # This is where we use the Node Tool ... need canvas and panel??
                 self.mapTool.setAction(self.actionEditRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
@@ -452,9 +454,9 @@ class manageRestrictionDetails():
 
                 QgsMessageLog.logMessage("In doEditRestriction - tool deactivated", tag="TOMs panel")
 
+                self.actionEditRestriction.setChecked(False)
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
-                self.actionEditRestriction.setChecked(False)
 
         else:
 

@@ -19,7 +19,7 @@ from qgis.gui import *
 from qgis.utils import iface
 import uuid
 
-from CadNodeTool.nodetool import NodeTool
+from TOMs.CadNodeTool.nodetool import NodeTool
 from TOMs.constants import TOMsConstants
 
 #from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
@@ -64,11 +64,6 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         #QgsMessageLog.logMessage("In init: RestInProp: " + str(RestInProp.name()), tag="TOMs panel")
 
         #RestInProp.editCommandEnded.connect(self.restrictionManager.updateMapCanvas())
-
-
-
-    def __del__(self):
-        pass
 
     def deactivate(self):
         pass
@@ -175,6 +170,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
             return None
 
         self.iface.setActiveLayer(closestLayer)  # returns bool
+        self.iface.canvas().setCurrentLayer(closestLayer)
+        # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
         closestLayer.startEditing()
 
         # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
