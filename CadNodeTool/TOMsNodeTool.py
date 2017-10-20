@@ -19,7 +19,7 @@ from qgis.gui import *
 from qgis.utils import iface
 import uuid
 
-from CadNodeTool.nodetool import NodeTool
+from TOMs.CadNodeTool.nodetool import NodeTool
 from TOMs.constants import TOMsConstants
 
 #from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
