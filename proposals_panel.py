@@ -4,26 +4,17 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 
-# Initialize Qt resources from file resources.py
-# from cadtools import resources
-
-#Import own classes and tools
-# from segmentfindertool import SegmentFinderTool
-# from lineintersection import LineIntersection
-# import cadutils
-# Import the code for the dialog
-
 from ProposalPanel_dockwidget import ProposalPanelDockWidget
-from proposal_details_dialog import proposalDetailsDialog
-from core.restrictionmanager import *
+#from proposal_details_dialog import proposalDetailsDialog
+from core.proposalsManager import *
 
 class proposalsPanel():
     
-    def __init__(self, iface, TOMsMenu, restrictionManager):
+    def __init__(self, iface, TOMsMenu, proposalsManager):
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
-        self.restrictionManager = restrictionManager
+        self.proposalsManager = proposalsManager
 
         self.actionProposalsPanel = QAction("Proposals Panel", self.iface.mainWindow())
         TOMsMenu.addAction(self.actionProposalsPanel)
@@ -46,8 +37,8 @@ class proposalsPanel():
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
 
-        self.restrictionManager.proposalChanged.connect(self.onProposalChanged)
-        self.restrictionManager.dateChanged.connect(self.onDateChanged)
+        self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
+        self.proposalsManager.dateChanged.connect(self.onDateChanged)
 
         #self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
         self.dock.filterDate.setDisplayFormat("dd/MM/yyyy")
@@ -84,7 +75,7 @@ class proposalsPanel():
 
         # set CurrentProposal to be 0
 
-        self.restrictionManager.setCurrentProposal(0)
+        self.proposalsManager.setCurrentProposal(0)
 
         # set up a "NULL" field for "No proposals to be shown"
 
@@ -101,7 +92,7 @@ class proposalsPanel():
                 self.dock.cb_ProposalsList.addItem( currProposalTitle, currProposalID )"""
 
         # set up action for when the date is changed from the user interface
-        self.dock.filterDate.dateChanged.connect(lambda: self.restrictionManager.setDate(self.dock.filterDate.date()))
+        self.dock.filterDate.dateChanged.connect(lambda: self.proposalsManager.setDate(self.dock.filterDate.date()))
 
         # set up action to refresh proposals list when a proposal is modified or created   Is this possible ????? *****************
         #self.dlg = proposalDetailsDialog()
@@ -222,8 +213,8 @@ class proposalsPanel():
         # self.Proposals.addFeatures([currProposal])
 
 
-        newProposal[self.idxCreateDate] = self.restrictionManager.date()
-        newProposal[self.idxOpenDate] = self.restrictionManager.date()
+        newProposal[self.idxCreateDate] = self.proposalsManager.date()
+        newProposal[self.idxOpenDate] = self.proposalsManager.date()
 
         self.Proposals.startEditing()
 
@@ -422,7 +413,7 @@ class proposalsPanel():
         pass
 
     def onProposalChanged(self):
-        currProposal = self.restrictionManager.currentProposal()
+        currProposal = self.proposalsManager.currentProposal()
         currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
         self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
 
@@ -430,10 +421,10 @@ class proposalsPanel():
         """Will be called whenever a new entry is selected in the combobox"""
         currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
-        self.restrictionManager.setCurrentProposal(currProposalID)
+        self.proposalsManager.setCurrentProposal(currProposalID)
 
     def onDateChanged(self):
-        date = self.restrictionManager.date()
+        date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
     def onChangeProposalStatus(self):
@@ -461,7 +452,7 @@ class proposalsPanel():
 
         return self.acceptProposal
 
-    def getRestrictionLayerTableID(self, currRestLayer):
+        """def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
 
@@ -477,7 +468,7 @@ class proposalsPanel():
 
         QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel")
 
-        return layersTableID
+        return layersTableID"""
 
     def getProposal(self, proposalID):
         QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel")

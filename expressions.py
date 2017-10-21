@@ -15,7 +15,7 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
 import math
-from mapTools import RestrictionTypeUtils
+from generateGeometryUtils import generateGeometryUtils
 import sys
 
 
@@ -29,7 +29,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
                 geometryID), tag="TOMs panel")"""
 
-        res = RestrictionTypeUtils.getRestrictionGeometry(feature)
+        res = generateGeometryUtils.getRestrictionGeometry(feature)
     except:
         QgsMessageLog.logMessage('generate_display_geometry error in expression function: {}'.format(sys.exc_info()[0]), tag="TOMs panel")
 
@@ -43,7 +43,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
 
 	#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
 
-    return int(RestrictionTypeUtils.calculateAzimuthToRoadCentreLine(feature))
+    return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
 
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
@@ -52,7 +52,7 @@ def getRoadName(feature, parent):
 
     QgsMessageLog.logMessage("In getRoadName(helper):", tag="TOMs panel")
 
-    newStreetName, newUSRN = RestrictionTypeUtils.determineRoadName(feature)
+    newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
 
     return newStreetName
 
@@ -63,7 +63,7 @@ def getUSRN(feature, parent):
 
     QgsMessageLog.logMessage("In getUSRN(helper):", tag="TOMs panel")
 
-    newStreetName, newUSRN = RestrictionTypeUtils.determineRoadName(feature)
+    newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
 
     return newUSRN
 
@@ -75,7 +75,7 @@ def generate_ZigZag(feature, parent):
         QgsMessageLog.logMessage(
             "In generate_ZigZag: New restriction .................................................................... ID: ", tag="TOMs panel")
 
-        res = RestrictionTypeUtils.zigzag(feature, 2, 1)
+        res = generateGeometryUtils.zigzag(feature, 2, 1)
     except:
         QgsMessageLog.logMessage('generate_ZigZag error in expression function: {}'.format(sys.exc_info()[0]), tag="TOMs panel")
 

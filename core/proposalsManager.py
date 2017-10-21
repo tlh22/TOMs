@@ -6,7 +6,8 @@ from PyQt4.QtCore import (
 )
 
 from PyQt4.QtGui import (
-    QMessageBox
+    QMessageBox,
+    QAction
 )
 
 from qgis.core import (
@@ -17,7 +18,7 @@ from qgis.core import (
 
 from TOMs.constants import TOMsConstants
 
-class TOMsRestrictionManager(QObject):
+class TOMsProposalsManager(QObject):
     """
     Manages what is currently shown to the user.
 
@@ -102,8 +103,8 @@ class TOMsRestrictionManager(QObject):
         #filterString = '"EffectiveDate" <= ' + dateChoosenFormatted + ' AND ("RescindDate" > ' + dateChoosenFormatted + '  OR "RescindDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
         # filterString = '"ResState" = 1'
 
-        # For PostGIS - "OpenDate2" <= '02-09-2017' AND ("CloseDate2" > '02-09-2017' OR "CloseDate2"  IS NULL)
-        filterString = '"OpenDate2" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate2" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate2"  IS  NULL)'
+        # For PostGIS - "OpenDate" <= '02-09-2017' AND ("CloseDate" > '02-09-2017' OR "CloseDate"  IS NULL)
+        filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
             self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]

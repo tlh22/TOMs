@@ -29,21 +29,14 @@ from qgis.gui import *
 import resources
 
 # Import the code for the dialog
-from core.restrictionmanager import TOMsRestrictionManager
+from core.proposalsManager import TOMsProposalsManager
+
 from expressions import registerFunctions, unregisterFunctions
 from test5_module_dialog import Test5ClassDialog
 
-
-from ui_TOMs import uiTOMs
-
-from manage_restriction_types import manageRestrictionTypes
-from filter_on_date import filterOnDate
 from proposals_panel import proposalsPanel
 from manage_restriction_details import manageRestrictionDetails
-from ProposalPanel_dockwidget import ProposalPanelDockWidget
-
-#from tools.lineintersectiontool import LineIntersectionTool
-#from tools.circleFromCentreTool import circleFromCentreTool
+#from ProposalPanel_dockwidget import ProposalPanelDockWidget
 
 import os.path
 import time
@@ -106,7 +99,7 @@ class Test5Class:
         return QCoreApplication.translate('Test5Class', message)
 
 
-    def add_action(
+        """def add_action(
         self,
         icon_path,
         text,
@@ -118,7 +111,7 @@ class Test5Class:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None):"""
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -160,7 +153,7 @@ class Test5Class:
 
         # Create the dialog (after translation) and keep reference
         #QMessageBox.information(self.iface.mainWindow(), "debug", "Hello")
-        QgsMessageLog.logMessage("Start adding action:" + text, tag="TOMs panel")
+        """QgsMessageLog.logMessage("Start adding action:" + text, tag="TOMs panel")
         
         self.dlg = dlg
 
@@ -194,7 +187,7 @@ class Test5Class:
         
         QgsMessageLog.logMessage("End adding action", tag="TOMs panel")
 
-        return action
+        return action"""
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -203,7 +196,7 @@ class Test5Class:
 
         registerFunctions()   # Register the Expression functions that we need
 
-        self.restrictionManager = TOMsRestrictionManager()
+        self.proposalsManager = TOMsProposalsManager()
 
         self.editing    = False
         self.curStartPt = None
@@ -222,21 +215,21 @@ class Test5Class:
             actions = self.iface.mainWindow().menuBar().actions()
             lastAction = actions[-1]
             self.iface.mainWindow().menuBar().insertMenu( lastAction, self.TOMsMenu )
-            
+
+            # add items to menu
+            # self.setupUi()
+            #self.doManageRestrictionTypes = manageRestrictionTypes(self.iface, self.TOMsMenu)
+            #self.TOMsMenu.addSeparator()
+            #self.doFilterOnDate = filterOnDate(self.iface, self.TOMsMenu)
+            #self.TOMsMenu.addSeparator()
+            self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsMenu, self.proposalsManager)
+
         else:
         
             #QMessageBox.information(self.iface.mainWindow(), "debug", "Reinstate menu")
             QgsMessageLog.logMessage("Menu already exists", tag="TOMs panel")
             
             self.TOMsMenu.menuAction().setVisible( True )
-
-        # add items to menu
-        # self.setupUi()
-        self.doManageRestrictionTypes = manageRestrictionTypes(self.iface, self.TOMsMenu)
-        self.TOMsMenu.addSeparator()
-        self.doFilterOnDate = filterOnDate(self.iface, self.TOMsMenu)
-        self.TOMsMenu.addSeparator()
-        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsMenu, self.restrictionManager)
 
         # set up menu. Is there a generic way to do this? from an xml file?
         
@@ -248,25 +241,15 @@ class Test5Class:
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")
         self.TOMsToolbar.setObjectName("TOMs Toolbar")
-        self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.restrictionManager)
+        self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
 
-        # Set up relevant parts of CadTools (from Stefan Ziegler)
-        
-        # Add toolbar 
-        #self.CADtoolBar = self.iface.addToolBar("CAD-Tools")
-        #self.CADtoolBar.setObjectName("CAD-Tools")
-        
-        #self.lineintersector = LineIntersectionTool(self.iface,  self.CADtoolBar)
-        #self.circleFromCentreMeasure = circleFromCentreTool(self.iface,  self.CADtoolBar)
+        pass
 
-        # Get the view date from the last session
-        #viewAtDate = QgsExpressionContextUtils.projectScope().variable('ViewAtDate')
-
-       
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
         unregisterFunctions()  # unregister all the Expression functions used
+
         # Remove TOMs menu
         self.menu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
         if self.menu:
@@ -279,6 +262,7 @@ class Test5Class:
                 action)
             self.iface.removeToolBarIcon(action)
         '''
+
         # remove the toolbar
         del self.TOMsToolbar
         self.restoreMenusToolbars()
