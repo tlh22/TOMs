@@ -165,13 +165,19 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         # If so, set make this the current layer and turn on editing
 
         closestFeature, closestLayer = self.findNearestFeatureAt(e.pos())
+        # QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
 
         if not closestLayer:   # if nothing was found
+            self.iface.setActiveLayer(None)  # returns bool
             return None
 
         self.iface.setActiveLayer(closestLayer)  # returns bool
-        self.iface.canvas().setCurrentLayer(closestLayer)
+        #self.iface.canvas().setCurrentLayer(closestLayer)
         # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
+        # layer = self.canvas().currentLayer()
+
+        #QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+
         closestLayer.startEditing()
 
         # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged

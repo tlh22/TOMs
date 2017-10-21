@@ -106,7 +106,7 @@ class MapToolMixin:
                     closestFeature = f
                     closestLayer = self.currLayer
 
-        # QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
 
         if shortestDistance < float("inf"):
             return closestFeature, closestLayer

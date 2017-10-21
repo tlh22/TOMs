@@ -183,7 +183,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         layer = self.canvas().currentLayer()
 
-        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
 
         if not layer:
             QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel")
