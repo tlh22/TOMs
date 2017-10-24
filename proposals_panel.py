@@ -4,9 +4,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 
-from ProposalPanel_dockwidget import ProposalPanelDockWidget
+from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
-from core.proposalsManager import *
+from TOMs.core.proposalsManager import *
 
 class proposalsPanel():
     

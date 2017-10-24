@@ -29,14 +29,13 @@ from qgis.gui import *
 import resources
 
 # Import the code for the dialog
-from core.proposalsManager import TOMsProposalsManager
+from TOMs.core.proposalsManager import TOMsProposalsManager
 
-from expressions import registerFunctions, unregisterFunctions
-from test5_module_dialog import Test5ClassDialog
+from TOMs.expressions import registerFunctions, unregisterFunctions
+from TOMs.test5_module_dialog import Test5ClassDialog
 
-from proposals_panel import proposalsPanel
-from manage_restriction_details import manageRestrictionDetails
-#from ProposalPanel_dockwidget import ProposalPanelDockWidget
+from TOMs.proposals_panel import proposalsPanel
+from TOMs.manage_restriction_details import manageRestrictionDetails
 
 import os.path
 import time

@@ -10,11 +10,11 @@ from PyQt4.QtGui import (
 
 from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
-from mapTools import *
+from TOMs.mapTools import *
 #from TOMsUtils import *
-from constants import *
+from TOMs.constants import TOMsConstants
 
-from restrictionTypeUtils import RestrictionTypeUtils
+from TOMs.restrictionTypeUtils import RestrictionTypeUtils
 
 import functools
 
@@ -25,6 +25,7 @@ class manageRestrictionDetails():
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.proposalsManager = proposalsManager
+        self.constants = TOMsConstants()
 
         # Create actions
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/Test5Class/resources/mActionGetInfo.svg"),
@@ -120,37 +121,6 @@ class manageRestrictionDetails():
 
         pass
 
-        """def onSaveRestrictionDetails(self):
-        QgsMessageLog.logMessage("In onSaveRestrictionDetails.", tag="TOMs panel")
-
-        self.currRestrictionLayer.startEditing()
-
-        if self.proposalsManager.restrictionInProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID):
-            # simply make changes to the current restriction in the current layer
-            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form.", tag="TOMs panel")
-            self.dlg.accept()
-
-        else:
-            # need to:
-            #    - enter the restriction into the table RestrictionInProposals, and
-            #    - make a copy of the restriction in the current layer (with the new details)
-            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Closing existing restriction.",
-                                     tag="TOMs panel")
-            self.proposalsManager.addRestrictionToProposal(self.currRestriction.id(), self.currRestrictionLayerID, self.currProposalID,
-                                                          "Close")
-            newRestriction = QgsFeature(self.currRestrictionLayer.fields())
-            self._geom_buffer = QgsGeometry(self.currRestriction.geometry())
-            newRestriction.setGeometry(QgsGeometry(self._geom_buffer))
-            self.currRestrictionLayer.addFeatures([newRestriction])
-
-            QgsMessageLog.logMessage("In onSaveRestrictionDetails. Opening existing restriction.",
-                                     tag="TOMs panel")
-            self.proposalsManager.addRestrictionToProposal(self.newRestriction.id(), self.currRestrictionLayerID,
-                                                      self.currProposalID,
-                                                      "Open")
-
-        pass """
-            
     def doCreateBayRestriction(self):
 
         QgsMessageLog.logMessage("In doCreateBayRestriction", tag="TOMs panel")
@@ -315,7 +285,7 @@ class manageRestrictionDetails():
         #self.currRestrictionLayer = currRestrictionLayer
         #self.currRestriction = currRestriction
 
-        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+        currProposalID = self.proposalsManager.currentProposal()
 
         currRestrictionLayer.startEditing()
         currRestrictionLayerID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
@@ -329,6 +299,8 @@ class manageRestrictionDetails():
             QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel")
             #self.dlg.accept()
 
+            # ***** IMPLEMENTATION REQUIRED  *****
+
         else:
             # need to:
             #    - enter the restriction into the table RestrictionInProposals as closed, and
@@ -337,7 +309,7 @@ class manageRestrictionDetails():
                                      tag="TOMs panel")
 
             RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID,
-                                                          2)  # 2 = Close
+                                                          self.constants.ACTION_CLOSE_RESTRICTION())  # 2 = Close
 
         pass
 

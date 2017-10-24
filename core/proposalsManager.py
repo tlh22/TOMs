@@ -16,7 +16,11 @@ from qgis.core import (
     QgsMessageLog, QgsFeature, QgsGeometry
 )
 
-from TOMs.constants import TOMsConstants
+from TOMs.restrictionTypeUtils import RestrictionTypeUtils
+from TOMs.constants import (
+    ACTION_CLOSE_RESTRICTION,
+    ACTION_OPEN_RESTRICTION
+)
 
 class TOMsProposalsManager(QObject):
     """
@@ -36,7 +40,7 @@ class TOMsProposalsManager(QObject):
     def __init__(self):
         QObject.__init__(self)
         self.__date = QDate.currentDate()
-        self.constants = TOMsConstants()
+        #self.constants = TOMsConstants()
 
     def date(self):
         """
@@ -137,7 +141,7 @@ class TOMsProposalsManager(QObject):
             if currProposalID > 0:   # need to consider a proposal
                 # get list of restrictions to open within proposal
 
-                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, self.constants.ACTION_CLOSE_RESTRICTION())   # Close is 2  ... need to get better looping ...
+                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_CLOSE_RESTRICTION())   # Close is 2  ... need to get better looping ...
                 QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
                 # **** Assumption that there are some details in proposal ??
@@ -145,7 +149,7 @@ class TOMsProposalsManager(QObject):
                     layerFilterString = layerFilterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
-                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, self.constants.ACTION_OPEN_RESTRICTION())   # Open is 1
+                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_OPEN_RESTRICTION())   # Open is 1
 
                 if len(restrictionsToOpen) > 0:
                     layerFilterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + layerFilterString + ")"
@@ -160,22 +164,8 @@ class TOMsProposalsManager(QObject):
             QgsMessageLog.logMessage("In filterMapOnDate. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
             currRestrictionLayer.setSubsetString(layerFilterString)
 
-        # QMessageBox.information(self.iface.mainWindow(), "debug", dateChoosen + " " + tmpOrdersText + " " + filterString)
         #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
-        # filterString = 'date("CreateDate") <= ' + date(dateChoosenFormatted) + ' AND (date("DeleteDate") > ' + date(dateChoosenFormatted) + '  OR "DeleteDate"  IS  NULL)' + ' AND ' + tmpOrdersFilterString
-        # QgsMessageLog.logMessage("Filter2: " + filterString, tag="TOMs panel")
-
-        #
-        # May need to apply filter to more than one layer. Currently just for one
-        #
-
-        #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
-
-        #
-        #  http://gis.stackexchange.com/questions/121148/how-to-filter-qgis-layer-from-python
-        #
-
-        #self.TOMslayer.setSubsetString(filterString)
+        pass
 
     def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
         # Will return a (comma separated) string with the list of restrictions within a Proposal
@@ -226,91 +216,10 @@ class TOMsProposalsManager(QObject):
 
             pass
 
+        pass
+
         #QgsMessageLog.logMessage("In getRestrictionsInProposal. restrictionsString: " + restrictionsString, tag="TOMs panel")
 
         return restrictionsString
 
-    def restrictionInProposal (self, currRestrictionID, currRestrictionLayerID, proposalID):
-        # returns True if restriction is in Proposal
-        #QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel")
 
-        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-
-        restrictionFound = False
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
-            if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
-                if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
-                    if restrictionInProposal.attribute("ProposalID") == proposalID:
-                        restrictionFound = True
-
-        """QgsMessageLog.logMessage("In restrictionInProposal. restrictionFound: " + str(restrictionFound),
-                                 tag="TOMs panel")"""
-
-        return restrictionFound
-
-    #@staticmethod    # NB: Duplicated from restrictionOpenForm.py - need to understand scope and how to reference !!!
-    def addRestrictionToProposal(self, restrictionID, restrictionLayerTableID, proposalID, proposedAction):
-        # adds restriction to the "RestrictionsInProposals" layer
-        #QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
-
-        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex(
-            "ActionOnProposalAcceptance")
-
-        RestrictionsInProposalsLayer.startEditing()
-
-        newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
-        newRestrictionsInProposal.setGeometry(QgsGeometry())
-
-        newRestrictionsInProposal[idxProposalID] = proposalID
-        newRestrictionsInProposal[idxRestrictionID] = restrictionID
-        newRestrictionsInProposal[idxRestrictionTableID] = restrictionLayerTableID
-        newRestrictionsInProposal[idxActionOnProposalAcceptance] = proposedAction
-
-        """QgsMessageLog.logMessage(
-            "In addRestrictionToProposal. Before record create. RestrictionID: " + str(restrictionID),
-            tag="TOMs panel")"""
-
-        RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
-
-        pass
-
-    def getRestrictionsLayer(self, currRestrictionTableRecord):
-        # return the layer given the row in "RestrictionLayers"
-        #QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
-
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
-
-        currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
-
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
-
-        return RestrictionsLayers
-
-    def getRestrictionLayerTableID(self, currRestLayer):
-        #QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
-        # find the ID for the layer within the table "
-
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-
-        layersTableID = 0
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        for layer in RestrictionsLayers.getFeatures():
-            if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
-                layersTableID = layer.attribute("id")
-
-        """QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
-                                 tag="TOMs panel")"""
-
-        return layersTableID

@@ -10,6 +10,11 @@ from qgis.core import (
     QgsMapLayerRegistry, QgsMessageLog
 )
 
+
+def ACTION_CLOSE_RESTRICTION(): return 2
+def ACTION_OPEN_RESTRICTION(): return 1
+
+
 class TOMsConstants(object):
 
     def __init__(self):
@@ -23,8 +28,8 @@ class TOMsConstants(object):
             raise LayerNotPresent"""
         pass
 
-    def ACTION_CLOSE_RESTRICTION(self): return 2
-    def ACTION_OPEN_RESTRICTION(self): return 1
+    #def ACTION_CLOSE_RESTRICTION(self): return 2
+    #def ACTION_OPEN_RESTRICTION(self): return 1
 
     #def RESTRICTIONS_IN_PROPOSALS_LAYER(self): return self.RestrictionsInProposals
 
