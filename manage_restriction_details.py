@@ -1,11 +1,33 @@
 # -*- coding: latin1 -*-
+#-----------------------------------------------------------
+# Licensed under the terms of GNU GPL 2
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#---------------------------------------------------------------------
+# Tim Hancock 2017
 
 # Initialize Qt resources from file resources.py
+
+from PyQt4.QtCore import (
+    QObject,
+    QDate,
+    pyqtSignal,
+    QCoreApplication
+)
 
 from PyQt4.QtGui import (
     QMessageBox,
     QAction,
     QIcon
+)
+
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsMapLayerRegistry,
+    QgsMessageLog, QgsFeature, QgsGeometry
 )
 
 from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool
@@ -66,6 +88,15 @@ class manageRestrictionDetails():
         self.actionCreateLineRestriction.triggered.connect(self.doCreateLineRestriction)
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
+
+        # set up a canvas refresh if there are any changes to the restrictions
+        """if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
+            raise LayerNotPresent
+
+        #self.RestrictionsInProposals.editingStopped(self.proposalsManager.updateMapCanvas)"""
         
         pass
 
@@ -101,10 +132,10 @@ class manageRestrictionDetails():
         self.currProposalID = self.proposalsManager.currentProposal()
 
         # Choose the dialog based on the layer
-        self.dlg = restrictionDetailsDialog()
+        #self.dlg = restrictionDetailsDialog()
 
         # show the dialog
-        self.dlg.show()
+        #self.dlg.show()
 
         QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. Waiting for changes to form."),
                                  tag="TOMs panel")
@@ -113,11 +144,12 @@ class manageRestrictionDetails():
         # self.dlg.attributeChanged.connect(self.onProposalChanged)
         # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
         # Disconnect the signal that QGIS has wired up for the dialog to the button box.
-        self.dlg.button_box.accepted.disconnect()
+        #self.dlg.button_box.accepted.disconnect()
 
         # Wire up our own signals.
         #self.newProposalRequired = False
-        self.dlg.button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, self.currRestriction, self.currRestrictionLayer, self.dlg))
+
+        #self.dlg.button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, self.currRestriction, self.currRestrictionLayer, self.dlg))
 
         pass
 
@@ -294,12 +326,22 @@ class manageRestrictionDetails():
 
         if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID):
             # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
-            # NB: THis is the only case of a restriction being truly deleted
+            # NB: This is the only case of a restriction being truly deleted
 
             QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel")
             #self.dlg.accept()
 
             # ***** IMPLEMENTATION REQUIRED  *****
+
+            # Delete from RestrictionsInProposals
+            result = RestrictionTypeUtils.deleteRestrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID)
+
+            if result:
+                QgsMessageLog.logMessage("In onRemoveRestriction. Deleting restriction.",
+                                         tag="TOMs panel")
+                currRestrictionLayer.deleteFeature(currRestriction.id())
+            else:
+                QMessageBox.information(None, "ERROR", ("Error deleting restriction ..."))
 
         else:
             # need to:
@@ -360,3 +402,4 @@ class manageRestrictionDetails():
         QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
 
         pass
+

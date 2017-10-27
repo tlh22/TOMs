@@ -42,9 +42,13 @@ import functools
 
 # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
 
-def onAttributeChanged(feature, layer, fieldName, value):
+#def onAttributeChanged(feature, layer, fieldName, value):
+def onAttributeChanged(feature, fieldName, value):
     #QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
 
+    feature.setAttribute(fieldName,value)
+
+    """    
     idxField = feature.fieldNameIndex(fieldName)
 
     # need to operate on the layer and not the dialog
@@ -52,7 +56,8 @@ def onAttributeChanged(feature, layer, fieldName, value):
 
     if not res:
         QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged: ERROR setting attribute value: " + fieldName + ": " + str(feature[idxField]),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel") 
+    """
 
 
 def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
@@ -82,16 +87,12 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     # Disconnect the signal that QGIS has wired up for the dialog to the button box.
     # button_box.accepted.disconnect(restrictionsDialog.accept)
     # Wire up our own signals.
-    button_box.accepted.connect(functools.partial(onSaveDetails, currRestrictionFeature, currRestLayer, dialog))
+    button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, currRestrictionFeature, currRestLayer, dialog))
     button_box.rejected.connect(dialog.reject)
 
     # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
-    dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature, currRestLayer))
+    dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature))
+    #dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature, currRestLayer))
 
     pass
 
-
-def onSaveDetails(currRestriction, currRestrictionLayer, dialog):
-    QgsMessageLog.logMessage("In restrictionFormOpen:onSaveDetails", tag="TOMs panel")
-    dialog.save()
-    RestrictionTypeUtils.onSaveRestrictionDetails (currRestriction, currRestrictionLayer, dialog)

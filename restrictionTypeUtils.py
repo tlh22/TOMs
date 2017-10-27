@@ -1,3 +1,12 @@
+#-----------------------------------------------------------
+# Licensed under the terms of GNU GPL 2
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#---------------------------------------------------------------------
+# Tim Hancock 2017
 
 """
 Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
@@ -19,6 +28,7 @@ from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
+from TOMs.core.proposalsManager import *
 
 import uuid
 
@@ -117,6 +127,26 @@ class RestrictionTypeUtils:
         return layersTableID
 
     @staticmethod
+    def deleteRestrictionInProposal(currRestrictionID, currRestrictionLayerID, proposalID):
+        QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel")
+
+        returnStatus = False
+
+        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
+            if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
+                if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
+                    if restrictionInProposal.attribute("ProposalID") == proposalID:
+                        QgsMessageLog.logMessage("In deleteRestrictionInProposal - deleting ",
+                                                 tag="TOMs panel")
+                        RestrictionsInProposalsLayer.deleteFeature(restrictionInProposal.id())
+                        returnStatus = True
+                        return returnStatus
+
+        return returnStatus
+
+    @staticmethod
     def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
         QgsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel")
 
@@ -136,17 +166,14 @@ class RestrictionTypeUtils:
                 QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form." + str(currRestriction.attribute("RestrictionTypeID")),
                                          tag="TOMs panel")
 
-                res = dialog.save()
-
-                QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form. Restype:" + str(currRestriction.attribute("RestrictionTypeID")),
-                                         tag="TOMs panel")
-
-                if res == True:
+                #res = dialog.save()
+                currRestrictionLayer.updateFeature(currRestriction)
+                """if res == True:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Form saved.",
                                              tag="TOMs panel")
                 else:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Form NOT saved.",
-                                             tag="TOMs panel")
+                                             tag="TOMs panel")"""
 
             else:
 
@@ -168,21 +195,29 @@ class RestrictionTypeUtils:
                 if currRestriction[idxGeometryID] is None:
                     # This is a feature that has just been created. It exists but doesn't have a GeometryID.
 
-                    currRestriction = dialog.feature()
-                    currRestriction[idxGeometryID] = newGeometryID
-                    dialog.changeAttribute("GeometryID", str(currRestriction[idxGeometryID]))
+                    # Not quite sure what is happening here but think the following:
+                    #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
+                    #  So, need to continue to modify dialog value which will be eventually saved
+
+                    #currRestriction = dialog.feature()
+                    #currRestriction[idxGeometryID] = newGeometryID
+                    dialog.changeAttribute("GeometryID", newGeometryID)
+                    #currRestriction = dialog.feature()
+                    #currRestriction.setAttribute("GeometryID", newGeometryID)
+                    #currRestrictionLayer.changeAttributeValue(currRestriction.id(), "GeometryID", str(currRestriction[idxGeometryID]))
                     # currRestrictionLayer.updateFeature(currRestriction)
+                    dialog.save()
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxGeometryID]),
                         tag="TOMs panel")
+                    # currRestrictionLayer.addFeatures([currRestriction])
 
-                    # restrictionsDialog.save()  # accept all the details for the original feature
-                    RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
+                    RestrictionTypeUtils.addRestrictionToProposal(str(currRestriction[idxGeometryID]), currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
 
                     # Now need to save the feature ??
-                    # dialog.save()
+
 
                 else:
 
