@@ -25,11 +25,11 @@
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load Test5Class class from file Test5Class.
+    """Load TOMs class from file TOMsPlugin.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    from .test5_module import Test5Class
-    return Test5Class(iface)
+    from .TOMsPlugin import TOMs
+    return TOMs(iface)

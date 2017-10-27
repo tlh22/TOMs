@@ -54,21 +54,6 @@ class proposalsPanel():
         self.dock.filterDate.setDisplayFormat("dd/MM/yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
-        # Now obtain all the current proposals,i.e., those with status of "In preparation"
-
-        # Set up the "add proposal" button
-        """if self.dockwidget == None:
-            # Create the dockwidget (after translation) and keep reference
-            self.dockwidget = ProposalPanelDockWidget()"""
-
-        # connect to provide cleanup on closing of dockwidget
-        #self.dockwidget.closingPlugin.connect(self.onClosePlugin)
-
-        # show the dockwidget
-        # TODO: fix to allow choice of dock location
-        #self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
-        #self.dockwidget.show()
-
         if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
         else:
@@ -87,26 +72,8 @@ class proposalsPanel():
 
         self.proposalsManager.setCurrentProposal(0)
 
-        # set up a "NULL" field for "No proposals to be shown"
-
-        """currProposalID = 0
-        currProposalTitle = "No proposal shown"
-        self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
-
-        for proposal in self.Proposals.getFeatures():
-            currProposalStatusID = proposal.attribute("ProposalStatusID")
-            QgsMessageLog.logMessage("In onInitProposalsPanel. currProposalStatus: " + str(currProposalStatusID), tag="TOMs panel")
-            if currProposalStatusID == 1:   # 1 = "in preparation"
-                currProposalID = proposal.attribute("ProposalID")
-                currProposalTitle = proposal.attribute("ProposalTitle")
-                self.dock.cb_ProposalsList.addItem( currProposalTitle, currProposalID )"""
-
         # set up action for when the date is changed from the user interface
         self.dock.filterDate.dateChanged.connect(lambda: self.proposalsManager.setDate(self.dock.filterDate.date()))
-
-        # set up action to refresh proposals list when a proposal is modified or created   Is this possible ????? *****************
-        #self.dlg = proposalDetailsDialog()
-        #self.dlg.accept().connect(lambda: self.dock.cb_ProposalsList.refresh())
 
         # set up action for when the proposal is changed
         self.dock.cb_ProposalsList.currentIndexChanged.connect(self.updateCurrentProposal)
@@ -154,74 +121,28 @@ class proposalsPanel():
 
         # Set the project variable
 
-        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
-
-        # rollback any outstanding changes
-        """reply = QMessageBox.question(self.iface.mainWindow(), 'Confirm changes to Proposal',
-                                     'Are you you want to accept this proposal?. Accepting will make all the proposed changes permanent.',
-                                     QMessageBox.Yes, QMessageBox.No)"""
-
         reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back", QMessageBox.Ok)
 
-        self.iface.actionRollbackAllEdits().trigger()
-        self.iface.actionCancelAllEdits().trigger()
+        if reply:
 
-        # reset map tools, etc
-        #self.iface.mapCanvas().unsetMapTool(self.mapTool)
-        #self.mapTool = None
+            QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
 
-        # Now revise the view based on proposal choosen
+            self.iface.actionRollbackAllEdits().trigger()
+            self.iface.actionCancelAllEdits().trigger()
 
-        self.filterView()
+            # Now revise the view based on proposal choosen
+
+            self.filterView()
 
         pass
 
     def onNewProposal(self):
         QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
 
-        # display the dialog for proposals
-
-        #self.dlg = proposalDetailsDialog()
-
-        # set up the combo box for Proposal Status
-
-        """
-        if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
-            self.ProposalStatusTypesLayer = \
-            QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
-            raise LayerNotPresent
-
-        for type in self.ProposalStatusTypesLayer.getFeatures():
-            currID = type.attribute("id")
-            currType = type.attribute("Description")
-            self.dlg.ProposalStatusID.addItem( currType, currID )
-        """
-
-        # add the values
-
-        #self.dlg.ProposalStatusID.setCurrentIndex(1 - 1)  # remove one as index starts at 1
-        """self.dlg.ProposalCreateDate.setDate(QDate.currentDate())
-
-        QgsMessageLog.logMessage("In onNewProposal. New Proposal created.", tag="TOMs panel")
-
-         self.dlg.show()
-
-        # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
-        # Disconnect the signal that QGIS has wired up for the dialog to the button box.
-        self.dlg.button_box.accepted.disconnect()
-
-        # Wire up our own signals.
-        self.newProposalRequired = True
-        self.dlg.button_box.accepted.connect(self.onSaveProposalDetails)   # would like to pass details here - not sure how ?? """
-
         # create a new Proposal
 
         newProposal = QgsFeature(self.Proposals.fields())
         newProposal.setGeometry(QgsGeometry())
-        # self.Proposals.addFeatures([currProposal])
-
 
         newProposal[self.idxCreateDate] = self.proposalsManager.date()
         newProposal[self.idxOpenDate] = self.proposalsManager.date()
@@ -354,68 +275,8 @@ class proposalsPanel():
 
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
 
-        """
-        currProposalTitle = self.dock.cb_ProposalsList.currentText()
-
-        QgsMessageLog.logMessage("In onProposalDetails. newProposalID: " + str(currProposalID) + " newProposalTitle: " + str(currProposalTitle), tag="TOMs panel")
-
-        # use the ID to retrieve the row
-        # https://gis.stackexchange.com/questions/54057/how-to-read-the-attribute-values-using-pyqgis/138027
-
-        iterator = self.Proposals.getFeatures(QgsFeatureRequest().setFilterFid(currProposalID))
-        currProposal = next(iterator)
-
-        currProposalStatusID = currProposal.attribute("ProposalStatusID")
-        currProposalCreateDate = QDate(currProposal.attribute("ProposalCreateDate"))
-        currProposalNotes = currProposal.attribute("ProposalNotes")
-
-        # display the dialog for proposals
-
-        self.dlg = proposalDetailsDialog()
-
-        # set up the combo box for Proposal Status
-
-        if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
-            self.ProposalStatusTypesLayer = \
-            QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
-            raise LayerNotPresent
-
-        for type in self.ProposalStatusTypesLayer.getFeatures():
-            currID = type.attribute("id")
-            currType = type.attribute("Description")
-            self.dlg.ProposalStatusID.addItem( currType, currID )
-
-        # add the values
-
-        self.dlg.ProposalTitle.setText(currProposalTitle)
-        self.dlg.ProposalStatusID.setCurrentIndex(currProposalStatusID - 1)  # remove one as index starts at 1
-        self.dlg.ProposalCreateDate.setDate(currProposalCreateDate)
-
-        if currProposalNotes:
-            self.dlg.ProposalNotes.setPlainText(currProposalNotes)
-
-        # check for changes to proposal status
-        self.dlg.ProposalStatusID.currentIndexChanged.connect(self.onChangeProposalStatus)
-
-        self.dlg.show()
-
-        QgsMessageLog.logMessage(("In onProposalDetails. Waiting for changes to form."),
-                                 tag="TOMs panel")
-
-        # pick up a singal that something has changed (not sure which one)
-        # self.dlg.attributeChanged.connect(self.onProposalChanged)
-        # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
-        # Disconnect the signal that QGIS has wired up for the dialog to the button box.
-        self.dlg.button_box.accepted.disconnect()
-
-        # Wire up our own signals.
-        self.newProposalRequired = False
-        self.dlg.button_box.accepted.connect(self.onSaveProposalDetails)   # would like to pass details here - not sure how ??
-        """
-
         currProposal = self.getProposal(currProposalID)
+
         self.Proposals.startEditing()
 
         self.iface.openFeatureForm(self.Proposals, currProposal, False)

@@ -7,17 +7,17 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Test5
-qgisMinimumVersion=2.0
-description=Start of TOMs
+name=TOMs
+qgisMinimumVersion=2.18
+description=A plugin is used to manage and display parking restrictions
 version=0.1
-author=TH
-email=th@mhtc.co.uk
+author=Tim Hancock for MHTC Ltd
+email=thancock@mhtc.co.uk
 
-about=The start of something interesting ... we hope
+about=To find out more about this plugin, see: http://www.mhtc.co.uk/
 
-tracker=test5
-repository=test5
+tracker=https://github.com/opengisch/TOMs/issues
+repository=https://github.com/opengisch/TOMs
 # End of mandatory metadata
 
 # Recommended items:
@@ -28,7 +28,7 @@ repository=test5
 # Tags are comma separated with spaces allowed
 tags=
 
-homepage=
+homepage=http://www.mhtc.co.uk/
 category=Plugins
 icon=icon.png
 # experimental flag
