@@ -175,6 +175,8 @@ class manageRestrictionDetails():
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
+                self.currLayer.startEditing()
+
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
@@ -220,6 +222,8 @@ class manageRestrictionDetails():
 
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 self.iface.setActiveLayer(self.currLayer)
+
+                self.currLayer.startEditing()
 
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
                 self.mapTool.setAction(self.actionCreateLineRestriction)

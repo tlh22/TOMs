@@ -24,10 +24,13 @@ from qgis.core import *
 from qgis.gui import *
 
 from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from core.proposalsManager import *
 from restrictionTypeUtils import RestrictionTypeUtils
 from generateGeometryUtils import generateGeometryUtils
+
+import functools
 
 #from cmath import rect, phase
 #import numpy as np
@@ -229,7 +232,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, onCreateRestriction):
 
-        QgsMessageLog.logMessage(("In Create - init."), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
         #https: // qgis.org / api / classQgsMapToolCapture.html
@@ -252,7 +255,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         self.currLayer = self.currentVectorLayer()
 
-        QgsMessageLog.logMessage(("In Create - init. Curr layer is " + str(self.currLayer.name()) + "Incoming: " + str(self.layer)), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - init. Curr layer is " + str(self.currLayer.name()) + "Incoming: " + str(self.layer)), tag="TOMs panel")
 
         # set up snapping configuration   *******************
         """
@@ -325,17 +328,17 @@ class CreateRestrictionTool(QgsMapToolCapture):
             # Need to think about the default action here if none of these buttons/keys are pressed. 
 
     def getPointsCaptured(self):
-        QgsMessageLog.logMessage(("In Create - getPointsCaptured"), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - getPointsCaptured"), tag="TOMs panel")
 
         # Check the number of points
         self.nrPoints = self.size()
-        QgsMessageLog.logMessage(("In Create - getPointsCaptured; Stopping: " + str(self.nrPoints)),
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - getPointsCaptured; Stopping: " + str(self.nrPoints)),
                                  tag="TOMs panel")
 
         self.sketchPoints = self.points()
 
         for point in self.sketchPoints:
-            QgsMessageLog.logMessage(("In Create - getPointsCaptured X:" + str(point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - getPointsCaptured X:" + str(point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
 
         # stop capture activity
         self.stopCapturing()
@@ -365,8 +368,37 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             # is there any other tidying to do ??
 
-            self.layer.startEditing()
+            #self.layer.startEditing()
+            dialog = self.iface.getFeatureForm(self.layer, feature)
+
+            currForm = dialog.attributeForm()
+            currForm.disconnectButtonBox()
+
+            QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(self.layer.name()),
+                                     tag="TOMs panel")
+
+            button_box = currForm.findChild(QDialogButtonBox, "button_box")
+            #button_box.accepted.disconnect(currForm.accept)
+
+            # Disconnect the signal that QGIS has wired up for the dialog to the button box.
+            # button_box.accepted.disconnect(restrictionsDialog.accept)
+            # Wire up our own signals.
+            button_box.accepted.connect(
+                functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, feature, self.layer,
+                                  currForm))
+            button_box.rejected.connect(dialog.reject)
+
+            # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
+            currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
+            # Can we now implement the logic from the form code ???
+
             self.iface.openFeatureForm(self.layer, feature)
+
+    def onAttributeChanged(self, feature, fieldName, value):
+        # QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
+
+        feature.setAttribute(fieldName, value)
+
 
 #############################################################################
 

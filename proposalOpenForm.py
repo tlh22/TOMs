@@ -96,7 +96,7 @@ def onSaveProposalFormDetails(currProposal, proposalsLayer, proposalsDialog):
     idxProposalCreateDate = proposalsLayer.fieldNameIndex("ProposalCreateDate")
     idxProposalOpenDate = proposalsLayer.fieldNameIndex("ProposalOpenDate")
 
-    if currProposal[idxProposalStatusID] == 1:  # 1 = accepted
+    if currProposal[idxProposalStatusID] == 2:  # 2 = accepted
 
         reply = QMessageBox.question(None, 'Confirm changes to Proposal',    # How do you access the main window to make the popup ???
                                      'Are you you want to accept this proposal?. Accepting will make all the proposed changes permanent.',
@@ -111,7 +111,8 @@ def onSaveProposalFormDetails(currProposal, proposalsLayer, proposalsDialog):
             #proposalAccepted.emit()
 
         else:
-            proposalsDialog.reject ((currProposal[idxProposalID]))
+            #proposalsDialog.reject ((currProposal[idxProposalID]))
+            proposalsDialog.reject ()
 
     else:
 

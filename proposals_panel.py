@@ -84,6 +84,9 @@ class proposalsPanel():
         # set up action for "View Proposal"
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
 
+        # set up action for when new proposal is created
+        self.Proposals.featureAdded.connect(self.createProposalcb)
+
         pass
 
     def createProposalcb(self):
@@ -142,7 +145,7 @@ class proposalsPanel():
         # create a new Proposal
 
         newProposal = QgsFeature(self.Proposals.fields())
-        newProposal.setGeometry(QgsGeometry())
+        #newProposal.setGeometry(QgsGeometry())
 
         newProposal[self.idxCreateDate] = self.proposalsManager.date()
         newProposal[self.idxOpenDate] = self.proposalsManager.date()
