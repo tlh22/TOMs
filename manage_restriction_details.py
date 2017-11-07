@@ -65,6 +65,16 @@ class manageRestrictionDetails():
                                self.iface.mainWindow())
         self.actionCreateLineRestriction.setCheckable(True)
 
+        self.actionCreatePolygonRestriction = QAction(QIcon(":/plugins/Test5Class/resources/rpolygonBy2Corners.svg"),
+                               QCoreApplication.translate("MyPlugin", "Create Polygon"),
+                               self.iface.mainWindow())
+        self.actionCreatePolygonRestriction.setCheckable(True)
+
+        self.actionCreateSignRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionSetEndPoint.svg"),
+                               QCoreApplication.translate("MyPlugin", "Create Sign"),
+                               self.iface.mainWindow())
+        self.actionCreateSignRestriction.setCheckable(True)
+
         self.actionRemoveRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionDeleteTrack.svg"),
                                QCoreApplication.translate("MyPlugin", "Remove Restriction"),
                                self.iface.mainWindow())
@@ -79,6 +89,8 @@ class manageRestrictionDetails():
         TOMsToolbar.addAction(self.actionRestrictionDetails)
         TOMsToolbar.addAction(self.actionCreateBayRestriction)
         TOMsToolbar.addAction(self.actionCreateLineRestriction)
+        TOMsToolbar.addAction(self.actionCreatePolygonRestriction)
+        TOMsToolbar.addAction(self.actionCreateSignRestriction)
         TOMsToolbar.addAction(self.actionRemoveRestriction)
         TOMsToolbar.addAction(self.actionEditRestriction)
 
@@ -86,6 +98,8 @@ class manageRestrictionDetails():
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
         self.actionCreateBayRestriction.triggered.connect(self.doCreateBayRestriction)
         self.actionCreateLineRestriction.triggered.connect(self.doCreateLineRestriction)
+        self.actionCreatePolygonRestriction.triggered.connect(self.doCreatePolygonRestriction)
+        self.actionCreateSignRestriction.triggered.connect(self.doCreateSignRestriction)
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
 
@@ -181,6 +195,8 @@ class manageRestrictionDetails():
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
+                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
             else:
 
                 QgsMessageLog.logMessage("In doCreateBayRestriction - tool deactivated", tag="TOMs panel")
@@ -229,6 +245,8 @@ class manageRestrictionDetails():
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
+                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
             else:
 
                 QgsMessageLog.logMessage("In doCreateLineRestriction - tool deactivated", tag="TOMs panel")
@@ -243,6 +261,106 @@ class manageRestrictionDetails():
                 self.actionCreateLineRestriction.setChecked(False)
                 if self.mapTool == None:
                     self.actionCreateLineRestriction.setChecked(False)
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+
+        pass
+
+    def doCreatePolygonRestriction(self):
+
+        QgsMessageLog.logMessage("In doCreatePolygonRestriction", tag="TOMs panel")
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionCreatePolygonRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
+
+                # set TOMs layer as active layer (for editing)...
+
+                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool activated", tag="TOMs panel")
+
+                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
+                self.iface.setActiveLayer(self.currLayer)
+
+                self.currLayer.startEditing()
+
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool.setAction(self.actionCreatePolygonRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
+            else:
+
+                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionCreatePolygonRestriction.setChecked(False)
+
+        else:
+
+            if self.actionCreatePolygonRestriction.isChecked():
+                self.actionCreatePolygonRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionCreatePolygonRestriction.setChecked(False)
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+
+        pass
+
+    def doCreateSignRestriction(self):
+
+        QgsMessageLog.logMessage("In doCreateSignRestriction", tag="TOMs panel")
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionCreateSignRestriction.isChecked():
+                # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+                # self.actionCreateRestiction.setChecked(True)
+
+                # set TOMs layer as active layer (for editing)...
+
+                QgsMessageLog.logMessage("In doCreateSignRestriction - tool activated", tag="TOMs panel")
+
+                self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
+                self.iface.setActiveLayer(self.currLayer)
+
+                self.currLayer.startEditing()
+
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool.setAction(self.actionCreateSignRestriction)
+                self.iface.mapCanvas().setMapTool(self.mapTool)
+
+                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
+            else:
+
+                QgsMessageLog.logMessage("In doCreateSignRestriction - tool deactivated", tag="TOMs panel")
+
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+                self.actionCreateSignRestriction.setChecked(False)
+
+        else:
+
+            if self.actionCreateSignRestriction.isChecked():
+                self.actionCreateSignRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionCreateSignRestriction.setChecked(False)
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)
@@ -356,6 +474,8 @@ class manageRestrictionDetails():
 
             RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID,
                                                           self.constants.ACTION_CLOSE_RESTRICTION())  # 2 = Close
+
+        self.currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
 
         pass
 

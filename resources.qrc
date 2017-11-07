@@ -9,8 +9,8 @@
         <file>resources/mActionEdit.svg</file>
         <file>resources/mActionSetStartPoint.svg</file>
         <file>resources/mActionSetEndPoint.svg</file>
-    
-        <file>resources/select2lines.png</file>
+        <file>resources/mActionSetEndPoint.svg</file>
+        <file>resources/rpolygonBy2Corners.svg</file>
 
         <file>resources/point.png</file>
 

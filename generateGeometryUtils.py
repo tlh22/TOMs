@@ -149,11 +149,22 @@ class generateGeometryUtils:
         RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
 
         # take the first point from the geometry
-        line = feature.geometry().asPolyline()
-        nrPts = len(line)
         QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().exportToWkt()), tag="TOMs panel")
 
-        secondPt = line[
+        if feature.geometry().type() == 0: # Point
+            ptList = feature.geometry().asPoint()
+        elif feature.geometry().type() == 1: # Line
+            ptList = feature.geometry().asPolyline()
+        elif feature.geometry().type() == 2: # Polygon
+            ptList = feature.geometry().asPolygon()[0]
+        else:
+            QgsMessageLog.logMessage("In setRoadName: unknown geometry type", tag="TOMs panel")
+            return
+
+        nrPts = len(ptList)
+        QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel")
+
+        secondPt = ptList[
             0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
         QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")

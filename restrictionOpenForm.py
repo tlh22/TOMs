@@ -20,15 +20,22 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-#from manage_restriction_details import manageRestrictionDetails
+from PyQt4.QtGui import (
+    QMessageBox,
+    QPixmap,
+    QDialog,
+    QDialogButtonBox,
+    QLabel
+)
 
 from qgis.core import (
-    QgsExpressionContextUtils,
-    QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry
+    QgsMessageLog,
+    QgsExpressionContextUtils
 )
+
+import os
+
+#from manage_restriction_details import manageRestrictionDetails
 
 #from qgis.core import *
 from qgis.gui import QgsAttributeForm
@@ -65,6 +72,11 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
 
     #restrictionsDialog = dialog
 
+    if not currRestrictionFeature.isValid():
+        return
+
+    photoDetails(dialog, currRestLayer, currRestrictionFeature)
+
     # This stops changes to the form being saved (unless explicitly enacted)
     dialog.disconnectButtonBox()
 
@@ -96,3 +108,89 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
 
     pass
 
+def photoDetails(dialog, currRestLayer, currRestrictionFeature):
+
+    # Function to deal with photo fields
+
+    QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel")
+
+    FIELD1 = dialog.findChild(QLabel, "Photo_Widget_01")
+    FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
+    FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
+
+    path_absolute = QgsExpressionContextUtils.projectScope().variable('PhotoPath')
+    if path_absolute == None:
+        reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
+        return
+
+    layerName = currRestLayer.name()
+
+    if FIELD1:
+        newPhotoFileName1 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(layerName + "_Photos_01")))
+        pixmap1 = QPixmap(newPhotoFileName1)
+        if pixmap1.isNull():
+            pass
+            # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+        else:
+            FIELD1.setPixmap(pixmap1)
+            FIELD1.setScaledContents(True)
+            QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+
+    if FIELD2:
+        newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(layerName + "_Photos_02")))
+        pixmap2 = QPixmap(newPhotoFileName2)
+        if pixmap2.isNull():
+            pass
+            # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+        else:
+            FIELD1.setPixmap(pixmap2)
+            FIELD1.setScaledContents(True)
+            QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+
+    if FIELD3:
+        newPhotoFileName3 = os.path.join(path_absolute,
+                                         str(currRestrictionFeature.attribute(layerName + "_Photos_03")))
+        pixmap3 = QPixmap(newPhotoFileName3)
+        if pixmap3.isNull():
+            pass
+            # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+        else:
+            FIELD1.setPixmap(pixmap3)
+            FIELD1.setScaledContents(True)
+            QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
+
+    """
+    fileName2 = str(currRestrictionFeature.attribute(layerName + "_Photos_02"))
+    fileName3 = str(currRestrictionFeature.attribute(layerName + "_Photos_03"))
+
+    newPhotoFileName1 = os.path.join(path_absolute, fileName1)
+    newPhotoFileName2 = os.path.join(path_absolute, fileName2)
+    newPhotoFileName3 = os.path.join(path_absolute, fileName3)
+
+    # Now link the file to the field
+
+    pixmap1 = QPixmap(newPhotoFileName1)
+    if pixmap1.isNull():
+        pass
+        # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+    else:
+        FIELD1.setPixmap(pixmap1)
+        FIELD1.setScaledContents(True)
+
+    pixmap2 = QPixmap(newPhotoFileName2)
+    if pixmap2.isNull():
+        pass
+        # FIELD2.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName2))
+    else:
+        FIELD2.setPixmap(pixmap2)
+        FIELD2.setScaledContents(True)
+
+    pixmap3 = QPixmap(newPhotoFileName3)
+    if pixmap3.isNull():
+        pass
+        # FIELD2.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName2))
+    else:
+        FIELD3.setPixmap(pixmap3)
+        FIELD3.setScaledContents(True)"""
+
+    pass

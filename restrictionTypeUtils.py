@@ -267,3 +267,12 @@ class RestrictionTypeUtils:
 
         # ************* refresh the view. Might be able to set up a signal to get the proposals_panel to intervene
 
+    @staticmethod
+    def setDefaultRestrictionDetails(currRestriction, currRestrictionLayer):
+        QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
+
+        if currRestrictionLayer.name() == "Lines" or currRestrictionLayer.name() == "Bays":
+            currRestriction.setAttribute("RestrictionTypeID", 1)  # 1 = SYL (Lines) or Resident Permit Holders Bays (Bays)
+            currRestriction.setAttribute("GeomShapeID", 6)   # 6 = Other
+        pass
+

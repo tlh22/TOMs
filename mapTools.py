@@ -238,10 +238,26 @@ class CreateRestrictionTool(QgsMapToolCapture):
         #https: // qgis.org / api / classQgsMapToolCapture.html
         canvas = iface.mapCanvas()
         self.iface = iface
+        self.layer = layer
+
+        #self.QgsWkbTypes = QgsWkbTypes()
 
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
         # capture mode (... not sure if this has already been set? - or how to set it)
-        self.setMode(CreateRestrictionTool.CaptureLine)
+
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
+
+        if self.layer.geometryType() == 0: # PointGeometry:
+            self.setMode(CreateRestrictionTool.CapturePoint)
+        elif self.layer.geometryType() == 1: # LineGeometry:
+            self.setMode(CreateRestrictionTool.CaptureLine)
+        elif self.layer.geometryType() == 2: # PolygonGeometry:
+            self.setMode(CreateRestrictionTool.CapturePolygon)
+        else:
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
+            return
+
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - mode set."), tag="TOMs panel")
 
         # Seems that this is important - or at least to create a point list that is used later to create Geometry
         self.sketchPoints = self.points()
@@ -250,8 +266,6 @@ class CreateRestrictionTool(QgsMapToolCapture):
         # Set up rubber band. In current implementation, it is not showing feeback for "next" location
 
         self.rb = self.createRubberBand(QGis.Line)
-
-        self.layer = layer
 
         self.currLayer = self.currentVectorLayer()
 
@@ -351,45 +365,56 @@ class CreateRestrictionTool(QgsMapToolCapture):
             feature = QgsFeature()
             feature.setFields(fields)
 
-            feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
+            QgsMessageLog.logMessage(("In CreateRestrictionTool. getPointsCaptured, layerType: " + str(self.layer.geometryType())), tag="TOMs panel")
+
+            if self.layer.geometryType() == 0:  # Point
+                feature.setGeometry(QgsGeometry.fromPoint(self.sketchPoints[0]))
+            elif self.layer.geometryType() == 1:  # Line
+                feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
+            elif self.layer.geometryType() == 2:  # Polygon
+                feature.setGeometry(QgsGeometry.fromPolygon([self.sketchPoints]))
+                #feature.setGeometry(QgsGeometry.fromPolygon(self.sketchPoints))
+            else:
+                QgsMessageLog.logMessage(("In CreateRestrictionTool - no geometry type found"), tag="TOMs panel")
+                return
 
             # Currently geometry is not being created correct. Might be worth checking co-ord values ...
 
-            self.valid = feature.isValid()
+            #self.valid = feature.isValid()
 
-            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geome"
-                                      "try prepared; validity" + str(self.valid)),
+            QgsMessageLog.logMessage(("In Create - getPointsCaptured; geometry prepared; " + str(feature.geometry().exportToWkt())),
                                      tag="TOMs panel")
 
             # set any geometry related attributes ...
 
             generateGeometryUtils.setRoadName(feature)
-            generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
+            if self.layer.geometryType() == 1:  # Line or Bay
+                generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
+
+            RestrictionTypeUtils.setDefaultRestrictionDetails(feature, self.layer)
 
             # is there any other tidying to do ??
 
             #self.layer.startEditing()
-            dialog = self.iface.getFeatureForm(self.layer, feature)
+            #dialog = self.iface.getFeatureForm(self.layer, feature)
 
-            currForm = dialog.attributeForm()
-            currForm.disconnectButtonBox()
+            #currForm = dialog.attributeForm()
+            #currForm.disconnectButtonBox()
 
             QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(self.layer.name()),
                                      tag="TOMs panel")
 
-            button_box = currForm.findChild(QDialogButtonBox, "button_box")
+            #button_box = currForm.findChild(QDialogButtonBox, "button_box")
             #button_box.accepted.disconnect(currForm.accept)
 
             # Disconnect the signal that QGIS has wired up for the dialog to the button box.
             # button_box.accepted.disconnect(restrictionsDialog.accept)
             # Wire up our own signals.
-            button_box.accepted.connect(
-                functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, feature, self.layer,
-                                  currForm))
-            button_box.rejected.connect(dialog.reject)
+            #button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, feature, self.layer, currForm))
+            #button_box.rejected.connect(dialog.reject)
 
             # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
-            currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
+            #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
             # Can we now implement the logic from the form code ???
 
             self.iface.openFeatureForm(self.layer, feature)
@@ -522,6 +547,8 @@ class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
 
         if closestFeature == None:
             return
+
+        # Need to deal with situation where there is a dual (or more) restriction. Will need to have a dialog to decide which restriction to delete
 
         QgsMessageLog.logMessage(("In Remove - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
 
