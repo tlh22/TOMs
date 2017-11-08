@@ -34,7 +34,10 @@ from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
 from TOMs.mapTools import *
 #from TOMsUtils import *
-from TOMs.constants import TOMsConstants
+from TOMs.constants import (
+    ACTION_CLOSE_RESTRICTION,
+    ACTION_OPEN_RESTRICTION
+)
 
 from TOMs.restrictionTypeUtils import RestrictionTypeUtils
 
@@ -47,7 +50,7 @@ class manageRestrictionDetails():
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.proposalsManager = proposalsManager
-        self.constants = TOMsConstants()
+        #self.constants = TOMsConstants()
 
         # Create actions
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/Test5Class/resources/mActionGetInfo.svg"),
@@ -454,6 +457,8 @@ class manageRestrictionDetails():
                 self.mapTool.setAction(self.actionRemoveRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
+                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
             else:
 
                 QgsMessageLog.logMessage("In doRemoveRestriction - tool deactivated", tag="TOMs panel")
@@ -522,9 +527,9 @@ class manageRestrictionDetails():
                                      tag="TOMs panel")
 
             RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID,
-                                                          self.constants.ACTION_CLOSE_RESTRICTION())  # 2 = Close
+                                                          ACTION_CLOSE_RESTRICTION())  # 2 = Close
 
-        self.currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+        currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
 
         pass
 
