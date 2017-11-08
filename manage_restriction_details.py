@@ -85,6 +85,12 @@ class manageRestrictionDetails():
                                self.iface.mainWindow())
         self.actionEditRestriction.setCheckable(True)
 
+        self.actionCreateConstructionLine = QAction(QIcon(":/plugins/Test5Class/resources/orthopointandline.png"),
+                               QCoreApplication.translate("MyPlugin", "Create construction line"),
+                               self.iface.mainWindow())
+        self.actionCreateConstructionLine.setCheckable(True)
+
+
         # Add actions to the toolbar
         TOMsToolbar.addAction(self.actionRestrictionDetails)
         TOMsToolbar.addAction(self.actionCreateBayRestriction)
@@ -93,6 +99,7 @@ class manageRestrictionDetails():
         TOMsToolbar.addAction(self.actionCreateSignRestriction)
         TOMsToolbar.addAction(self.actionRemoveRestriction)
         TOMsToolbar.addAction(self.actionEditRestriction)
+        TOMsToolbar.addAction(self.actionCreateConstructionLine)
 
         # Connect action signals to slots
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
@@ -102,6 +109,7 @@ class manageRestrictionDetails():
         self.actionCreateSignRestriction.triggered.connect(self.doCreateSignRestriction)
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
+        self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
 
         # set up a canvas refresh if there are any changes to the restrictions
         """if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
@@ -204,6 +212,8 @@ class manageRestrictionDetails():
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
                 self.actionCreateBayRestriction.setChecked(False)
+
+                #self.currLayer.editingStopped()
 
         else:
 
@@ -355,6 +365,8 @@ class manageRestrictionDetails():
                 self.mapTool = None
                 self.actionCreateSignRestriction.setChecked(False)
 
+                #self.currLayer.editingStopped()
+
         else:
 
             if self.actionCreateSignRestriction.isChecked():
@@ -364,6 +376,43 @@ class manageRestrictionDetails():
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data is not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)
+
+        pass
+
+    def doCreateConstructionLine(self):
+
+        QgsMessageLog.logMessage("In doCreateConstructionLine", tag="TOMs panel")
+
+        self.mapTool = None
+
+        if self.actionCreateConstructionLine.isChecked():
+            # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
+            # self.actionCreateRestiction.setChecked(True)
+
+            # set TOMs layer as active layer (for editing)...
+
+            QgsMessageLog.logMessage("In doCreateConstructionLine - tool activated", tag="TOMs panel")
+
+            self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+            self.iface.setActiveLayer(self.currLayer)
+
+            self.currLayer.startEditing()
+
+            self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+            self.mapTool.setAction(self.actionCreateConstructionLine)
+            self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            #self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+
+        else:
+
+            QgsMessageLog.logMessage("In doCreateConstructionLine - tool deactivated", tag="TOMs panel")
+
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+            self.actionCreateConstructionLine.setChecked(False)
+
+            #self.currLayer.editingStopped ()
 
         pass
 

@@ -152,20 +152,21 @@ class generateGeometryUtils:
         QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().exportToWkt()), tag="TOMs panel")
 
         if feature.geometry().type() == 0: # Point
-            ptList = feature.geometry().asPoint()
+            secondPt = feature.geometry().asPoint()
         elif feature.geometry().type() == 1: # Line
             ptList = feature.geometry().asPolyline()
+            secondPt = ptList[
+                0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
         elif feature.geometry().type() == 2: # Polygon
             ptList = feature.geometry().asPolygon()[0]
+            secondPt = ptList[
+                0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
         else:
             QgsMessageLog.logMessage("In setRoadName: unknown geometry type", tag="TOMs panel")
             return
 
-        nrPts = len(ptList)
-        QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel")
-
-        secondPt = ptList[
-            0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+        #nrPts = len(ptList)
+        #QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel")
 
         QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
 

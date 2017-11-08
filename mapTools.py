@@ -357,6 +357,9 @@ class CreateRestrictionTool(QgsMapToolCapture):
         # stop capture activity
         self.stopCapturing()
 
+        if self.layer.name() == "ConstructionLines":
+            return
+
         if self.nrPoints > 0:
 
             # take points from the rubber band and copy them into the "feature"
