@@ -31,11 +31,11 @@ import resources
 # Import the code for the dialog
 from TOMs.core.proposalsManager import TOMsProposalsManager
 
-from TOMs.expressions import registerFunctions, unregisterFunctions
+from .expressions import registerFunctions, unregisterFunctions
 #from TOMs.test5_module_dialog import Test5ClassDialog
 
-from TOMs.proposals_panel import proposalsPanel
-from TOMs.manage_restriction_details import manageRestrictionDetails
+from .proposals_panel import proposalsPanel
+from .manage_restriction_details import manageRestrictionDetails
 
 import os.path
 import time
@@ -98,9 +98,6 @@ class TOMs:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        
-        QgsMessageLog.logMessage("In initGui", tag="TOMs panel")
-
         registerFunctions()   # Register the Expression functions that we need
 
         self.proposalsManager = TOMsProposalsManager()

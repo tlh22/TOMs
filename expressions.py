@@ -21,6 +21,8 @@ register=False in order to delay registring of functions before we load the plug
 
 #from qgis.utils import qgsfunction
 
+import qgis
+
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
@@ -32,7 +34,7 @@ import sys
 """ ****************************** """
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
         """QgsMessageLog.logMessage(
@@ -46,7 +48,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
     return res
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
 def getAzimuthToRoadCentreLine(feature, parent):
 	# find the shortest line from this point to the road centre line layer
 	# http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
@@ -56,7 +58,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
     return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
 def getRoadName(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -67,7 +69,7 @@ def getRoadName(feature, parent):
     return newStreetName
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
 def getUSRN(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -77,7 +79,7 @@ def getUSRN(feature, parent):
 
     return newUSRN
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
 def generate_ZigZag(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -93,16 +95,25 @@ def generate_ZigZag(feature, parent):
 
 
 functions = [
-    getUSRN,
-    getRoadName,
+    generate_display_geometry,
     getAzimuthToRoadCentreLine,
-    generate_display_geometry
+    getRoadName,
+    getUSRN,
+    generate_ZigZag
 ]
 
 def registerFunctions():
     for func in functions:
+        try:
+            if func.name() in qgis.toms_functions:
+                QgsExpression.unregisterFunction(func.name())
+                del qgis.toms_functions[func.name()]
+        except AttributeError:
+            qgis.toms_functions = dict()
+
         if QgsExpression.registerFunction(func):
-            yield func.name()
+            QgsMessageLog.logMessage("Registered expression function {}".format(func.name()), tag="TOMs panel")
+            qgis.toms_functions[func.name()] = func
 
 def unregisterFunctions():
     # Unload all the functions that we created.
