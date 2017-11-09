@@ -119,3 +119,4 @@ def unregisterFunctions():
     # Unload all the functions that we created.
     for func in functions:
         QgsExpression.unregisterFunction(func.name())
+        del qgis.toms_functions[func.name()]
