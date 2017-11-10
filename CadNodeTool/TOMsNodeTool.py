@@ -128,7 +128,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
             newFeature[idxGeometryID] = newGeometryID
 
-            idxOpenDate = currLayer.fieldNameIndex("OpenDate2")
+            idxOpenDate = currLayer.fieldNameIndex("OpenDate")
             newFeature[idxOpenDate] = None
 
             currLayer.addFeature(newFeature)
@@ -167,29 +167,34 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         closestFeature, closestLayer = self.findNearestFeatureAt(e.pos())
         # QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
 
-        if not closestLayer:   # if nothing was found
-            self.iface.setActiveLayer(None)  # returns bool
-            return None
+        # Check if the closest layer is the current active layer
 
-        self.iface.setActiveLayer(closestLayer)  # returns bool
-        #self.iface.canvas().setCurrentLayer(closestLayer)
-        # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
-        # layer = self.canvas().currentLayer()
+        if closestLayer:   # if nothing was found
 
-        #QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+            #self.iface.mapCanvas().unsetMapTool(self)
+            closestLayer.startEditing()
+            self.iface.setActiveLayer(closestLayer)  # returns bool
+            #self.iface.mapCanvas().setMapTool(self)
 
-        closestLayer.startEditing()
+            #self.iface.canvas().setCurrentLayer(closestLayer)
+            # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
+            # layer = self.canvas().currentLayer()
 
-        # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
+            QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
 
-        self.origFeature.setFeature(closestFeature)
+            # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
 
-        closestLayer.geometryChanged.connect(self.onGeometryChanged)
+            self.origFeature.setFeature(closestFeature)
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: geometryChanged connected", tag="TOMs panel")
+            closestLayer.geometryChanged.connect(self.onGeometryChanged)
+
+            QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: geometryChanged connected", tag="TOMs panel")
 
         NodeTool.cadCanvasPressEvent(self, e)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: after NodeTool.cadCanvasPressEvent", tag="TOMs panel")
+
+        #self.iface.setActiveLayer(None)  # returns bool
+        #return None
 
         return

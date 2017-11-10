@@ -22,7 +22,8 @@ from PyQt4.QtGui import (
 from qgis.core import (
     QgsExpressionContextUtils,
     QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry
+    QgsMessageLog, QgsFeature, QgsGeometry,
+    QgsFeatureRequest
 )
 
 from TOMs.restrictionTypeUtils import RestrictionTypeUtils
@@ -136,7 +137,7 @@ class TOMsProposalsManager(QObject):
             currLayerID = currLayerDetails["id"]
             currLayerName = currLayerDetails["RestrictionLayerName"]
             QgsMessageLog.logMessage(
-                "In filterMapOnDate. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
+                "In updateMapCanvas. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
 
             if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
                 currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
@@ -151,7 +152,7 @@ class TOMsProposalsManager(QObject):
                 # get list of restrictions to open within proposal
 
                 restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_CLOSE_RESTRICTION())   # Close is 2  ... need to get better looping ...
-                QgsMessageLog.logMessage("In filterMapOnDate. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
+                QgsMessageLog.logMessage("In updateMapCanvas. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
                 # **** Assumption that there are some details in proposal ??
                 if len(restrictionsToClose) > 0:
@@ -170,7 +171,7 @@ class TOMsProposalsManager(QObject):
                 layerFilterString = layerFilterString + ")"
 
             # Now apply filter to the layer
-            QgsMessageLog.logMessage("In filterMapOnDate. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
+            QgsMessageLog.logMessage("In updateMapCanvas. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
             currRestrictionLayer.setSubsetString(layerFilterString)
 
         #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
@@ -231,4 +232,106 @@ class TOMsProposalsManager(QObject):
 
         return restrictionsString
 
+    def getProposalBoundingBox(self):
 
+        QgsMessageLog.logMessage("In getProposalBoundingBox.", tag="TOMs panel")
+
+        geometryBoundingBox = QgsGeometry().boundingBox()
+
+        currProposalID = self.currentProposal()
+
+        if currProposalID > 0:  # need to consider a proposal
+
+            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+                self.RestrictionsInProposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                        ("Table RestrictionsInProposals is not present"))
+                #raise LayerNotPresent
+
+            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
+                return
+
+            # loop through all the layers that might have restrictions
+
+            listRestrictionLayers = self.RestrictionLayers.getFeatures()
+
+            for currLayerDetails in listRestrictionLayers:
+
+                # get the layer from the name
+
+                currLayerID = currLayerDetails["id"]
+                currLayerName = currLayerDetails["RestrictionLayerName"]
+                QgsMessageLog.logMessage(
+                    "In getProposalBoundingBox. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
+
+                if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                            ("Table " + currLayerName + " is not present"))
+                    return
+
+                #restrictionListForLayer = []
+                restrictionsString = ''
+                firstRestriction = True
+
+                # get list of restrictions to open within proposal
+
+                listRestrictionsInProposals = self.RestrictionsInProposals.getFeatures()
+
+                for row in listRestrictionsInProposals:
+
+                    proposalID = row["ProposalID"]
+                    restrictionTableID = row["RestrictionTableID"]
+
+                    # check to see if the current row is for the current proposal and for the correct proposedAction
+
+                    if proposalID == currProposalID:
+                        if restrictionTableID == currLayerID:
+
+                            if not firstRestriction:
+                                restrictionsString = restrictionsString + ", '" + row["RestrictionID"] + "'"
+                                """QgsMessageLog.logMessage(
+                                    "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
+                                    tag="TOMs panel")"""
+                            else:
+                                restrictionsString = "'" + str(row["RestrictionID"]) + "'"
+                                firstRestriction = False
+
+                            pass
+
+                self.generateBoundingBox(geometryBoundingBox, currRestrictionLayer, restrictionsString)
+
+            pass
+
+            # print out
+            #QgsMessageLog.logMessage(("In getProposalBoundingBox. rect is; " + str(geometryBoundingBox().asWktCoordinates())), tag="TOMs panel")
+
+            return geometryBoundingBox
+
+       #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
+        pass
+
+    def generateBoundingBox(self, geometryBoundingBox, currLayer, restrictionsString):
+        QgsMessageLog.logMessage("In generateBoundingBox." + restrictionsString, tag="TOMs panel")
+
+        # https://gis.stackexchange.com/questions/176170/qgis-python-find-bounding-box-for-multiple-features
+
+        QgsMessageLog.logMessage("In generateBoundingBox. query: " u'"GeometryID" in ({0})'.format(restrictionsString), tag="TOMs panel")
+
+        request = QgsFeatureRequest().setFilterExpression(u'"GeometryID" in ({0})'.format(restrictionsString))  #u'"field_name" = {0}'.format(values[j])
+        iter = currLayer.getFeatures(request)
+        feat = QgsFeature()
+        iter.nextFeature(feat)
+        # box = feat.geometry().boundingBox()
+
+        while iter.nextFeature(feat):
+            QgsMessageLog.logMessage("In generateBoundingBox. feat: " + feat["GeometryID"], tag="TOMs panel")
+            geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
+
+        pass

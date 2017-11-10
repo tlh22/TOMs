@@ -6,7 +6,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #---------------------------------------------------------------------
-# Tim Hancock 2017
+# Tim Hancock/Matthias Kuhn 2017
 #
 """
 

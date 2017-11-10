@@ -135,7 +135,11 @@ class proposalsPanel():
 
             # Now revise the view based on proposal choosen
 
-            self.filterView()
+            #self.filterView()
+
+            QgsMessageLog.logMessage("In onChangeProposal. Zoom to extents", tag="TOMs panel")
+            self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
+            self.iface.mapCanvas().refresh()
 
         pass
 
@@ -287,17 +291,39 @@ class proposalsPanel():
         pass
 
     def onProposalChanged(self):
+        QgsMessageLog.logMessage("In onProposalChanged.", tag="TOMs panel")
         currProposal = self.proposalsManager.currentProposal()
         currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
         self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
 
+        QgsMessageLog.logMessage("In onProposalChanged. Zoom to extents", tag="TOMs panel")
+        """if self.proposalsManager.getProposalBoundingBox():
+            QgsMessageLog.logMessage("In onProposalChanged. Bounding box found", tag="TOMs panel")
+            self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
+            self.iface.mapCanvas().refresh()"""
+
     def updateCurrentProposal(self):
+        QgsMessageLog.logMessage("In updateCurrentProposal.", tag="TOMs panel")
         """Will be called whenever a new entry is selected in the combobox"""
+
+        # Can we check to see if there are any outstanding edits?!!
+
+        """reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back",
+                                        QMessageBox.Ok)
+
+        if reply:
+
+            self.iface.actionRollbackAllEdits().trigger()
+            self.iface.actionCancelAllEdits().trigger()
+
+        pass"""
+
         currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
         self.proposalsManager.setCurrentProposal(currProposalID)
 
     def onDateChanged(self):
+        QgsMessageLog.logMessage("In onDateChanged.", tag="TOMs panel")
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
