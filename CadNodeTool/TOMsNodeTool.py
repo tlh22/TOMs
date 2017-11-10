@@ -101,7 +101,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         currLayer = self.iface.activeLayer()
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. closestLayer: " + str(currLayer.name()), tag="TOMs panel")
 
-        currLayer.geometryChanged.disconnect()
+        currLayer.geometryChanged.disconnect(self.onGeometryChanged)
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. geometryChange signal disconnected.", tag="TOMs panel")
 
         idxGeometryID = currLayer.fieldNameIndex("GeometryID")
