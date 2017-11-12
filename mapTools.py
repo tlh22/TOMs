@@ -265,7 +265,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         # Set up rubber band. In current implementation, it is not showing feeback for "next" location
 
-        self.rb = self.createRubberBand(QGis.Line)
+        self.rb = self.createRubberBand(QGis.Line)  # what about a polygon ??
 
         self.currLayer = self.currentVectorLayer()
 
@@ -291,8 +291,11 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.snappingUtils.setSnapToMapMode(QgsSnappingUtils.SnapAdvanced)
 
         # set up tracing configuration
-
+        self.TOMsTracer = QgsTracer()
         RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+        traceLayersNames = [RoadCasementLayer]
+        self.TOMsTracer.setLayers(traceLayersNames)
+        self.lastPoint = None
 
         # set up function to be called when capture is complete
         self.onCreateRestriction = onCreateRestriction
@@ -300,6 +303,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
     def cadCanvasReleaseEvent(self, event):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
         QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), tag="TOMs panel")
+
         if event.button() == Qt.LeftButton:
             if not self.isCapturing():
                 self.startCapturing()
@@ -322,9 +326,50 @@ class CreateRestrictionTool(QgsMapToolCapture):
             self.currPoint = event.snapPoint(1)    #  1 is value of QgsMapMouseEvent.SnappingMode (not sure where this is defined)
             self.lastEvent = event
             # If this is the first point, add and k
-            self.result = self.addVertex(self.currPoint)
 
-            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), tag="TOMs panel")
+            nrPoints = self.size()
+            res = None
+
+            if not self.lastPoint:
+
+                self.result = self.addVertex(self.currPoint)
+                QgsMessageLog.logMessage("In Create - cadCanvasReleaseEvent: adding vertex 0 " + str(self.result), tag="TOMs panel")
+
+            else:
+
+                # check for shortest line
+                resVectorList = self.TOMsTracer.findShortestPath(self.lastPoint, self.currPoint)
+
+                QgsMessageLog.logMessage("In Create - cadCanvasReleaseEvent: traceList" + str(resVectorList), tag="TOMs panel")
+                QgsMessageLog.logMessage("In Create - cadCanvasReleaseEvent: traceList" + str(resVectorList[1]), tag="TOMs panel")
+                if resVectorList[1] == 0:
+                    # path found, add the points to the list
+                    QgsMessageLog.logMessage("In Create - cadCanvasReleaseEvent (found path) ", tag="TOMs panel")
+
+                    #self.points.extend(resVectorList)
+                    initialPoint = True
+                    for point in resVectorList[0]:
+                        if not initialPoint:
+
+                            QgsMessageLog.logMessage(("In CreateRestrictionTool - cadCanvasReleaseEvent (found path) X:" + str(
+                                point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
+
+                            self.result = self.addVertex(point)
+
+                        initialPoint = False
+
+                    QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (added shortest path)"),
+                                             tag="TOMs panel")
+
+                else:
+                    # error encountered, add just the curr point ??
+
+                    self.result = self.addVertex(self.currPoint)
+                    QgsMessageLog.logMessage(("In CreateRestrictionTool - (adding shortest path) X:" + str(self.currPoint.x()) + " Y: " + str(self.currPoint.y())), tag="TOMs panel")
+
+            self.lastPoint = self.currPoint
+
+            QgsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex/Line) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), tag="TOMs panel")
 
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
@@ -332,6 +377,8 @@ class CreateRestrictionTool(QgsMapToolCapture):
             self.getPointsCaptured()
 
             # Need to think about the default action here if none of these buttons/keys are pressed.
+
+        pass
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete):

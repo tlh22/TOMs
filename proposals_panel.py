@@ -87,6 +87,8 @@ class proposalsPanel():
         # set up action for when new proposal is created
         self.Proposals.featureAdded.connect(self.createProposalcb)
 
+        #self.dock.setUserVisible(True)
+
         pass
 
     def createProposalcb(self):
