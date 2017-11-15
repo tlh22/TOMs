@@ -457,7 +457,7 @@ class manageRestrictionDetails():
                 self.mapTool.setAction(self.actionRemoveRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+                # self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
 
             else:
 
@@ -498,9 +498,9 @@ class manageRestrictionDetails():
         currRestrictionLayer.startEditing()
         currRestrictionLayerID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
 
-        idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
+        idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
 
-        if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID):
+        if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID):
             # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
             # NB: This is the only case of a restriction being truly deleted
 
@@ -510,7 +510,7 @@ class manageRestrictionDetails():
             # ***** IMPLEMENTATION REQUIRED  *****
 
             # Delete from RestrictionsInProposals
-            result = RestrictionTypeUtils.deleteRestrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID)
+            result = RestrictionTypeUtils.deleteRestrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID)
 
             if result:
                 QgsMessageLog.logMessage("In onRemoveRestriction. Deleting restriction.",
@@ -526,7 +526,7 @@ class manageRestrictionDetails():
             QgsMessageLog.logMessage("In onRemoveRestriction. Closing existing restriction.",
                                      tag="TOMs panel")
 
-            RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerID, currProposalID,
+            RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID,
                                                           ACTION_CLOSE_RESTRICTION())  # 2 = Close
 
         currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)

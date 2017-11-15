@@ -146,7 +146,7 @@ class generateGeometryUtils:
 
         QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel")
 
-        RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+        RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
 
         # take the first point from the geometry
         QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().exportToWkt()), tag="TOMs panel")
@@ -398,7 +398,7 @@ class generateGeometryUtils:
 
         # Now get the geometry
 
-        # QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
@@ -416,10 +416,10 @@ class generateGeometryUtils:
 
         # Need to check why the project variable function is not working
 
-        geometryID = feature.attribute("GeometryID")
+        restrictionID = feature.attribute("RestrictionID")
         QgsMessageLog.logMessage(
             "In getDisplayGeometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel")
+                restrictionID), tag="TOMs panel")
         # restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         # QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")

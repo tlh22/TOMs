@@ -34,7 +34,7 @@ import sys
 """ ****************************** """
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
         """QgsMessageLog.logMessage(
@@ -48,7 +48,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
     return res
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getAzimuthToRoadCentreLine(feature, parent):
 	# find the shortest line from this point to the road centre line layer
 	# http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
@@ -58,7 +58,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
     return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getRoadName(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -69,7 +69,7 @@ def getRoadName(feature, parent):
     return newStreetName
 
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getUSRN(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -79,7 +79,7 @@ def getUSRN(feature, parent):
 
     return newUSRN
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=False)
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_ZigZag(feature, parent):
 	# Determine road name from the kerb line layer
 
@@ -104,6 +104,7 @@ functions = [
 
 def registerFunctions():
     for func in functions:
+        QgsMessageLog.logMessage("Considering function {}".format(func.name()), tag="TOMs panel")
         try:
             if func.name() in qgis.toms_functions:
                 QgsExpression.unregisterFunction(func.name())
@@ -119,4 +120,5 @@ def unregisterFunctions():
     # Unload all the functions that we created.
     for func in functions:
         QgsExpression.unregisterFunction(func.name())
+        QgsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), tag="TOMs panel")
         del qgis.toms_functions[func.name()]

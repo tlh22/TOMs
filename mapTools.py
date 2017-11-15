@@ -292,9 +292,10 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
         # set up tracing configuration
         self.TOMsTracer = QgsTracer()
-        RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
+        RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
         traceLayersNames = [RoadCasementLayer]
         self.TOMsTracer.setLayers(traceLayersNames)
+        #self.TOMsTracer.setMaxFeatureCount(1000)
         self.lastPoint = None
 
         # set up function to be called when capture is complete
@@ -404,9 +405,6 @@ class CreateRestrictionTool(QgsMapToolCapture):
         # stop capture activity
         self.stopCapturing()
 
-        if self.layer.name() == "ConstructionLines":
-            return
-
         if self.nrPoints > 0:
 
             # take points from the rubber band and copy them into the "feature"
@@ -435,13 +433,17 @@ class CreateRestrictionTool(QgsMapToolCapture):
             QgsMessageLog.logMessage(("In Create - getPointsCaptured; geometry prepared; " + str(feature.geometry().exportToWkt())),
                                      tag="TOMs panel")
 
-            # set any geometry related attributes ...
+            if self.layer.name() == "ConstructionLines":
+                pass
+            else:
 
-            generateGeometryUtils.setRoadName(feature)
-            if self.layer.geometryType() == 1:  # Line or Bay
-                generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
+                # set any geometry related attributes ...
 
-            RestrictionTypeUtils.setDefaultRestrictionDetails(feature, self.layer)
+                generateGeometryUtils.setRoadName(feature)
+                if self.layer.geometryType() == 1:  # Line or Bay
+                    generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
+
+                RestrictionTypeUtils.setDefaultRestrictionDetails(feature, self.layer)
 
             # is there any other tidying to do ??
 
@@ -467,10 +469,10 @@ class CreateRestrictionTool(QgsMapToolCapture):
             #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
             # Can we now implement the logic from the form code ???
 
-            self.iface.openFeatureForm(self.layer, feature)
+            self.iface.openFeatureForm(self.layer, feature, False, False)
 
     def onAttributeChanged(self, feature, fieldName, value):
-        # QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("RestrictionID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
 
         feature.setAttribute(fieldName, value)
 

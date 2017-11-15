@@ -123,7 +123,7 @@ class TOMsProposalsManager(QObject):
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
             self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
+            QMessageBox.information(None, "ERROR", ("Table RestrictionLayers is not present"))
             return
 
         # loop through all the layers that might have restrictions
@@ -142,7 +142,7 @@ class TOMsProposalsManager(QObject):
             if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
                 currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
             else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                QMessageBox.information(None, "ERROR",
                                         ("Table " + currLayerName + " is not present"))
                 return
 
@@ -156,13 +156,13 @@ class TOMsProposalsManager(QObject):
 
                 # **** Assumption that there are some details in proposal ??
                 if len(restrictionsToClose) > 0:
-                    layerFilterString = layerFilterString + ' AND "GeometryID" NOT IN ( ' + restrictionsToClose + " ))"
+                    layerFilterString = layerFilterString + ' AND "RestrictionID" NOT IN ( ' + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
                 restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_OPEN_RESTRICTION())   # Open is 1
 
                 if len(restrictionsToOpen) > 0:
-                    layerFilterString = ' "GeometryID"  IN ( ' + restrictionsToOpen + " ) OR ( " + layerFilterString + ")"
+                    layerFilterString = ' "RestrictionID"  IN ( ' + restrictionsToOpen + " ) OR ( " + layerFilterString + ")"
 
                 if len(restrictionsToClose) == 0:
                     layerFilterString = layerFilterString + ")"
@@ -187,7 +187,7 @@ class TOMsProposalsManager(QObject):
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
             self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
+            QMessageBox.information(None, "ERROR", ("Table RestrictionsInProposals is not present"))
             raise LayerNotPresent
 
         # Hopefully can use SQL to return the rows, but now sure about process.
@@ -322,16 +322,16 @@ class TOMsProposalsManager(QObject):
 
         # https://gis.stackexchange.com/questions/176170/qgis-python-find-bounding-box-for-multiple-features
 
-        QgsMessageLog.logMessage("In generateBoundingBox. query: " u'"GeometryID" in ({0})'.format(restrictionsString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In generateBoundingBox. query: " u'"RestrictionID" in ({0})'.format(restrictionsString), tag="TOMs panel")
 
-        request = QgsFeatureRequest().setFilterExpression(u'"GeometryID" in ({0})'.format(restrictionsString))  #u'"field_name" = {0}'.format(values[j])
+        request = QgsFeatureRequest().setFilterExpression(u'"RestrictionID" in ({0})'.format(restrictionsString))  #u'"field_name" = {0}'.format(values[j])
         iter = currLayer.getFeatures(request)
         feat = QgsFeature()
         iter.nextFeature(feat)
         # box = feat.geometry().boundingBox()
 
         while iter.nextFeature(feat):
-            QgsMessageLog.logMessage("In generateBoundingBox. feat: " + feat["GeometryID"], tag="TOMs panel")
+            QgsMessageLog.logMessage("In generateBoundingBox. feat: " + feat["RestrictionID"], tag="TOMs panel")
             geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
 
         pass

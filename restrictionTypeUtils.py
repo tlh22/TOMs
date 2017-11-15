@@ -157,9 +157,9 @@ class RestrictionTypeUtils:
         if currProposalID > 0:
 
             currRestrictionLayerTableID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
-            idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
+            idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
 
-            if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID, currProposalID):
+            if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID, currProposalID):
 
                 # restriction already is part of the current proposal
                 # simply make changes to the current restriction in the current layer
@@ -190,9 +190,9 @@ class RestrictionTypeUtils:
 
                 idxOpenDate = currRestriction.fieldNameIndex("OpenDate")
                 idxRestrictionTypeID = currRestriction.fieldNameIndex("RestrictionTypeID")
-                newGeometryID = str(uuid.uuid4())
+                newRestrictionID = str(uuid.uuid4())
 
-                if currRestriction[idxGeometryID] is None:
+                if currRestriction[idxRestrictionID] is None:
                     # This is a feature that has just been created. It exists but doesn't have a GeometryID.
 
                     # Not quite sure what is happening here but think the following:
@@ -200,20 +200,20 @@ class RestrictionTypeUtils:
                     #  So, need to continue to modify dialog value which will be eventually saved
 
                     #currRestriction = dialog.feature()
-                    #currRestriction[idxGeometryID] = newGeometryID
-                    dialog.changeAttribute("GeometryID", newGeometryID)
+                    #currRestriction[idxRestrictionID] = newRestrictionID
+                    dialog.changeAttribute("RestrictionID", newRestrictionID)
                     #currRestriction = dialog.feature()
-                    #currRestriction.setAttribute("GeometryID", newGeometryID)
-                    #currRestrictionLayer.changeAttributeValue(currRestriction.id(), "GeometryID", str(currRestriction[idxGeometryID]))
+                    #currRestriction.setAttribute("RestrictionID", newRestrictionID)
+                    #currRestrictionLayer.changeAttributeValue(currRestriction.id(), "RestrictionID", str(currRestriction[idxRestrictionID]))
                     # currRestrictionLayer.updateFeature(currRestriction)
                     dialog.save()
 
                     QgsMessageLog.logMessage(
-                        "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxGeometryID]),
+                        "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
                     # currRestrictionLayer.addFeatures([currRestriction])
 
-                    RestrictionTypeUtils.addRestrictionToProposal(str(currRestriction[idxGeometryID]), currRestrictionLayerTableID,
+                    RestrictionTypeUtils.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
 
                     # Now need to save the feature ??
@@ -230,29 +230,29 @@ class RestrictionTypeUtils:
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Closing existing restriction. ID: " + str(
-                            currRestriction[idxGeometryID]) + " existing Restriction Type: " + str(
+                            currRestriction[idxRestrictionID]) + " existing Restriction Type: " + str(
                             currRestriction[idxRestrictionTypeID]),
                         tag="TOMs panel")
 
-                    RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxGeometryID], currRestrictionLayerTableID,
+                    RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_CLOSE_RESTRICTION())  # Open = 1; Close = 2
 
                     newRestriction = dialog.feature()
 
-                    newRestriction[idxGeometryID] = newGeometryID
+                    newRestriction[idxRestrictionID] = newRestrictionID
                     newRestriction[idxOpenDate] = None
                     currRestrictionLayer.addFeatures([newRestriction])
 
                     QgsMessageLog.logMessage(
-                        "In onSaveRestrictionDetails. Clone restriction. New ID: " + str(newRestriction[idxGeometryID]),
+                        "In onSaveRestrictionDetails. Clone restriction. New ID: " + str(newRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
-                    RestrictionTypeUtils.addRestrictionToProposal(newRestriction[idxGeometryID], currRestrictionLayerTableID,
+                    RestrictionTypeUtils.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1; Close = 2
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Opening clone. ID: " + str(
-                            newRestriction[idxGeometryID]) + " new Restriction Type: " + str(
+                            newRestriction[idxRestrictionID]) + " new Restriction Type: " + str(
                             newRestriction[idxRestrictionTypeID]),
                         tag="TOMs panel")
 
@@ -266,6 +266,10 @@ class RestrictionTypeUtils:
         pass
 
         # ************* refresh the view. Might be able to set up a signal to get the proposals_panel to intervene
+
+        QgsMessageLog.logMessage(
+        "In onSaveRestrictionDetails. Finished",
+        tag="TOMs panel")
 
     @staticmethod
     def setDefaultRestrictionDetails(currRestriction, currRestrictionLayer):

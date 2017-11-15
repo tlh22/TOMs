@@ -104,18 +104,18 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         currLayer.geometryChanged.disconnect(self.onGeometryChanged)
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. geometryChange signal disconnected.", tag="TOMs panel")
 
-        idxGeometryID = currLayer.fieldNameIndex("GeometryID")
+        idxRestrictionID = currLayer.fieldNameIndex("RestrictionID")
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currProposal: " + str(self.proposalsManager.currentProposal()), tag="TOMs panel")
 
         # Now obtain the changed feature (not sure which geometry)
 
         currFeature = self.THgetFeature(fid, currLayer)
 
-        #currRestrictionGeometryID = currFeature[idxGeometryID]
+        #currRestrictionRestrictionID = currFeature[idxRestrictionID]
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionGeometryID: " + str(currFeature[idxGeometryID]), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionRestrictionID: " + str(currFeature[idxRestrictionID]), tag="TOMs panel")
 
-        if not RestrictionTypeUtils.restrictionInProposal(currFeature[idxGeometryID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal()):
+        if not RestrictionTypeUtils.restrictionInProposal(currFeature[idxRestrictionID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal()):
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
             #  This one is not in the current Proposal, so now we need to:
             #  - generate a new ID and assign it to the feature for which the geometry has changed
@@ -124,9 +124,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
             newFeature = QgsFeature(currFeature)
             newFeature.setGeometry(newGeometry)
-            newGeometryID = str(uuid.uuid4())
+            newRestrictionID = str(uuid.uuid4())
 
-            newFeature[idxGeometryID] = newGeometryID
+            newFeature[idxRestrictionID] = newRestrictionID
 
             idxOpenDate = currLayer.fieldNameIndex("OpenDate")
             newFeature[idxOpenDate] = None
@@ -148,9 +148,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
 
-            RestrictionTypeUtils.addRestrictionToProposal(currFeature[idxGeometryID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_CLOSE_RESTRICTION()) # close the original feature
+            RestrictionTypeUtils.addRestrictionToProposal(currFeature[idxRestrictionID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_CLOSE_RESTRICTION()) # close the original feature
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", tag="TOMs panel")
-            RestrictionTypeUtils.addRestrictionToProposal(newGeometryID, RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
+            RestrictionTypeUtils.addRestrictionToProposal(newRestrictionID, RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
 
             self.proposalsManager.updateMapCanvas()
