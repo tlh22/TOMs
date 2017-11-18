@@ -531,6 +531,10 @@ class manageRestrictionDetails():
 
         currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
 
+        # refresh the current layer
+
+        currRestrictionLayer.triggerRepaint()
+
         pass
 
     def doEditRestriction(self):
