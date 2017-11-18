@@ -382,10 +382,10 @@ class CreateRestrictionTool(QgsMapToolCapture):
         pass
 
     def keyPressEvent(self, event):
-        if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete):
+        if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete) or (event.key() == Qt.Key_Escape):
             self.undo()
             pass
-        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter or (event.key() == Qt.Key_Escape):
+        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             pass
             # Need to think about the default action here if none of these buttons/keys are pressed. 
 
