@@ -203,10 +203,13 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
         self.iface = iface
         #self.proposalsManager = proposalsManager  ??? how to include ???
-        #self.layer = layer
+        #self.closestLayer = layer
         #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
         self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
+
+        ### Should we pick up the change active layer signal here? and deselect from previous layer
+        # Currently, it is possible to select features from more than one layer
 
     def canvasReleaseEvent(self, event):
         # Return point under cursor
@@ -215,22 +218,37 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
-        if closestFeature == None:
-            return
+        # Remove any current selection and add the new ones (if appropriate)
 
-        QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()), tag="TOMs panel")
+        if closestLayer == None:
 
-        # Need to chec
-        closestLayer.startEditing()
+            self.iface.activeLayer().removeSelection()
 
-        self.iface.openFeatureForm(closestLayer, closestFeature)
-        #self.onDisplayRestrictionDetails(feature, self.layer)
+        else:
+
+            QgsMessageLog.logMessage(
+                ("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()),
+                tag="TOMs panel")
+
+            if closestLayer <> self.iface.activeLayer():
+                if self.iface.activeLayer():
+                    self.iface.activeLayer().removeSelection()
+                #closestLayer.startEditing()
+                self.iface.setActiveLayer(closestLayer)
+
+            # highlight the feature ...
+            closestLayer.setSelectedFeatures([closestFeature.id()])
+
+            # self.iface.openFeatureForm(self.closestLayer, self.closestFeature)
+            # self.onDisplayRestrictionDetails(feature, self.layer)
+
+        pass
 
 #############################################################################
 
 class CreateRestrictionTool(QgsMapToolCapture):
     # helpful link - http://apprize.info/python/qgis/7.html ??
-    def __init__(self, iface, layer, onCreateRestriction):
+    def __init__(self, iface, layer):
 
         QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
 
@@ -299,7 +317,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
         self.lastPoint = None
 
         # set up function to be called when capture is complete
-        self.onCreateRestriction = onCreateRestriction
+        #self.onCreateRestriction = onCreateRestriction
 
     def cadCanvasReleaseEvent(self, event):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
@@ -579,7 +597,7 @@ class EditRestrictionTool(QgsMapTool, MapToolMixin):
 
 #############################################################################
 
-class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
+    """class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
     def __init__(self, iface, onRemoveRestriction):
         QgsMapTool.__init__(self, iface.mapCanvas())
         self.iface = iface
@@ -607,10 +625,10 @@ class RemoveRestrictionTool(QgsMapTool, MapToolMixin):
         closestLayer.startEditing()
 
         self.onRemoveRestriction(closestLayer, closestFeature)
-        #self.onDisplayRestrictionDetails(feature, self.layer)
+        #self.onDisplayRestrictionDetails(feature, self.layer)"""
 
 
-    #############################################################################
+#############################################################################
 
     #class SelectVertexTool(QgsMapTool, MapToolMixin):
     """ Map tool to let user select a vertex.

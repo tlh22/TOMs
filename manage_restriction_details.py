@@ -53,10 +53,15 @@ class manageRestrictionDetails():
         #self.constants = TOMsConstants()
 
         # Create actions
-        self.actionRestrictionDetails = QAction(QIcon(":/plugins/Test5Class/resources/mActionGetInfo.svg"),
+        self.actionSelectRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionSelect.png"),
                                QCoreApplication.translate("MyPlugin", "Select"),
                                self.iface.mainWindow())
-        self.actionRestrictionDetails.setCheckable(True)
+        self.actionSelectRestriction.setCheckable(True)
+
+        self.actionRestrictionDetails = QAction(QIcon(":/plugins/Test5Class/resources/mActionGetInfo.svg"),
+                               QCoreApplication.translate("MyPlugin", "Get Details"),
+                               self.iface.mainWindow())
+        #self.actionRestrictionDetails.setCheckable(True)
 
         self.actionCreateBayRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddTrack.svg"),
                                QCoreApplication.translate("MyPlugin", "Create Bay"),
@@ -81,7 +86,7 @@ class manageRestrictionDetails():
         self.actionRemoveRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionDeleteTrack.svg"),
                                QCoreApplication.translate("MyPlugin", "Remove Restriction"),
                                self.iface.mainWindow())
-        self.actionRemoveRestriction.setCheckable(True)
+        #self.actionRemoveRestriction.setCheckable(True)
 
         self.actionEditRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionEdit.svg"),
                                QCoreApplication.translate("MyPlugin", "Edit Restriction"),
@@ -95,6 +100,7 @@ class manageRestrictionDetails():
 
 
         # Add actions to the toolbar
+        TOMsToolbar.addAction(self.actionSelectRestriction)
         TOMsToolbar.addAction(self.actionRestrictionDetails)
         TOMsToolbar.addAction(self.actionCreateBayRestriction)
         TOMsToolbar.addAction(self.actionCreateLineRestriction)
@@ -105,6 +111,7 @@ class manageRestrictionDetails():
         TOMsToolbar.addAction(self.actionCreateConstructionLine)
 
         # Connect action signals to slots
+        self.actionSelectRestriction.triggered.connect(self.doSelectRestriction)
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
         self.actionCreateBayRestriction.triggered.connect(self.doCreateBayRestriction)
         self.actionCreateLineRestriction.triggered.connect(self.doCreateLineRestriction)
@@ -114,39 +121,67 @@ class manageRestrictionDetails():
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
 
-        # set up a canvas refresh if there are any changes to the restrictions
-        """if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
-            raise LayerNotPresent
-
-        #self.RestrictionsInProposals.editingStopped(self.proposalsManager.updateMapCanvas)"""
-        
         pass
+
+    def doSelectRestriction(self):
+        """ Select point and then display details
+        """
+
+        QgsMessageLog.logMessage("In doSelectRestriction", tag="TOMs panel")
+
+        if not self.actionSelectRestriction.isChecked():
+            self.actionSelectRestriction.setChecked(False)
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+            # self.actionPan.connect()
+            return
+
+        self.actionSelectRestriction.setChecked(True)
+
+        self.mapTool = GeometryInfoMapTool(self.iface)
+        self.mapTool.setAction(self.actionSelectRestriction)
+        self.iface.mapCanvas().setMapTool(self.mapTool)
 
     def doRestrictionDetails(self):
         """ Select point and then display details
-		"""
-        
+        """
         QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
 
-        if not self.actionRestrictionDetails.isChecked():
+        """if not self.actionRestrictionDetails.isChecked():
             self.actionRestrictionDetails.setChecked(False)
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
-            #self.actionPan.connect()
+            # self.actionPan.connect()
             return
 
         self.actionRestrictionDetails.setChecked(True)
 
         self.mapTool = GeometryInfoMapTool(self.iface)
         self.mapTool.setAction(self.actionRestrictionDetails)
-        self.iface.mapCanvas().setMapTool(self.mapTool)
+        self.iface.mapCanvas().setMapTool(self.mapTool)"""
 
-    def onDisplayRestrictionDetails(self, currRestriction, currRestrictionLayer):
+        currRestrictionLayer = self.iface.activeLayer()
+
+        #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+
+        if currRestrictionLayer:
+
+            QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+            currRestrictionLayer.startEditing()
+
+            if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                selectedRestrictions = currRestrictionLayer.selectedFeatures()
+                for currRestriction in selectedRestrictions:
+                    self.iface.openFeatureForm(currRestrictionLayer, currRestriction)
+
+            pass
+
+        pass
+
+        #def onDisplayRestrictionDetails(self, currRestriction, currRestrictionLayer):
         """ Called by map tool when a restriction is selected
-        """
+
         self.currRestriction = currRestriction
         self.currRestrictionLayer = currRestrictionLayer
 
@@ -176,7 +211,7 @@ class manageRestrictionDetails():
 
         #self.dlg.button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, self.currRestriction, self.currRestrictionLayer, self.dlg))
 
-        pass
+        pass        """
 
     def doCreateBayRestriction(self):
 
@@ -202,11 +237,11 @@ class manageRestrictionDetails():
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+                #self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
 
             else:
 
@@ -254,11 +289,11 @@ class manageRestrictionDetails():
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+                #self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
 
             else:
 
@@ -304,11 +339,11 @@ class manageRestrictionDetails():
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+                #self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
 
             else:
 
@@ -354,11 +389,11 @@ class manageRestrictionDetails():
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
                 self.mapTool.setAction(self.actionCreateSignRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
+                #self.currLayer.editingStopped.connect (self.proposalsManager.updateMapCanvas)
 
             else:
 
@@ -401,7 +436,7 @@ class manageRestrictionDetails():
 
             self.currLayer.startEditing()
 
-            self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.onDisplayRestrictionDetails)
+            self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
             self.mapTool.setAction(self.actionCreateConstructionLine)
             self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -419,10 +454,10 @@ class manageRestrictionDetails():
 
         pass
 
-    def onCreateRestriction(self, newRestriction):
+        #def onCreateRestriction(self, newRestriction):
         """ Called by map tool when a restriction is created
         """
-        QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
 
         #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
@@ -435,13 +470,14 @@ class manageRestrictionDetails():
         # pass control to MapTool and then deal with Proposals issues from there ??
         QgsMessageLog.logMessage("In doRemoveRestriction", tag="TOMs panel")
 
-        self.mapTool = None
+        #self.mapTool = None
 
         # Get the current proposal from the session variables
         self.currProposalID = self.proposalsManager.currentProposal()
 
         if self.currProposalID > 0:
 
+            '''
             if self.actionRemoveRestriction.isChecked():
                 # self.iface.mapCanvas().setMapTool(CreateRestrictionTool)
                 # self.actionCreateRestiction.setChecked(True)
@@ -466,26 +502,39 @@ class manageRestrictionDetails():
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
                 self.actionRemoveRestriction.setChecked(False)
+            '''
 
-            '''
-            self.mapTool = GeometryInfoMapTool(self.iface, self.TOMslayer, self.onDisplayRestrictionDetails)
-            self.mapTool.setAction(self.actionRestrictionDetails)
-            self.iface.mapCanvas().setMapTool(self.mapTool)
-            '''
+
+            currRestrictionLayer = self.iface.activeLayer()
+            currRestrictionLayer.startEditing()
+            #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+
+            if currRestrictionLayer:
+
+                QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+
+                if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                    selectedRestrictions = currRestrictionLayer.selectedFeatures()
+                    for currRestriction in selectedRestrictions:
+                        self.onRemoveRestriction(currRestrictionLayer, currRestriction)
+
+                pass
+
+            pass
+
         else:
 
-            if self.actionRemoveRestriction.isChecked():
+            """if self.actionRemoveRestriction.isChecked():
                 self.actionRemoveRestriction.setChecked(False)
                 if self.mapTool == None:
-                    self.actionRemoveRestriction.setChecked(False)
+                    self.actionRemoveRestriction.setChecked(False)"""
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Changes to current data are not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)
 
         pass
 
-
-        pass
 
     def onRemoveRestriction(self, currRestrictionLayer, currRestriction):
         QgsMessageLog.logMessage("In onRemoveRestriction. currLayer: " + str(currRestrictionLayer.id()) + " CurrFeature: " + str(currRestriction.id()), tag="TOMs panel")
@@ -529,13 +578,11 @@ class manageRestrictionDetails():
             RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID,
                                                           ACTION_CLOSE_RESTRICTION())  # 2 = Close
 
-        currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+            RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
 
-        # refresh the current layer
+        #currRestrictionLayer.triggerRepaint()
 
-        currRestrictionLayer.triggerRepaint()
 
-        pass
 
     def doEditRestriction(self):
 

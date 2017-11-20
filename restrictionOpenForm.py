@@ -67,12 +67,12 @@ def onAttributeChanged(feature, fieldName, value):
     """
 
 
-def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
+def restrictionFormOpen(dialog, currRestrictionLayer, currRestrictionFeature):
     QgsMessageLog.logMessage("In restrictionFormOpen", tag="TOMs panel")
 
     #restrictionsDialog = dialog
 
-    photoDetails(dialog, currRestLayer, currRestrictionFeature)
+    photoDetails(dialog, currRestrictionLayer, currRestrictionFeature)
 
     # This stops changes to the form being saved (unless explicitly enacted)
     dialog.disconnectButtonBox()
@@ -80,7 +80,7 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     #dialog.setMode(QgsAttributeForm.SingleEditMode)
 
     #currRestrictionLayer = currRestLayer
-    QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(currRestLayer.name()), tag="TOMs panel")
+    QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
     #currRestriction = currRestrictionFeature
 
@@ -96,14 +96,21 @@ def restrictionFormOpen(dialog, currRestLayer, currRestrictionFeature):
     # Disconnect the signal that QGIS has wired up for the dialog to the button box.
     # button_box.accepted.disconnect(restrictionsDialog.accept)
     # Wire up our own signals.
-    button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, currRestrictionFeature, currRestLayer, dialog))
-    button_box.rejected.connect(dialog.reject)
+    button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, currRestrictionFeature, currRestrictionLayer, dialog))
+    button_box.rejected.connect(functools.partial(dialogReject, currRestrictionLayer, dialog))
 
     # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
     dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature))
     #dialog.attributeChanged.connect(functools.partial(onAttributeChanged, currRestrictionFeature, currRestLayer))
 
     pass
+
+def dialogReject(currRestrictionLayer, dialog):
+    # Function to clear selection in case of cancel
+    QgsMessageLog.logMessage("In restrictionFormOpen.dialogReject", tag="TOMs panel")
+
+    #currRestrictionLayer.removeSelection()
+    dialog.reject
 
 def photoDetails(dialog, currRestLayer, currRestrictionFeature):
 

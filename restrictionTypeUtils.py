@@ -28,14 +28,15 @@ from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
-from TOMs.core.proposalsManager import *
+#from TOMs.core.proposalsManager import *
 
 import uuid
 
 class RestrictionTypeUtils:
 
-    def __init__(self, iface, proposalsManager):
+    def __init__(self, iface):
         #self.constants = TOMsConstants()
+        #self.proposalsManager = proposalsManager
         pass
 
     @staticmethod
@@ -67,13 +68,13 @@ class RestrictionTypeUtils:
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
+        RestrictionsInProposalsLayer.startEditing()
+
         idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
         idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
         idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
         idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex(
             "ActionOnProposalAcceptance")
-
-        RestrictionsInProposalsLayer.startEditing()
 
         newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
         newRestrictionsInProposal.setGeometry(QgsGeometry())
@@ -134,6 +135,8 @@ class RestrictionTypeUtils:
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
+        RestrictionsInProposalsLayer.startEditing()
+
         for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
             if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
                 if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
@@ -150,7 +153,7 @@ class RestrictionTypeUtils:
     def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
         QgsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel")
 
-        currRestrictionLayer.startEditing()
+        #currRestrictionLayer.startEditing()
 
         currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
 
@@ -158,6 +161,7 @@ class RestrictionTypeUtils:
 
             currRestrictionLayerTableID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
             idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
+            idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
 
             if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID, currProposalID):
 
@@ -189,7 +193,7 @@ class RestrictionTypeUtils:
                 # Create a new feature using the current details
 
                 idxOpenDate = currRestriction.fieldNameIndex("OpenDate")
-                idxRestrictionTypeID = currRestriction.fieldNameIndex("RestrictionTypeID")
+                #idxRestrictionTypeID = currRestriction.fieldNameIndex("RestrictionTypeID")
                 newRestrictionID = str(uuid.uuid4())
 
                 if currRestriction[idxRestrictionID] is None:
@@ -230,8 +234,7 @@ class RestrictionTypeUtils:
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Closing existing restriction. ID: " + str(
-                            currRestriction[idxRestrictionID]) + " existing Restriction Type: " + str(
-                            currRestriction[idxRestrictionTypeID]),
+                            currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
                     RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
@@ -241,6 +244,7 @@ class RestrictionTypeUtils:
 
                     newRestriction[idxRestrictionID] = newRestrictionID
                     newRestriction[idxOpenDate] = None
+                    newRestriction[idxGeometryID] = None
                     currRestrictionLayer.addFeatures([newRestriction])
 
                     QgsMessageLog.logMessage(
@@ -252,9 +256,15 @@ class RestrictionTypeUtils:
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Opening clone. ID: " + str(
-                            newRestriction[idxRestrictionID]) + " new Restriction Type: " + str(
-                            newRestriction[idxRestrictionTypeID]),
+                            newRestriction[idxRestrictionID]),
                         tag="TOMs panel")
+
+                pass
+
+            # Now commit changes and redraw
+
+            RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+
 
         else:   # currProposal = 0, i.e., no change allowed
 
@@ -271,12 +281,51 @@ class RestrictionTypeUtils:
         "In onSaveRestrictionDetails. Finished",
         tag="TOMs panel")
 
+        #currRestrictionLayer.removeSelection()
+
     @staticmethod
     def setDefaultRestrictionDetails(currRestriction, currRestrictionLayer):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
 
-        if currRestrictionLayer.name() == "Lines" or currRestrictionLayer.name() == "Bays":
-            currRestriction.setAttribute("RestrictionTypeID", 1)  # 1 = SYL (Lines) or Resident Permit Holders Bays (Bays)
-            currRestriction.setAttribute("GeomShapeID", 6)   # 6 = Other
+        if currRestrictionLayer.name() == "Lines":
+            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines) or Resident Permit Holders Bays (Bays)
+            currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
+        elif currRestrictionLayer.name() == "Bays":
+            currRestriction.setAttribute("RestrictionTypeID", 28)  # 28 = Permit Holders Bays (Bays)
+            currRestriction.setAttribute("GeomShapeID", 1)   # 1 = Parallel Bay
         pass
 
+    @staticmethod
+    def commitRestrictionChanges(currRestrictionLayer):
+        # Function to save changes to current layer and to RestrictionsInProposal
+
+        QgsMessageLog.logMessage("In commitRestrictionChanges: ", tag="TOMs panel")
+
+        # save changes to currRestrictionLayer
+        if currRestrictionLayer.commitChanges() <> True:
+            # save the active layer
+
+            reply = QMessageBox.information(None, "Error",
+                                            "Changes to " + currRestrictionLayer.name() + " failed: " + str(
+                                                currRestrictionLayer.commitErrors()),
+                                            QMessageBox.Ok)
+
+        pass
+
+        # save changes to RestrictionsInProposal
+        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+        if RestrictionsInProposalsLayer.isEditable():
+            if RestrictionsInProposalsLayer.commitChanges() <> True:
+
+                reply = QMessageBox.information(None, "Error",
+                                                "Changes to RestrictionsInProposal failed: " + str(
+                                                    RestrictionsInProposalsLayer.commitErrors()),
+                                                QMessageBox.Ok)
+                return
+
+            pass
+
+        pass
+
+        # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view

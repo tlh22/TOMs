@@ -562,7 +562,7 @@ class generateGeometryUtils:
 
         newLine = QgsGeometry.fromPolyline(ptsList)
 
-        # QgsMessageLog.logMessage("In generate_display_geometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
         return newLine
 

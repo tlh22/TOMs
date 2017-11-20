@@ -99,6 +99,8 @@ class TOMsProposalsManager(QObject):
         Whenever the current proposal or the date changes we need to update the canvas.
         """
 
+        QMessageBox.information(None, "Information", ("Entering updateMapCanvas"))
+
         dateString = self.__date.toString('dd-MM-yyyy')
         currProposalID = self.currentProposal()
 
@@ -174,7 +176,7 @@ class TOMsProposalsManager(QObject):
             QgsMessageLog.logMessage("In updateMapCanvas. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
             currRestrictionLayer.setSubsetString(layerFilterString)
 
-        #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
+        QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
         pass
 
     def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
