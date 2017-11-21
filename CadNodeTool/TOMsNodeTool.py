@@ -150,12 +150,16 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
             RestrictionTypeUtils.addRestrictionToProposal(currFeature[idxRestrictionID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_CLOSE_RESTRICTION()) # close the original feature
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", tag="TOMs panel")
+
             RestrictionTypeUtils.addRestrictionToProposal(newRestrictionID, RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
 
-            self.proposalsManager.updateMapCanvas()
+
+            #self.proposalsManager.updateMapCanvas()
 
         pass
+
+        RestrictionTypeUtils.commitRestrictionChanges(currLayer)
 
     def cadCanvasPressEvent(self, e):
 
