@@ -578,9 +578,10 @@ class manageRestrictionDetails():
             RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID,
                                                           ACTION_CLOSE_RESTRICTION())  # 2 = Close
 
-            RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+        # Now save all changes
 
-        #currRestrictionLayer.triggerRepaint()
+        RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+        #currRestrictionLayer.triggerRepaint()  # This shouldn't be required ...
 
 
 

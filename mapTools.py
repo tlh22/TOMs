@@ -313,6 +313,17 @@ class CreateRestrictionTool(QgsMapToolCapture):
         RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
         traceLayersNames = [RoadCasementLayer]
         self.TOMsTracer.setLayers(traceLayersNames)
+
+        # set an extent for the Tracer
+        tracerExtent = iface.mapCanvas().extent()
+        tolerance = 1000.0
+        tracerExtent.setXMaximum(tracerExtent.xMaximum() + tolerance)
+        tracerExtent.setYMaximum(tracerExtent.yMaximum() + tolerance)
+        tracerExtent.setXMinimum(tracerExtent.xMinimum() - tolerance)
+        tracerExtent.setYMinimum(tracerExtent.yMinimum() - tolerance)
+
+        self.TOMsTracer.setExtent(tracerExtent)
+
         #self.TOMsTracer.setMaxFeatureCount(1000)
         self.lastPoint = None
 
@@ -489,10 +500,10 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
             self.iface.openFeatureForm(self.layer, feature, False, False)
 
-    def onAttributeChanged(self, feature, fieldName, value):
+        #def onAttributeChanged(self, feature, fieldName, value):
         # QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("RestrictionID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
 
-        feature.setAttribute(fieldName, value)
+        #feature.setAttribute(fieldName, value)
 
 
 #############################################################################

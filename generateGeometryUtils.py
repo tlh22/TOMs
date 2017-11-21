@@ -343,13 +343,13 @@ class generateGeometryUtils:
     @staticmethod
     def getRestrictionGeometry(feature):
         # Function to control creation of geometry for any restriction
-        # QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
 
         bayWidth = float(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
-        # QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
         bayLength = float(QgsExpressionContextUtils.projectScope().variable("BayLength"))
         bayOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
-        # QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
 
         restGeomType = feature.attribute("GeomShapeID")
 
