@@ -88,6 +88,10 @@ class RestrictionTypeUtils:
             "In addRestrictionToProposal. Before record create. RestrictionID: " + str(restrictionID),
             tag="TOMs panel")
 
+        attrs = newRestrictionsInProposal.attributes()
+
+        #QMessageBox.information(None, "Information", ("addRestrictionToProposal" + str(attrs)))
+
         RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
 
         pass
@@ -143,6 +147,11 @@ class RestrictionTypeUtils:
                     if restrictionInProposal.attribute("ProposalID") == proposalID:
                         QgsMessageLog.logMessage("In deleteRestrictionInProposal - deleting ",
                                                  tag="TOMs panel")
+
+                        attrs = restrictionInProposal.attributes()
+
+                        #QMessageBox.information(None, "Information", ("deleteRestrictionInProposal" + str(attrs)))
+
                         RestrictionsInProposalsLayer.deleteFeature(restrictionInProposal.id())
                         returnStatus = True
                         return returnStatus
@@ -263,7 +272,11 @@ class RestrictionTypeUtils:
 
             # Now commit changes and redraw
 
-            RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+            attrs = currRestriction.attributes()
+
+            #QMessageBox.information(None, "Information", ("currRestriction" + str(attrs)))
+
+            #RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
 
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -300,8 +313,10 @@ class RestrictionTypeUtils:
         # Function to save changes to current layer and to RestrictionsInProposal
 
         QgsMessageLog.logMessage("In commitRestrictionChanges: ", tag="TOMs panel")
+        #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
 
         # save changes to currRestrictionLayer
+
         if currRestrictionLayer.commitChanges() <> True:
             # save the active layer
 
@@ -310,22 +325,27 @@ class RestrictionTypeUtils:
                                                 currRestrictionLayer.commitErrors()),
                                             QMessageBox.Ok)
 
-        pass
+            # Should we rollback?
 
-        # save changes to RestrictionsInProposal
-        RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        else:
 
-        if RestrictionsInProposalsLayer.isEditable():
-            if RestrictionsInProposalsLayer.commitChanges() <> True:
+            # save changes to RestrictionsInProposal
+            RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
-                reply = QMessageBox.information(None, "Error",
-                                                "Changes to RestrictionsInProposal failed: " + str(
-                                                    RestrictionsInProposalsLayer.commitErrors()),
-                                                QMessageBox.Ok)
-                return
+            #QMessageBox.information(None, "Information", ("Committing to RestrictionsInProposalsLayer"))
 
+            if RestrictionsInProposalsLayer.isEditable():
+                if RestrictionsInProposalsLayer.commitChanges() <> True:
+
+                    reply = QMessageBox.information(None, "Error",
+                                                    "Changes to RestrictionsInProposal failed: " + str(
+                                                        RestrictionsInProposalsLayer.commitErrors()),
+                                                    QMessageBox.Ok)
+
+                pass
             pass
-
         pass
+
+
 
         # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
