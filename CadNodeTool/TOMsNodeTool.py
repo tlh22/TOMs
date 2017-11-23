@@ -129,7 +129,10 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
             newFeature[idxRestrictionID] = newRestrictionID
 
             idxOpenDate = currLayer.fieldNameIndex("OpenDate")
+            idxGeometryID = currLayer.fieldNameIndex("GeometryID")
+
             newFeature[idxOpenDate] = None
+            newFeature[idxGeometryID] = None
 
             currLayer.addFeature(newFeature)
 
@@ -159,7 +162,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         pass
 
-        RestrictionTypeUtils.commitRestrictionChanges(currLayer)
+        # RestrictionTypeUtils.commitRestrictionChanges(currLayer)
 
     def cadCanvasPressEvent(self, e):
 

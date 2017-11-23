@@ -18,6 +18,11 @@ from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
 
+from TOMs.constants import (
+    PROPOSAL_STATUS_IN_PREPARATION,
+    PROPOSAL_STATUS_ACCEPTED,
+    PROPOSAL_STATUS_REJECTED
+)
 class proposalsPanel():
     
     def __init__(self, iface, TOMsMenu, proposalsManager):
@@ -109,9 +114,9 @@ class proposalsPanel():
 
         for proposal in self.Proposals.getFeatures():
             currProposalStatusID = proposal.attribute("ProposalStatusID")
-            QgsMessageLog.logMessage("In onInitProposalsPanel. currProposalStatus: " + str(currProposalStatusID),
+            QgsMessageLog.logMessage("In onInitProposalsPanel. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")
-            if currProposalStatusID == 1:  # 1 = "in preparation"
+            if currProposalStatusID == PROPOSAL_STATUS_IN_PREPARATION():  # 1 = "in preparation"
                 currProposalID = proposal.attribute("ProposalID")
                 currProposalTitle = proposal.attribute("ProposalTitle")
                 self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)

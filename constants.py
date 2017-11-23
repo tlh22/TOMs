@@ -23,6 +23,9 @@ from qgis.core import (
 def ACTION_CLOSE_RESTRICTION(): return 2
 def ACTION_OPEN_RESTRICTION(): return 1
 
+def PROPOSAL_STATUS_IN_PREPARATION(): return 1
+def PROPOSAL_STATUS_ACCEPTED(): return 2
+def PROPOSAL_STATUS_REJECTED(): return 3
 
 class TOMsConstants(object):
 
