@@ -112,6 +112,24 @@ class RestrictionTypeUtils:
         return RestrictionsLayers
 
     @staticmethod
+    def getRestrictionsLayerFromID(currRestrictionTableID):
+        # return the layer given the row in "RestrictionLayers"
+        QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
+        idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+
+        for layer in RestrictionsLayers.getFeatures():
+            if layer[idxRestrictionsLayerID] == currRestrictionTableID:
+                currRestrictionLayerName = layer[idxRestrictionsLayerName]
+
+        restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+
+        return restrictionLayer
+
+    @staticmethod
     def getRestrictionLayerTableID(currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
@@ -349,3 +367,40 @@ class RestrictionTypeUtils:
 
 
         # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
+
+    @staticmethod
+    def updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
+        # update the Open/Close date for the restriction
+        QgsMessageLog.logMessage("In updateRestriction. layer: " + str(
+            currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
+            currProposalOpenDate), tag="TOMs panel")
+
+        # idxOpenDate = currRestrictionLayer.fieldNameIndex("OpenDate2")
+        # idxCloseDate = currRestrictionLayer.fieldNameIndex("CloseDate2")
+
+        # clear filter
+        currRestrictionLayer.setSubsetString("")
+
+        for currRestriction in currRestrictionLayer.getFeatures():
+            #QgsMessageLog.logMessage("In updateRestriction. checkRestId: " + currRestriction.attribute("GeometryID"), tag="TOMs panel")
+
+            if currRestriction.attribute("RestrictionID") == currRestrictionID:
+                QgsMessageLog.logMessage(
+                    "In updateRestriction. Action on: " + currRestrictionID + " Action: " + str(currAction),
+                    tag="TOMs panel")
+                if currAction == ACTION_OPEN_RESTRICTION():  # Open
+                    currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                              currRestrictionLayer.fieldNameIndex("OpenDate"),
+                                                              currProposalOpenDate)
+                    QgsMessageLog.logMessage(
+                        "In updateRestriction. " + currRestrictionID + " Opened", tag="TOMs panel")
+                else:  # Close
+                    currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                              currRestrictionLayer.fieldNameIndex("CloseDate"),
+                                                              currProposalOpenDate)
+                    QgsMessageLog.logMessage(
+                        "In updateRestriction. " + currRestrictionID + " Closed", tag="TOMs panel")
+
+                return
+
+        pass

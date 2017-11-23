@@ -398,7 +398,7 @@ class generateGeometryUtils:
 
         # Now get the geometry
 
-        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
@@ -417,9 +417,7 @@ class generateGeometryUtils:
         # Need to check why the project variable function is not working
 
         restrictionID = feature.attribute("RestrictionID")
-        QgsMessageLog.logMessage(
-            "In getDisplayGeometry: New restriction .................................................................... ID: " + str(
-                restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
         # restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         # QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
@@ -562,7 +560,7 @@ class generateGeometryUtils:
 
         newLine = QgsGeometry.fromPolyline(ptsList)
 
-        QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
         return newLine
 
