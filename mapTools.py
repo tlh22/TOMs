@@ -73,64 +73,6 @@ class MapToolMixin:
 
         return tolerance
 
-    def findNearestFeatureAt(self, pos):
-        #  def findFeatureAt(self, pos, excludeFeature=None):
-        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
-
-        """ Find the feature close to the given position.
-
-            'pos' is the position to check, in canvas coordinates.
-
-            if 'excludeFeature' is specified, we ignore this feature when
-            finding the clicked-on feature.
-
-            If no feature is close to the given coordinate, we return None.
-        """
-        mapPt = self.transformCoordinates(pos)
-        #tolerance = self.calcTolerance(pos)
-        tolerance = 0.5
-        searchRect = QgsRectangle(mapPt.x() - tolerance,
-                                  mapPt.y() - tolerance,
-                                  mapPt.x() + tolerance,
-                                  mapPt.y() + tolerance)
-
-        request = QgsFeatureRequest()
-        request.setFilterRect(searchRect)
-        request.setFlags(QgsFeatureRequest.ExactIntersect)
-
-        '''for feature in self.layer.getFeatures(request):
-            if excludeFeature != None:
-                if feature.id() == excludeFeature.id():
-                    continue
-            return feature '''
-
-        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-
-        #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
-        #iface.setActiveLayer(currLayer)
-
-        shortestDistance = float("inf")
-
-        for layerDetails in self.RestrictionLayers.getFeatures():
-
-            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
-
-            # Loop through all features in the layer to find the closest feature
-            for f in self.currLayer.getFeatures(request):
-                dist = f.geometry().distance(QgsGeometry.fromPoint(mapPt))
-                if dist < shortestDistance:
-                    shortestDistance = dist
-                    closestFeature = f
-                    closestLayer = self.currLayer
-
-        QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
-
-        if shortestDistance < float("inf"):
-            return closestFeature, closestLayer
-        else:
-            return None, None
-
-        pass
 
     def findVertexAt(self, feature, pos):
         """ Find the vertex of the given feature close to the given position.
@@ -202,10 +144,13 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
     def __init__(self, iface):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
         self.iface = iface
+
+        #self.featureContextMenu = FeatureContextMenu(self.iface)
+
         #self.proposalsManager = proposalsManager  ??? how to include ???
         #self.closestLayer = layer
         #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
-        self.setCursor(Qt.WhatsThisCursor)
+        #self.setCursor(Qt.WhatsThisCursor)
         # self.setCursor(Qt.ArrowCursor)
 
         ### Should we pick up the change active layer signal here? and deselect from previous layer
@@ -213,6 +158,8 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
     def canvasReleaseEvent(self, event):
         # Return point under cursor
+
+        self.event = event
 
         closestFeature, closestLayer = self.findNearestFeatureAt(event.pos())
 
@@ -243,6 +190,156 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
             # self.onDisplayRestrictionDetails(feature, self.layer)
 
         pass
+
+    def findNearestFeatureAt(self, pos):
+        #  def findFeatureAt(self, pos, excludeFeature=None):
+        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+
+        """ Find the feature close to the given position.
+
+            'pos' is the position to check, in canvas coordinates.
+
+            if 'excludeFeature' is specified, we ignore this feature when
+            finding the clicked-on feature.
+
+            If no feature is close to the given coordinate, we return None.
+        """
+        mapPt = self.transformCoordinates(pos)
+        #tolerance = self.calcTolerance(pos)
+        tolerance = 0.5
+        searchRect = QgsRectangle(mapPt.x() - tolerance,
+                                  mapPt.y() - tolerance,
+                                  mapPt.x() + tolerance,
+                                  mapPt.y() + tolerance)
+
+        request = QgsFeatureRequest()
+        request.setFilterRect(searchRect)
+        request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+        '''for feature in self.layer.getFeatures(request):
+            if excludeFeature != None:
+                if feature.id() == excludeFeature.id():
+                    continue
+            return feature '''
+
+        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
+        #iface.setActiveLayer(currLayer)
+
+        #shortestDistance = float("inf")
+
+        featureList = []
+        layerList = []
+
+        for layerDetails in self.RestrictionLayers.getFeatures():
+
+            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
+
+            # Loop through all features in the layer to find the closest feature
+            for f in self.currLayer.getFeatures(request):
+                # Add any features that are found should be added to a list
+                featureList.append(f)
+                layerList.append(self.currLayer)
+
+                """dist = f.geometry().distance(QgsGeometry.fromPoint(mapPt))
+                if dist < shortestDistance:
+                    shortestDistance = dist
+                    closestFeature = f
+                    closestLayer = self.currLayer"""
+
+        #QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(featureList)), tag="TOMs panel")
+
+        """if shortestDistance < float("inf"):
+            return closestFeature, closestLayer
+        else:
+            return None, None"""
+
+        if len(featureList) == 0:
+            return None, None
+        elif len(featureList) == 1:
+            return featureList[0], layerList[0]
+        else:
+            # set up a context menu
+            QgsMessageLog.logMessage("In findNearestFeatureAt: multiple features: " + str(len(featureList)), tag="TOMs panel")
+
+            feature, layer = self.getFeatureDetails(featureList, layerList)
+            return feature, layer
+            # return self.getFeatureDetails(featureList, layerList)
+
+        pass
+
+    def getFeatureDetails(self, featureList, layerList):
+        QgsMessageLog.logMessage("In getFeatureDetails", tag="TOMs panel")
+
+        self.featureList = featureList
+        self.layerList = layerList
+
+        # Creates the context menu and returns the selected feature and layer
+        QgsMessageLog.logMessage("In getFeatureDetails: nrFeatures: " + str(len(featureList)), tag="TOMs panel")
+
+        #actions = dict()
+        self.actions = []
+        self.menu = QMenu(self.iface.mapCanvas())
+
+        # for _, feature in filtered_features.iteritems():
+        for feature in featureList:
+
+            try:
+
+                title = feature.attribute('GeometryID')
+                QgsMessageLog.logMessage("In featureContextMenu: adding: " + str(title), tag="TOMs panel")
+
+            except TypeError:
+
+                title = " (" + feature.attribute('RestrictionID') + ")"
+
+            action = QAction(title, self.menu)
+            #self.action.triggered.connect(self.onInitProposalsPanel)
+            self.actions.append(action)
+
+            #actions[action] = point
+
+            self.menu.addAction(action)
+
+        QgsMessageLog.logMessage("In getFeatureDetails: showing menu?", tag="TOMs panel")
+
+        # QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
+
+        clicked_action = self.menu.exec_(self.iface.mapCanvas().mapToGlobal(self.event.pos()))
+        QgsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action)), tag="TOMs panel")
+
+        if clicked_action is not None:
+
+            QgsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action.text())),
+                                     tag="TOMs panel")
+            #return self.actions[clicked_action]
+            idxList = self.getIdxFromGeometryID (clicked_action.text(), featureList)
+
+            QgsMessageLog.logMessage("In getfeatureFromGeometryID: idx = " + str(idxList), tag="TOMs panel")
+
+            if idxList >= 0:
+                QgsMessageLog.logMessage("In getfeatureFromGeometryID: feat = " + str(featureList[idxList].attribute('GeometryID')), tag="TOMs panel")
+                return featureList[idxList], layerList[idxList]
+
+        QgsMessageLog.logMessage(("In getFeatureDetails. No action found."), tag="TOMs panel")
+
+        return None, None
+
+    def getIdxFromGeometryID(self, selectedGeometryID, featureList):
+        #
+        QgsMessageLog.logMessage("In getIdxFromGeometryID", tag="TOMs panel")
+
+        idx = -1
+        for feature in featureList:
+            idx = idx + 1
+            if feature.attribute("GeometryID") == selectedGeometryID:
+                return idx
+
+        pass
+
+        return idx
 
 #############################################################################
 
