@@ -26,6 +26,7 @@ from qgis.core import (
 )
 
 from qgis.gui import *
+import functools
 
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
