@@ -15,6 +15,9 @@ Series of functions to deal with restrictionsInProposals. Defined as static func
 from PyQt4.QtGui import (
     QMessageBox
 )
+from PyQt4.QtCore import (
+    QTimer
+)
 
 from qgis.core import (
     QgsExpressionContextUtils,
@@ -294,7 +297,10 @@ class RestrictionTypeUtils:
 
             #QMessageBox.information(None, "Information", ("currRestriction" + str(attrs)))
 
-            #RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+            # Make sure that the saving will not be executed immediately, but
+            # only when the event loop runs into the next iteration to avoid
+            # problems
+            QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
 
         else:   # currProposal = 0, i.e., no change allowed
