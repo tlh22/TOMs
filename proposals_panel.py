@@ -14,6 +14,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 
+import time
+
 from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
@@ -56,7 +58,7 @@ class proposalsPanel():
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
 
         #self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
-        self.dock.filterDate.setDisplayFormat("dd/MM/yyyy")
+        self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
         if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
@@ -70,6 +72,7 @@ class proposalsPanel():
         idxProposalTitle = self.Proposals.fieldNameIndex("ProposalTitle")
         self.idxCreateDate = self.Proposals.fieldNameIndex("ProposalCreateDate")
         self.idxOpenDate = self.Proposals.fieldNameIndex("ProposalOpenDate")
+        self.idxProposalStatusID = self.Proposals.fieldNameIndex("ProposalStatusID")
 
         self.createProposalcb()
 
@@ -90,7 +93,7 @@ class proposalsPanel():
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
 
         # set up action for when new proposal is created
-        self.Proposals.featureAdded.connect(self.createProposalcb)
+        self.Proposals.editingStopped.connect(self.createProposalcb)
 
         #self.dock.setUserVisible(True)
 
@@ -103,6 +106,7 @@ class proposalsPanel():
 
     def createProposalcb(self):
 
+        QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
         self.dock.cb_ProposalsList.clear()
@@ -110,11 +114,17 @@ class proposalsPanel():
         currProposalID = 0
         currProposalTitle = "No proposal shown"
 
+        # A little pause for the db to catch up
+        time.sleep(.1)
+
+        QgsMessageLog.logMessage("In createProposalcb: Adding 0", tag="TOMs panel")
+
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
+
 
         for proposal in self.Proposals.getFeatures():
             currProposalStatusID = proposal.attribute("ProposalStatusID")
-            QgsMessageLog.logMessage("In onInitProposalsPanel. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
+            QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")
             if currProposalStatusID == PROPOSAL_STATUS_IN_PREPARATION():  # 1 = "in preparation"
                 currProposalID = proposal.attribute("ProposalID")
@@ -165,10 +175,11 @@ class proposalsPanel():
 
         newProposal[self.idxCreateDate] = self.proposalsManager.date()
         newProposal[self.idxOpenDate] = self.proposalsManager.date()
+        newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
 
         self.Proposals.startEditing()
 
-        self.iface.openFeatureForm(self.Proposals, newProposal, False)
+        self.iface.openFeatureForm(self.Proposals, newProposal, False, False)
 
         pass
 
