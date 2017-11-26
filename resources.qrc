@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/Test5Class" >
+    <qresource prefix="/plugins/TOMs" >
         <file>resources/mActionAddTrack.svg</file>
         <file>resources/mActionAddLine.svg</file>
         <file>resources/mActionFindShortestPath.svg</file>
@@ -14,7 +14,11 @@
 
         <file>resources/point.png</file>
         <file>resources/mActionSelect.png</file>
-
+        <file>resources/CreateConstructionLine.svg</file>
+        <file>resources/TOMsStart.svg</file>
+        <file>resources/TOMsStart2.svg</file>
+        <file>resources/TOMsStart.png</file>
+        <file>resources/TOMsStart3.png</file>
         <file>resources/line.png</file>
 
         <file>resources/pointandline.png</file>

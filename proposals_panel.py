@@ -19,6 +19,7 @@ import time
 from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
+from .manage_restriction_details import manageRestrictionDetails
 
 from TOMs.constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
@@ -27,18 +28,32 @@ from TOMs.constants import (
 )
 class proposalsPanel():
     
-    def __init__(self, iface, TOMsMenu, proposalsManager):
+    def __init__(self, iface, TOMsToolBar, proposalsManager):
+        #def __init__(self, iface, TOMsMenu, proposalsManager):
+
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
+        self.TOMsToolBar = TOMsToolBar
         self.proposalsManager = proposalsManager
 
-        self.actionProposalsPanel = QAction("Proposals Panel", self.iface.mainWindow())
-        TOMsMenu.addAction(self.actionProposalsPanel)
+        self.actionProposalsPanel = QAction(QIcon(":/plugins/TOMs/resources/TOMsStart.png"),
+                               QCoreApplication.translate("MyPlugin", "Start TOMs"), self.iface.mainWindow())
+        self.actionProposalsPanel.setCheckable(True)
+
+        self.TOMsToolBar.addAction(self.actionProposalsPanel)
+
         self.actionProposalsPanel.triggered.connect(self.onInitProposalsPanel)
 
         self.acceptProposal = False
         self.newProposalRequired = False
+
+        # Now set up the toolbar
+
+        self.RestrictionTools = manageRestrictionDetails(self.iface, self.TOMsToolBar, self.proposalsManager)
+        self.RestrictionTools.disableTOMsToolbarItems()
+
+        pass
 
     def onInitProposalsPanel(self):
         """Filter main layer based on date and state options"""
@@ -51,20 +66,40 @@ class proposalsPanel():
         #    first run of plugin
         #    removed on close (see self.onClosePlugin method)
 
+        if self.actionProposalsPanel.isChecked():
+
+            QgsMessageLog.logMessage("In onInitProposalsPanel. Activating ...", tag="TOMs panel")
+
+            self.openTOMsTools()
+
+        else:
+
+            QgsMessageLog.logMessage("In onInitProposalsPanel. Deactivating ...", tag="TOMs panel")
+
+            self.closeTOMsTools()
+
+        pass
+
+    def openTOMsTools(self):
+        # actions when the Proposals Panel is closed or the toolbar "start" is toggled
+
+        QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
+
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
+        self.dock.closingPlugin.connect(self.closeTOMsTools)
 
         self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
 
-        #self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
+        # self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
         self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
         if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(),"ERROR", ("Table Proposals is not present"))
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
             raise LayerNotPresent
 
         # Set up field details for table  ** what about errors here **
@@ -95,13 +130,33 @@ class proposalsPanel():
         # set up action for when new proposal is created
         self.Proposals.editingStopped.connect(self.createProposalcb)
 
-        #self.dock.setUserVisible(True)
+        # self.dock.setUserVisible(True)
 
         # set up a canvas refresh if there are any changes to the restrictions
         self.RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        #self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+        # self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
         self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
         self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
+
+        self.RestrictionTools.enableTOMsToolbarItems()
+
+        pass
+
+    def closeTOMsTools(self):
+        # actions when the Proposals Panel is closed or the toolbar "start" is toggled
+
+        QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel")
+
+        self.actionProposalsPanel.setChecked(False)
+
+        # Now close the proposals panel
+
+        self.dock.close()
+
+        # Now disable the items from the Toolbar
+
+        self.RestrictionTools.disableTOMsToolbarItems()
+
         pass
 
     def createProposalcb(self):
