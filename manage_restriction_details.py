@@ -46,69 +46,74 @@ import functools
 class manageRestrictionDetails():
     
     def __init__(self, iface, TOMsToolbar, proposalsManager):
+
+        QgsMessageLog.logMessage("In manageRestrictionDetails::init", tag="TOMs panel")
+
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.proposalsManager = proposalsManager
+        self.TOMsToolbar = TOMsToolbar
         #self.constants = TOMsConstants()
 
+        # This will set up the items on the toolbar
         # Create actions
-        self.actionSelectRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionSelect.png"),
+        self.actionSelectRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionSelect.png"),
                                QCoreApplication.translate("MyPlugin", "Select"),
                                self.iface.mainWindow())
         self.actionSelectRestriction.setCheckable(True)
 
-        self.actionRestrictionDetails = QAction(QIcon(":/plugins/Test5Class/resources/mActionGetInfo.svg"),
+        self.actionRestrictionDetails = QAction(QIcon(":/plugins/TOMs/resources/mActionGetInfo.svg"),
                                QCoreApplication.translate("MyPlugin", "Get Details"),
                                self.iface.mainWindow())
         #self.actionRestrictionDetails.setCheckable(True)
 
-        self.actionCreateBayRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddTrack.svg"),
+        self.actionCreateBayRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionAddTrack.svg"),
                                QCoreApplication.translate("MyPlugin", "Create Bay"),
                                self.iface.mainWindow())
         self.actionCreateBayRestriction.setCheckable(True)
 
-        self.actionCreateLineRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionAddLine.svg"),
+        self.actionCreateLineRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionAddLine.svg"),
                                QCoreApplication.translate("MyPlugin", "Create Line"),
                                self.iface.mainWindow())
         self.actionCreateLineRestriction.setCheckable(True)
 
-        self.actionCreatePolygonRestriction = QAction(QIcon(":/plugins/Test5Class/resources/rpolygonBy2Corners.svg"),
+        self.actionCreatePolygonRestriction = QAction(QIcon(":/plugins/TOMs/resources/rpolygonBy2Corners.svg"),
                                QCoreApplication.translate("MyPlugin", "Create Polygon"),
                                self.iface.mainWindow())
         self.actionCreatePolygonRestriction.setCheckable(True)
 
-        self.actionCreateSignRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionSetEndPoint.svg"),
+        self.actionCreateSignRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionSetEndPoint.svg"),
                                QCoreApplication.translate("MyPlugin", "Create Sign"),
                                self.iface.mainWindow())
         self.actionCreateSignRestriction.setCheckable(True)
 
-        self.actionRemoveRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionDeleteTrack.svg"),
+        self.actionRemoveRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionDeleteTrack.svg"),
                                QCoreApplication.translate("MyPlugin", "Remove Restriction"),
                                self.iface.mainWindow())
         #self.actionRemoveRestriction.setCheckable(True)
 
-        self.actionEditRestriction = QAction(QIcon(":/plugins/Test5Class/resources/mActionEdit.svg"),
+        self.actionEditRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionEdit.svg"),
                                QCoreApplication.translate("MyPlugin", "Edit Restriction"),
                                self.iface.mainWindow())
         #self.actionEditRestriction.setCheckable(True)
 
-        self.actionCreateConstructionLine = QAction(QIcon(":/plugins/Test5Class/resources/orthopointandline.png"),
+        self.actionCreateConstructionLine = QAction(QIcon(":/plugins/TOMs/resources/CreateConstructionLine.svg"),
                                QCoreApplication.translate("MyPlugin", "Create construction line"),
                                self.iface.mainWindow())
         self.actionCreateConstructionLine.setCheckable(True)
 
 
         # Add actions to the toolbar
-        TOMsToolbar.addAction(self.actionSelectRestriction)
-        TOMsToolbar.addAction(self.actionRestrictionDetails)
-        TOMsToolbar.addAction(self.actionCreateBayRestriction)
-        TOMsToolbar.addAction(self.actionCreateLineRestriction)
-        TOMsToolbar.addAction(self.actionCreatePolygonRestriction)
-        TOMsToolbar.addAction(self.actionCreateSignRestriction)
-        TOMsToolbar.addAction(self.actionRemoveRestriction)
-        TOMsToolbar.addAction(self.actionEditRestriction)
-        TOMsToolbar.addAction(self.actionCreateConstructionLine)
+        self.TOMsToolbar.addAction(self.actionSelectRestriction)
+        self.TOMsToolbar.addAction(self.actionRestrictionDetails)
+        self.TOMsToolbar.addAction(self.actionCreateBayRestriction)
+        self.TOMsToolbar.addAction(self.actionCreateLineRestriction)
+        self.TOMsToolbar.addAction(self.actionCreatePolygonRestriction)
+        self.TOMsToolbar.addAction(self.actionCreateSignRestriction)
+        self.TOMsToolbar.addAction(self.actionRemoveRestriction)
+        self.TOMsToolbar.addAction(self.actionEditRestriction)
+        self.TOMsToolbar.addAction(self.actionCreateConstructionLine)
 
         # Connect action signals to slots
         self.actionSelectRestriction.triggered.connect(self.doSelectRestriction)
@@ -120,6 +125,39 @@ class manageRestrictionDetails():
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
+
+        pass
+
+    def enableTOMsToolbarItems(self):
+
+        QgsMessageLog.logMessage("In disableTOMsToolbarItems", tag="TOMs panel")
+
+        self.actionSelectRestriction.setEnabled(True)
+        self.actionRestrictionDetails.setEnabled(True)
+        self.actionCreateBayRestriction.setEnabled(True)
+        self.actionCreateLineRestriction.setEnabled(True)
+        self.actionCreatePolygonRestriction.setEnabled(True)
+        self.actionCreateSignRestriction.setEnabled(True)
+        self.actionRemoveRestriction.setEnabled(True)
+        self.actionEditRestriction.setEnabled(True)
+        self.actionCreateConstructionLine.setEnabled(True)
+
+        pass
+
+
+    def disableTOMsToolbarItems(self):
+
+        QgsMessageLog.logMessage("In disableTOMsToolbarItems", tag="TOMs panel")
+
+        self.actionSelectRestriction.setEnabled(False)
+        self.actionRestrictionDetails.setEnabled(False)
+        self.actionCreateBayRestriction.setEnabled(False)
+        self.actionCreateLineRestriction.setEnabled(False)
+        self.actionCreatePolygonRestriction.setEnabled(False)
+        self.actionCreateSignRestriction.setEnabled(False)
+        self.actionRemoveRestriction.setEnabled(False)
+        self.actionEditRestriction.setEnabled(False)
+        self.actionCreateConstructionLine.setEnabled(False)
 
         pass
 

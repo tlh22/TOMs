@@ -102,11 +102,11 @@ class TOMs:
 
         self.proposalsManager = TOMsProposalsManager()
 
-        self.editing    = False
-        self.curStartPt = None
-        self.curEndPt   = None
+        #self.editing    = False
+        #self.curStartPt = None
+        #self.curEndPt   = None
 
-        self.TOMsMenu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
+        """self.TOMsMenu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
 
         # If the menu does not exist, create it!
         if not self.TOMsMenu:
@@ -132,7 +132,7 @@ class TOMs:
 
             QgsMessageLog.logMessage("Menu already exists", tag="TOMs panel")
             
-            self.TOMsMenu.menuAction().setVisible( True )
+            self.TOMsMenu.menuAction().setVisible( True )"""
 
         # set up menu. Is there a generic way to do this? from an xml file?
         
@@ -143,7 +143,8 @@ class TOMs:
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")
         self.TOMsToolbar.setObjectName("TOMs Toolbar")
-        self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
+        #self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
+        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar, self.proposalsManager)
 
         pass
 
@@ -153,9 +154,9 @@ class TOMs:
         unregisterFunctions()  # unregister all the Expression functions used
 
         # Remove TOMs menu
-        self.menu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
+        """self.menu = self.iface.mainWindow().findChild( QMenu, 'TOMs' )
         if self.menu:
-            self.menu.menuAction().setVisible( False )
+            self.menu.menuAction().setVisible( False )"""
 
         '''
         for action in self.actions:
