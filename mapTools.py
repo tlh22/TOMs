@@ -560,6 +560,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
                                      tag="TOMs panel")
 
             if self.layer.name() == "ConstructionLines":
+                self.layer.addFeature(feature)
                 pass
             else:
 
@@ -571,31 +572,33 @@ class CreateRestrictionTool(QgsMapToolCapture):
 
                 RestrictionTypeUtils.setDefaultRestrictionDetails(feature, self.layer)
 
-            # is there any other tidying to do ??
+                # is there any other tidying to do ??
 
-            #self.layer.startEditing()
-            #dialog = self.iface.getFeatureForm(self.layer, feature)
+                #self.layer.startEditing()
+                #dialog = self.iface.getFeatureForm(self.layer, feature)
 
-            #currForm = dialog.attributeForm()
-            #currForm.disconnectButtonBox()
+                #currForm = dialog.attributeForm()
+                #currForm.disconnectButtonBox()
 
-            QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(self.layer.name()),
-                                     tag="TOMs panel")
+                QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(self.layer.name()),
+                                         tag="TOMs panel")
 
-            #button_box = currForm.findChild(QDialogButtonBox, "button_box")
-            #button_box.accepted.disconnect(currForm.accept)
+                #button_box = currForm.findChild(QDialogButtonBox, "button_box")
+                #button_box.accepted.disconnect(currForm.accept)
 
-            # Disconnect the signal that QGIS has wired up for the dialog to the button box.
-            # button_box.accepted.disconnect(restrictionsDialog.accept)
-            # Wire up our own signals.
-            #button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, feature, self.layer, currForm))
-            #button_box.rejected.connect(dialog.reject)
+                # Disconnect the signal that QGIS has wired up for the dialog to the button box.
+                # button_box.accepted.disconnect(restrictionsDialog.accept)
+                # Wire up our own signals.
+                #button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, feature, self.layer, currForm))
+                #button_box.rejected.connect(dialog.reject)
 
-            # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
-            #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
-            # Can we now implement the logic from the form code ???
+                # To allow saving of the original feature, this function follows changes to attributes within the table and records them to the current feature
+                #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
+                # Can we now implement the logic from the form code ???
 
-            self.iface.openFeatureForm(self.layer, feature, False, False)
+                self.iface.openFeatureForm(self.layer, feature, False, False)
+
+            pass
 
         #def onAttributeChanged(self, feature, fieldName, value):
         # QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("RestrictionID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
