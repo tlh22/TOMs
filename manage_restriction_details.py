@@ -198,6 +198,9 @@ class manageRestrictionDetails():
         self.mapTool.setAction(self.actionRestrictionDetails)
         self.iface.mapCanvas().setMapTool(self.mapTool)"""
 
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
         currRestrictionLayer = self.iface.activeLayer()
 
         #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
@@ -205,10 +208,11 @@ class manageRestrictionDetails():
         if currRestrictionLayer:
 
             QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
-            currRestrictionLayer.startEditing()
 
             if currRestrictionLayer.selectedFeatureCount() > 0:
 
+                if currProposalID > 0:
+                    currRestrictionLayer.startEditing()
                 selectedRestrictions = currRestrictionLayer.selectedFeatures()
                 for currRestriction in selectedRestrictions:
                     self.iface.openFeatureForm(currRestrictionLayer, currRestriction)
@@ -665,6 +669,8 @@ class manageRestrictionDetails():
                 QgsMessageLog.logMessage("In doEditRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
                 if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                    # save the current feature
 
                     self.mapTool = TOMsNodeTool(self.iface,
                                                 self.proposalsManager)  # This is where we use the Node Tool ... need canvas and panel??

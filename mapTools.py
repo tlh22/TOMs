@@ -235,7 +235,8 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         if closestLayer == None:
 
-            self.iface.activeLayer().removeSelection()
+            if self.iface.activeLayer():
+                self.iface.activeLayer().removeSelection()
 
         else:
 

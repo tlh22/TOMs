@@ -302,8 +302,7 @@ class RestrictionTypeUtils:
             # Make sure that the saving will not be executed immediately, but
             # only when the event loop runs into the next iteration to avoid
             # problems
-            QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
-
+            #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
 
