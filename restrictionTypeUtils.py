@@ -27,6 +27,7 @@ from qgis.core import (
 
 from qgis.gui import *
 import functools
+import time
 
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
@@ -360,6 +361,7 @@ class RestrictionTypeUtils:
             #QMessageBox.information(None, "Information", ("Committing to RestrictionsInProposalsLayer"))
 
             if RestrictionsInProposalsLayer.isEditable():
+                time.sleep(.300)
                 if RestrictionsInProposalsLayer.commitChanges() <> True:
 
                     reply = QMessageBox.information(None, "Error",

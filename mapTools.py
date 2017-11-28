@@ -73,6 +73,72 @@ class MapToolMixin:
 
         return tolerance
 
+    def findNearestFeatureAt(self, pos):
+        #  def findFeatureAt(self, pos, excludeFeature=None):
+        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+
+        """ Find the feature close to the given position.
+
+            'pos' is the position to check, in canvas coordinates.
+
+            if 'excludeFeature' is specified, we ignore this feature when
+            finding the clicked-on feature.
+
+            If no feature is close to the given coordinate, we return None.
+        """
+        mapPt = self.transformCoordinates(pos)
+        #tolerance = self.calcTolerance(pos)
+        tolerance = 0.5
+        searchRect = QgsRectangle(mapPt.x() - tolerance,
+                                  mapPt.y() - tolerance,
+                                  mapPt.x() + tolerance,
+                                  mapPt.y() + tolerance)
+
+        request = QgsFeatureRequest()
+        request.setFilterRect(searchRect)
+        request.setFlags(QgsFeatureRequest.ExactIntersect)
+
+        '''for feature in self.layer.getFeatures(request):
+            if excludeFeature != None:
+                if feature.id() == excludeFeature.id():
+                    continue
+            return feature '''
+
+        self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
+        #iface.setActiveLayer(currLayer)
+
+        shortestDistance = float("inf")
+
+        featureList = []
+        layerList = []
+
+        for layerDetails in self.RestrictionLayers.getFeatures():
+
+            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
+
+            # Loop through all features in the layer to find the closest feature
+            for f in self.currLayer.getFeatures(request):
+                # Add any features that are found should be added to a list
+                featureList.append(f)
+                layerList.append(self.currLayer)
+
+                dist = f.geometry().distance(QgsGeometry.fromPoint(mapPt))
+                if dist < shortestDistance:
+                    shortestDistance = dist
+                    closestFeature = f
+                    closestLayer = self.currLayer
+
+        #QgsMessageLog.logMessage("In findNearestFeatureAt: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(featureList)), tag="TOMs panel")
+
+        if shortestDistance < float("inf"):
+            return closestFeature, closestLayer
+        else:
+            return None, None
+
+        pass
 
     def findVertexAt(self, feature, pos):
         """ Find the vertex of the given feature close to the given position.
@@ -161,7 +227,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         self.event = event
 
-        closestFeature, closestLayer = self.findNearestFeatureAt(event.pos())
+        closestFeature, closestLayer = self.findNearestFeatureAtC(event.pos())
 
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
@@ -191,7 +257,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         pass
 
-    def findNearestFeatureAt(self, pos):
+    def findNearestFeatureAtC(self, pos):
         #  def findFeatureAt(self, pos, excludeFeature=None):
         # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 

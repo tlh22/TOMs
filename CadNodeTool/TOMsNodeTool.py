@@ -19,6 +19,7 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
 import uuid
+import functools
 
 from TOMs.CadNodeTool.nodetool import NodeTool
 
@@ -77,8 +78,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         #RestInProp.editCommandEnded.connect(self.proposalsManager.updateMapCanvas())
 
-    def deactivate(self):
-        pass
+    """def deactivate(self):
+        pass """
 
     def THgetFeature(self, fid, layer):
         fids = [fid]
@@ -113,7 +114,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         #currRestrictionRestrictionID = currFeature[idxRestrictionID]
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionRestrictionID: " + str(currFeature[idxRestrictionID]), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(currFeature[idxRestrictionID]), tag="TOMs panel")
 
         if not RestrictionTypeUtils.restrictionInProposal(currFeature[idxRestrictionID], RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal()):
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
@@ -163,6 +164,11 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
         pass
 
         # RestrictionTypeUtils.commitRestrictionChanges(currLayer)
+        #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currLayer))
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - resetting geometry changed event.", tag="TOMs panel")
+
+        currLayer.geometryChanged.connect(self.onGeometryChanged)
 
     def cadCanvasPressEvent(self, e):
 
@@ -176,11 +182,11 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         # Check if the closest layer is the current active layer
 
-        if closestLayer:   # if nothing was found
+        if closestLayer == self.iface.activeLayer():
 
             #self.iface.mapCanvas().unsetMapTool(self)
             closestLayer.startEditing()
-            self.iface.setActiveLayer(closestLayer)  # returns bool
+            # self.iface.setActiveLayer(closestLayer)  # returns bool
             #self.iface.mapCanvas().setMapTool(self)
 
             #self.iface.canvas().setCurrentLayer(closestLayer)
@@ -191,7 +197,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
             # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
 
-            self.origFeature.setFeature(closestFeature)
+            selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
+            self.origFeature.setFeature(selectedRestriction)
 
             closestLayer.geometryChanged.connect(self.onGeometryChanged)
 
