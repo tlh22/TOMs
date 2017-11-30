@@ -76,25 +76,10 @@ class TOMs:
         # self.menu = self.tr(u'&Test5')
         # TODO: We are going to let the user set this up in a future iteration
 
-        # Set up log file and collect any relevant messages
-        logFilePath = os.environ['QGIS_LOGFILE_PATH']
-        QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
-        if logFilePath:
-            logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
-            self.filename = os.path.join(logFilePath, logfile)
-            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
-            QgsMessageLog.instance().messageReceived.connect(self.write_log_message)
-
 
         QgsMessageLog.logMessage("Finished init", tag="TOMs panel")
         #self.toolbar = self.iface.addToolBar(u'Test5Class')
         #self.toolbar.setObjectName(u'Test5Class')
-
-
-    def write_log_message(self, message, tag, level):
-        filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
-        with open(self.filename, 'a') as logfile:
-            logfile.write('{tag}({level}): {message}\n'.format(tag=tag, level=level, message=message))
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
