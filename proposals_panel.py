@@ -157,6 +157,10 @@ class proposalsPanel():
 
         self.RestrictionTools.disableTOMsToolbarItems()
 
+        # Now clear the filters
+
+        self.proposalsManager.clearRestrictionFilters()
+
         pass
 
     def createProposalcb(self):

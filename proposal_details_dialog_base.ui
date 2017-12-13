@@ -129,7 +129,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QTextEdit" name="ProposalNotes">
+  <widget class="QTextEdit" name="Notes">
    <property name="geometry">
     <rect>
      <x>120</x>

@@ -179,6 +179,42 @@ class TOMsProposalsManager(QObject):
         QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
         pass
 
+    def clearRestrictionFilters(self):
+        # This is to be used at the close of the plugin to clear any filters that have been set
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        else:
+            QMessageBox.information(None, "ERROR", ("Table RestrictionLayers is not present"))
+            return
+
+        # loop through all the layers that might have restrictions
+
+        listRestrictionLayers = self.RestrictionLayers.getFeatures()
+
+        for currLayerDetails in listRestrictionLayers:
+
+            # get the layer from the name
+
+            currLayerID = currLayerDetails["id"]
+            currLayerName = currLayerDetails["RestrictionLayerName"]
+            QgsMessageLog.logMessage(
+                "In clearRestrictionFilters. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
+
+            if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+                currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
+            else:
+                QMessageBox.information(None, "ERROR",
+                                        ("Table " + currLayerName + " is not present"))
+                return
+
+            layerFilterString = ''
+
+            # Now apply filter to the layer
+            currRestrictionLayer.setSubsetString(layerFilterString)
+
+        pass
+
     def getRestrictionsInProposal(self, layerID, proposalID, proposedAction):
         # Will return a (comma separated) string with the list of restrictions within a Proposal
         #QgsMessageLog.logMessage("In getRestrictionsInProposal. layerID: " + str(layerID) + " proposalID: " + str(proposalID) + " proposedAction: " + str(proposedAction), tag="TOMs panel")
