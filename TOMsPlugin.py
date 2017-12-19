@@ -77,9 +77,12 @@ class TOMs:
         # TODO: We are going to let the user set this up in a future iteration
 
         # Set up log file and collect any relevant messages
-        logFilePath = os.environ['QGIS_LOGFILE_PATH']
-        QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
+        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+
         if logFilePath:
+
+            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
+
             logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
             self.filename = os.path.join(logFilePath, logfile)
             QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
