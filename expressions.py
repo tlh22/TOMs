@@ -103,6 +103,7 @@ functions = [
 ]
 
 def registerFunctions():
+
     for func in functions:
         QgsMessageLog.logMessage("Considering function {}".format(func.name()), tag="TOMs panel")
         try:
@@ -122,3 +123,5 @@ def unregisterFunctions():
         QgsExpression.unregisterFunction(func.name())
         QgsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), tag="TOMs panel")
         del qgis.toms_functions[func.name()]
+
+    QgsExpression.cleanRegisteredFunctions()

@@ -145,22 +145,50 @@ class generateGeometryUtils:
     def determineRoadName(feature):
 
         QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel")
+        QgsMessageLog.logMessage("In setRoadName(helper)2:", tag="TOMs panel")
 
         RoadCasementLayer = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
 
         # take the first point from the geometry
         QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().exportToWkt()), tag="TOMs panel")
 
-        if feature.geometry().type() == 0: # Point
-            secondPt = feature.geometry().asPoint()
-        elif feature.geometry().type() == 1: # Line
-            ptList = feature.geometry().asPolyline()
-            secondPt = ptList[
-                0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
-        elif feature.geometry().type() == 2: # Polygon
-            ptList = feature.geometry().asPolygon()[0]
-            secondPt = ptList[
-                0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+        """line = generateGeometryUtils.getLineForAz(feature)
+
+        if len(line) == 0:
+            return 0
+
+        testPt = line[
+            0]
+        """
+        geom = feature.geometry()
+        # line = QgsGeometry()
+
+        tolerance_nearby = 5.0  # somehow need to have this (and layer names) as global variables
+
+        if geom:
+            if geom.type() == QGis.Line:
+                QgsMessageLog.logMessage("In setRoadName(helper): considering line", tag="TOMs panel")
+                line = generateGeometryUtils.getLineForAz(feature)
+
+                if len(line) == 0:
+                    return None, None
+
+                testPt = line[0]
+                #ptList = feature.geometry().asPolyline()
+                #secondPt = ptList[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
+            elif geom.type() == QGis.Point: # Point
+                QgsMessageLog.logMessage("In setRoadName(helper): considering point", tag="TOMs panel")
+                testPt = feature.geometry().asPoint()
+
+                #tolerance_nearby = 5.0
+
+            elif feature.geometry().type() == QGis.Polygon: # Polygon
+                QgsMessageLog.logMessage("In setRoadName(helper): considering polygon", tag="TOMs panel")
+                ptList = feature.geometry().asPolygon()[0]
+                testPt = ptList[
+                    0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+
         else:
             QgsMessageLog.logMessage("In setRoadName: unknown geometry type", tag="TOMs panel")
             return
@@ -168,21 +196,21 @@ class generateGeometryUtils:
         #nrPts = len(ptList)
         #QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel")
 
-        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(secondPt.x()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
         # check for the feature within RoadCasement_NSG_StreetName layer
-        tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
+        #tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
 
-        nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, secondPt, RoadCasementLayer,
+        nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, testPt, RoadCasementLayer,
                                                                 tolerance_nearby)
 
         if nearestRC_feature:
             # QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().exportToWkt(), tag="TOMs panel")
 
-            idx_Street_Descriptor = RoadCasementLayer.fieldNameIndex('Street_Descriptor')
+            idx_StreetName = RoadCasementLayer.fieldNameIndex('StreetName')
             idx_USRN = RoadCasementLayer.fieldNameIndex('USRN')
 
-            StreetName = nearestRC_feature.attributes()[idx_Street_Descriptor]
+            StreetName = nearestRC_feature.attributes()[idx_StreetName]
             USRN = nearestRC_feature.attributes()[idx_USRN]
 
             QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
@@ -207,7 +235,7 @@ class generateGeometryUtils:
         # - existence of geoemtry
         # - whether or not it is multi-part
 
-        # QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel")
 
         geom = feature.geometry()
         # line = QgsGeometry()
@@ -218,10 +246,13 @@ class generateGeometryUtils:
                     lines = geom.asMultiPolyline()
                     nrLines = len(lines)
 
-                    # QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+                    #QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().exportToWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
 
                     # take the first line as the one we are interested in
-                    line = lines[0]
+                    if nrLines > 0:
+                        line = lines[0]
+                    else:
+                        return 0
                     """for idxLine in range(nrLines):
                         line = lines[idxLine]"""
 
@@ -232,11 +263,11 @@ class generateGeometryUtils:
                 return line
 
             else:
-                # QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
+                QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
                 return 0
 
         else:
-            # QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
+            QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
             return 0
 
     @staticmethod
@@ -323,7 +354,7 @@ class generateGeometryUtils:
             If no feature is close to the given coordinate, we return None.
         """
 
-        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer) + "tol: " + str(tolerance), tag="TOMs panel")
 
         searchRect = QgsRectangle(layerPt.x() - tolerance,
                                   layerPt.y() - tolerance,
@@ -412,15 +443,15 @@ class generateGeometryUtils:
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation):
         # Obtain relevant variables
-        # QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
 
         # Need to check why the project variable function is not working
 
-        restrictionID = feature.attribute("RestrictionID")
+        restrictionID = feature.attribute("GeometryID")
         #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
         # restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
-        # QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
 
         # Need to check feature class. If it is a bay, obtain the number
         # nrBays = feature.attribute("nrBays")
