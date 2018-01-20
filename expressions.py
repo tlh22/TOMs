@@ -85,21 +85,43 @@ def generate_ZigZag(feature, parent):
 
     try:
         QgsMessageLog.logMessage(
-            "In generate_ZigZag: New restriction .................................................................... ID: ", tag="TOMs panel")
+            "In getLabelLeader ", tag="TOMs panel")
 
         res = generateGeometryUtils.zigzag(feature, 2, 1)
     except:
-        QgsMessageLog.logMessage('generate_ZigZag error in expression function: {}'.format(sys.exc_info()[0]), tag="TOMs panel")
+        QgsMessageLog.logMessage('generate_ZigZag error in expression function: {}'.format(sys.exc_info()[0]),
+                                 tag="TOMs panel")
 
     return res
 
+    return newUSRN
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def getLabelLeader(feature, parent):
+	# If the scale is within range (< 1250) and the label has been moved, create a line
+
+    labelLeaderGeom = generateGeometryUtils.generateLabelLeader(feature)
+
+    return labelLeaderGeom
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
+def getWaitingRestrictionLabelText(feature, parent):
+	# Returns the text to label the feature
+
+    QgsMessageLog.logMessage("In getWaitingRestrictionLabelText:", tag="TOMs panel")
+
+    #labelText = generateGeometryUtils.WaitingRestrictionLabelText(feature)
+    labelText = "Testing"
+    return labelText
 
 functions = [
     generate_display_geometry,
     getAzimuthToRoadCentreLine,
     getRoadName,
     getUSRN,
-    generate_ZigZag
+    generate_ZigZag,
+    getLabelLeader,
+    getWaitingRestrictionLabelText
 ]
 
 def registerFunctions():

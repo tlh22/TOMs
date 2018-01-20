@@ -21,11 +21,13 @@ from qgis.core import (
     QgsFeatureRequest,
     QgsPoint,
     QgsRectangle,
-    QgsVectorLayer,
+    QgsVectorLayer
     # QgsWkbTypes
 )
 
 from qgis.core import *
+from qgis.gui import *
+from qgis.utils import iface
 
 import math
 from cmath import rect, phase
@@ -388,7 +390,7 @@ class generateGeometryUtils:
 
         orientation = 0
 
-        if restGeomType == 1:  # 1 = Parallel (bay)
+        if restGeomType == 1 or restGeomType == 21:  # 1 = Parallel (bay)
             offset = bayOffsetFromKerb
             shpExtent = bayWidth
         elif restGeomType == 2:  # 2 = half on/half off
@@ -397,10 +399,10 @@ class generateGeometryUtils:
         elif restGeomType == 3:  # 3 = on pavement
             offset = 0
             shpExtent = 0
-        elif restGeomType == 4:  # 4 = Perpendicular
+        elif restGeomType == 4 or restGeomType == 24:  # 4 = Perpendicular
             offset = bayOffsetFromKerb
             shpExtent = bayLength
-        elif restGeomType == 5:  # 5 = Echelon
+        elif restGeomType == 5  or restGeomType == 25:  # 5 = Echelon
             offset = bayOffsetFromKerb
             shpExtent = bayLength
             orientation = feature.attribute("BayOrientation")
@@ -409,7 +411,10 @@ class generateGeometryUtils:
         elif restGeomType == 6:  # 6 = Perpendicular on pavement
             offset = 0
             shpExtent = 0
-        elif restGeomType == 7:  # 6 = Other
+        elif restGeomType == 7:  # 7 = Other
+            offset = 0
+            shpExtent = 0
+        elif restGeomType == 8 or restGeomType == 28:  # 8 = Outline
             offset = 0
             shpExtent = 0
         elif restGeomType == 10:  # 10 = Parallel (line)
@@ -429,7 +434,7 @@ class generateGeometryUtils:
 
         # Now get the geometry
 
-        #QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
@@ -438,12 +443,76 @@ class generateGeometryUtils:
             outputGeometry = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation)
 
+        QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+
+        #if feature.attribute("RestrictionTypeID") == 18:  # Greenway Parking Bay
+        if restGeomType >= 20:  # Polygon
+
+            if restGeomType in [21, 24, 25]:
+                outputGeometry1 = outputGeometry
+                # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
+                outputGeometry2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
+                                                                         orientation)
+                # remove the first and the last points
+
+                #ptsList = []
+                vertices = outputGeometry2A.asPolyline()
+
+                QgsMessageLog.logMessage(
+                    "In getRestrictionGeometry - nrPts in 2A:  " + str(len(vertices)),
+                    tag="TOMs panel")
+
+                """outputGeometry2A.deleteVertex(len(vertices) - 1)
+                outputGeometry2A.deleteVertex(0)
+    
+                vertices2 = outputGeometry2A.asPolyline()
+    
+                QgsMessageLog.logMessage(
+                    "In getRestrictionGeometry - nrPts in 2A - 2:  " + str(len(vertices2)),
+                    tag="TOMs panel")
+    
+                for v in vertices2:
+                    ptsList.append(v)
+    
+                outputGeometry2B = QgsGeometry.fromPolygon([ptsList])"""
+
+                # ... and combine the two geometries
+                newGeometry = outputGeometry1.combine(outputGeometry2A)
+
+            else:
+
+                newGeometry = outputGeometry
+
+            QgsMessageLog.logMessage(
+                "In getRestrictionGeometry - newGeometry prepared for " + str(feature.attribute("GeometryID")),
+                tag="TOMs panel")
+
+            # now convert the geometry to a polygon
+            # https://gis.stackexchange.com/questions/64247/where-to-find-the-variables-of-qgspolygon-and-qgspolyline (see answer 2)
+
+            ptsList = []
+
+            vertices = newGeometry.asPolyline()
+            QgsMessageLog.logMessage(
+                "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+                tag="TOMs panel")
+
+            for v in vertices:
+                ptsList.append(v)
+            QgsMessageLog.logMessage(
+                "In getRestrictionGeometry - have points ",
+                tag="TOMs panel")
+            outputGeometry = QgsGeometry.fromPolygon([ptsList])
+
+            #outputGeometry = newGeometry
+
+
         return outputGeometry
 
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation):
         # Obtain relevant variables
-        #QgsMessageLog.logMessage("In getDisplayGeometry", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry: restGeomType = " + str(restGeomType), tag="TOMs panel")
 
         # Need to check why the project variable function is not working
 
@@ -529,7 +598,8 @@ class generateGeometryUtils:
                 #   b. adjust the angle
                 #   c. *** also need to adjust the length *** Not yet implemented
 
-                if restGeomType == 5:  # echelon
+                #if restGeomType == 5 or restGeomType == 25:  # echelon
+                if restGeomType in [5, 25]:  # echelon
                     QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
                     diffEchelonAz = generateGeometryUtils.checkDegrees(orientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
@@ -698,3 +768,38 @@ class generateGeometryUtils:
     def meanAngle(a1, a2):
         return phase((rect(1, a1) + rect(1, a2)) / 2.0)
 
+    @staticmethod
+    def generateLabelLeader(feature):
+
+        QgsMessageLog.logMessage("In generateLabelLeader", tag="TOMs panel")
+        # check to see scale
+
+        minScale = generateGeometryUtils.getMininumScaleForDisplay()
+        currScale = iface.mapCanvas().scale()
+
+        QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale), tag="TOMs panel")
+        if currScale <= minScale:
+
+            if feature.attribute("labelX"):
+                QgsMessageLog.logMessage(
+                    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+
+                # now generate line
+                return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+
+            pass
+
+        pass
+
+        return NULL
+
+    @staticmethod
+    def getMininumScaleForDisplay():
+        QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel")
+
+        minScale = float(QgsExpressionContextUtils.projectScope().variable('MinimumTextDisplayScale'))
+        if minScale == None:
+            minScale = 1250.0
+        QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
+
+        return minScale
