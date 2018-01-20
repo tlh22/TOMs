@@ -110,9 +110,30 @@ def getWaitingRestrictionLabelText(feature, parent):
 
     QgsMessageLog.logMessage("In getWaitingRestrictionLabelText:", tag="TOMs panel")
 
-    #labelText = generateGeometryUtils.WaitingRestrictionLabelText(feature)
-    labelText = "Testing"
+    waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+    # waitingText = "Test"
+    labelText = "No Waiting: " + waitingText
     return labelText
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
+def getLoadingRestrictionLabelText(feature, parent):
+	# Returns the text to label the feature
+
+    QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
+
+    waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+    labelText = "No Loading: " + loadingText
+    return labelText
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
+def getBayTimePeriodLabelText(feature, parent):
+	# Returns the text to label the feature
+
+    QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
+
+    baytext = generateGeometryUtils.getBayRestrictionLabelText(feature)
+
+    return baytext
 
 functions = [
     generate_display_geometry,

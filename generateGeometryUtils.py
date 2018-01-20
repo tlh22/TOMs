@@ -803,3 +803,48 @@ class generateGeometryUtils:
         QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
 
         return minScale
+
+    @staticmethod
+    def getWaitingLoadingRestrictionLabelText(feature):
+
+        #QgsMessageLog.logMessage("In WaitingRestrictionLabelText", tag="TOMs panel")
+
+        waitingTimeID = feature.attribute("NoWaitingTimeID")
+        loadingTimeID = feature.attribute("NoLoadingTimeID")
+
+        TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
+
+        waitDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, waitingTimeID)
+        loadDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, loadingTimeID)
+
+        return waitDesc, loadDesc
+
+    @staticmethod
+    def getBayRestrictionLabelText(feature):
+
+        # QgsMessageLog.logMessage("In WaitingRestrictionLabelText", tag="TOMs panel")
+
+        timePeriodID = feature.attribute("TimePeriodID")
+        TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
+
+        # QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriod: " + str(timePeriodID), tag="TOMs panel")
+
+        timePeriodDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, timePeriodID)
+
+        return timePeriodDesc
+
+    @staticmethod
+    def getLookupDescription(lookupLayer, code):
+
+        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel")
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
+
+        for row in lookupLayer.getFeatures(request):
+            # QgsMessageLog.logMessage("In getLookupDescription: found row", tag="TOMs panel")
+            return row.attribute("Description") # make assumption that only one row
+
+        return NULL
