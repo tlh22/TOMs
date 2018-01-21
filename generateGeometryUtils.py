@@ -434,7 +434,7 @@ class generateGeometryUtils:
 
         # Now get the geometry
 
-        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
@@ -443,7 +443,7 @@ class generateGeometryUtils:
             outputGeometry = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation)
 
-        QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
         #if feature.attribute("RestrictionTypeID") == 18:  # Greenway Parking Bay
         if restGeomType >= 20:  # Polygon
@@ -458,23 +458,9 @@ class generateGeometryUtils:
                 #ptsList = []
                 vertices = outputGeometry2A.asPolyline()
 
-                QgsMessageLog.logMessage(
-                    "In getRestrictionGeometry - nrPts in 2A:  " + str(len(vertices)),
-                    tag="TOMs panel")
-
-                """outputGeometry2A.deleteVertex(len(vertices) - 1)
-                outputGeometry2A.deleteVertex(0)
-    
-                vertices2 = outputGeometry2A.asPolyline()
-    
-                QgsMessageLog.logMessage(
-                    "In getRestrictionGeometry - nrPts in 2A - 2:  " + str(len(vertices2)),
-                    tag="TOMs panel")
-    
-                for v in vertices2:
-                    ptsList.append(v)
-    
-                outputGeometry2B = QgsGeometry.fromPolygon([ptsList])"""
+                #QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - nrPts in 2A:  " + str(len(vertices)),
+                #    tag="TOMs panel")
 
                 # ... and combine the two geometries
                 newGeometry = outputGeometry1.combine(outputGeometry2A)
@@ -483,9 +469,9 @@ class generateGeometryUtils:
 
                 newGeometry = outputGeometry
 
-            QgsMessageLog.logMessage(
-                "In getRestrictionGeometry - newGeometry prepared for " + str(feature.attribute("GeometryID")),
-                tag="TOMs panel")
+            #QgsMessageLog.logMessage(
+            #    "In getRestrictionGeometry - newGeometry prepared for " + str(feature.attribute("GeometryID")),
+            #    tag="TOMs panel")
 
             # now convert the geometry to a polygon
             # https://gis.stackexchange.com/questions/64247/where-to-find-the-variables-of-qgspolygon-and-qgspolyline (see answer 2)
@@ -493,15 +479,15 @@ class generateGeometryUtils:
             ptsList = []
 
             vertices = newGeometry.asPolyline()
-            QgsMessageLog.logMessage(
-                "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
-                tag="TOMs panel")
+            #QgsMessageLog.logMessage(
+            #    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+            #    tag="TOMs panel")
 
             for v in vertices:
                 ptsList.append(v)
-            QgsMessageLog.logMessage(
-                "In getRestrictionGeometry - have points ",
-                tag="TOMs panel")
+            #QgsMessageLog.logMessage(
+            #    "In getRestrictionGeometry - have points ",
+            #    tag="TOMs panel")
             outputGeometry = QgsGeometry.fromPolygon([ptsList])
 
             #outputGeometry = newGeometry
@@ -771,18 +757,18 @@ class generateGeometryUtils:
     @staticmethod
     def generateLabelLeader(feature):
 
-        QgsMessageLog.logMessage("In generateLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader", tag="TOMs panel")
         # check to see scale
 
         minScale = generateGeometryUtils.getMininumScaleForDisplay()
         currScale = iface.mapCanvas().scale()
 
-        QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale), tag="TOMs panel")
         if currScale <= minScale:
 
             if feature.attribute("labelX"):
-                QgsMessageLog.logMessage(
-                    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+                #QgsMessageLog.logMessage(
+                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
                 # now generate line
                 return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
@@ -795,12 +781,12 @@ class generateGeometryUtils:
 
     @staticmethod
     def getMininumScaleForDisplay():
-        QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel")
 
         minScale = float(QgsExpressionContextUtils.projectScope().variable('MinimumTextDisplayScale'))
         if minScale == None:
             minScale = 1250.0
-        QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
 
         return minScale
 
