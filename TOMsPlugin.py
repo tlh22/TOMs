@@ -35,6 +35,7 @@ from .expressions import registerFunctions, unregisterFunctions
 #from TOMs.test5_module_dialog import Test5ClassDialog
 
 from .proposals_panel import proposalsPanel
+from .search_bar import searchBar
 from .manage_restriction_details import manageRestrictionDetails
 
 import os.path
@@ -156,12 +157,18 @@ class TOMs:
         
         # self.TOMsMenu.addMenu( self.PrintMenu )
 
-        QgsMessageLog.logMessage("Adding toolbar", tag="TOMs panel")
+        QgsMessageLog.logMessage("Adding toolbars", tag="TOMs panel")
+
+        # set up a search box (for street names and GeometryIDs)
+        self.TOMsSearchBar = self.iface.addToolBar("TOMs Search Bar")
+        self.TOMsSearchBar.setObjectName("TOMs Search Bar")
+        self.doSearchBar = searchBar(self.iface, self.TOMsSearchBar)
 
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")
         self.TOMsToolbar.setObjectName("TOMs Toolbar")
         #self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
+
         self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar, self.proposalsManager)
 
         pass
@@ -202,26 +209,28 @@ class TOMs:
         # databaseMenu = self.iface.databaseMenu()
         # databaseMenu.menuAction().setVisible( False )
 
-        rasterMenu = self.iface.rasterMenu()
-        rasterMenu.menuAction().setVisible( False )
+        #rasterMenu = self.iface.rasterMenu()
+        #rasterMenu.menuAction().setVisible( False )
 
         # Toolbars not required are Vector, Managing Layers, File, Digitizing, Attributes, 
-        digitizeToolBar = self.iface.digitizeToolBar()
-        digitizeToolBar.setVisible( False )
+        #digitizeToolBar = self.iface.digitizeToolBar()
+        #digitizeToolBar.setVisible( False )
 
         #advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
         #advancedDigitizeToolBar.setVisible( False )
 
         # Panels not required are Browser, Layer Order
 		
-        for x in self.iface.mainWindow().findChildren(QDockWidget): 
-            QgsMessageLog.logMessage("Dockwidgets: " + str(x.objectName()), tag="TOMs panel")
+        """for x in self.iface.mainWindow().findChildren(QDockWidget): 
+            QgsMessageLog.logMessage("Dockwidgets: " + str(x.objectName()), tag="TOMs panel")"""
 
         # for x in self.iface.mainWindow().findChildren(QMenu): 
         #     QgsMessageLog.logMessage("Menus: " + str(x.objectName()), tag="TOMs panel")
 
         # rasterMenu = self.iface.rasterMenu()
         # databaseMenu.menuAction().setVisible( False )
+        pass
+
 
     def restoreMenusToolbars(self):
         ''' Remove the menus and toolbars that we don't want (e.g., the Edit menu)
