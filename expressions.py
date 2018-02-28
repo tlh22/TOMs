@@ -112,8 +112,11 @@ def getWaitingRestrictionLabelText(feature, parent):
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
     # waitingText = "Test"
-    labelText = "No Waiting: " + waitingText
-    return labelText
+    if waitingText:
+        labelText = "No Waiting: " + waitingText
+        return labelText
+
+    return None
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getLoadingRestrictionLabelText(feature, parent):
@@ -122,8 +125,12 @@ def getLoadingRestrictionLabelText(feature, parent):
     QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
-    labelText = "No Loading: " + loadingText
-    return labelText
+
+    if loadingText:
+        labelText = "No Loading: " + loadingText
+        return labelText
+
+    return None
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getBayTimePeriodLabelText(feature, parent):
@@ -135,6 +142,18 @@ def getBayTimePeriodLabelText(feature, parent):
 
     return baytext
 
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def getCPZ(feature, parent):
+	# Returns the CPZ for the feature - or None
+
+    QgsMessageLog.logMessage("In getCPZ:", tag="TOMs panel")
+
+    cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
+
+    #QgsMessageLog.logMessage("In getCPZ: CPZ " + str(cpzNr), tag="TOMs panel")
+
+    return cpzNr
+
 functions = [
     generate_display_geometry,
     getAzimuthToRoadCentreLine,
@@ -142,7 +161,10 @@ functions = [
     getUSRN,
     generate_ZigZag,
     getLabelLeader,
-    getWaitingRestrictionLabelText
+    getWaitingRestrictionLabelText,
+    getLoadingRestrictionLabelText,
+    getBayTimePeriodLabelText,
+    getCPZ
 ]
 
 def registerFunctions():

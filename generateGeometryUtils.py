@@ -266,11 +266,11 @@ class generateGeometryUtils:
 
             else:
                 QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
-                return 0
+                return None
 
         else:
             QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
-            return 0
+            return None
 
     @staticmethod
     def calculateAzimuthToRoadCentreLine(feature):
@@ -294,8 +294,13 @@ class generateGeometryUtils:
         if len(line) == 0:
             return 0
 
-        testPt = line[
-            0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+        # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
+
+        #lineGeom = QgsGeometry.fromPolyline((line[::])
+        #lineLength = lineGeom.length()
+        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
+        #testPt = lineGeom.interpolate(lineLength / 2.0)
+        testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
         # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
@@ -793,16 +798,30 @@ class generateGeometryUtils:
     @staticmethod
     def getWaitingLoadingRestrictionLabelText(feature):
 
-        #QgsMessageLog.logMessage("In WaitingRestrictionLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", tag="TOMs panel")
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
 
         TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
 
-        waitDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, waitingTimeID)
-        loadDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, loadingTimeID)
+        waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
+        loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
+        restrictionCPZ = feature.attribute("CPZ")
+        CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
+
+        QgsMessageLog.logMessage(
+            "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID),
+            tag="TOMs panel")
+
+        if CPZWaitingTimeID:
+            QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
+                                     tag="TOMs panel")
+            if CPZWaitingTimeID == waitingTimeID:
+                waitDesc = None
+
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(waitDesc) + " " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
@@ -830,7 +849,95 @@ class generateGeometryUtils:
         #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
 
         for row in lookupLayer.getFeatures(request):
-            # QgsMessageLog.logMessage("In getLookupDescription: found row", tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
             return row.attribute("Description") # make assumption that only one row
 
         return NULL
+
+    @staticmethod
+    def getLookupLabelText(lookupLayer, code):
+
+        QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
+
+        for row in lookupLayer.getFeatures(request):
+            QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
+            return row.attribute("LabelText") # make assumption that only one row
+
+        return NULL
+
+    @staticmethod
+    def getCurrentCPZDetails(feature):
+
+        QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel")
+        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
+
+        restrictionID = feature.attribute("GeometryID")
+        QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
+
+        geom = feature.geometry()
+
+        currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
+
+        if currentCPZFeature:
+
+            currentCPZ = currentCPZFeature.attribute("zone_no")
+            cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
+            QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
+
+            return currentCPZ, cpzWaitingTimeID
+
+        return None, None
+
+    @staticmethod
+    def getPolygonForRestriction(restriction, layer):
+        # def findFeatureAt(self, pos, excludeFeature=None):
+        """ Find the feature close to the given position.
+        #def findFeatureAt2(feature, layerPt, layer, tolerance):
+            'layerPt' is the position to check, in layer coordinates.
+            'layer' is specified layer
+            'tolerance' is search distance in layer units
+
+            If no feature is close to the given coordinate, we return None.
+        """
+
+        QgsMessageLog.logMessage("In getPolygonForRestriction.", tag="TOMs panel")
+
+        line = generateGeometryUtils.getLineForAz(restriction)
+
+        if line:
+            if len(line) == 0:
+                return 0
+
+            testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+            #QgsMessageLog.logMessage("In getPolygonForRestriction." + str(testPt.x()), tag="TOMs panel")
+
+            for poly in layer.getFeatures():
+                if poly.geometry().contains(QgsGeometry.fromPoint(testPt)):
+                    #QgsMessageLog.logMessage("In getPolygonForRestriction. feature found", tag="TOMs panel")
+                    return poly
+
+        return None
+
+
+    @staticmethod
+    def getCPZWaitingTimeID(cpzNr):
+
+        QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel")
+
+        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
+
+        for poly in CPZLayer.getFeatures():
+
+            currentCPZ = poly.attribute("zone_no")
+            if currentCPZ == cpzNr:
+                QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel")
+                cpzWaitingTimeID = poly.attribute("WaitingTimeID")
+                QgsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
+                return cpzWaitingTimeID
+
+        return None

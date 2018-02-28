@@ -94,8 +94,9 @@ class searchBar():
             if locality:
                 nameString = nameString + ", " + locality
 
-            QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel")
-            self.gazetteerStringList.append((nameString))
+            if nameString:
+                QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel")
+                self.gazetteerStringList.append((nameString))
 
         completer = QCompleter()
         self.textbox.setCompleter(completer)
