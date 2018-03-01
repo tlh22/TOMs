@@ -296,6 +296,7 @@ class generateGeometryUtils:
 
         # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
 
+        testPt = feature.geometry().centroid().asPoint()
         #lineGeom = QgsGeometry.fromPolyline((line[::])
         #lineLength = lineGeom.length()
         #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
