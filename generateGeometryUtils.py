@@ -675,16 +675,16 @@ class generateGeometryUtils:
 
         line = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation)
 
-        QgsMessageLog.logMessage("In zigzag - have geometry + " + line.exportToWkt(), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have geometry + " + line.exportToWkt(), tag="TOMs panel")
 
         length = line.length()
-        QgsMessageLog.logMessage(
-            "In zigzag - have geometry. Length = " + str(length) + " wavelength: " + str(wavelength),
-            tag="TOMs panel")
+        #QgsMessageLog.logMessage(
+        #    "In zigzag - have geometry. Length = " + str(length) + " wavelength: " + str(wavelength),
+        #    tag="TOMs panel")
 
         segments = int(length / wavelength)
         # Find equally spaced points that approximate the line
-        QgsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), tag="TOMs panel")
 
         points = []
         countSegments = 0
@@ -696,7 +696,7 @@ class generateGeometryUtils:
             # QgsMessageLog.logMessage("In zigzag - added Point", tag="TOMs panel")
             countSegments = countSegments + 1
 
-        QgsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), tag="TOMs panel")
 
         # Calculate the azimuths of the approximating line segments
 
@@ -706,8 +706,8 @@ class generateGeometryUtils:
             # QgsMessageLog.logMessage("In zigzag - creating Az: i = " + str(i), tag="TOMs panel")
             azimuths.append((points[i].azimuth(points[i + 1])))
 
-        QgsMessageLog.logMessage("In zigzag - after azimuths: i " + str(i) + " len(az): " + str(len(azimuths)),
-                                 tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - after azimuths: i " + str(i) + " len(az): " + str(len(azimuths)),
+        #                         tag="TOMs panel")
 
         # Average consecutive azimuths and rotate 90 deg counterclockwise
 
@@ -718,7 +718,7 @@ class generateGeometryUtils:
                                range(len(points) - 1)])
         zigzagazimuths.append(azimuths[-1] - math.pi / 2)
 
-        QgsMessageLog.logMessage("In zigzag - about to create shape", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - about to create shape", tag="TOMs panel")
 
         cosa = 0.0
         cosb = 0.0
@@ -728,30 +728,30 @@ class generateGeometryUtils:
         for i in range(len(points) - 1):
             # Alternate the sign
 
-            QgsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i / 2)), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i / 2)), tag="TOMs panel")
 
             # currX = points[i].x()
             # currY = points[i].y()
 
             dst = amplitude * 1 - 2 * (i - 2 * math.floor(
                 i / 2))  # b = a - m.*floor(a./m)  is the same as   b = mod( a , m )      Thus: i - 2 * math.floor(i/2)
-            QgsMessageLog.logMessage("In zigzag - dst: " + str(dst) + " Az: " + str(azimuths[i]), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - dst: " + str(dst) + " Az: " + str(azimuths[i]), tag="TOMs panel")
 
             # currAz = zigzagazimuths[i]
             cosa, cosb = generateGeometryUtils.cosdir_azim(azimuths[i])
 
-            QgsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), tag="TOMs panel")
 
             zigzagpoints.append(
                 QgsPoint(points[i].x() + (float(offset) * cosa), points[i].y() + (float(offset) * cosb)))
 
-            QgsMessageLog.logMessage("In zigzag - point added: " + str(i), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - point added: " + str(i), tag="TOMs panel")
             # zigzagpoints.append(QgsPoint(points[i][0] + math.sin(zigzagazimuths[i]) * dst, points[i][1] + math.cos(zigzagazimuths[i]) * dst))
 
         # Create new feature from the list of zigzag points
         gLine = QgsGeometry.fromPolyline(zigzagpoints)
 
-        QgsMessageLog.logMessage("In zigzag - shape created", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - shape created", tag="TOMs panel")
 
         return gLine
 
@@ -760,15 +760,16 @@ class generateGeometryUtils:
         return phase((rect(1, a1) + rect(1, a2)) / 2.0)
 
     @staticmethod
-    def generateLabelLeader(feature):
+    def generateWaitingLabelLeader(feature):
 
-        #QgsMessageLog.logMessage("In generateLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateWaitingLabelLeader", tag="TOMs panel")
         # check to see scale
 
-        minScale = generateGeometryUtils.getMininumScaleForDisplay()
-        currScale = iface.mapCanvas().scale()
+        minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
+        currScale = float(iface.mapCanvas().scale())
 
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+
         if currScale <= minScale:
 
             if feature.attribute("labelX"):
@@ -785,12 +786,41 @@ class generateGeometryUtils:
         return NULL
 
     @staticmethod
+    def generateLoadingLabelLeader(feature):
+
+        #QgsMessageLog.logMessage("In generateLoadingLabelLeader", tag="TOMs panel")
+        # check to see scale
+
+        minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
+        currScale = float(iface.mapCanvas().scale())
+
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+
+        if currScale <= minScale:
+
+            if feature.attribute("labelLoadingX"):
+                #QgsMessageLog.logMessage(
+                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+
+                # now generate line
+                return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
+
+            pass
+
+        pass
+
+        return NULL
+
+    @staticmethod
     def getMininumScaleForDisplay():
         #QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel")
 
-        minScale = float(QgsExpressionContextUtils.projectScope().variable('MinimumTextDisplayScale'))
+        minScale = QgsExpressionContextUtils.projectScope().variable('MinimumTextDisplayScale')
+
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale(1): " + str(minScale), tag="TOMs panel")
+
         if minScale == None:
-            minScale = 1250.0
+            minScale = 1250
         #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
 
         return minScale
@@ -808,20 +838,22 @@ class generateGeometryUtils:
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
+        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
-        QgsMessageLog.logMessage(
-            "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID),
-            tag="TOMs panel")
+        #QgsMessageLog.logMessage(
+        #    "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID),
+        #    tag="TOMs panel")
 
         if CPZWaitingTimeID:
-            QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
-                                     tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
+            #                         tag="TOMs panel")
             if CPZWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(waitDesc) + " " + str(loadDesc), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
@@ -857,7 +889,7 @@ class generateGeometryUtils:
     @staticmethod
     def getLookupLabelText(lookupLayer, code):
 
-        QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
 
         query = "\"Code\" = " + str(code)
         request = QgsFeatureRequest().setFilterExpression(query)
@@ -865,7 +897,7 @@ class generateGeometryUtils:
         #QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
 
         for row in lookupLayer.getFeatures(request):
-            QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
             return row.attribute("LabelText") # make assumption that only one row
 
         return NULL
@@ -905,7 +937,7 @@ class generateGeometryUtils:
             If no feature is close to the given coordinate, we return None.
         """
 
-        QgsMessageLog.logMessage("In getPolygonForRestriction.", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getPolygonForRestriction.", tag="TOMs panel")
 
         line = generateGeometryUtils.getLineForAz(restriction)
 
@@ -927,7 +959,7 @@ class generateGeometryUtils:
     @staticmethod
     def getCPZWaitingTimeID(cpzNr):
 
-        QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel")
 
         CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
 
@@ -935,9 +967,9 @@ class generateGeometryUtils:
 
             currentCPZ = poly.attribute("zone_no")
             if currentCPZ == cpzNr:
-                QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel")
                 cpzWaitingTimeID = poly.attribute("WaitingTimeID")
-                QgsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
                 return cpzWaitingTimeID
 
         return None

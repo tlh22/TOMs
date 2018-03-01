@@ -47,6 +47,18 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 
     return res
 
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def generateDisplayGeometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
+    try:
+        """QgsMessageLog.logMessage(
+            "In generate_display_geometry: New restriction .................................................................... ID: " + str(
+                geometryID), tag="TOMs panel")"""
+
+        res = generateGeometryUtils.getRestrictionGeometry(feature)
+    except:
+        QgsMessageLog.logMessage('generate_display_geometry error in expression function: {}'.format(sys.exc_info()[0]), tag="TOMs panel")
+
+    return res
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getAzimuthToRoadCentreLine(feature, parent):
@@ -84,9 +96,6 @@ def generate_ZigZag(feature, parent):
 	# Determine road name from the kerb line layer
 
     try:
-        QgsMessageLog.logMessage(
-            "In getLabelLeader ", tag="TOMs panel")
-
         res = generateGeometryUtils.zigzag(feature, 2, 1)
     except:
         QgsMessageLog.logMessage('generate_ZigZag error in expression function: {}'.format(sys.exc_info()[0]),
@@ -97,10 +106,22 @@ def generate_ZigZag(feature, parent):
     return newUSRN
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
-def getLabelLeader(feature, parent):
+def getWaitingLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    labelLeaderGeom = generateGeometryUtils.generateLabelLeader(feature)
+    QgsMessageLog.logMessage(
+        "In getWaitingLabelLeader ", tag="TOMs panel")
+    labelLeaderGeom = generateGeometryUtils.generateWaitingLabelLeader(feature)
+
+    return labelLeaderGeom
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def getLoadingLabelLeader(feature, parent):
+	# If the scale is within range (< 1250) and the label has been moved, create a line
+
+    QgsMessageLog.logMessage(
+        "In getLoadingLabelLeader ", tag="TOMs panel")
+    labelLeaderGeom = generateGeometryUtils.generateLoadingLabelLeader(feature)
 
     return labelLeaderGeom
 
@@ -108,7 +129,7 @@ def getLabelLeader(feature, parent):
 def getWaitingRestrictionLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getWaitingRestrictionLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getWaitingRestrictionLabelText:", tag="TOMs panel")
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
     # waitingText = "Test"
@@ -122,7 +143,7 @@ def getWaitingRestrictionLabelText(feature, parent):
 def getLoadingRestrictionLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
@@ -136,7 +157,7 @@ def getLoadingRestrictionLabelText(feature, parent):
 def getBayTimePeriodLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
 
     baytext = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
@@ -146,7 +167,7 @@ def getBayTimePeriodLabelText(feature, parent):
 def getCPZ(feature, parent):
 	# Returns the CPZ for the feature - or None
 
-    QgsMessageLog.logMessage("In getCPZ:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getCPZ:", tag="TOMs panel")
 
     cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
 
@@ -156,11 +177,13 @@ def getCPZ(feature, parent):
 
 functions = [
     generate_display_geometry,
+    generateDisplayGeometry,
     getAzimuthToRoadCentreLine,
     getRoadName,
     getUSRN,
     generate_ZigZag,
-    getLabelLeader,
+    getWaitingLabelLeader,
+    getLoadingLabelLeader,
     getWaitingRestrictionLabelText,
     getLoadingRestrictionLabelText,
     getBayTimePeriodLabelText,
