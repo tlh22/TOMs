@@ -301,7 +301,7 @@ class generateGeometryUtils:
         #lineLength = lineGeom.length()
         #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
         #testPt = lineGeom.interpolate(lineLength / 2.0)
-        testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+        #testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
         # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
 
@@ -862,14 +862,16 @@ class generateGeometryUtils:
 
         # QgsMessageLog.logMessage("In WaitingRestrictionLabelText", tag="TOMs panel")
 
-        timePeriodID = feature.attribute("TimePeriodID")
-        TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
+        maxStayID = feature.attribute("MaxStayID")
+        noReturnID = feature.attribute("NoReturnID")
+        lengthOfTimeLayer = QgsMapLayerRegistry.instance().mapLayersByName("LengthOfTime")[0]
 
         # QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriod: " + str(timePeriodID), tag="TOMs panel")
 
-        timePeriodDesc = generateGeometryUtils.getLookupDescription(TimePeriodsLayer, timePeriodID)
+        maxStayDesc = generateGeometryUtils.getLookupDescription(lengthOfTimeLayer, maxStayID)
+        noReturnDesc = generateGeometryUtils.getLookupDescription(lengthOfTimeLayer, noReturnID)
 
-        return timePeriodDesc
+        return maxStayDesc, noReturnDesc
 
     @staticmethod
     def getLookupDescription(lookupLayer, code):

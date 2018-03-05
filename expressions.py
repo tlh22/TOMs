@@ -159,9 +159,11 @@ def getBayTimePeriodLabelText(feature, parent):
 
     #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
 
-    baytext = generateGeometryUtils.getBayRestrictionLabelText(feature)
+    maxStayText, noReturnText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    return baytext
+    bayText = "Max Stay: " + maxStayText + ";No Return:" + noReturnText
+
+    return bayText
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getCPZ(feature, parent):
