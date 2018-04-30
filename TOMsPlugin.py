@@ -46,8 +46,11 @@ class TOMs:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
-        """Constructor.
 
+        QgsMessageLog.logMessage("Starting TOMs ... ", tag="TOMs panel")
+
+        """Constructor.
+        
         :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
             application at run time.
@@ -117,6 +120,7 @@ class TOMs:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        QgsMessageLog.logMessage("Registering expression functions ... ", tag="TOMs panel")
         registerFunctions()   # Register the Expression functions that we need
 
         self.proposalsManager = TOMsProposalsManager()
@@ -192,11 +196,16 @@ class TOMs:
         '''
 
         # remove the toolbar
+        QgsMessageLog.logMessage("Clearing toolbar ... ", tag="TOMs panel")
+        self.TOMsToolbar.clear()
+        QgsMessageLog.logMessage("Deleting toolbar ... ", tag="TOMs panel")
         del self.TOMsToolbar
-        self.restoreMenusToolbars()
+        #self.restoreMenusToolbars()
 
         # disconnect panel
         #self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
+
+        QgsMessageLog.logMessage("Unload comnpleted ... ", tag="TOMs panel")
 
     def hideMenusToolbars(self):
         ''' Remove the menus and toolbars that we don't want (e.g., the Edit menu)

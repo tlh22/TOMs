@@ -241,7 +241,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
         else:
 
             QgsMessageLog.logMessage(
-                ("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name()),
+                ("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name() + " id: " + str(closestFeature.id())),
                 tag="TOMs panel")
 
             if closestLayer <> self.iface.activeLayer():
@@ -249,6 +249,16 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
                     self.iface.activeLayer().removeSelection()
                 #closestLayer.startEditing()
                 self.iface.setActiveLayer(closestLayer)
+
+            if closestLayer.type() == QgsMapLayer.VectorLayer:
+                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. layer type " + str(closestLayer.type()) ), tag="TOMs panel")
+
+            if closestLayer.geometryType() == QGis.Point:
+                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. point layer type " ), tag="TOMs panel")
+
+            if closestLayer.geometryType() == QGis.Line:
+                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. line layer type " ), tag="TOMs panel")
+
 
             # highlight the feature ...
             closestLayer.setSelectedFeatures([closestFeature.id()])
@@ -332,6 +342,9 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
             QgsMessageLog.logMessage("In findNearestFeatureAt: multiple features: " + str(len(featureList)), tag="TOMs panel")
 
             feature, layer = self.getFeatureDetails(featureList, layerList)
+
+            QgsMessageLog.logMessage("In findNearestFeatureAt: feature: " + feature.attribute('GeometryID'), tag="TOMs panel")
+
             return feature, layer
             # return self.getFeatureDetails(featureList, layerList)
 
@@ -384,10 +397,10 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
             #return self.actions[clicked_action]
             idxList = self.getIdxFromGeometryID (clicked_action.text(), featureList)
 
-            QgsMessageLog.logMessage("In getfeatureFromGeometryID: idx = " + str(idxList), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getFeatureDetails: idx = " + str(idxList), tag="TOMs panel")
 
             if idxList >= 0:
-                QgsMessageLog.logMessage("In getfeatureFromGeometryID: feat = " + str(featureList[idxList].attribute('GeometryID')), tag="TOMs panel")
+                QgsMessageLog.logMessage("In getFeatureDetails: feat = " + str(featureList[idxList].attribute('GeometryID')), tag="TOMs panel")
                 return featureList[idxList], layerList[idxList]
 
         QgsMessageLog.logMessage(("In getFeatureDetails. No action found."), tag="TOMs panel")

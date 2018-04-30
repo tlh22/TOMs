@@ -296,7 +296,7 @@ class generateGeometryUtils:
 
         # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
 
-        testPt = feature.geometry().centroid().asPoint()
+	testPt = feature.geometry().centroid().asPoint()
         #lineGeom = QgsGeometry.fromPolyline((line[::])
         #lineLength = lineGeom.length()
         #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
@@ -935,7 +935,6 @@ class generateGeometryUtils:
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 
-
     @staticmethod
     def getLookupDescription(lookupLayer, code):
 
@@ -971,11 +970,11 @@ class generateGeometryUtils:
     @staticmethod
     def getCurrentCPZDetails(feature):
 
-        QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel")
         CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
 
         restrictionID = feature.attribute("GeometryID")
-        QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
 
         geom = feature.geometry()
 
@@ -985,7 +984,7 @@ class generateGeometryUtils:
 
             currentCPZ = currentCPZFeature.attribute("zone_no")
             cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
-            QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
 
             return currentCPZ, cpzWaitingTimeID
 
@@ -1020,6 +1019,7 @@ class generateGeometryUtils:
                     return poly
 
         return None
+
 
     @staticmethod
     def getCPZWaitingTimeID(cpzNr):
@@ -1071,24 +1071,6 @@ class generateGeometryUtils:
                 QgsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", tag="TOMs panel")
                 ptaNoReturnID = poly.attribute("NoReturnTimeID")
                 QgsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), tag="TOMs panel")
-                return ptaNoReturnID
-
-        return None
-
-    @staticmethod
-    def getAdjacentGridSquares(currGridSquare):
-
-        #QgsMessageLog.logMessage("In getAdjacentGridSquares", tag="TOMs panel")
-
-        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
-
-        for poly in CPZLayer.getFeatures():
-
-            currentCPZ = poly.attribute("zone_no")
-            if currentCPZ == cpzNr:
-                #QgsMessageLog.logMessage("In getAdjacentGridSquares. Found CPZ.", tag="TOMs panel")
-                cpzWaitingTimeID = poly.attribute("WaitingTimeID")
-                #QgsMessageLog.logMessage("In getAdjacentGridSquares. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
-                return cpzWaitingTimeID
+                return ptaMaxStayID
 
         return None

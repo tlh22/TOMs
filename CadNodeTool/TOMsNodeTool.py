@@ -169,12 +169,11 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
             RestrictionTypeUtils.addRestrictionToProposal(newRestrictionID, RestrictionTypeUtils.getRestrictionLayerTableID(currLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
 
-
             #self.proposalsManager.updateMapCanvas()
 
         pass
 
-        # RestrictionTypeUtils.commitRestrictionChanges(currLayer)
+        #RestrictionTypeUtils.commitRestrictionChanges(currLayer)
         #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currLayer))
 
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - resetting geometry changed event.", tag="TOMs panel")
@@ -190,49 +189,78 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         closestFeature, closestLayer = self.findNearestFeatureAt(e.pos())
 
-        if e.button() == Qt.RightButton:
+        """if e.button() == Qt.RightButton:
 
             # need to somehow obtain the new geometry.
             self.onGeometryChanged(self.selectedRestriction)
 
+        else: """
+
+        # QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
+
+        # Check if the closest layer is the current active layer
+
+        if closestLayer == self.iface.activeLayer():
+
+            #self.iface.mapCanvas().unsetMapTool(self)
+            closestLayer.startEditing()
+            # self.iface.setActiveLayer(closestLayer)  # returns bool
+            #self.iface.mapCanvas().setMapTool(self)
+
+            #self.iface.canvas().setCurrentLayer(closestLayer)
+            # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
+            # layer = self.canvas().currentLayer()
+
+            QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
+
+            # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
+
+            #selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
+            #self.origFeature.setFeature(selectedRestriction)
+
+            #closestLayer.geometryChanged.connect(self.onGeometryChanged)
+
+            #QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: geometryChanged connected", tag="TOMs panel")
+
         else:
 
-
-            # QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
-
-            # Check if the closest layer is the current active layer
-
-            if closestLayer == self.iface.activeLayer():
-
-                #self.iface.mapCanvas().unsetMapTool(self)
-                closestLayer.startEditing()
-                # self.iface.setActiveLayer(closestLayer)  # returns bool
-                #self.iface.mapCanvas().setMapTool(self)
-
-                #self.iface.canvas().setCurrentLayer(closestLayer)
-                # self.iface.mapCanvas().setCurrentLayer() = closestLayer  # Need to be able to set current layer
-                # layer = self.canvas().currentLayer()
-
-                QgsMessageLog.logMessage("In TOMsNodeTool:can_use_current_layer.  layer is " + str(closestLayer.name()), tag="TOMs panel")
-
-                # **** Somehow need to be able to get a copy of closestFeature (or the geometry at least) and have it available within onGeometryChanged
-
-                #selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
-                #self.origFeature.setFeature(selectedRestriction)
-
-                #closestLayer.geometryChanged.connect(self.onGeometryChanged)
-
-                #QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: geometryChanged connected", tag="TOMs panel")
-
-            else:
-
-                self.iface.setActiveLayer(None)
+            self.iface.setActiveLayer(None)
 
         NodeTool.cadCanvasPressEvent(self, e)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: after NodeTool.cadCanvasPressEvent", tag="TOMs panel")
 
+        currLayer = self.iface.activeLayer()
+
+        if currLayer.isModified():
+            self.onGeometryChanged(self.selectedRestriction)
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasPressEvent: after commitRestrictionChanges", tag="TOMs panel")
+
         #self.iface.setActiveLayer(None)  # returns bool
         #return None
 
         return
+
+    def cadCanvasReleaseEvent(self, e):
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasReleaseEvent", tag="TOMs panel")
+
+        NodeTool.cadCanvasReleaseEvent(self, e)
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasReleaseEvent: after NodeTool.cadCanvasReleaseEvent", tag="TOMs panel")
+
+        currLayer = self.iface.activeLayer()
+
+        if e.button() == Qt.RightButton:
+            if currLayer.isModified():
+                #RestrictionTypeUtils.commitRestrictionChanges(currLayer)
+                pass
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasReleaseEvent: after commitRestrictionChanges", tag="TOMs panel")
+
+        #self.iface.setActiveLayer(None)  # returns bool
+        #return None
+
+        return
+

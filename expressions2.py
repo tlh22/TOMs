@@ -127,7 +127,7 @@ def getLoadingLabelLeader(feature, parent):
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getBayLabelLeader(feature, parent):
-	# If the scale is within range (< 1250) and the label has been moved, create a line
+    # If the scale is within range (< 1250) and the label has been moved, create a line
 
     QgsMessageLog.logMessage(
         "In getBayLabelLeader ", tag="TOMs panel")
@@ -144,7 +144,8 @@ def getWaitingRestrictionLabelText(feature, parent):
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
     # waitingText = "Test"
     if waitingText:
-        labelText = "No Waiting: " + waitingText
+        # labelText = "No Waiting: " + waitingText
+        labelText = waitingText
         return labelText
 
     return None
@@ -158,7 +159,8 @@ def getLoadingRestrictionLabelText(feature, parent):
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
     if loadingText:
-        labelText = "No Loading: " + loadingText
+        #labelText = "No Loading: " + loadingText
+        labelText = loadingText
         return labelText
 
     return None
@@ -167,13 +169,15 @@ def getLoadingRestrictionLabelText(feature, parent):
 def getBayTimePeriodLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
+    QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
 
-    maxStayText, noReturnText = generateGeometryUtils.getBayRestrictionLabelText(feature)
+    maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    bayText = "Max Stay: " + maxStayText + ";No Return:" + noReturnText
+    #bayText = "Max Stay: " + maxStayText + ";No Return: " + noReturnText
 
-    return bayText
+    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText: " + str(baytext), tag="TOMs panel")
+
+    return timePeriodText
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getBayMaxStayLabelText(feature, parent):
@@ -235,33 +239,29 @@ functions = [
 
 def registerFunctions():
 
-    toms_list = QgsExpression.Functions()
-
     for func in functions:
         QgsMessageLog.logMessage("Considering function {}".format(func.name()), tag="TOMs panel")
         try:
-            if func in toms_list:
+            if func.name() in qgis.toms_functions:
                 QgsExpression.unregisterFunction(func.name())
-                #del toms_list[func.name()]
+                del qgis.toms_functions[func.name()]
         except AttributeError:
-            #qgis.toms_functions = dict()
-            pass
+            qgis.toms_functions = dict()
 
         if QgsExpression.registerFunction(func):
             QgsMessageLog.logMessage("Registered expression function {}".format(func.name()), tag="TOMs panel")
-            #qgis.toms_functions[func.name()] = func
-
-    """for title in qgis.toms_functions:
-        QgsMessageLog.logMessage("toms_functions function {}".format(title), tag="TOMs panel")
-
-    for title2 in toms_list:
-        QgsMessageLog.logMessage("toms_list function {}".format(title2.name()), tag="TOMs panel")"""
+            qgis.toms_functions[func.name()] = func
 
 def unregisterFunctions():
     # Unload all the functions that we created.
     for func in functions:
-        QgsExpression.unregisterFunction(func.name())
-        QgsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), tag="TOMs panel")
-        #del qgis.toms_functions[func.name()]
+        QgsMessageLog.logMessage("Considering function {}".format(func.name()), tag="TOMs panel")
+        try:
+            if func.name() in qgis.toms_functions:
+                QgsExpression.unregisterFunction(func.name())
+                QgsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), tag="TOMs panel")
+                # del qgis.toms_functions[func.name()]
+        except AttributeError:
+            qgis.toms_functions = dict()
 
     QgsExpression.cleanRegisteredFunctions()

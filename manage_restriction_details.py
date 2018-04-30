@@ -96,7 +96,7 @@ class manageRestrictionDetails():
         self.actionEditRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionEdit.svg"),
                                QCoreApplication.translate("MyPlugin", "Edit Restriction"),
                                self.iface.mainWindow())
-        #self.actionEditRestriction.setCheckable(True)
+        self.actionEditRestriction.setCheckable(True)
 
         self.actionCreateConstructionLine = QAction(QIcon(":/plugins/TOMs/resources/CreateConstructionLine.svg"),
                                QCoreApplication.translate("MyPlugin", "Create construction line"),
@@ -130,7 +130,7 @@ class manageRestrictionDetails():
 
     def enableTOMsToolbarItems(self):
 
-        QgsMessageLog.logMessage("In disableTOMsToolbarItems", tag="TOMs panel")
+        QgsMessageLog.logMessage("In enableTOMsToolbarItems", tag="TOMs panel")
 
         self.actionSelectRestriction.setEnabled(True)
         self.actionRestrictionDetails.setEnabled(True)
@@ -207,7 +207,7 @@ class manageRestrictionDetails():
 
         if currRestrictionLayer:
 
-            QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+            QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name() + " Nr feats: " + str(currRestrictionLayer.selectedFeatureCount())), tag="TOMs panel")
 
             if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -563,7 +563,11 @@ class manageRestrictionDetails():
                     for currRestriction in selectedRestrictions:
                         self.onRemoveRestriction(currRestrictionLayer, currRestriction)
 
-                pass
+                else:
+
+                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                    "Select restriction for delete",
+                                                    QMessageBox.Ok)
 
             pass
 
@@ -624,7 +628,7 @@ class manageRestrictionDetails():
 
         # Now save all changes
 
-        RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+        #RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
         #currRestrictionLayer.triggerRepaint()  # This shouldn't be required ...
 
 
@@ -640,17 +644,50 @@ class manageRestrictionDetails():
 
         if currProposalID > 0:
 
-            """if self.actionEditRestriction.isChecked():
+            if self.actionEditRestriction.isChecked():
 
-                QgsMessageLog.logMessage("In actionEditRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In actionEditRestriction - tool being activated", tag="TOMs panel")
 
                 # Need to clear any other maptools ....   ********
 
-                self.actionEditRestriction.setChecked(True)
+                currRestrictionLayer = self.iface.activeLayer()
 
-                self.mapTool = TOMsNodeTool(self.iface, self.proposalsManager)    # This is where we use the Node Tool ... need canvas and panel??
-                self.mapTool.setAction(self.actionEditRestriction)
-                self.iface.mapCanvas().setMapTool(self.mapTool)
+                if currRestrictionLayer:
+
+                    QgsMessageLog.logMessage("In doEditRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+
+                    if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                        # save the current feature
+
+                        #self.actionEditRestriction.setChecked(True)
+                        self.mapTool = TOMsNodeTool(self.iface,
+                                                    self.proposalsManager)  # This is where we use the Node Tool ... need canvas and panel??
+                        self.mapTool.setAction(self.actionEditRestriction)
+                        self.iface.mapCanvas().setMapTool(self.mapTool)
+
+
+                        currRestrictionLayer.startEditing()
+                        #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+
+                    else:
+
+                        reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                        "Select restriction for edit",
+                                                        QMessageBox.Ok)
+
+                        self.actionEditRestriction.setChecked(False)
+                        self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                        self.mapTool = None
+
+                else:
+
+                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                    "Select restriction for edit",
+                                                    QMessageBox.Ok)
+                    self.actionEditRestriction.setChecked(False)
+                    self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                    self.mapTool = None
 
             else:
 
@@ -658,26 +695,7 @@ class manageRestrictionDetails():
 
                 self.actionEditRestriction.setChecked(False)
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                self.mapTool = None"""
-
-            currRestrictionLayer = self.iface.activeLayer()
-            currRestrictionLayer.startEditing()
-            #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
-
-            if currRestrictionLayer:
-
-                QgsMessageLog.logMessage("In doEditRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
-
-                if currRestrictionLayer.selectedFeatureCount() > 0:
-
-                    # save the current feature
-
-                    self.mapTool = TOMsNodeTool(self.iface,
-                                                self.proposalsManager)  # This is where we use the Node Tool ... need canvas and panel??
-                    self.mapTool.setAction(self.actionEditRestriction)
-                    self.iface.mapCanvas().setMapTool(self.mapTool)
-
-                pass
+                self.mapTool = None
 
             pass
 
@@ -691,6 +709,9 @@ class manageRestrictionDetails():
             reply = QMessageBox.information(self.iface.mainWindow(), "Information",
                                             "Changes to current data are not allowed. Changes are made via Proposals",
                                             QMessageBox.Ok)
+            self.actionEditRestriction.setChecked(False)
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
 
         pass
 

@@ -129,8 +129,31 @@ def photoDetails(dialog, currRestLayer, currRestrictionFeature):
 
     layerName = currRestLayer.name()
 
+    # Generate the full path to the file
+
+    fileName1 = layerName + "_Photos_01"
+    fileName2 = layerName + "_Photos_02"
+    fileName3 = layerName + "_Photos_03"
+
+    idx1 = currRestLayer.fieldNameIndex(fileName1)
+    idx2 = currRestLayer.fieldNameIndex(fileName2)
+    idx3 = currRestLayer.fieldNameIndex(fileName3)
+
+    QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3), tag="TOMs panel")
+    #if currRestrictionFeature[idx1]:
+    #QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), tag="TOMs panel")
+
     if FIELD1:
-        newPhotoFileName1 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(layerName + "_Photos_01")))
+        QgsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
+                                 tag="TOMs panel")
+        if currRestrictionFeature[idx1]:
+            newPhotoFileName1 = os.path.join(path_absolute, currRestrictionFeature[idx1])
+        else:
+            newPhotoFileName1 = None
+
+        QgsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
         pixmap1 = QPixmap(newPhotoFileName1)
         if pixmap1.isNull():
             pass
@@ -141,7 +164,16 @@ def photoDetails(dialog, currRestLayer, currRestrictionFeature):
             QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
 
     if FIELD2:
-        newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(layerName + "_Photos_02")))
+        QgsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
+                                 tag="TOMs panel")
+        if currRestrictionFeature[idx2]:
+            newPhotoFileName2 = os.path.join(path_absolute, currRestrictionFeature[idx2])
+        else:
+            newPhotoFileName2 = None
+
+        #newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature[idx2]))
+        #newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(fileName2)))
+        QgsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
         pixmap2 = QPixmap(newPhotoFileName2)
         if pixmap2.isNull():
             pass
@@ -152,8 +184,17 @@ def photoDetails(dialog, currRestLayer, currRestrictionFeature):
             QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
 
     if FIELD3:
-        newPhotoFileName3 = os.path.join(path_absolute,
-                                         str(currRestrictionFeature.attribute(layerName + "_Photos_03")))
+        QgsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
+                                 tag="TOMs panel")
+        if currRestrictionFeature[idx3]:
+            newPhotoFileName3 = os.path.join(path_absolute, currRestrictionFeature[idx3])
+        else:
+            newPhotoFileName3 = None
+
+        #newPhotoFileName3 = os.path.join(path_absolute, str(currRestrictionFeature[idx3]))
+        #newPhotoFileName3 = os.path.join(path_absolute,
+        #                                 str(currRestrictionFeature.attribute(fileName3)))
+        #newPhotoFileName3 = os.path.join(path_absolute, str(layerName + "_Photos_03"))
         pixmap3 = QPixmap(newPhotoFileName3)
         if pixmap3.isNull():
             pass

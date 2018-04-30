@@ -330,19 +330,21 @@ class RestrictionTypeUtils:
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
         elif currRestrictionLayer.name() == "Bays":
             currRestriction.setAttribute("RestrictionTypeID", 28)  # 28 = Permit Holders Bays (Bays)
-            currRestriction.setAttribute("GeomShapeID", 1)   # 1 = Parallel Bay
+            currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
         pass
 
     @staticmethod
     def commitRestrictionChanges(currRestrictionLayer):
         # Function to save changes to current layer and to RestrictionsInProposal
 
-        QgsMessageLog.logMessage("In commitRestrictionChanges: ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In commitRestrictionChanges: currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
         #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
 
         # save changes to currRestrictionLayer
 
-        if currRestrictionLayer.commitChanges() <> True:
+        res = currRestrictionLayer.commitChanges()
+        QgsMessageLog.logMessage("In commitRestrictionChanges: res ...", tag="TOMs panel")
+        if res == False:
             # save the active layer
 
             reply = QMessageBox.information(None, "Error",
@@ -357,7 +359,7 @@ class RestrictionTypeUtils:
             # save changes to RestrictionsInProposal
             RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
-            #QMessageBox.information(None, "Information", ("Committing to RestrictionsInProposalsLayer"))
+            QMessageBox.information(None, "Information", ("Committing to RestrictionsInProposalsLayer"))
 
             if RestrictionsInProposalsLayer.isEditable():
                 time.sleep(.300)

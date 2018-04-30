@@ -603,6 +603,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def on_cached_geometry_changed(self, fid, geom):
         """ update geometry of our feature """
+        QgsMessageLog.logMessage("In NodeTool:on_cached_geometry_changed", tag="TOMs panel")
         layer = self.sender()
         assert layer in self.cache
         if fid in self.cache[layer]:
