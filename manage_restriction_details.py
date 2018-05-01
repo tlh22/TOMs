@@ -628,7 +628,7 @@ class manageRestrictionDetails():
 
         # Now save all changes
 
-        #RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
+        RestrictionTypeUtils.commitRestrictionChanges(currRestrictionLayer)
         #currRestrictionLayer.triggerRepaint()  # This shouldn't be required ...
 
 

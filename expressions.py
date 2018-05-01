@@ -215,6 +215,18 @@ def getCPZ(feature, parent):
 
     return cpzNr
 
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def getPTA(feature, parent):
+	# Returns the CPZ for the feature - or None
+
+    #QgsMessageLog.logMessage("In getPTA:", tag="TOMs panel")
+
+    ptaName, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(feature)
+
+    #QgsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), tag="TOMs panel")
+
+    return ptaName
+
 functions = [
     generate_display_geometry,
     generateDisplayGeometry,
@@ -230,7 +242,8 @@ functions = [
     getBayTimePeriodLabelText,
     getBayMaxStayLabelText,
     getBayNoReturnLabelText,
-    getCPZ
+    getCPZ,
+    getPTA
 ]
 
 def registerFunctions():

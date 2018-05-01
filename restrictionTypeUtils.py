@@ -302,6 +302,8 @@ class RestrictionTypeUtils:
             # Make sure that the saving will not be executed immediately, but
             # only when the event loop runs into the next iteration to avoid
             # problems
+
+            RestrictionTypeUtils.commitRestrictionChanges (currRestrictionLayer)
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -342,7 +344,9 @@ class RestrictionTypeUtils:
 
         # save changes to currRestrictionLayer
 
-        res = currRestrictionLayer.commitChanges()
+        res = True
+        #res = currRestrictionLayer.commitChanges()
+
         QgsMessageLog.logMessage("In commitRestrictionChanges: res ...", tag="TOMs panel")
         if res == False:
             # save the active layer
@@ -359,11 +363,14 @@ class RestrictionTypeUtils:
             # save changes to RestrictionsInProposal
             RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
-            QMessageBox.information(None, "Information", ("Committing to RestrictionsInProposalsLayer"))
+            QgsMessageLog.logMessage("Committing to RestrictionsInProposalsLayer ... ", tag="TOMs panel")
 
             if RestrictionsInProposalsLayer.isEditable():
-                time.sleep(.300)
-                if RestrictionsInProposalsLayer.commitChanges() <> True:
+                #time.sleep(.300)
+                res2 = True
+                #res2 = RestrictionsInProposalsLayer.commitChanges()
+
+                if res2 == False:
 
                     reply = QMessageBox.information(None, "Error",
                                                     "Changes to RestrictionsInProposal failed: " + str(

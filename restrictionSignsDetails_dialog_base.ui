@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>739</width>
-    <height>488</height>
+    <width>750</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>750</width>
-    <height>550</height>
+    <height>600</height>
    </size>
   </property>
   <property name="font">
@@ -535,6 +535,12 @@
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
         <widget class="QLabel" name="Photo_Widget_03">
+         <property name="maximumSize">
+          <size>
+           <width>680</width>
+           <height>480</height>
+          </size>
+         </property>
          <property name="autoFillBackground">
           <bool>true</bool>
          </property>

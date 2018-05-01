@@ -992,6 +992,30 @@ class generateGeometryUtils:
         return None, None
 
     @staticmethod
+    def getCurrentPTADetails(feature):
+
+        QgsMessageLog.logMessage("In getCurrentPTADetails", tag="TOMs panel")
+        PTALayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
+
+        restrictionID = feature.attribute("GeometryID")
+        QgsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), tag="TOMs panel")
+
+        geom = feature.geometry()
+
+        currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
+
+        if currentPTAFeature:
+
+            currentPTA = currentPTAFeature.attribute("Name")
+            ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
+            ptaNoReturnTimeID = currentPTAFeature.attribute("NoReturnTimeID")
+            QgsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), tag="TOMs panel")
+
+            return currentPTA, ptaMaxStayID, ptaNoReturnTimeID
+
+        return None, None, None
+
+    @staticmethod
     def getPolygonForRestriction(restriction, layer):
         # def findFeatureAt(self, pos, excludeFeature=None):
         """ Find the feature close to the given position.

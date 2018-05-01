@@ -134,9 +134,9 @@ class ProposalTypeUtils:
                                             "Changes to " + proposalsLayer.name() + " failed: " + str(
                                                 proposalsLayer.commitErrors()),
                                             QMessageBox.Ok)
-        pass
+        pass"""
 
-        #ProposalTypeUtils.commitProposalChanges()"""
+        #ProposalTypeUtils.commitProposalChanges(proposalsLayer)
 
         # Make sure that the saving will not be executed immediately, but
         # only when the event loop runs into the next iteration to avoid

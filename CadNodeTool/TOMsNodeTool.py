@@ -254,7 +254,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin):
 
         if e.button() == Qt.RightButton:
             if currLayer.isModified():
-                #RestrictionTypeUtils.commitRestrictionChanges(currLayer)
+                RestrictionTypeUtils.commitRestrictionChanges(currLayer)
                 pass
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cadCanvasReleaseEvent: after commitRestrictionChanges", tag="TOMs panel")
