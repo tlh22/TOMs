@@ -99,7 +99,7 @@ class TOMsProposalsManager(QObject):
         Whenever the current proposal or the date changes we need to update the canvas.
         """
 
-        #QMessageBox.information(None, "Information", ("Entering updateMapCanvas"))
+        QgsMessageLog.logMessage('Entering updateMapCanvas', tag="TOMs panel")
 
         dateString = self.__date.toString('dd-MM-yyyy')
         currProposalID = self.currentProposal()

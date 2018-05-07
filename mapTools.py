@@ -27,8 +27,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from core.proposalsManager import *
-from restrictionTypeUtils import RestrictionTypeUtils
+#from restrictionTypeUtils import RestrictionTypeUtils
 from generateGeometryUtils import generateGeometryUtils
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 
 import functools
 
@@ -203,7 +204,7 @@ class MapToolMixin:
 
 #############################################################################
 
-class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
+class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin, RestrictionTypeUtilsMixin):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
 
@@ -311,7 +312,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
-            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
+            self.currLayer = self.getRestrictionsLayer (layerDetails)
 
             # Loop through all features in the layer to find the closest feature
             for f in self.currLayer.getFeatures(request):
@@ -423,10 +424,11 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin):
 
 #############################################################################
 
-class CreateRestrictionTool(QgsMapToolCapture):
+class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer):
 
+        #def __init__(self, iface, layer, dialog):
         QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
@@ -434,6 +436,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
         canvas = iface.mapCanvas()
         self.iface = iface
         self.layer = layer
+        #self.dialog = dialog
 
         #self.QgsWkbTypes = QgsWkbTypes()
 
@@ -650,7 +653,7 @@ class CreateRestrictionTool(QgsMapToolCapture):
                 if self.layer.geometryType() == 1:  # Line or Bay
                     generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
 
-                RestrictionTypeUtils.setDefaultRestrictionDetails(feature, self.layer)
+                self.setDefaultRestrictionDetails(feature, self.layer)
 
                 # is there any other tidying to do ??
 
@@ -676,7 +679,12 @@ class CreateRestrictionTool(QgsMapToolCapture):
                 #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
                 # Can we now implement the logic from the form code ???
 
-                self.iface.openFeatureForm(self.layer, feature, False, False)
+                self.dialog = self.iface.getFeatureForm(self.layer, feature)
+
+                self.setupRestrictionDialog(self.dialog, self.layer, feature)  # connects signals, etc
+
+                self.dialog.show()
+                #self.iface.openFeatureForm(self.layer, feature, False, False)
 
             pass
 

@@ -13,7 +13,12 @@ Series of functions to deal with restrictionsInProposals. Defined as static func
 
 """
 from PyQt4.QtGui import (
-    QMessageBox
+    QMessageBox,
+    QAction,
+    QIcon,
+    QDialogButtonBox,
+    QPixmap,
+    QLabel
 )
 from PyQt4.QtCore import (
     QTimer
@@ -28,6 +33,7 @@ from qgis.core import (
 from qgis.gui import *
 import functools
 import time
+import os
 
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
@@ -37,16 +43,15 @@ from TOMs.constants import (
 
 import uuid
 
-class RestrictionTypeUtils:
+class RestrictionTypeUtilsMixin:
 
     def __init__(self, iface):
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
-        #self.iface = iface
+        self.iface = iface
         pass
 
-    @staticmethod
-    def restrictionInProposal(currRestrictionID, currRestrictionLayerID, proposalID):
+    def restrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         # returns True if resstriction is in Proposal
         QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel")
 
@@ -67,8 +72,7 @@ class RestrictionTypeUtils:
 
         return restrictionFound
 
-    @staticmethod
-    def addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
+    def addRestrictionToProposal(self, restrictionID, restrictionLayerTableID, proposalID, proposedAction):
         # adds restriction to the "RestrictionsInProposals" layer
         QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
 
@@ -102,8 +106,7 @@ class RestrictionTypeUtils:
 
         pass
 
-    @staticmethod
-    def getRestrictionsLayer(currRestrictionTableRecord):
+    def getRestrictionsLayer(self, currRestrictionTableRecord):
         # return the layer given the row in "RestrictionLayers"
         QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
 
@@ -117,8 +120,7 @@ class RestrictionTypeUtils:
 
         return RestrictionsLayers
 
-    @staticmethod
-    def getRestrictionsLayerFromID(currRestrictionTableID):
+    def getRestrictionsLayerFromID(self, currRestrictionTableID):
         # return the layer given the row in "RestrictionLayers"
         QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
 
@@ -135,8 +137,7 @@ class RestrictionTypeUtils:
 
         return restrictionLayer
 
-    @staticmethod
-    def getRestrictionLayerTableID(currRestLayer):
+    def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
         # find the ID for the layer within the table "
 
@@ -155,8 +156,7 @@ class RestrictionTypeUtils:
 
         return layersTableID
 
-    @staticmethod
-    def deleteRestrictionInProposal(currRestrictionID, currRestrictionLayerID, proposalID):
+    def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel")
 
         returnStatus = False
@@ -182,8 +182,7 @@ class RestrictionTypeUtils:
 
         return returnStatus
 
-    @staticmethod
-    def onSaveRestrictionDetails(currRestriction, currRestrictionLayer, dialog):
+    def onSaveRestrictionDetails(self, currRestriction, currRestrictionLayer, dialog):
         QgsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel")
 
         #currRestrictionLayer.startEditing()
@@ -192,11 +191,11 @@ class RestrictionTypeUtils:
 
         if currProposalID > 0:
 
-            currRestrictionLayerTableID = RestrictionTypeUtils.getRestrictionLayerTableID(currRestrictionLayer)
+            currRestrictionLayerTableID = self.getRestrictionLayerTableID(currRestrictionLayer)
             idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
             idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
 
-            if RestrictionTypeUtils.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID, currProposalID):
+            if self.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID, currProposalID):
 
                 # restriction already is part of the current proposal
                 # simply make changes to the current restriction in the current layer
@@ -205,6 +204,8 @@ class RestrictionTypeUtils:
 
                 #res = dialog.save()
                 currRestrictionLayer.updateFeature(currRestriction)
+                dialog.attributeForm().save()
+
                 """if res == True:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Form saved.",
                                              tag="TOMs panel")
@@ -238,23 +239,26 @@ class RestrictionTypeUtils:
 
                     #currRestriction = dialog.feature()
                     #currRestriction[idxRestrictionID] = newRestrictionID
-                    dialog.changeAttribute("RestrictionID", newRestrictionID)
+
+                    #dialog.changeAttribute("RestrictionID", newRestrictionID)
+
+                    currRestriction.setAttribute(idxRestrictionID, newRestrictionID)
+                    dialog.attributeForm().changeAttribute("RestrictionID", newRestrictionID)
                     #currRestriction = dialog.feature()
                     #currRestriction.setAttribute("RestrictionID", newRestrictionID)
                     #currRestrictionLayer.changeAttributeValue(currRestriction.id(), "RestrictionID", str(currRestriction[idxRestrictionID]))
                     # currRestrictionLayer.updateFeature(currRestriction)
-                    dialog.save()
+                    #dialog.accept()
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
                     # currRestrictionLayer.addFeatures([currRestriction])
 
-                    RestrictionTypeUtils.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
+                    self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
 
-                    # Now need to save the feature ??
-
+                    dialog.attributeForm().save()
 
                 else:
 
@@ -270,16 +274,12 @@ class RestrictionTypeUtils:
                             currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
-                    attrs1 = currRestriction.attributes()
-                    QgsMessageLog.logMessage("In onSaveRestrictionDetails: currRestriction: " + str(attrs1),
-                        tag="TOMs panel")
-                    QgsMessageLog.logMessage("In onSaveRestrictionDetails. curr: {}".format(currRestriction.geometry().exportToWkt()),
-                                             tag="TOMs panel")
-
-                    RestrictionTypeUtils.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
+                    self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_CLOSE_RESTRICTION())  # Open = 1; Close = 2
 
-                    newRestriction = dialog.feature()
+                    newRestriction = QgsFeature(currRestriction)
+
+                    dialog.reject()
 
                     newRestriction[idxRestrictionID] = newRestrictionID
                     newRestriction[idxOpenDate] = None
@@ -296,7 +296,7 @@ class RestrictionTypeUtils:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Clone: {}".format(newRestriction.geometry().exportToWkt()),
                                              tag="TOMs panel")
 
-                    RestrictionTypeUtils.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
+                    self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1; Close = 2
 
                     QgsMessageLog.logMessage(
@@ -308,15 +308,18 @@ class RestrictionTypeUtils:
 
             # Now commit changes and redraw
 
-            attrs = currRestriction.attributes()
-
-            #QMessageBox.information(None, "Information", ("currRestriction" + str(attrs)))
+            attrs1 = currRestriction.attributes()
+            QgsMessageLog.logMessage("In onSaveRestrictionDetails: currRestriction: " + str(attrs1),
+                                     tag="TOMs panel")
+            QgsMessageLog.logMessage(
+                "In onSaveRestrictionDetails. curr: {}".format(currRestriction.geometry().exportToWkt()),
+                tag="TOMs panel")
 
             # Make sure that the saving will not be executed immediately, but
             # only when the event loop runs into the next iteration to avoid
             # problems
 
-            RestrictionTypeUtils.commitRestrictionChanges (currRestrictionLayer)
+            self.commitRestrictionChanges (currRestrictionLayer)
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -334,10 +337,10 @@ class RestrictionTypeUtils:
         "In onSaveRestrictionDetails. Finished",
         tag="TOMs panel")
 
-        #currRestrictionLayer.removeSelection()
+        dialog.close()
+        currRestrictionLayer.removeSelection()
 
-    @staticmethod
-    def setDefaultRestrictionDetails(currRestriction, currRestrictionLayer):
+    def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
 
         if currRestrictionLayer.name() == "Lines":
@@ -348,8 +351,7 @@ class RestrictionTypeUtils:
             currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
         pass
 
-    @staticmethod
-    def commitRestrictionChanges(currRestrictionLayer):
+    def commitRestrictionChanges(self, currRestrictionLayer):
         # Function to save changes to current layer and to RestrictionsInProposal
 
         QgsMessageLog.logMessage("In commitRestrictionChanges: currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
@@ -357,15 +359,15 @@ class RestrictionTypeUtils:
 
         # Trying to unset map tool to force updates ...
         #qgis.utils.iface.mapCanvas().unsetMapTool(qgis.utils.iface.mapCanvas().mapTool())
-        #iface.mapCanvas().unsetMapTool(iface.mapCanvas().mapTool())
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         # Added to stop save actions
-        return
+        #return
 
         # save changes to currRestrictionLayer
 
         res = True
-        #res = currRestrictionLayer.commitChanges()
+        res = currRestrictionLayer.commitChanges()
 
         QgsMessageLog.logMessage("In commitRestrictionChanges: res ...", tag="TOMs panel")
         if res == False:
@@ -388,7 +390,7 @@ class RestrictionTypeUtils:
             if RestrictionsInProposalsLayer.isEditable():
                 #time.sleep(.300)
                 res2 = True
-                #res2 = RestrictionsInProposalsLayer.commitChanges()
+                res2 = RestrictionsInProposalsLayer.commitChanges()
 
                 if res2 == False:
 
@@ -405,8 +407,7 @@ class RestrictionTypeUtils:
 
         # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
 
-    @staticmethod
-    def updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
+    def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
         # update the Open/Close date for the restriction
         QgsMessageLog.logMessage("In updateRestriction. layer: " + str(
             currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
@@ -439,5 +440,141 @@ class RestrictionTypeUtils:
                         "In updateRestriction. " + currRestrictionID + " Closed", tag="TOMs panel")
 
                 return
+
+        pass
+
+    def setupRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
+
+        self.restrictionDialog = restrictionDialog
+        self.currRestrictionLayer = currRestrictionLayer
+        self.currRestriction = currRestriction
+
+        if self.restrictionDialog is None:
+            QgsMessageLog.logMessage(
+                "In restrictionFormOpen. dialog not found",
+                tag="TOMs panel")
+
+        self.restrictionDialog.attributeForm().disconnectButtonBox()
+        self.button_box = self.restrictionDialog.findChild(QDialogButtonBox, "button_box")
+
+        if self.button_box is None:
+            QgsMessageLog.logMessage(
+                "In restrictionFormOpen. button box not found",
+                tag="TOMs panel")
+
+        self.button_box.accepted.disconnect(self.restrictionDialog.accept)
+        self.button_box.accepted.connect(self.onSaveRestrictionDetailsFromForm)
+        self.restrictionDialog.attributeForm().attributeChanged.connect(self.onAttributeChangedClass)
+
+        self.button_box.rejected.connect(self.restrictionDialog.reject)
+
+        self.photoDetails(self.restrictionDialog, self.currRestrictionLayer, self.currRestriction)
+
+    def onSaveRestrictionDetailsFromForm(self):
+        QgsMessageLog.logMessage("In onSaveRestrictionDetailsFromForm", tag="TOMs panel")
+        self.onSaveRestrictionDetails(self.currRestriction,
+                                      self.currRestrictionLayer, self.restrictionDialog)
+
+    def onAttributeChangedClass(self, fieldName, value):
+        QgsMessageLog.logMessage(
+            "In restrictionFormOpen:onAttributeChanged - layer: " + str(self.currRestrictionLayer.name()) + " (" + str(
+                self.currRestriction.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
+
+        # self.currRestriction.setAttribute(fieldName, value)
+        self.currRestriction.setAttribute(self.currRestrictionLayer.fieldNameIndex(fieldName), value)
+        # self.currRestrictionLayer.changeAttributeValue(self.currRestriction, self.currRestrictionLayer.fieldNameIndex(fieldName), value)
+
+    def photoDetails(self, dialog, currRestLayer, currRestrictionFeature):
+
+        # Function to deal with photo fields
+
+        QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel")
+
+        FIELD1 = dialog.findChild(QLabel, "Photo_Widget_01")
+        FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
+        FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
+
+        path_absolute = QgsExpressionContextUtils.projectScope().variable('PhotoPath')
+        if path_absolute == None:
+            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
+            return
+
+        layerName = currRestLayer.name()
+
+        # Generate the full path to the file
+
+        fileName1 = layerName + "_Photos_01"
+        fileName2 = layerName + "_Photos_02"
+        fileName3 = layerName + "_Photos_03"
+
+        idx1 = currRestLayer.fieldNameIndex(fileName1)
+        idx2 = currRestLayer.fieldNameIndex(fileName2)
+        idx3 = currRestLayer.fieldNameIndex(fileName3)
+
+        QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
+                                 tag="TOMs panel")
+        # if currRestrictionFeature[idx1]:
+        # QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), tag="TOMs panel")
+
+        if FIELD1:
+            QgsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
+                                     tag="TOMs panel")
+            if currRestrictionFeature[idx1]:
+                newPhotoFileName1 = os.path.join(path_absolute, currRestrictionFeature[idx1])
+            else:
+                newPhotoFileName1 = None
+
+            QgsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+            pixmap1 = QPixmap(newPhotoFileName1)
+            if pixmap1.isNull():
+                pass
+                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+            else:
+                FIELD1.setPixmap(pixmap1)
+                FIELD1.setScaledContents(True)
+                QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+
+        if FIELD2:
+            QgsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
+                                     tag="TOMs panel")
+            if currRestrictionFeature[idx2]:
+                newPhotoFileName2 = os.path.join(path_absolute, currRestrictionFeature[idx2])
+            else:
+                newPhotoFileName2 = None
+
+            # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature[idx2]))
+            # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(fileName2)))
+            QgsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+            pixmap2 = QPixmap(newPhotoFileName2)
+            if pixmap2.isNull():
+                pass
+                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+            else:
+                FIELD1.setPixmap(pixmap2)
+                FIELD1.setScaledContents(True)
+                QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+
+        if FIELD3:
+            QgsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
+                                     tag="TOMs panel")
+            if currRestrictionFeature[idx3]:
+                newPhotoFileName3 = os.path.join(path_absolute, currRestrictionFeature[idx3])
+            else:
+                newPhotoFileName3 = None
+
+            # newPhotoFileName3 = os.path.join(path_absolute, str(currRestrictionFeature[idx3]))
+            # newPhotoFileName3 = os.path.join(path_absolute,
+            #                                 str(currRestrictionFeature.attribute(fileName3)))
+            # newPhotoFileName3 = os.path.join(path_absolute, str(layerName + "_Photos_03"))
+            pixmap3 = QPixmap(newPhotoFileName3)
+            if pixmap3.isNull():
+                pass
+                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
+            else:
+                FIELD1.setPixmap(pixmap3)
+                FIELD1.setScaledContents(True)
+                QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
 
         pass

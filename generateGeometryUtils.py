@@ -886,7 +886,7 @@ class generateGeometryUtils:
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
@@ -896,7 +896,7 @@ class generateGeometryUtils:
 
         TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText (2)", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText (2)", tag="TOMs panel")
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)

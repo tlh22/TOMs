@@ -23,7 +23,7 @@ from PyQt4.QtCore import (
 from qgis.core import (
     QgsExpressionContextUtils,
     QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry
+    QgsMessageLog, QgsFeature, QgsGeometry, QgsTransaction
 )
 
 from qgis.gui import *
@@ -34,6 +34,8 @@ from TOMs.constants import (
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
 )
+
+#from TOMs.TOMsTableNames import TOMsTableNames
 
 from TOMs.restrictionTypeUtils import RestrictionTypeUtils
 
@@ -47,6 +49,8 @@ class ProposalTypeUtils:
     def __init__(self, iface):
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
+        self.iface = iface
+        #self.tableNames = TOMsTableNames()
         pass
 
     @staticmethod
@@ -60,6 +64,9 @@ class ProposalTypeUtils:
         self.Proposals.startEditing()
         """
 
+        #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
+        #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
+
         # set up field indexes
         idxProposalID = proposalsLayer.fieldNameIndex("ProposalID")
         idxProposalTitle = proposalsLayer.fieldNameIndex("ProposalTitle")
@@ -67,6 +74,15 @@ class ProposalTypeUtils:
         idxProposalNotes = proposalsLayer.fieldNameIndex("ProposalNotes")
         idxProposalCreateDate = proposalsLayer.fieldNameIndex("ProposalCreateDate")
         idxProposalOpenDate = proposalsLayer.fieldNameIndex("ProposalOpenDate")
+
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposal[idxProposalStatusID]), tag="TOMs panel")
+
+        updateStatus = False
+        newProposal = False
+
+        # Set up transaction group
+        #currTrans = ProposalTypeUtils.createProposalTransactionGroup(proposalsLayer)
+        #transStatus = currTrans.begin()
 
         if currProposal[idxProposalStatusID] == PROPOSAL_STATUS_ACCEPTED():  # 2 = accepted
 
@@ -78,8 +94,14 @@ class ProposalTypeUtils:
                 # open the proposal - and accept any other changes to the form
 
                 # currProposalID = currProposal[idxProposalID]
-                ProposalTypeUtils.acceptProposal(currProposal[idxProposalID], currProposal[idxProposalOpenDate])
-                proposalsLayer.updateFeature(currProposal)
+
+                # TODO: Need to check that this is an authorised user
+
+                updateStatus = proposalsLayer.updateFeature(currProposal)
+
+                if updateStatus == True:
+                    ProposalTypeUtils.acceptProposal(currProposal[idxProposalID], currProposal[idxProposalOpenDate])
+
                 #proposalsDialog.save()
 
                 # proposalAccepted.emit()
@@ -88,7 +110,7 @@ class ProposalTypeUtils:
                 # proposalsDialog.reject ((currProposal[idxProposalID]))
                 proposalsDialog.reject()
 
-        elif currProposal[idxProposalStatusID] == PROPOSAL_STATUS_REJECTED():
+        elif currProposal[idxProposalStatusID] == PROPOSAL_STATUS_REJECTED():  # 3 = rejected
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
@@ -98,8 +120,13 @@ class ProposalTypeUtils:
                 # open the proposal - and accept any other changes to the form
 
                 # currProposalID = currProposal[idxProposalID]
-                ProposalTypeUtils.rejectProposal(currProposal[idxProposalID])
-                proposalsLayer.updateFeature(currProposal)
+
+                # TODO: Need to check that this is an authorised user
+
+                updateStatus = proposalsLayer.updateFeature(currProposal)
+                if updateStatus == True:
+                    ProposalTypeUtils.rejectProposal(currProposal[idxProposalID])
+
                 #proposalsDialog.save()
 
                 # proposalAccepted.emit()
@@ -108,12 +135,29 @@ class ProposalTypeUtils:
                 # proposalsDialog.reject ((currProposal[idxProposalID]))
                 proposalsDialog.reject()
 
-
         else:
 
-            # anything else can be saved.
+            QgsMessageLog.logMessage(
+                "In onSaveProposalFormDetails. currProposalID = " + str(currProposal[idxProposalID]),
+                tag="TOMs panel")
 
-            proposalsLayer.updateFeature(currProposal)
+            # anything else can be saved.
+            if currProposal[idxProposalID] == None:
+
+                # This is a new proposal ...
+
+                newProposal = True
+
+                # add geometry
+                currProposal.setGeometry(QgsGeometry())
+
+            updateStatus = proposalsLayer.updateFeature(currProposal)
+
+            QgsMessageLog.logMessage(
+                "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus),
+                tag="TOMs panel")
+            updateStatus = True
+            pass
             #proposalsDialog.save()
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
@@ -141,13 +185,28 @@ class ProposalTypeUtils:
         # Make sure that the saving will not be executed immediately, but
         # only when the event loop runs into the next iteration to avoid
         # problems
-        QTimer.singleShot(0, functools.partial(ProposalTypeUtils.commitProposalChanges, proposalsLayer))
+
+        if updateStatus == False:
+
+            reply = QMessageBox.information(None, "Error",
+                                            "Changes to " + proposalsLayer.name() + " failed: " + str(
+                                                proposalsLayer.commitErrors()),
+                                            QMessageBox.Ok)
+        else:
+
+            QTimer.singleShot(0, functools.partial(ProposalTypeUtils.commitProposalChanges, proposalsLayer))
 
         pass
 
+        # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
+
+        if newProposal == True:
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. refreshing cbProposals ???", tag="TOMs panel")
+            #ProposalTypeUtils.iface.proposalChanged.emit()
+
     @staticmethod
     def acceptProposal(currProposalID, currProposalOpenDate):
-        QgsMessageLog.logMessage("In openProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")
 
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
@@ -217,7 +276,14 @@ class ProposalTypeUtils:
         idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
         idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
 
+        status = False
+
         try:
+
+            if proposalsLayer.isEditable():
+                QgsMessageLog.logMessage("In commitProposalChanges. Saving Proposals Layer: " + str(proposalsLayer.name()),
+                                         tag="TOMs panel")
+                proposalsLayer.commitChanges()
 
             for layer in RestrictionsLayers.getFeatures():
 
@@ -232,15 +298,20 @@ class ProposalTypeUtils:
 
             pass
 
-            if proposalsLayer.isEditable():
-                res = proposalsLayer.commitChanges()
-
         except:
 
             reply = QMessageBox.information(None, "Error",
                                             "Changes to " + restrictionLayer.name() + " failed: " + str(
-                                                restrictionLayer.commitErrors()),
-                                            QMessageBox.Ok)
+                                                restrictionLayer.commitErrors()) + str(
+                                                    proposalsLayer.commitErrors()), QMessageBox.Ok)
+
+            # rollback all changes
+            proposalsLayer.rollback()
+            restrictionLayer.rollback()
+
+        """status = currTrans.commit()
+        if status == False:
+            status2 = currTrans.rollback()"""
 
         QgsMessageLog.logMessage("In commitProposalChanges. Finished. ", tag="TOMs panel")
 
@@ -249,3 +320,35 @@ class ProposalTypeUtils:
 
 
         # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
+
+
+    @staticmethod
+    def createProposalTransactionGroup(proposalsLayer):
+        # Function to create group of layers to be in Transaction for changing proposal
+
+        QgsMessageLog.logMessage("In createProposalTransactionGroup: ", tag="TOMs panel")
+        #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
+
+        # save changes to all layers
+
+        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
+        idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+
+        # create transaction
+        newTransaction = QgsTransaction()
+
+        QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding ProposalsLayer ", tag="TOMs panel")
+        newTransaction.addLayer(proposalsLayer)
+
+        for layer in RestrictionsLayers.getFeatures():
+
+            currRestrictionLayerName = layer[idxRestrictionsLayerName]
+
+            restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+
+            newTransaction.addLayer(restrictionLayer)
+            QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
+
+        return newTransaction

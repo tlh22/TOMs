@@ -19,6 +19,7 @@ import time
 from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
+from .TOMsTableNames import TOMsTableNames
 from .manage_restriction_details import manageRestrictionDetails
 
 from TOMs.constants import (
@@ -85,6 +86,10 @@ class proposalsPanel():
 
         QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
 
+        # Check that tables are present
+        QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
+        #self.tableNames = TOMsTableNames()
+
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         self.dock.closingPlugin.connect(self.closeTOMsTools)
@@ -128,17 +133,24 @@ class proposalsPanel():
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
 
         # set up action for when new proposal is created
-        self.Proposals.editingStopped.connect(self.createProposalcb)
+        #self.Proposals.editingStopped.connect(self.createProposalcb)
+        #self.Proposals.committedFeaturesAdded.connect(self.createProposalcb)
 
         # self.dock.setUserVisible(True)
 
         # set up a canvas refresh if there are any changes to the restrictions
         self.RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        # self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
-        self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
-        self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
+        self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+        #self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
+        #self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
 
         self.RestrictionTools.enableTOMsToolbarItems()
+
+        # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
+
+        """shortcutEsc = QShortcut(QKeySequence(Qt.Key_Escape), self.iface.mainWindow())
+        shortcutEsc.setContext(Qt.ApplicationShortcut)
+        shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
 
         pass
 
@@ -174,17 +186,16 @@ class proposalsPanel():
         currProposalTitle = "No proposal shown"
 
         # A little pause for the db to catch up
-        time.sleep(.1)
+        #time.sleep(.1)
 
         QgsMessageLog.logMessage("In createProposalcb: Adding 0", tag="TOMs panel")
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-
         for proposal in self.Proposals.getFeatures():
             currProposalStatusID = proposal.attribute("ProposalStatusID")
-            QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
-                                     tag="TOMs panel")
+            """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
+                                     tag="TOMs panel")"""
             if currProposalStatusID == PROPOSAL_STATUS_IN_PREPARATION():  # 1 = "in preparation"
                 currProposalID = proposal.attribute("ProposalID")
                 currProposalTitle = proposal.attribute("ProposalTitle")
@@ -201,13 +212,14 @@ class proposalsPanel():
         newProposalID = self.dock.cb_ProposalsList.itemData(newProposal_cbIndex)
         newProposalTitle = self.dock.cb_ProposalsList.currentText()
 
+        setCurrentProposal(newProposalID)
         QgsMessageLog.logMessage("In onChangeProposal. newProposalID: " + str(newProposalID) + " newProposalTitle: " + str(newProposalTitle), tag="TOMs panel")
 
         # Set the project variable
 
         reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back", QMessageBox.Ok)
 
-        if reply:
+        """if reply:
 
             QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
 
@@ -222,7 +234,7 @@ class proposalsPanel():
             self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
             self.iface.mapCanvas().refresh()
 
-        pass
+        pass"""
 
     def onNewProposal(self):
         QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
@@ -238,8 +250,9 @@ class proposalsPanel():
 
         self.Proposals.startEditing()
 
-        self.iface.openFeatureForm(self.Proposals, newProposal, False, False)
+        self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
 
+        self.createProposalcb()
         pass
 
     def onSaveProposalDetails(self):
