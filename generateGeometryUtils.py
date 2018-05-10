@@ -886,7 +886,7 @@ class generateGeometryUtils:
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
@@ -932,6 +932,8 @@ class generateGeometryUtils:
             #                         tag="TOMs panel")
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
+
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 

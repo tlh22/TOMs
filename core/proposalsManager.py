@@ -26,13 +26,14 @@ from qgis.core import (
     QgsFeatureRequest
 )
 
-from TOMs.restrictionTypeUtils import RestrictionTypeUtils
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
 
-class TOMsProposalsManager(QObject):
+class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
     """
     Manages what is currently shown to the user.
 
@@ -46,10 +47,13 @@ class TOMsProposalsManager(QObject):
     """Signal will be emitted, when the current date is changed"""
     proposalChanged = pyqtSignal()
     """Signal will be emitted when the current proposal is changed"""
+    proposal = newProposalCreated = pyqtSignal(int)
+    """Signal will be emitted when the current proposal is changed"""
 
     def __init__(self):
         QObject.__init__(self)
         self.__date = QDate.currentDate()
+        self.currProposalFeature = None
         #self.constants = TOMsConstants()
 
     def date(self):
@@ -76,14 +80,20 @@ class TOMsProposalsManager(QObject):
             currProposal = 0
         return int(currProposal)
 
-    def currentProposalName(self):
+        #def currentProposalFeature(self):
+        """
+        Returns the current proposal feature
+        """
+        #return self.currProposalFeature
+
+        #def currentProposalName(self):
         """
         Returns the current proposal
         """
-        currProposal = QgsExpressionContextUtils.projectScope().variable('CurrentProposal')
-        if not currProposal:
-            currProposal = 0
-        return int(currProposal)
+        #currProposal = QgsExpressionContextUtils.projectScope().variable('CurrentProposal')
+        #if not currProposal:
+        #    currProposal = 0
+        #return int(currProposal)
 
     def setCurrentProposal(self, value):
         """
@@ -91,6 +101,9 @@ class TOMsProposalsManager(QObject):
         """
         QgsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), tag="TOMs panel")
         QgsExpressionContextUtils.setProjectVariable('CurrentProposal', value)
+
+        #self.currProposalFeature = QgsFeature(id=int(value))
+
         self.proposalChanged.emit()
         self.updateMapCanvas()
 
@@ -256,8 +269,8 @@ class TOMsProposalsManager(QObject):
                         if not firstRestriction:
                             restrictionsString = restrictionsString + ", '" + proposedChange["RestrictionID"] + "'"
                             """QgsMessageLog.logMessage(
-                                "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
-                                tag="TOMs panel")"""
+                                    "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
+                                    tag="TOMs panel")"""
                         else:
                             restrictionsString = "'" + str(proposedChange["RestrictionID"]) + "'"
                             firstRestriction = False

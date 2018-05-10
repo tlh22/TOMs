@@ -169,21 +169,19 @@ def getBayTimePeriodLabelText(feature, parent):
 
     #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
 
-    maxStayText, noReturnText = generateGeometryUtils.getBayRestrictionLabelText(feature)
+    maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    bayText = "Max Stay: " + maxStayText + ";No Return:" + noReturnText
+    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:" + str(timePeriodText), tag="TOMs panel")
 
-    return bayText
+    return timePeriodText
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getBayMaxStayLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
+    QgsMessageLog.logMessage("In getBayMaxStayLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
-
-    #bayText = "Max Stay: " + maxStayText + ";No Return: " + noReturnText
 
     #QgsMessageLog.logMessage("In getBayTimePeriodLabelText: " + str(baytext), tag="TOMs panel")
 
@@ -193,11 +191,9 @@ def getBayMaxStayLabelText(feature, parent):
 def getBayNoReturnLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel")
+    QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
-
-    #bayText = "Max Stay: " + maxStayText + ";No Return: " + noReturnText
 
     #QgsMessageLog.logMessage("In getBayTimePeriodLabelText: " + str(baytext), tag="TOMs panel")
 

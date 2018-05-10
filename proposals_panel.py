@@ -15,19 +15,21 @@ from PyQt4.QtGui import *
 from qgis.core import *
 
 import time
+import functools
 
 from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
 from .TOMsTableNames import TOMsTableNames
 from .manage_restriction_details import manageRestrictionDetails
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 
 from TOMs.constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
 )
-class proposalsPanel():
+class proposalsPanel(RestrictionTypeUtilsMixin):
     
     def __init__(self, iface, TOMsToolBar, proposalsManager):
         #def __init__(self, iface, TOMsMenu, proposalsManager):
@@ -94,7 +96,7 @@ class proposalsPanel():
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         self.dock.closingPlugin.connect(self.closeTOMsTools)
 
-        self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
+        #self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
 
         # self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
@@ -118,23 +120,16 @@ class proposalsPanel():
 
         # set CurrentProposal to be 0
 
-        self.proposalsManager.setCurrentProposal(0)
+        #self.proposalsManager.setCurrentProposal(0)
 
         # set up action for when the date is changed from the user interface
         self.dock.filterDate.dateChanged.connect(lambda: self.proposalsManager.setDate(self.dock.filterDate.date()))
-
-        # set up action for when the proposal is changed
-        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.updateCurrentProposal)
 
         # set up action for "New Proposal"
         self.dock.btn_NewProposal.clicked.connect(self.onNewProposal)
 
         # set up action for "View Proposal"
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
-
-        # set up action for when new proposal is created
-        #self.Proposals.editingStopped.connect(self.createProposalcb)
-        #self.Proposals.committedFeaturesAdded.connect(self.createProposalcb)
 
         # self.dock.setUserVisible(True)
 
@@ -144,6 +139,9 @@ class proposalsPanel():
         #self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
         #self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
 
+        #self.Proposals.committedFeaturesAdded.connect(self.onNewProposalSaved)
+        self.proposalsManager.newProposalCreated.connect(self.onNewProposalCreated)
+
         self.RestrictionTools.enableTOMsToolbarItems()
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
@@ -151,6 +149,7 @@ class proposalsPanel():
         """shortcutEsc = QShortcut(QKeySequence(Qt.Key_Escape), self.iface.mainWindow())
         shortcutEsc.setContext(Qt.ApplicationShortcut)
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
+        self.proposalsManager.setCurrentProposal(0)
 
         pass
 
@@ -180,10 +179,13 @@ class proposalsPanel():
         QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
+        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
+        self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
+
         self.dock.cb_ProposalsList.clear()
 
         currProposalID = 0
-        currProposalTitle = "No proposal shown"
+        currProposalTitle = "0 - No proposal shown"
 
         # A little pause for the db to catch up
         #time.sleep(.1)
@@ -192,7 +194,15 @@ class proposalsPanel():
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
+        """proposalsList = self.Proposals.getFeatures()
+        proposalsList.sort()
+
+        query = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
+        request = QgsFeatureRequest().setFilterExpression(query)"""
+
+        # for proposal in proposalsList:
         for proposal in self.Proposals.getFeatures():
+
             currProposalStatusID = proposal.attribute("ProposalStatusID")
             """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")"""
@@ -203,6 +213,8 @@ class proposalsPanel():
 
         pass
 
+        # set up action for when the proposal is changed
+        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
 
     def onChangeProposal(self):
         QgsMessageLog.logMessage("In onChangeProposal", tag="TOMs panel")
@@ -212,7 +224,7 @@ class proposalsPanel():
         newProposalID = self.dock.cb_ProposalsList.itemData(newProposal_cbIndex)
         newProposalTitle = self.dock.cb_ProposalsList.currentText()
 
-        setCurrentProposal(newProposalID)
+        self.setCurrentProposal(newProposalID)
         QgsMessageLog.logMessage("In onChangeProposal. newProposalID: " + str(newProposalID) + " newProposalTitle: " + str(newProposalTitle), tag="TOMs panel")
 
         # Set the project variable
@@ -241,21 +253,67 @@ class proposalsPanel():
 
         # create a new Proposal
 
-        newProposal = QgsFeature(self.Proposals.fields())
+        self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
 
-        newProposal[self.idxCreateDate] = self.proposalsManager.date()
-        newProposal[self.idxOpenDate] = self.proposalsManager.date()
-        newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
+        self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
+        self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
+        self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
+        self.newProposal.setGeometry(QgsGeometry())
 
         self.Proposals.startEditing()
 
-        self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
+        self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
+
+        self.proposalDialog.attributeForm().disconnectButtonBox()
+        self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
+
+        if self.button_box is None:
+            QgsMessageLog.logMessage(
+                "In onNewProposal. button box not found",
+                tag="TOMs panel")
+
+        self.button_box.accepted.disconnect(self.proposalDialog.accept)
+        self.button_box.accepted.connect(self.onSaveProposalDetailsFromForm)
+
+        self.button_box.rejected.disconnect(self.proposalDialog.reject)
+        self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
+
+        self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.newProposal, self.Proposals))
+
+        self.proposalDialog.show()
+
+        #self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
 
         self.createProposalcb()
         pass
 
-    def onSaveProposalDetails(self):
+    def onNewProposalCreated(self, proposal):
+        QgsMessageLog.logMessage("In onNewProposalSaved. New proposal = " + str(proposal), tag="TOMs panel")
+
+        self.createProposalcb()
+
+        # change the list to show the new proposal
+
+        for currIndex in range(self.dock.cb_ProposalsList.count()):
+            currProposalID = self.dock.cb_ProposalsList.itemData(currIndex)
+            #QgsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), tag="TOMs panel")
+            if currProposalID == proposal:
+                QgsMessageLog.logMessage("In onNewProposalSaved. index found as " + str(currIndex), tag="TOMs panel")
+                self.dock.cb_ProposalsList.setCurrentIndex(currIndex)
+                return
+
+        return
+
+    def onSaveProposalDetailsFromForm(self):
+        self.onSaveProposalFormDetails(self.newProposal, self.Proposals, self.proposalDialog)
+
+    def onRejectProposalDetailsFromForm(self):
+        self.Proposals.destroyEditCommand()
+        self.proposalDialog.reject()
+        pass
+
+        """def onSaveProposalDetails(self):
         QgsMessageLog.logMessage("In onSaveProposalDetails.", tag="TOMs panel")
 
         # set up field indexes
@@ -364,7 +422,7 @@ class proposalsPanel():
         # Update the lsit of Proposals
         self.createProposalcb()
 
-        self.dlg.accept()   # exit in the normal way
+        self.dlg.accept()   # exit in the normal way"""
 
     def onProposalDetails(self):
         QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel")
@@ -385,11 +443,16 @@ class proposalsPanel():
 
         pass
 
-    def onProposalChanged(self):
-        QgsMessageLog.logMessage("In onProposalChanged.", tag="TOMs panel")
-        currProposal = self.proposalsManager.currentProposal()
-        currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
-        self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
+    def onProposalListIndexChanged(self):
+        QgsMessageLog.logMessage("In onProposalListIndexChanged.", tag="TOMs panel")
+        #currProposal = self.proposalsManager.currentProposal()
+        #currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
+        #self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
+
+        currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
+        QgsMessageLog.logMessage("In onProposalListIndexChanged. Current Index = " + str(currProposal_cbIndex), tag="TOMs panel")
+        currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
+        self.proposalsManager.setCurrentProposal(currProposalID)
 
         QgsMessageLog.logMessage("In onProposalChanged. Zoom to extents", tag="TOMs panel")
         """if self.proposalsManager.getProposalBoundingBox():
