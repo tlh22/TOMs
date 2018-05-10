@@ -274,7 +274,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
         self.button_box.accepted.disconnect(self.proposalDialog.accept)
-        self.button_box.accepted.connect(self.onSaveProposalDetailsFromForm)
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalDetailsFromForm, self.newProposal))
 
         self.button_box.rejected.disconnect(self.proposalDialog.reject)
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
@@ -285,7 +285,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         #self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
 
-        self.createProposalcb()
+        #self.createProposalcb()
         pass
 
     def onNewProposalCreated(self, proposal):
@@ -305,124 +305,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         return
 
-    def onSaveProposalDetailsFromForm(self):
-        self.onSaveProposalFormDetails(self.newProposal, self.Proposals, self.proposalDialog)
+    def onSaveProposalDetailsFromForm(self, proposal):
+        self.onSaveProposalFormDetails(proposal, self.Proposals, self.proposalDialog)
 
     def onRejectProposalDetailsFromForm(self):
         self.Proposals.destroyEditCommand()
         self.proposalDialog.reject()
         pass
-
-        """def onSaveProposalDetails(self):
-        QgsMessageLog.logMessage("In onSaveProposalDetails.", tag="TOMs panel")
-
-        # set up field indexes
-        idxProposalID = self.Proposals.fieldNameIndex("ProposalID")
-        idxProposalTitle = self.Proposals.fieldNameIndex("ProposalTitle")
-        idxProposalStatusID = self.Proposals.fieldNameIndex("ProposalStatusID")
-        idxProposalNotes = self.Proposals.fieldNameIndex("ProposalNotes")
-        idxProposalCreateDate = self.Proposals.fieldNameIndex("ProposalCreateDate")
-
-        self.Proposals.startEditing()
-
-        if self.newProposalRequired == True:
-
-            # create a new Proposal
-
-            currProposal = QgsFeature(self.Proposals.fields())
-            currProposal.setGeometry(QgsGeometry())
-            #self.Proposals.addFeatures([currProposal])
-
-            QgsMessageLog.logMessage("In onSaveProposalDetails. Creating new Proposal.", tag="TOMs panel")
-
-        else:
-
-            # get the existing proposal ?? is there a better way ??
-
-            currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
-            currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
-            currProposalTitle = self.dock.cb_ProposalsList.currentText()
-
-            QgsMessageLog.logMessage(
-                "In onSaveProposalDetails. ProposalID: " + str(currProposalID) + " ProposalTitle: " + str(
-                    currProposalTitle), tag="TOMs panel")
-
-            # use the ID to retrieve the row
-            # https://gis.stackexchange.com/questions/54057/how-to-read-the-attribute-values-using-pyqgis/138027
-
-            iterator = self.Proposals.getFeatures(QgsFeatureRequest().setFilterFid(currProposalID))
-            currProposal = next(iterator)
-
-        QgsMessageLog.logMessage("In onSaveProposalDetails. Saving Proposal. id: " + str(currProposal.id()),
-                                 tag="TOMs panel")
-
-        # Now save the details
-
-        try:
-
-            # Update the existing feature
-
-            # idxProposalID = self.Proposals.fieldNameIndex("ProposalID")
-            QgsMessageLog.logMessage(
-                ("In onSaveProposalDetails. Attempting save. ID: " + str(currProposal.id()) + " Title: " + self.dlg.ProposalTitle.text() + " CreateDate: " + str(
-                    self.dlg.ProposalCreateDate.text()) +
-                 " ProposalStatusID: " + str(
-                    self.dlg.ProposalStatusID.currentIndex() + 1) + " ProposalNotes: " + self.dlg.ProposalNotes.toPlainText()),
-                tag="TOMs panel")
-
-            if self.newProposalRequired == True:
-
-                #currProposal[idxProposalID] = currProposal.id()
-                currProposal[idxProposalTitle] = self.dlg.ProposalTitle.text()
-                currProposal[idxProposalStatusID] = self.dlg.ProposalStatusID.currentIndex() + 1
-
-                if self.dlg.ProposalNotes is not None:
-                    currProposal[idxProposalNotes] = self.dlg.ProposalNotes.toPlainText()
-
-                currProposal[idxProposalCreateDate] = self.dlg.ProposalCreateDate.date()
-
-                self.Proposals.addFeatures([currProposal])
-
-                QgsMessageLog.logMessage("In onSaveProposalDetails. Creating new Proposal.", tag="TOMs panel")
-
-            else:
-
-                # the Proposal already exists - so update it
-
-                self.Proposals.changeAttributeValue(currProposal.id(), self.Proposals.fieldNameIndex("ProposalTitle"),
-                                                    self.dlg.ProposalTitle.text())
-
-                #  There is a problem with the format of the date passed here - and it is not saving correctly. Need to investigate further.
-                self.Proposals.changeAttributeValue(currProposal.id(),
-                                                    self.Proposals.fieldNameIndex("ProposalCreateDate"),
-                                                    self.dlg.ProposalCreateDate.date())
-
-                self.Proposals.changeAttributeValue(currProposal.id(),
-                                                    self.Proposals.fieldNameIndex("ProposalStatusID"),
-                                                    self.dlg.ProposalStatusID.currentIndex() + 1)
-
-                self.Proposals.changeAttributeValue(currProposal.id(), self.Proposals.fieldNameIndex("ProposalNotes"),
-                                                    str(self.dlg.ProposalNotes.toPlainText()))
-
-                QgsMessageLog.logMessage("In onSaveProposalDetails. Saving existing Proposal. id: " + str(currProposal.id()), tag="TOMs panel")
-
-            self.Proposals.commitChanges()  # Save details
-
-        except:
-            # errorList = self.TOMslayer.commitErrors()
-            for item in list(self.Proposals.commitErrors()):
-                QgsMessageLog.logMessage(("In onSaveProposalDetails. Unexpected error: " + str(item)),
-                                         tag="TOMs panel")
-
-            # self.TOMslayer.rollBack()
-            raise
-
-        QgsMessageLog.logMessage(("In onSaveProposalDetails. Successful save."), tag="TOMs panel")
-
-        # Update the lsit of Proposals
-        self.createProposalcb()
-
-        self.dlg.accept()   # exit in the normal way"""
 
     def onProposalDetails(self):
         QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel")
@@ -435,11 +324,29 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
 
-        currProposal = self.getProposal(currProposalID)
+        self.currProposal = self.getProposal(currProposalID)
 
         self.Proposals.startEditing()
 
-        self.iface.openFeatureForm(self.Proposals, currProposal, False)
+        self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
+
+        self.proposalDialog.attributeForm().disconnectButtonBox()
+        self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
+
+        if self.button_box is None:
+            QgsMessageLog.logMessage(
+                "In onNewProposal. button box not found",
+                tag="TOMs panel")
+
+        self.button_box.accepted.disconnect(self.proposalDialog.accept)
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalDetailsFromForm, self.currProposal))
+
+        self.button_box.rejected.disconnect(self.proposalDialog.reject)
+        self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
+
+        self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.currProposal, self.Proposals))
+
+        self.proposalDialog.show()
 
         pass
 
