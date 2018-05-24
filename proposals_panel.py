@@ -22,7 +22,7 @@ from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 from TOMs.core.proposalsManager import *
 from .TOMsTableNames import TOMsTableNames
 from .manage_restriction_details import manageRestrictionDetails
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 from TOMs.constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
@@ -90,7 +90,31 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
-        #self.tableNames = TOMsTableNames()
+        self.tableNames = setupTableNames(self.iface)
+
+        """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+            self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
+            raise LayerNotPresent"""
+
+        # Set up transaction group
+        currTransactionGroup = self.createProposalTransactionGroup(self.tableNames)
+
+        """try:
+            currProposalTrans
+        except NameError:
+
+            # the Transaction doesn't exist so create it
+            currProposalTrans = self.createProposalTransactionGroup(self.Proposals)
+            self.currProposalTrans = currProposalTrans
+
+            errMessage = str()
+
+            # Start transaction
+
+            if self.currProposalTrans.begin() == False:
+                QgsMessageLog.logMessage("In onProposalDetails. Begin transaction failed: " + self.errMessage, tag="TOMs panel")"""
 
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)

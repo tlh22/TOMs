@@ -233,3 +233,13 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         return
 
+    def on_cached_geometry_changed(self, fid, geom):
+        """ update geometry of our feature """
+        QgsMessageLog.logMessage("In TOMsNodeTool:on_cached_geometry_changed", tag="TOMs panel")
+        layer = self.sender()
+        assert layer in self.cache
+        if fid in self.cache[layer]:
+            # Add extra check to ensure that updates are only to selected feature
+            if fid == self.origFeature.getFeature().id():
+                QgsMessageLog.logMessage("In TOMsNodeTool:on_cached_geometry_changed: fid = " + str(fid), tag="TOMs panel")
+                self.cache[layer][fid] = QgsGeometry(geom)

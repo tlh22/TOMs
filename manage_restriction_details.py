@@ -320,7 +320,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -376,7 +376,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -426,7 +426,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -476,7 +476,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
                 self.mapTool.setAction(self.actionCreateSignRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 

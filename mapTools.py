@@ -426,7 +426,7 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin, RestrictionTypeUtils
 
 class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
     # helpful link - http://apprize.info/python/qgis/7.html ??
-    def __init__(self, iface, layer):
+    def __init__(self, iface, layer, currTransaction):
 
         #def __init__(self, iface, layer, dialog):
         QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
@@ -437,6 +437,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         self.iface = iface
         self.layer = layer
         #self.dialog = dialog
+        self.currTransaction = currTransaction
 
         #self.QgsWkbTypes = QgsWkbTypes()
 
@@ -681,7 +682,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
                 self.dialog = self.iface.getFeatureForm(self.layer, feature)
 
-                self.setupRestrictionDialog(self.dialog, self.layer, feature)  # connects signals, etc
+                self.setupRestrictionDialog(self.dialog, self.layer, feature, self.currTransaction)  # connects signals, etc
 
                 self.dialog.show()
                 #self.iface.openFeatureForm(self.layer, feature, False, False)

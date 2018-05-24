@@ -50,11 +50,12 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
     proposal = newProposalCreated = pyqtSignal(int)
     """Signal will be emitted when the current proposal is changed"""
 
-    def __init__(self):
+    def __init__(self, iface):
         QObject.__init__(self)
         self.__date = QDate.currentDate()
         self.currProposalFeature = None
         #self.constants = TOMsConstants()
+        self.iface = iface
 
     def date(self):
         """
@@ -106,6 +107,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         self.proposalChanged.emit()
         self.updateMapCanvas()
+
+        # Rollback any edit session and stop editing ... need to find way to do "silently"
+        self.rollbackCurrentEdits()
 
     def updateMapCanvas(self):
         """
@@ -386,3 +390,27 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
 
         pass
+
+    def createTrans(self):
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+            self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
+            raise LayerNotPresent
+
+        # Set up transaction group
+        try:
+            currProposalTrans
+        except NameError:
+
+            # the Transaction doesn't exist so create it
+            currProposalTrans = self.createProposalTransactionGroup(self.Proposals)
+            self.currProposalTrans = currProposalTrans
+
+            errMessage = str()
+
+            # Start transaction
+
+            if self.currProposalTrans.begin() == False:
+                QgsMessageLog.logMessage("In onProposalDetails. Begin transaction failed: " + self.errMessage, tag="TOMs panel")
