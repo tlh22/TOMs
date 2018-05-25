@@ -21,7 +21,7 @@ from qgis.utils import iface
 import uuid
 import functools
 
-from TOMs.CadNodeTool.nodetool import NodeTool
+from TOMs.CadNodeTool.nodetool import NodeTool, OneFeatureFilter
 
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
@@ -233,13 +233,54 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         return
 
-    def on_cached_geometry_changed(self, fid, geom):
-        """ update geometry of our feature """
-        QgsMessageLog.logMessage("In TOMsNodeTool:on_cached_geometry_changed", tag="TOMs panel")
-        layer = self.sender()
-        assert layer in self.cache
-        if fid in self.cache[layer]:
-            # Add extra check to ensure that updates are only to selected feature
-            if fid == self.origFeature.getFeature().id():
-                QgsMessageLog.logMessage("In TOMsNodeTool:on_cached_geometry_changed: fid = " + str(fid), tag="TOMs panel")
-                self.cache[layer][fid] = QgsGeometry(geom)
+    def snap_to_editable_layer(self, e):
+        """ Temporarily override snapping config and snap to vertices and edges
+         of any editable vector layer, to allow selection of node for editing
+         (if snapped to edge, it would offer creation of a new vertex there).
+        """
+
+        map_point = self.toMapCoordinates(e.pos())
+        tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
+        snap_type = QgsPointLocator.Type(QgsPointLocator.Vertex|QgsPointLocator.Edge)
+
+        snap_layers = []
+
+        ### TH: Amend to choose only from selected feature (and layer)
+
+        snap_layers.append(QgsSnappingUtils.LayerConfig(
+            self.origLayer, snap_type, tol, QgsTolerance.ProjectUnits))
+
+        """for layer in self.canvas().layers():
+            if not isinstance(layer, QgsVectorLayer) or not layer.isEditable():
+                continue
+            snap_layers.append(QgsSnappingUtils.LayerConfig(
+                layer, snap_type, tol, QgsTolerance.ProjectUnits))"""
+
+
+        snap_util = self.canvas().snappingUtils()
+        old_layers = snap_util.layers()
+        old_mode = snap_util.snapToMapMode()
+        old_intersections = snap_util.snapOnIntersections()
+        snap_util.setLayers(snap_layers)
+        snap_util.setSnapToMapMode(QgsSnappingUtils.SnapAdvanced)
+        snap_util.setSnapOnIntersections(False)  # only snap to layers
+        #m = snap_util.snapToMap(map_point)
+
+        # try to stay snapped to previously used feature
+        # so the highlight does not jump around at nodes where features are joined
+
+        ### TH: Amend to choose only from selected feature (and layer)
+
+        filter_last = OneFeatureFilter(self.origLayer, self.origFeature.getFeature().id())
+        m = snap_util.snapToMap(map_point, filter_last)
+        """if m_last.isValid() and m_last.distance() <= m.distance():
+            m = m_last"""
+
+        snap_util.setLayers(old_layers)
+        snap_util.setSnapToMapMode(old_mode)
+        snap_util.setSnapOnIntersections(old_intersections)
+
+        #self.last_snap = m
+
+        return m
+
