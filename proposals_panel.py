@@ -22,7 +22,7 @@ from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 from TOMs.core.proposalsManager import *
 from .TOMsTableNames import TOMsTableNames
 from .manage_restriction_details import manageRestrictionDetails
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
 from TOMs.constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
@@ -99,7 +99,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
             raise LayerNotPresent"""
 
         # Set up transaction group
-        currTransactionGroup = self.createProposalTransactionGroup(self.tableNames)
+        #self.currTransactionGroup = self.createProposalTransactionGroup(self.tableNames)
 
         """try:
             currProposalTrans
@@ -190,6 +190,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # Now disable the items from the Toolbar
 
+        #self.createProposalTransactionGroup.rollback()
         self.RestrictionTools.disableTOMsToolbarItems()
 
         # Now clear the filters
@@ -277,6 +278,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # create a new Proposal
 
+        self.currTransaction = TOMsTransaction(self.iface).create()
+        self.currTransaction.begin()
+
+        self.Proposals.startEditing()
+
         self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
 
@@ -284,8 +290,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
         self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
         self.newProposal.setGeometry(QgsGeometry())
-
-        self.Proposals.startEditing()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
 
@@ -330,11 +334,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         return
 
     def onSaveProposalDetailsFromForm(self, proposal):
-        self.onSaveProposalFormDetails(proposal, self.Proposals, self.proposalDialog)
+        self.onSaveProposalFormDetails(proposal, self.Proposals, self.proposalDialog, self.currTransaction)
 
     def onRejectProposalDetailsFromForm(self):
         self.Proposals.destroyEditCommand()
         self.proposalDialog.reject()
+        self.rollbackCurrentEdits()
+        del self.currTransaction
         pass
 
     def onProposalDetails(self):
@@ -350,6 +356,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.currProposal = self.getProposal(currProposalID)
 
+        self.currTransaction = TOMsTransaction(self.iface).create()
+        self.currTransaction.begin()
         self.Proposals.startEditing()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)

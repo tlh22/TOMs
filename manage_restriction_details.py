@@ -46,7 +46,7 @@ from TOMs.constants import (
     ACTION_OPEN_RESTRICTION
 )
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransaction
 #from BayRestrictionForm import BayRestrictionForm
 
 import functools
@@ -152,6 +152,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionEditRestriction.setEnabled(True)
         self.actionCreateConstructionLine.setEnabled(True)
 
+        #self.currTransactionGroup = currTransaction
+
         pass
 
 
@@ -221,8 +223,14 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.currRestrictionLayer.selectedFeatureCount() > 0:
 
+                self.currTransaction = None
+
                 if currProposalID > 0:
+
+                    self.currTransaction = TOMsTransaction(self.iface).create()
+                    self.currTransaction.begin()
                     self.currRestrictionLayer.startEditing()
+
                 selectedRestrictions = self.currRestrictionLayer.selectedFeatures()
                 for self.currRestriction in selectedRestrictions:
                     #self.restrictionForm = BayRestrictionForm(currRestrictionLayer, currRestriction)
@@ -233,7 +241,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     self.dialog = self.iface.getFeatureForm(self.currRestrictionLayer, self.currRestriction)
 
-                    self.setupRestrictionDialog(self.dialog, self.currRestrictionLayer, self.currRestriction)  # connects signals
+                    self.setupRestrictionDialog(self.dialog, self.currRestrictionLayer, self.currRestriction, self.currTransaction)  # connects signals
 
                     self.dialog.show()
 
@@ -318,9 +326,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
+                self.currTransaction = TOMsTransaction(self.iface).create()
+                self.currTransaction.begin()
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -374,9 +384,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
+                self.currTransaction = TOMsTransaction(self.iface).create()
+                self.currTransaction.begin()
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -424,9 +436,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
+                self.currTransaction = TOMsTransaction(self.iface).create()
+                self.currTransaction.begin()
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -474,9 +488,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
+                self.currTransaction = TOMsTransaction(self.iface).create()
+                self.currTransaction.begin()
                 self.currLayer.startEditing()
 
-                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager.currProposalTrans)
+                self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateSignRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -600,6 +616,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
+                self.currTransaction = TOMsTransaction(self.iface).create()
+                self.currTransaction.begin()
                 currRestrictionLayer.startEditing()
 
                 if currRestrictionLayer.selectedFeatureCount() > 0:
@@ -637,7 +655,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         currProposalID = self.proposalsManager.currentProposal()
 
-        currRestrictionLayer.startEditing()
+        #currRestrictionLayer.startEditing()
         currRestrictionLayerID = self.getRestrictionLayerTableID(currRestrictionLayer)
 
         idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
@@ -679,7 +697,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Trying to unset map tool to force updates ...
         #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        self.commitRestrictionChanges(currRestrictionLayer)
+        self.commitRestrictionChanges(currRestrictionLayer, self.currTransaction)
         #currRestrictionLayer.triggerRepaint()  # This shouldn't be required ...
 
 
@@ -709,15 +727,16 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     if currRestrictionLayer.selectedFeatureCount() > 0:
 
-                        # save the current feature
+                        self.currTransaction = TOMsTransaction(self.iface).create()
+                        self.currTransaction.begin()
+                        currRestrictionLayer.startEditing()
 
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsNodeTool(self.iface,
-                                                    self.proposalsManager)  # This is where we use the Node Tool ... need canvas and panel??
+                                                    self.proposalsManager, self.currTransaction)  # This is where we use the Node Tool ... need canvas and panel??
                         self.mapTool.setAction(self.actionEditRestriction)
                         self.iface.mapCanvas().setMapTool(self.mapTool)
 
-                        currRestrictionLayer.startEditing()
                         #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
 
                     else:
