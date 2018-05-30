@@ -261,7 +261,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # create a new Proposal
 
-        self.currTransaction = TOMsTransaction(self.iface).createGroup()
+        if not self.currTransaction:
+            self.currTransaction = TOMsTransaction(self.iface).createGroup()
         #self.currTransaction.begin()
 
         #self.Proposals.startEditing()
@@ -342,7 +343,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         #self.currTransaction = TOMsTransaction(self.iface).create()
         # self.currTransaction.begin()
-        self.currTransaction = TOMsTransaction(self.iface).createGroup()
+        if not self.currTransaction:
+            self.currTransaction = TOMsTransaction(self.iface).createGroup()
         #self.Proposals.startEditing()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)

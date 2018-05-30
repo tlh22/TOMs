@@ -60,7 +60,7 @@ class originalFeature(object):
 # class TOMsNodeTool(NodeTool, MapToolMixin, TOMsConstants):
 class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
-    def __init__(self, iface, proposalsManager, currTransaction):
+    def __init__(self, iface, proposalsManager):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:initialising .... ", tag="TOMs panel")
 
@@ -71,7 +71,6 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         NodeTool.__init__(self, canvas, cadDock)
 
         self.proposalsManager = proposalsManager
-        self.currTransaction = currTransaction
 
         #self.constants = TOMsConstants()
         self.origFeature = originalFeature()
@@ -204,7 +203,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         # Trying to unset map tool to force updates ...
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        self.commitRestrictionChanges(self.origLayer, self.currTransaction)
+        self.commitRestrictionChanges()
         #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, origLayer))
 
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometry saved.", tag="TOMs panel")

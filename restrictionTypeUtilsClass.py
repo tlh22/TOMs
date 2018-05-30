@@ -171,8 +171,8 @@ class TOMsTransaction ():
 
         self.newTransaction = None
         self.newTransactionGroup = None
-        del self.newTransaction
-        del self.newTransactionGroup
+        #del self.newTransaction
+        #del self.newTransactionGroup
 
 class setupTableNames():
     def __init__(self, iface):
@@ -228,7 +228,7 @@ class RestrictionTypeUtilsMixin():
         self.iface = iface
         self.tableNames = setupTableNames(self.iface)
         #super().__init__()
-
+        self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()
 
         pass
@@ -501,7 +501,7 @@ class RestrictionTypeUtilsMixin():
             # only when the event loop runs into the next iteration to avoid
             # problems
 
-            self.commitRestrictionChanges (currRestrictionLayer, currTransaction)
+            self.commitRestrictionChanges ()
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -533,15 +533,15 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
         pass
 
-    def commitRestrictionChanges(self, currRestrictionLayer, currTransaction):
+    def commitRestrictionChanges(self):
         # Function to save changes to current layer and to RestrictionsInProposal
 
-        QgsMessageLog.logMessage("In commitRestrictionChanges: currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In commitRestrictionChanges: currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
         #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
 
         # Trying to unset map tool to force updates ...
         #qgis.utils.iface.mapCanvas().unsetMapTool(qgis.utils.iface.mapCanvas().mapTool())
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         # Added to stop save actions
         #return
@@ -550,16 +550,35 @@ class RestrictionTypeUtilsMixin():
 
         errMessage = str()
 
-        currTransaction.commitError.connect(self.showTransactionErrorMessage)
+        self.currTransaction.commitError.connect(self.showTransactionErrorMessage)
 
         #try:
-        modifiedTransaction = currTransaction.modified()
-        statusTrans = currRestrictionLayer.commitChanges()
-        commitErrors = currRestrictionLayer.commitErrors()
+        modifiedTransaction = self.currTransaction.modified()
+        #statusTrans = currRestrictionLayer.commitChanges()
+        #commitErrors = currRestrictionLayer.commitErrors()
 
+        localTrans = TOMsTransaction(self.iface)
 
-        currTransaction.commitError.disconnect()
-        del currTransaction
+        localTrans.prepareLayerSet()
+        setLayers = localTrans.layersInTransaction()
+
+        for layerID in setLayers:
+
+            transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
+            QgsMessageLog.logMessage("In commitProposalChanges. Considering: " + transLayer.name(), tag="TOMs panel")
+
+            commitStatus = transLayer.commitChanges()
+            commitErrors = transLayer.commitErrors()
+
+            if commitErrors:
+                reply = QMessageBox.information(None, "Error",
+                                            "Changes to " + transLayer.name() + " failed: " + str(
+                                                transLayer.commitErrors()), QMessageBox.Ok)
+
+            break
+
+        self.currTransaction.commitError.disconnect()
+        self.currTransaction = None
         self.rollbackCurrentEdits()
 
         return
@@ -953,7 +972,7 @@ class RestrictionTypeUtilsMixin():
         #self.Proposals.editCommandEnded.connect(self.proposalsManager.setCurrentProposal)
 
         # QTimer.singleShot(0, functools.partial(self.commitProposalChanges, proposalsLayer))
-        self.commitProposalChanges(proposalsLayer, currTransaction)
+        self.commitProposalChanges()
 
         """if updateStatus == False:
 
@@ -1059,19 +1078,21 @@ class RestrictionTypeUtilsMixin():
 
         pass
 
-    def commitProposalChanges(self, proposalsLayer, currTransaction):
+    def commitProposalChanges(self):
         # Function to save changes to current layer and to RestrictionsInProposal
 
         QgsMessageLog.logMessage("In commitProposalChanges: ", tag="TOMs panel")
 
         # save changes to all layers
 
-        #localTrans = TOMsTransaction(self.iface)
+        localTrans = TOMsTransaction(self.iface)
 
-        #localTrans.prepareLayerSet()
-        #setLayers = localTrans.layersInTransaction()
+        localTrans.prepareLayerSet()
+        setLayers = localTrans.layersInTransaction()
 
-        """for layerID in setLayers:
+        modifiedTransaction = self.currTransaction.modified()
+
+        for layerID in setLayers:
 
             transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
             QgsMessageLog.logMessage("In commitProposalChanges. Considering: " + transLayer.name(), tag="TOMs panel")
@@ -1082,24 +1103,24 @@ class RestrictionTypeUtilsMixin():
             if commitErrors:
                 reply = QMessageBox.information(None, "Error",
                                             "Changes to " + transLayer.name() + " failed: " + str(
-                                                transLayer.commitErrors()) + str(
-                                                    proposalsLayer.commitErrors()), QMessageBox.Ok)"""
+                                                transLayer.commitErrors()), QMessageBox.Ok)
+            break
 
         statusTrans = False
         errMessage = str()
 
         # setup signal catch
         #currTransaction.commitError.disconnect()
-        currTransaction.commitError.connect(self.showTransactionErrorMessage)
+        self.currTransaction.commitError.connect(self.showTransactionErrorMessage)
 
         #try:
-        modifiedTransaction = currTransaction.modified()
-        statusTrans = proposalsLayer.commitChanges()
-        commitErrors = proposalsLayer.commitErrors()
+
+        #statusTrans = proposalsLayer.commitChanges()
+        #commitErrors = proposalsLayer.commitErrors()
 
 
-        currTransaction.commitError.disconnect()
-        del currTransaction
+        self.currTransaction.commitError.disconnect()
+        self.currTransaction = None
         self.rollbackCurrentEdits()
 
         # TODO: deal with errors in Transaction
