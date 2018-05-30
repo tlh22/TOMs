@@ -256,23 +256,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back", QMessageBox.Ok)
 
-        """if reply:
-
-            QgsExpressionContextUtils.setProjectVariable('CurrentProposal', str(newProposalID))
-
-            self.iface.actionRollbackAllEdits().trigger()
-            self.iface.actionCancelAllEdits().trigger()
-
-            # Now revise the view based on proposal choosen
-
-            #self.filterView()
-
-            QgsMessageLog.logMessage("In onChangeProposal. Zoom to extents", tag="TOMs panel")
-            self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
-            self.iface.mapCanvas().refresh()
-
-        pass"""
-
     def onNewProposal(self):
         QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
 
@@ -281,7 +264,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.currTransaction = TOMsTransaction(self.iface).createGroup()
         #self.currTransaction.begin()
 
-        self.Proposals.startEditing()
+        #self.Proposals.startEditing()
 
         self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
@@ -339,8 +322,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def onRejectProposalDetailsFromForm(self):
         self.Proposals.destroyEditCommand()
         self.proposalDialog.reject()
-        self.rollbackCurrentEdits()
         del self.currTransaction
+        self.rollbackCurrentEdits()
+
         pass
 
     def onProposalDetails(self):

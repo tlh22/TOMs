@@ -260,7 +260,7 @@ class RestrictionTypeUtilsMixin():
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
-        RestrictionsInProposalsLayer.startEditing()
+        #RestrictionsInProposalsLayer.startEditing()
 
         idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
         idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
@@ -345,7 +345,7 @@ class RestrictionTypeUtilsMixin():
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
 
-        RestrictionsInProposalsLayer.startEditing()
+        #RestrictionsInProposalsLayer.startEditing()
 
         for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
             if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
@@ -550,7 +550,21 @@ class RestrictionTypeUtilsMixin():
 
         errMessage = str()
 
-        if currTransaction.commit() == False:
+        currTransaction.commitError.connect(self.showTransactionErrorMessage)
+
+        #try:
+        modifiedTransaction = currTransaction.modified()
+        statusTrans = currRestrictionLayer.commitChanges()
+        commitErrors = currRestrictionLayer.commitErrors()
+
+
+        currTransaction.commitError.disconnect()
+        del currTransaction
+        self.rollbackCurrentEdits()
+
+        return
+
+        """if currTransaction.commit() == False:
 
             reply = QMessageBox.information(None, "Error",
                                                 "Proposal changes failed: " + str(errMessage),
@@ -562,7 +576,7 @@ class RestrictionTypeUtilsMixin():
                                                 QMessageBox.Ok)  # rollback all changes
 
         del currTransaction
-        self.rollbackCurrentEdits()
+        self.rollbackCurrentEdits()"""
 
         """res = True
         res = currRestrictionLayer.commitChanges()
@@ -1036,8 +1050,8 @@ class RestrictionTypeUtilsMixin():
                 currAction = restrictionInProposal.attribute("ActionOnProposalAcceptance")
 
                 #currRestrictionLayer.startEditing()
-                if not currRestrictionLayer.isEditable():
-                    currRestrictionLayer.startEditing()
+                """if not currRestrictionLayer.isEditable():
+                    currRestrictionLayer.startEditing()"""
 
                 statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, None)
 
@@ -1082,6 +1096,16 @@ class RestrictionTypeUtilsMixin():
         modifiedTransaction = currTransaction.modified()
         statusTrans = proposalsLayer.commitChanges()
         commitErrors = proposalsLayer.commitErrors()
+
+
+        currTransaction.commitError.disconnect()
+        del currTransaction
+        self.rollbackCurrentEdits()
+
+        # TODO: deal with errors in Transaction
+
+        return
+
         """except:
 
             reply = QMessageBox.information(None, "Error",
@@ -1092,14 +1116,6 @@ class RestrictionTypeUtilsMixin():
                 reply = QMessageBox.information(None, "Error",
                                                 "Proposal rollback failed: " + str(errMessage),
                                                 QMessageBox.Ok)  # rollback all changes"""
-
-        currTransaction.commitError.disconnect()
-        del currTransaction
-        self.rollbackCurrentEdits()
-
-        # TODO: deal with errors in Transaction
-
-        return
 
         """def createProposalTransactionGroup(self, tableNames):
 

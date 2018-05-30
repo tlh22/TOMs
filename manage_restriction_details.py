@@ -227,9 +227,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 if currProposalID > 0:
 
-                    self.currTransaction = TOMsTransaction(self.iface).create()
-                    self.currTransaction.begin()
-                    self.currRestrictionLayer.startEditing()
+                    self.currTransaction = TOMsTransaction(self.iface).createGroup()
+
+                    #self.currTransaction = TOMsTransaction(self.iface).create()
+                    #self.currTransaction.begin()
+                    #self.currRestrictionLayer.startEditing()
 
                 selectedRestrictions = self.currRestrictionLayer.selectedFeatures()
                 for self.currRestriction in selectedRestrictions:
@@ -326,9 +328,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
-                self.currTransaction = TOMsTransaction(self.iface).create()
-                self.currTransaction.begin()
-                self.currLayer.startEditing()
+                self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                #self.currTransaction = TOMsTransaction(self.iface).create()
+                #self.currTransaction.begin()
+                #self.currLayer.startEditing()
 
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
@@ -384,9 +387,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
-                self.currTransaction = TOMsTransaction(self.iface).create()
-                self.currTransaction.begin()
-                self.currLayer.startEditing()
+                self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                #self.currTransaction = TOMsTransaction(self.iface).create()
+                #self.currTransaction.begin()
+                #self.currLayer.startEditing()
 
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
@@ -436,9 +440,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
-                self.currTransaction = TOMsTransaction(self.iface).create()
-                self.currTransaction.begin()
-                self.currLayer.startEditing()
+                self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                #self.currTransaction = TOMsTransaction(self.iface).create()
+                #self.currTransaction.begin()
+                #self.currLayer.startEditing()
 
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
@@ -488,9 +493,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
                 self.iface.setActiveLayer(self.currLayer)
 
-                self.currTransaction = TOMsTransaction(self.iface).create()
-                self.currTransaction.begin()
-                self.currLayer.startEditing()
+                self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                #self.currTransaction = TOMsTransaction(self.iface).create()
+                #self.currTransaction.begin()
+                #self.currLayer.startEditing()
 
                 self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.currTransaction)
                 self.mapTool.setAction(self.actionCreateSignRestriction)
@@ -616,9 +622,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
-                self.currTransaction = TOMsTransaction(self.iface).create()
-                self.currTransaction.begin()
-                currRestrictionLayer.startEditing()
+                self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                #self.currTransaction = TOMsTransaction(self.iface).create()
+                #self.currTransaction.begin()
+                #currRestrictionLayer.startEditing()
 
                 if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -727,9 +734,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     if currRestrictionLayer.selectedFeatureCount() > 0:
 
-                        self.currTransaction = TOMsTransaction(self.iface).create()
-                        self.currTransaction.begin()
-                        currRestrictionLayer.startEditing()
+                        self.currTransaction = TOMsTransaction(self.iface).createGroup()
+                        #self.currTransaction = TOMsTransaction(self.iface).create()
+                        #self.currTransaction.begin()
+                        #currRestrictionLayer.startEditing()
 
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsNodeTool(self.iface,
