@@ -48,7 +48,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.actionProposalsPanel.triggered.connect(self.onInitProposalsPanel)
 
-        self.acceptProposal = False
+        #self.acceptProposal = False
         self.newProposalRequired = False
 
         # Now set up the toolbar
@@ -278,8 +278,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # create a new Proposal
 
-        self.currTransaction = TOMsTransaction(self.iface).create()
-        self.currTransaction.begin()
+        self.currTransaction = TOMsTransaction(self.iface).createGroup()
+        #self.currTransaction.begin()
 
         self.Proposals.startEditing()
 
@@ -356,9 +356,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.currProposal = self.getProposal(currProposalID)
 
-        self.currTransaction = TOMsTransaction(self.iface).create()
-        self.currTransaction.begin()
-        self.Proposals.startEditing()
+        #self.currTransaction = TOMsTransaction(self.iface).create()
+        # self.currTransaction.begin()
+        self.currTransaction = TOMsTransaction(self.iface).createGroup()
+        #self.Proposals.startEditing()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
@@ -424,7 +425,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
-    def onChangeProposalStatus(self):
+        """def onChangeProposalStatus(self):
         QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fieldNameIndex("ProposalStatusID")), tag="TOMs panel")
 
         # check to see if the proposal is "Accepted"
@@ -447,7 +448,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dlg.activateWindow()
 
-        return self.acceptProposal
+        return self.acceptProposal"""
 
         """def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")

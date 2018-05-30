@@ -99,6 +99,7 @@ class TOMs:
 
 
     def write_log_message(self, message, tag, level):
+        #https://gis.stackexchange.com/questions/84790/where-does-qgis-write-its-error-log-messages/165455
         filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
         with open(self.filename, 'a') as logfile:
             logfile.write('{tag}({level}): {message}\n'.format(tag=tag, level=level, message=message))
