@@ -48,7 +48,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.actionProposalsPanel.triggered.connect(self.onInitProposalsPanel)
 
-        #self.acceptProposal = False
         self.newProposalRequired = False
 
         # Now set up the toolbar
@@ -127,11 +126,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+        self.Proposals = self.tableNames.PROPOSALS
+
+        """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
-            raise LayerNotPresent
+            raise LayerNotPresent"""
 
         # Set up field details for table  ** what about errors here **
         idxProposalID = self.Proposals.fieldNameIndex("ProposalID")
@@ -175,6 +176,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
 
+        # Create a transaction object for the Proposals
+
+        self.proposalTransaction = TOMsTransaction(self.iface)
+
         pass
 
     def closeTOMsTools(self):
@@ -196,6 +201,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # Now clear the filters
 
         self.proposalsManager.clearRestrictionFilters()
+
+        # TODO: Delete any objects that are no longer needed
 
         pass
 
@@ -259,13 +266,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def onNewProposal(self):
         QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
 
+        # set up a transaction
+        self.proposalTransaction.createTransactionGroup()
+
         # create a new Proposal
-
-        if not self.currTransaction:
-            self.currTransaction = TOMsTransaction(self.iface).createGroup()
-        #self.currTransaction.begin()
-
-        #self.Proposals.startEditing()
 
         self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
@@ -286,7 +290,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
         self.button_box.accepted.disconnect(self.proposalDialog.accept)
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalDetailsFromForm, self.newProposal))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.proposalDialog, self.proposalTransaction))
 
         self.button_box.rejected.disconnect(self.proposalDialog.reject)
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
@@ -317,19 +321,26 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         return
 
-    def onSaveProposalDetailsFromForm(self, proposal):
-        self.onSaveProposalFormDetails(proposal, self.Proposals, self.proposalDialog, self.currTransaction)
+        #def onSaveProposalDetailsFromForm(self):
+        #self.onSaveProposalFormDetails(self.newProposal, self.Proposals, self.proposalDialog, self.currTransaction)
 
     def onRejectProposalDetailsFromForm(self):
+
         self.Proposals.destroyEditCommand()
         self.proposalDialog.reject()
-        del self.currTransaction
+
         self.rollbackCurrentEdits()
+
+        self.proposalTransaction.deleteTransactionGroup()
+
 
         pass
 
     def onProposalDetails(self):
         QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel")
+
+        # set up transaction
+        self.proposalTransaction.createTransactionGroup()
 
         # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
         currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
@@ -341,11 +352,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.currProposal = self.getProposal(currProposalID)
 
-        #self.currTransaction = TOMsTransaction(self.iface).create()
-        # self.currTransaction.begin()
-        if not self.currTransaction:
-            self.currTransaction = TOMsTransaction(self.iface).createGroup()
-        #self.Proposals.startEditing()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
@@ -358,7 +364,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
         self.button_box.accepted.disconnect(self.proposalDialog.accept)
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalDetailsFromForm, self.currProposal))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.proposalDialog, self.proposalTransaction))
 
         self.button_box.rejected.disconnect(self.proposalDialog.reject)
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
@@ -411,12 +417,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
-        """def onChangeProposalStatus(self):
+    def onChangeProposalStatus(self):
         QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fieldNameIndex("ProposalStatusID")), tag="TOMs panel")
 
         # check to see if the proposal is "Accepted"
 
-        self.acceptProposal = False
+        acceptProposal = False
 
         newProposalStatus = int(self.Proposals.fieldNameIndex("ProposalStatusID"))
 
@@ -428,13 +434,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                                          'Are you you want to accept this proposal?. Accepting will make all the proposed changes permanent.', QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 # make the changes permanent
-                self.acceptProposal = True
+                acceptProposal = True
 
         # bring the Proposals dislog back to the front
 
         self.dlg.activateWindow()
 
-        return self.acceptProposal"""
+        return acceptProposal
 
         """def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")

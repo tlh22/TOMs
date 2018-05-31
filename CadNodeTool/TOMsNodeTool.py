@@ -60,7 +60,7 @@ class originalFeature(object):
 # class TOMsNodeTool(NodeTool, MapToolMixin, TOMsConstants):
 class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
-    def __init__(self, iface, proposalsManager):
+    def __init__(self, iface, proposalsManager, restrictionTransaction):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:initialising .... ", tag="TOMs panel")
 
@@ -71,6 +71,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         NodeTool.__init__(self, canvas, cadDock)
 
         self.proposalsManager = proposalsManager
+        self.restrictionTransaction = restrictionTransaction
 
         #self.constants = TOMsConstants()
         self.origFeature = originalFeature()
@@ -118,6 +119,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         # When a geometry is changed; we need to check whether or not the feature is part of the current proposal
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. fid: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel")
 
+        # disconnect signal for geometryChanged
+        #self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
+
         #self.currLayer = self.iface.activeLayer()
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. closestLayer: " + str(self.origLayer.name()), tag="TOMs panel")
 
@@ -140,9 +144,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         #currRestrictionRestrictionID = currFeature[idxRestrictionID]
 
-
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(currRestriction[idxRestrictionID]), tag="TOMs panel")
-
 
         if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal()):
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
@@ -203,7 +205,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         # Trying to unset map tool to force updates ...
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        self.commitRestrictionChanges()
+        self.restrictionTransaction.commitTransactionGroup()
+        self.restrictionTransaction.deleteTransactionGroup()
+
         #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, origLayer))
 
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometry saved.", tag="TOMs panel")
