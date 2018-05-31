@@ -123,7 +123,7 @@ class TOMs:
         QgsMessageLog.logMessage("Registering expression functions ... ", tag="TOMs panel")
         registerFunctions()   # Register the Expression functions that we need
 
-        self.proposalsManager = TOMsProposalsManager()
+        self.proposalsManager = TOMsProposalsManager(self.iface)
 
         #self.editing    = False
         #self.curStartPt = None
