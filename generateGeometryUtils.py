@@ -886,7 +886,7 @@ class generateGeometryUtils:
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")

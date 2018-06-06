@@ -60,7 +60,7 @@ class TOMsTransaction ():
         # proposalTransaction = QgsTransaction()
         # __metaclass__ = ABCMeta
         #self.tableNames = tableNames
-        self.currTransaction = None
+        #self.currTransaction = None
         self.currTransactionGroup = None
         self.prepareLayerSet()
 
@@ -104,18 +104,17 @@ class TOMsTransaction ():
             self.setTransactionGroup.append(restrictionLayer)
             QgsMessageLog.logMessage("In In TOMsTransaction.create. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
 
-    def createTransaction(self):
+        """def createTransaction(self):
 
         self.currTransaction = QgsTransaction.create(self.setTransactionGroup)
 
-        """if not newTransaction.supportsTransaction(self.tableNames.RESTRICTIONS_IN_PROPOSALS):
+        if not newTransaction.supportsTransaction(self.tableNames.RESTRICTIONS_IN_PROPOSALS):
             QgsMessageLog.logMessage("In createProposalTransactionGroup. ERROR Adding RestrictionsInProposals Layer ",
                                      tag="TOMs panel")
         else:
             setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS.id())
             QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding RestrictionsInProposals Layer ",
-                                     tag="TOMs panel")"""
-
+                                     tag="TOMs panel")
         self.currTransaction.begin()
 
         if self.currTransaction:
@@ -126,9 +125,9 @@ class TOMsTransaction ():
 
                 #transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
 
-                """caps_string = transLayer.capabilitiesString()
+                caps_string = transLayer.capabilitiesString()
                 QgsMessageLog.logMessage("In createProposalTransactionGroup: " + str(transLayer.name()) + ": capabilities: " + caps_string,
-                         tag="TOMs panel")"""
+                         tag="TOMs panel")
 
                 #statusSupp = newTransaction.supportsTransaction(transLayer)
                 if not self.currTransaction.supportsTransaction(transLayer):
@@ -138,7 +137,7 @@ class TOMsTransaction ():
                     QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding " + str(transLayer.name()), tag="TOMs panel")
                     transLayer.startEditing()
 
-        return
+        return"""
 
     def createTransactionGroup(self):
 
@@ -165,7 +164,10 @@ class TOMsTransaction ():
                 self.currTransactionGroup.addLayer(layer)
                 layer.startEditing()
 
+        self.currTransactionGroup.commitError.connect(self.errorInTransaction)
+
         return
+
 
     def commitTransactionGroup(self):
 
@@ -175,6 +177,8 @@ class TOMsTransaction ():
             return
 
         modifiedTransaction = self.currTransactionGroup.modified()
+
+        #self.currTransactionGroup.commitError.connect(self.errorInTransaction)
 
         for layer in self.setTransactionGroup:
 
@@ -190,10 +194,18 @@ class TOMsTransaction ():
                                                     layer.commitErrors()), QMessageBox.Ok)
             break
 
+        #self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
+
         return
 
     def layersInTransaction(self):
         return self.setTransactionGroup
+
+    def errorInTransaction(self, errorMsg):
+        reply = QMessageBox.information(None, "Error",
+                                        "Proposal changes failed: " + errorMsg, QMessageBox.Ok)
+        QgsMessageLog.logMessage("In errorInTransaction: " + errorMsg,
+                                 tag="TOMs panel")
 
     def __del__(self):
         pass
@@ -207,7 +219,10 @@ class TOMsTransaction ():
                                         tag="TOMs panel")
                 return
 
+            self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
             self.currTransactionGroup = None
+
+        pass
 
         return
 
@@ -326,9 +341,9 @@ class RestrictionTypeUtilsMixin():
 
         #QMessageBox.information(None, "Information", ("addRestrictionToProposal" + str(attrs)))
 
-        RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
+        returnStatus = RestrictionsInProposalsLayer.addFeatures([newRestrictionsInProposal])
 
-        pass
+        return returnStatus
 
     def getRestrictionsLayer(self, currRestrictionTableRecord):
         # return the layer given the row in "RestrictionLayers"
@@ -400,8 +415,8 @@ class RestrictionTypeUtilsMixin():
 
                         #QMessageBox.information(None, "Information", ("deleteRestrictionInProposal" + str(attrs)))
 
-                        RestrictionsInProposalsLayer.deleteFeature(restrictionInProposal.id())
-                        returnStatus = True
+                        returnStatus = RestrictionsInProposalsLayer.deleteFeature(restrictionInProposal.id())
+                        #returnStatus = True
                         return returnStatus
 
         return returnStatus
@@ -479,7 +494,7 @@ class RestrictionTypeUtilsMixin():
                         tag="TOMs panel")
                     # currRestrictionLayer.addFeatures([currRestriction])
 
-                    self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
+                    status = self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
 
                     dialog.attributeForm().save()
@@ -498,7 +513,7 @@ class RestrictionTypeUtilsMixin():
                             currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
-                    self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
+                    status = self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_CLOSE_RESTRICTION())  # Open = 1; Close = 2
 
                     newRestriction = QgsFeature(currRestriction)
@@ -520,7 +535,7 @@ class RestrictionTypeUtilsMixin():
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Clone: {}".format(newRestriction.geometry().exportToWkt()),
                                              tag="TOMs panel")
 
-                    self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
+                    status = self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1; Close = 2
 
                     QgsMessageLog.logMessage(
@@ -767,23 +782,36 @@ class RestrictionTypeUtilsMixin():
         
 
 
-    def onAttributeChangedClass(self, fieldName, value):
+        """def onAttributeChangedClass(self, fieldName, value):
         QgsMessageLog.logMessage(
             "In restrictionFormOpen:onAttributeChanged - layer: " + str(self.currRestrictionLayer.name()) + " (" + str(
                 self.currRestriction.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
 
         # self.currRestriction.setAttribute(fieldName, value)
-        self.currRestriction.setAttribute(self.currRestrictionLayer.fieldNameIndex(fieldName), value)
+        setStatus = self.currRestriction.setAttribute(self.currRestrictionLayer.fieldNameIndex(fieldName), value)
         # self.currRestrictionLayer.changeAttributeValue(self.currRestriction, self.currRestrictionLayer.fieldNameIndex(fieldName), value)
+
+        return setStatus"""
 
     def onAttributeChangedClass2(self, currFeature, layer, fieldName, value):
         QgsMessageLog.logMessage(
             "In FormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), tag="TOMs panel")
 
         # self.currRestriction.setAttribute(fieldName, value)
-        currFeature.setAttribute(layer.fieldNameIndex(fieldName), value)
+        try:
+
+            currFeature[layer.fieldNameIndex(fieldName)] = value
+            #currFeature.setAttribute(layer.fieldNameIndex(fieldName), value)
+
+        except:
+
+            reply = QMessageBox.information(None, "Error",
+                                                "onAttributeChangedClass2. Update failed for: " + str(layer.name()) + " (" + fieldName + "): " + str(value),
+                                                QMessageBox.Ok)  # rollback all changes
 
         # self.currRestrictionLayer.changeAttributeValue(self.currRestriction, self.currRestrictionLayer.fieldNameIndex(fieldName), value)
+        #return setStatus
+        return
 
     def photoDetails(self, dialog, currRestLayer, currRestrictionFeature):
 
@@ -919,25 +947,25 @@ class RestrictionTypeUtilsMixin():
 
                 # TODO: Need to check that this is an authorised user
 
+                # Now close dialog
+                updateStatus = proposalsDialog.accept()
 
                 updateStatus = True
 
                 if updateStatus == True:
                     currProposalID = currProposal[idxProposalID]
                     currOpenDate = currProposal[idxProposalOpenDate]
-                    self.acceptProposal(currProposalID, currOpenDate)
+                    updateStatus = self.acceptProposal(currProposalID, currOpenDate)
 
-                # Now close dialog
-                proposalsDialog.accept()
-
-                #updateStatus = proposalsLayer.updateFeature(currProposal)
-
-                proposalsDialog.close()
+                if updateStatus == True:
+                    updateStatus = proposalsDialog.accept()
+                    #proposalsDialog.close()
+                else:
+                    proposalsDialog.reject()
 
                 # proposalAccepted.emit()
 
             else:
-                # proposalsDialog.reject ((currProposal[idxProposalID]))
                 proposalsDialog.reject()
 
         elif currProposal[idxProposalStatusID] == PROPOSAL_STATUS_REJECTED():  # 3 = rejected
@@ -1095,11 +1123,11 @@ class RestrictionTypeUtilsMixin():
 
                 statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate)
 
-                """if statusUpd == False:
+                if statusUpd == False:
                     reply = QMessageBox.information(None, "Error",
                                                     "Changes to " + currRestrictionLayer.name() + " failed: " + str(
                                                         currRestrictionLayer.commitErrors()), QMessageBox.Ok)
-                    return statusUpd"""
+                    return statusUpd
 
         return statusUpd
 
