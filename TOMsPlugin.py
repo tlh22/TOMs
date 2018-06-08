@@ -36,6 +36,8 @@ from .expressions import registerFunctions, unregisterFunctions
 
 from .proposals_panel import proposalsPanel
 from .search_bar import searchBar
+from TOMs.InstantPrint.InstantPrintPlugin import InstantPrintPlugin
+
 from .manage_restriction_details import manageRestrictionDetails
 
 import os.path
@@ -167,6 +169,7 @@ class TOMs:
         self.TOMsSearchBar = self.iface.addToolBar("TOMs Search Bar")
         self.TOMsSearchBar.setObjectName("TOMs Search Bar")
         self.doSearchBar = searchBar(self.iface, self.TOMsSearchBar)
+        #self.doInstantPrint = InstantPrintPlugin(self.iface, self.TOMsSearchBar)
 
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")

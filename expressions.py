@@ -74,7 +74,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
 def getRoadName(feature, parent):
 	# Determine road name from the kerb line layer
 
-    QgsMessageLog.logMessage("In getRoadName(helper):", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getRoadName(helper):", tag="TOMs panel")
 
     newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
 
@@ -85,7 +85,7 @@ def getRoadName(feature, parent):
 def getUSRN(feature, parent):
 	# Determine road name from the kerb line layer
 
-    QgsMessageLog.logMessage("In getUSRN(helper):", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getUSRN(helper):", tag="TOMs panel")
 
     newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
 
@@ -129,8 +129,7 @@ def getLoadingLabelLeader(feature, parent):
 def getBayLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    QgsMessageLog.logMessage(
-        "In getBayLabelLeader ", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayLabelLeader ", tag="TOMs panel")
     labelLeaderGeom = generateGeometryUtils.generateBayLabelLeader(feature)
 
     return labelLeaderGeom
@@ -179,7 +178,7 @@ def getBayTimePeriodLabelText(feature, parent):
 def getBayMaxStayLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayMaxStayLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayMaxStayLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
@@ -191,7 +190,7 @@ def getBayMaxStayLabelText(feature, parent):
 def getBayNoReturnLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 

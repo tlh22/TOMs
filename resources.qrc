@@ -72,7 +72,9 @@
         <file>resources/capturecirculararc.png</file>
        
         <file>resources/spline.png</file>
-       
+        <file>resources/magnifyingGlass.png</file>
+        <file>InstantPrint/icons/icon.png</file>
+        
     </qresource>
 
     
