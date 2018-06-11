@@ -84,9 +84,17 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     self.addItem(scale)
         self.check_scales()
 
-        # TH (180608) change signals to new function
+        # TH (180608) change signals to new functions
         self.dialogui.comboBox_composers.currentIndexChanged.disconnect(self.__selectComposer)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.TOMsSelectComposer)
+
+        self.exportButton.clicked.disconnect(self.__export)
+        self.exportButton.clicked.connect(self.TOMsExport)
+
+        self.iface.composerAdded.disconnect()
+        self.iface.composerWillBeRemoved.disconnect(self.__reloadComposers)
+        self.iface.composerAdded.connect(lambda view: self.TOMsReloadComposers())
+        self.iface.composerWillBeRemoved.connect(self.TOMsReloadComposers)
 
     def __onDialogHidden(self):
         self.setEnabled(False)
@@ -273,51 +281,21 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         # Ensure output filename has correct extension
         filename = os.path.splitext(filename)[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
-        dirName = os.path.dirname(filename)
 
         settings.setValue("/instantprint/lastfile", filename)
 
         if self.populateCompositionFz:
             self.populateCompositionFz(self.composerView.composition())
 
-        # TH (180608): Check to see whether or not the Composer is an Atlas
-
-        currComposition = self.composerView.composition()
-        currAtlas = currComposition.atlasComposition()
-
         success = False
-
-        if currAtlas:
-            # We have an atlas
-            pass
-
-            # https://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-
-            currAtlas.beginRender()
-            currComposition.setAtlasMode(QgsComposition.ExportAtlas)
-
-            for i in range(0, currAtlas.numFeatures()):
-
-                currAtlas.prepareForFeature(i)
-                currAtlas.composition().refreshItems()
-                filename = currAtlas.currentFilename() + "." + self.dialogui.comboBox_fileformat.currentText().lower()
-                outputFile = os.path.join(dirName, filename)
-                success = currAtlas.composition().exportAsPDF(outputFile)
-
-                pass
-
-            currAtlas.endRender()
-
+        if filename[-3:].lower() == u"pdf":
+            success = self.composerView.composition().exportAsPDF(filename)
         else:
-
-            if filename[-3:].lower() == u"pdf":
-                success = self.composerView.composition().exportAsPDF(filename)
-            else:
-                image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
-                if not image.isNull():
-                    success = image.save(filename)
-            if not success:
-                QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+            image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
+            if not image.isNull():
+                success = image.save(filename)
+        if not success:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __print(self):
         if not self.printer:
@@ -430,6 +408,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         # TH (180608): Assume that when multiple maps are displayed, that composer is Atlas ...
 
+        self.exportButton.setEnabled(True)
+
+        self.composerView = composerView
+        self.mapitem = maps[0]
+
         if len(maps) != 1:
             #QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             #self.exportButton.setEnabled(False)
@@ -442,7 +425,106 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.dialogui.comboBox_scale.setScale(1 / 500)  # composer may not have a "scale" item
             self.__createRubberBand()
 
-        self.exportButton.setEnabled(True)
+    def TOMsExport(self):
 
-        self.composerView = composerView
-        self.mapitem = maps[0]
+        # TH (180608): Export function to deal with atlases
+
+        settings = QSettings()
+        format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
+
+        # TH (180608): Check to see whether or not the Composer is an Atlas
+        currComposition = self.composerView.composition()
+        currAtlas = currComposition.atlasComposition()
+
+        if currAtlas.enabled():
+            self.TOMsExportAtlas()
+        else:
+            self.__export()
+
+    def TOMsExportAtlas(self):
+
+        # TH (180608): Export function to deal with atlases
+
+        settings = QSettings()
+        format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
+
+        # TH (180608): Check to see whether or not the Composer is an Atlas
+        currComposition = self.composerView.composition()
+        currAtlas = currComposition.atlasComposition()
+
+        dirName = QFileDialog.getExistingDirectory(
+            self.iface.mainWindow(),
+            self.tr("Export Composition"),
+            settings.value("/instantprint/lastdir", ""),
+            QFileDialog.ShowDirsOnly
+        )
+        if not dirName:
+            return
+
+        settings.setValue("/instantprint/lastdir", dirName)
+        # self.TOMsExportAtlas()
+
+        success = False
+
+        # https://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+        currAtlas.beginRender()
+        currComposition.setAtlasMode(QgsComposition.ExportAtlas)
+
+        for i in range(0, currAtlas.numFeatures()):
+
+            currAtlas.prepareForFeature(i)
+            currAtlas.composition().refreshItems()
+            filename = currAtlas.currentFilename() + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+            outputFile = os.path.join(dirName, filename)
+
+            if filename[-3:].lower() == u"pdf":
+                success = currAtlas.composition().exportAsPDF(outputFile)
+            else:
+                image = currAtlas.composition().printPageAsRaster(0)
+                if not image.isNull():
+                    success = image.save(outputFile)
+
+            if not success:
+                QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
+                                    self.tr("Failed to print the composition."))
+
+        currAtlas.endRender()
+
+    def TOMsReloadComposers(self, removed=None):
+        if not self.dialog.isVisible():
+            # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
+            return
+
+        self.dialogui.comboBox_composers.blockSignals(True)
+        prev = None
+        if self.dialogui.comboBox_composers.currentIndex() >= 0:
+            prev = self.dialogui.comboBox_composers.currentText()
+        self.dialogui.comboBox_composers.clear()
+        active = 0
+        for composer in self.iface.activeComposers():
+            if composer != removed and composer.composerWindow():
+                cur = composer.composerWindow().windowTitle()
+                self.dialogui.comboBox_composers.addItem(cur, composer)
+                if prev == cur:
+                    active = self.dialogui.comboBox_composers.count() - 1
+        self.dialogui.comboBox_composers.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
+        self.dialogui.comboBox_composers.blockSignals(False)
+        if self.dialogui.comboBox_composers.count() > 0:
+            self.dialogui.comboBox_composers.setCurrentIndex(active)
+
+            # TH (180608): Check whether or not the active item is an Atlas
+            composerView = self.dialogui.comboBox_composers.itemData(active)
+            currComposition = composerView.composition()
+            currAtlas = currComposition.atlasComposition()
+
+            if currAtlas.enabled():
+                self.dialogui.comboBox_scale.setEnabled(False)
+            else:
+                self.dialogui.comboBox_scale.setEnabled(True)
+
+            self.exportButton.setEnabled(True)
+        else:
+            self.exportButton.setEnabled(False)
+            self.dialogui.comboBox_scale.setEnabled(False)
+
