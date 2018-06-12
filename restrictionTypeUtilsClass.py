@@ -26,6 +26,8 @@ from PyQt4.QtCore import (
 
 from qgis.core import (
     QgsExpressionContextUtils,
+    QgsExpression,
+    QgsFeatureRequest,
     QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsTransaction, QgsTransactionGroup
@@ -340,9 +342,9 @@ class RestrictionTypeUtilsMixin():
 
         currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
+        RestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
 
-        return RestrictionsLayers
+        return RestrictionLayer
 
     def getRestrictionsLayerFromID(self, currRestrictionTableID):
         # return the layer given the row in "RestrictionLayers"
@@ -379,6 +381,25 @@ class RestrictionTypeUtilsMixin():
                                  tag="TOMs panel")
 
         return layersTableID
+
+    def getRestrictionBasedOnRestrictionID(self, currRestrictionID, currRestrictionLayer):
+        # return the layer given the row in "RestrictionLayers"
+        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel")
+
+        #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
+
+        queryString = "\"RestrictionID\" = \'" + currRestrictionID + "\'"
+
+        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        for feature in currRestrictionLayer.getFeatures(QgsFeatureRequest(expr)):
+            return feature
+
+        QgsMessageLog.logMessage("In getRestriction: Restriction not found", tag="TOMs panel")
+        return None
+
 
     def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel")

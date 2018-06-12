@@ -56,6 +56,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         self.currProposalFeature = None
         #self.constants = TOMsConstants()
         self.iface = iface
+        self.canvas = self.iface.mapCanvas()
 
     def date(self):
         """
@@ -107,6 +108,10 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         self.proposalChanged.emit()
         self.updateMapCanvas()
+
+        box = self.getProposalBoundingBox()
+        if box:
+            self.canvas.setExtent(box)
 
         # Rollback any edit session and stop editing ... need to find way to do "silently". Ideally check to see if there any outstanding edits
         self.rollbackCurrentEdits()
@@ -193,7 +198,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             QgsMessageLog.logMessage("In updateMapCanvas. Layer: " + currLayerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
             currRestrictionLayer.setSubsetString(layerFilterString)
 
-        QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
+        QgsMessageLog.logMessage("In updateMapCanvas. Date Filter: " + filterString, tag="TOMs panel")
         pass
 
     def clearRestrictionFilters(self):
@@ -289,9 +294,10 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
     def getProposalBoundingBox(self):
 
+        # Need to remember that filters are in operation, so need to ensure that Restriction features are available
         QgsMessageLog.logMessage("In getProposalBoundingBox.", tag="TOMs panel")
 
-        geometryBoundingBox = QgsGeometry().boundingBox()
+        geometryBoundingBox = None
 
         currProposalID = self.currentProposal()
 
@@ -314,6 +320,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             # loop through all the layers that might have restrictions
 
             listRestrictionLayers = self.RestrictionLayers.getFeatures()
+            #listRestrictionLayers2 = self.tableNames.RESTRICTIONLAYERS.getFeatures()
+
+            firstRestriction = True
 
             for currLayerDetails in listRestrictionLayers:
 
@@ -333,9 +342,10 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
                 #restrictionListForLayer = []
                 restrictionsString = ''
-                firstRestriction = True
+                #firstRestriction = True
 
                 # get list of restrictions to open within proposal
+                # TODO: Include selection of only proposal and for the current restriction type
 
                 listRestrictionsInProposals = self.RestrictionsInProposals.getFeatures()
 
@@ -349,28 +359,31 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
                     if proposalID == currProposalID:
                         if restrictionTableID == currLayerID:
 
+                            currRestrictionID = str(row["RestrictionID"])
+
                             if not firstRestriction:
-                                restrictionsString = restrictionsString + ", '" + row["RestrictionID"] + "'"
+                                #restrictionsString = restrictionsString + ", '" + row["RestrictionID"] + "'"
                                 """QgsMessageLog.logMessage(
                                     "In getRestrictionsInProposal. A restrictionsString: " + restrictionsString,
                                     tag="TOMs panel")"""
+                                currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID, currRestrictionLayer)
+                                if currRestriction:
+                                    geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
+
                             else:
-                                restrictionsString = "'" + str(row["RestrictionID"]) + "'"
-                                firstRestriction = False
+
+                                #restrictionsString = "'" + str(row["RestrictionID"]) + "'"
+
+                                currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID, currRestrictionLayer)
+                                if currRestriction:
+                                    geometryBoundingBox = currRestriction.geometry().boundingBox()
+                                    firstRestriction = False
 
                             pass
 
-                self.generateBoundingBox(geometryBoundingBox, currRestrictionLayer, restrictionsString)
+                pass
 
-            pass
-
-            # print out
-            #QgsMessageLog.logMessage(("In getProposalBoundingBox. rect is; " + str(geometryBoundingBox().asWktCoordinates())), tag="TOMs panel")
-
-            return geometryBoundingBox
-
-       #QgsMessageLog.logMessage("In filterMapOnDate. Date Filter: " + filterString, tag="TOMs panel")
-        pass
+        return geometryBoundingBox
 
     def generateBoundingBox(self, geometryBoundingBox, currLayer, restrictionsString):
         QgsMessageLog.logMessage("In generateBoundingBox." + restrictionsString, tag="TOMs panel")

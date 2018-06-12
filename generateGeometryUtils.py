@@ -985,7 +985,7 @@ class generateGeometryUtils:
 
         if currentCPZFeature:
 
-            currentCPZ = currentCPZFeature.attribute("zone_no")
+            currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
             QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
 
