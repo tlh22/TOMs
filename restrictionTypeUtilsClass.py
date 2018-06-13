@@ -227,6 +227,12 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
+            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
+            found = False
+
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
             self.RESTRICTIONLAYERS = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
         else:
@@ -1329,3 +1335,18 @@ class RestrictionTypeUtilsMixin():
                 statusRollback = restrictionLayer.rollBack()
 
         return
+
+    def getLookupDescription(self, lookupLayer, code):
+
+        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel")
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
+
+        for row in lookupLayer.getFeatures(request):
+            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
+            return row.attribute("Description") # make assumption that only one row
+
+        return None

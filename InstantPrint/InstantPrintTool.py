@@ -437,11 +437,18 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currAtlas = currComposition.atlasComposition()
 
         if currAtlas.enabled():
-            self.TOMsExportAtlas()
+            if self.proposalsManager.currentProposal() == 0:
+                reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
+                                             'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
+                                             QMessageBox.Yes, QMessageBox.No)
+                if reply == QMessageBox.No:
+                    return
+
+            self.TOMsExportAtlas(self.proposalsManager.currentProposal())
         else:
             self.__export()
 
-    def TOMsExportAtlas(self):
+    def TOMsExportAtlas(self, currProposalID):
 
         # TH (180608): Export function to deal with atlases
 
@@ -467,6 +474,25 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         success = False
 
         # https://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+        self.TOMsSetAtlasValues(currComposition)
+
+        #currProposalID = self.proposalsManager.currentProposal()
+
+        # get the map tiles that are affected by the Proposal
+        tileFeatureList = self.getTilesIDsInProposal(currProposalID)
+
+        tileIDList = ""
+        firstTile = True
+        for tile in tileFeatureList:
+            if firstTile:
+                tileIDList = str(tile.attribute("id"))
+                firstTile = False
+            else:
+                tileIDList = tileIDList + ',' + str(tile.attribute("id"))
+
+        currAtlas.setFilterFeatures(True)
+        currAtlas.setFeatureFilter(' "id" in ({tileList})'.format(tileList=tileIDList))
 
         currAtlas.beginRender()
         currComposition.setAtlasMode(QgsComposition.ExportAtlas)
@@ -527,4 +553,34 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         else:
             self.exportButton.setEnabled(False)
             self.dialogui.comboBox_scale.setEnabled(False)
+
+    def TOMsSetAtlasValues(self, currComposition):
+
+        # Need to set date and status
+
+        effectiveDate = self.proposalsManager.date()
+        composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
+        composerEffectiveDate.setText('{date}'.format(date=effectiveDate.toString('dd-MMM-yyyy')))
+
+        if self.proposalsManager.currentProposal() == 0:
+            proposalStatusText = 'CURRENT'
+        else:
+            proposalStatusID = self.proposalsManager.getProposalStatusID(self.proposalsManager.currentProposal())
+            #proposalStatusText = 'PROPOSED'
+            if proposalStatusID:
+
+                if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
+                    self.ProposalStatusTypes = \
+                        QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                            ("Table ProposalStatusTypes is not present"))
+
+                proposalStatusText = self.getLookupDescription(self.ProposalStatusTypes, proposalStatusID)
+
+            else:
+                proposalStatusText = 'UNKNOWN'
+
+        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        composerProposalStatus.setText(proposalStatusText)
 

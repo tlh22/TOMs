@@ -26,7 +26,7 @@ from qgis.core import (
     QgsFeatureRequest
 )
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 from TOMs.constants import (
     ACTION_CLOSE_RESTRICTION,
@@ -57,6 +57,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         #self.constants = TOMsConstants()
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
+        #self.tableNames = setupTableNames(self.iface)
 
     def date(self):
         """
@@ -109,7 +110,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         self.proposalChanged.emit()
         self.updateMapCanvas()
 
-        box = self.getProposalBoundingBox()
+        box = self.getProposalBoundingBox(self.currentProposal())
         if box:
             self.canvas.setExtent(box)
 
@@ -292,14 +293,14 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         return restrictionsString
 
-    def getProposalBoundingBox(self):
+    def getProposalBoundingBox(self, currProposalID):
 
         # Need to remember that filters are in operation, so need to ensure that Restriction features are available
         QgsMessageLog.logMessage("In getProposalBoundingBox.", tag="TOMs panel")
 
         geometryBoundingBox = None
 
-        currProposalID = self.currentProposal()
+        #currProposalID = self.currentProposal()
 
         if currProposalID > 0:  # need to consider a proposal
 
@@ -403,3 +404,26 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
 
         pass
+
+    def getProposalStatusID(self, currProposalID):
+        # return proposal status code ??
+
+        # QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
+
+        query = "\"ProposalID\" = " + str(currProposalID)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        # QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+            self.Proposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table Proposals is not present"))
+
+        for row in self.Proposals.getFeatures(request):
+            # QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
+            return row.attribute("ProposalStatusID")  # make assumption that only one row
+
+        return None

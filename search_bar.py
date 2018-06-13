@@ -21,16 +21,16 @@ from TOMs.InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
 
 class searchBar():
 
-    def __init__(self, iface, TOMsSearchBar):
+    def __init__(self, iface, TOMsSearchBar, proposalsManager):
 
         QgsMessageLog.logMessage("In searchBar", tag="TOMs panel")
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.TOMsSearchBar = TOMsSearchBar
-        #self.proposalsManager = proposalsManager
+        self.proposalsManager = proposalsManager
 
-        self.tool = TOMsInstantPrintTool(self.iface)
+        self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
 
         self.initSearchBar()
 

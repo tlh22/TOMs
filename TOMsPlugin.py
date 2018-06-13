@@ -168,7 +168,7 @@ class TOMs:
         # set up a search box (for street names and GeometryIDs)
         self.TOMsSearchBar = self.iface.addToolBar("TOMs Search Bar")
         self.TOMsSearchBar.setObjectName("TOMs Search Bar")
-        self.doSearchBar = searchBar(self.iface, self.TOMsSearchBar)
+        self.doSearchBar = searchBar(self.iface, self.TOMsSearchBar, self.proposalsManager)
         #self.doInstantPrint = InstantPrintPlugin(self.iface, self.TOMsSearchBar)
 
         # Add toolbar 
