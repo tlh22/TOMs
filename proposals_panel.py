@@ -117,6 +117,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
+
+        # set up tabbing for Panels
+        self.setupPanelTabs(self.iface, self.dock)
+
         self.dock.closingPlugin.connect(self.closeTOMsTools)
 
         #self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
@@ -474,3 +478,4 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         return None
 
         pass
+

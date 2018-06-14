@@ -18,7 +18,7 @@ from PyQt4.QtGui import (
     QIcon,
     QDialogButtonBox,
     QPixmap,
-    QLabel
+    QLabel, QDockWidget
 )
 from PyQt4.QtCore import (
     QTimer
@@ -26,6 +26,8 @@ from PyQt4.QtCore import (
 
 from qgis.core import (
     QgsExpressionContextUtils,
+    QgsExpression,
+    QgsFeatureRequest,
     QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsTransaction, QgsTransactionGroup
@@ -225,6 +227,12 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
+            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
+            found = False
+
         if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
             self.RESTRICTIONLAYERS = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
         else:
@@ -340,9 +348,9 @@ class RestrictionTypeUtilsMixin():
 
         currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
+        RestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionsTableName)[0]
 
-        return RestrictionsLayers
+        return RestrictionLayer
 
     def getRestrictionsLayerFromID(self, currRestrictionTableID):
         # return the layer given the row in "RestrictionLayers"
@@ -379,6 +387,25 @@ class RestrictionTypeUtilsMixin():
                                  tag="TOMs panel")
 
         return layersTableID
+
+    def getRestrictionBasedOnRestrictionID(self, currRestrictionID, currRestrictionLayer):
+        # return the layer given the row in "RestrictionLayers"
+        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel")
+
+        #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
+
+        queryString = "\"RestrictionID\" = \'" + currRestrictionID + "\'"
+
+        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        for feature in currRestrictionLayer.getFeatures(QgsFeatureRequest(expr)):
+            return feature
+
+        QgsMessageLog.logMessage("In getRestriction: Restriction not found", tag="TOMs panel")
+        return None
+
 
     def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel")
@@ -548,6 +575,7 @@ class RestrictionTypeUtilsMixin():
 
             restrictionTransaction.commitTransactionGroup()
             restrictionTransaction.deleteTransactionGroup()
+
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -567,6 +595,10 @@ class RestrictionTypeUtilsMixin():
 
         dialog.close()
         currRestrictionLayer.removeSelection()
+
+        # reinstate Proposals Panel (if it needs it)
+        """proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        self.setupPanelTabs(self.iface, proposalPanel)"""
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
@@ -765,7 +797,12 @@ class RestrictionTypeUtilsMixin():
         
         restrictionTransaction.deleteTransactionGroup()
         
+        # reinstate Proposals Panel (if it needs it)
 
+        """self.iface.cadDockWidget().disable()
+
+        proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        self.setupPanelTabs(self.iface, proposalPanel)"""
 
     def onAttributeChangedClass(self, fieldName, value):
         QgsMessageLog.logMessage(
@@ -1308,3 +1345,31 @@ class RestrictionTypeUtilsMixin():
                 statusRollback = restrictionLayer.rollBack()
 
         return
+
+    def getLookupDescription(self, lookupLayer, code):
+
+        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel")
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
+
+        for row in lookupLayer.getFeatures(request):
+            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
+            return row.attribute("Description") # make assumption that only one row
+
+        return None
+
+    def setupPanelTabs(self, iface, parent):
+
+        # https: // gis.stackexchange.com / questions / 257603 / activate - a - panel - in -tabbed - panels?utm_medium = organic & utm_source = google_rich_qa & utm_campaign = google_rich_qa
+
+        dws = iface.mainWindow().findChildren(QDockWidget)
+        #parent = iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        dockstate = iface.mainWindow().dockWidgetArea(parent)
+        for d in dws:
+            if d is not parent:
+                if iface.mainWindow().dockWidgetArea(d) == dockstate and d.isHidden() == False:
+                    iface.mainWindow().tabifyDockWidget(parent, d)
+        parent.raise_()

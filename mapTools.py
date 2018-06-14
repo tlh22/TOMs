@@ -439,6 +439,18 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         #self.dialog = dialog
         self.currTransaction = currTransaction
 
+        #advancedDigitizingPanel = self.iface.AdvancedDigitizingTools()
+        advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
+        if not advancedDigitizingPanel:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Advanced Digitising Panel is not present"))
+        # TODO: Need to do something if this is not present
+
+        advancedDigitizingPanel.setVisible(True)
+        self.setupPanelTabs(self.iface, advancedDigitizingPanel)
+        #QgsMapToolAdvancedDigitizing.activate(self)
+        #self.iface.cadDockWidget().enable()
+
         #self.QgsWkbTypes = QgsWkbTypes()
 
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)

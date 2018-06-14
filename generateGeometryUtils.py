@@ -815,13 +815,13 @@ class generateGeometryUtils:
     @staticmethod
     def generateBayLabelLeader(feature):
 
-        QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel")
         # check to see scale
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
 
         if currScale <= minScale:
 
@@ -886,7 +886,7 @@ class generateGeometryUtils:
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
@@ -985,7 +985,7 @@ class generateGeometryUtils:
 
         if currentCPZFeature:
 
-            currentCPZ = currentCPZFeature.attribute("zone_no")
+            currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
             QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
 
@@ -1068,7 +1068,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneMaxStayID(tpaNr):
 
-        QgsMessageLog.logMessage("In getTariffZoneMaxStayID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneMaxStayID", tag="TOMs panel")
 
         tpaLayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1086,7 +1086,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneNoReturnID(tpaNr):
 
-        QgsMessageLog.logMessage("In getTariffZoneNoReturnID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneNoReturnID", tag="TOMs panel")
 
         tpaLayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
 
