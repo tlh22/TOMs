@@ -159,6 +159,8 @@ class TOMs:
             
             self.TOMsMenu.menuAction().setVisible( True )"""
 
+        self.hideMenusToolbars()
+
         # set up menu. Is there a generic way to do this? from an xml file?
         
         # self.TOMsMenu.addMenu( self.PrintMenu )
@@ -233,8 +235,8 @@ class TOMs:
 
         # Panels not required are Browser, Layer Order
 		
-        """for x in self.iface.mainWindow().findChildren(QDockWidget): 
-            QgsMessageLog.logMessage("Dockwidgets: " + str(x.objectName()), tag="TOMs panel")"""
+        for x in self.iface.mainWindow().findChildren(QDockWidget):
+            QgsMessageLog.logMessage("Dockwidgets: " + str(x.objectName()), tag="TOMs panel")
 
         # for x in self.iface.mainWindow().findChildren(QMenu): 
         #     QgsMessageLog.logMessage("Menus: " + str(x.objectName()), tag="TOMs panel")

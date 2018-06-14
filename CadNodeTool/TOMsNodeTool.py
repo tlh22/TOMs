@@ -96,7 +96,12 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         #RestInProp.editCommandEnded.connect(self.proposalsManager.updateMapCanvas())
 
+        advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
+        advancedDigitizingPanel.setVisible(True)
+        self.setupPanelTabs(self.iface, advancedDigitizingPanel)
+
         QgsMapToolAdvancedDigitizing.deactivate(self)
+        QgsMapToolAdvancedDigitizing.activate(self)
 
     """def deactivate(self):
         pass """

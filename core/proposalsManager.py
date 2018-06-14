@@ -386,7 +386,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         return geometryBoundingBox
 
-    def generateBoundingBox(self, geometryBoundingBox, currLayer, restrictionsString):
+        """def generateBoundingBox(self, geometryBoundingBox, currLayer, restrictionsString):
         QgsMessageLog.logMessage("In generateBoundingBox." + restrictionsString, tag="TOMs panel")
 
         # https://gis.stackexchange.com/questions/176170/qgis-python-find-bounding-box-for-multiple-features
@@ -403,7 +403,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             QgsMessageLog.logMessage("In generateBoundingBox. feat: " + feat["RestrictionID"], tag="TOMs panel")
             geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
 
-        pass
+        pass"""
 
     def getProposalStatusID(self, currProposalID):
         # return proposal status code ??

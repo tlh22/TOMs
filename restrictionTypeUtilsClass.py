@@ -18,7 +18,7 @@ from PyQt4.QtGui import (
     QIcon,
     QDialogButtonBox,
     QPixmap,
-    QLabel
+    QLabel, QDockWidget
 )
 from PyQt4.QtCore import (
     QTimer
@@ -575,6 +575,7 @@ class RestrictionTypeUtilsMixin():
 
             restrictionTransaction.commitTransactionGroup()
             restrictionTransaction.deleteTransactionGroup()
+
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
         else:   # currProposal = 0, i.e., no change allowed
@@ -594,6 +595,10 @@ class RestrictionTypeUtilsMixin():
 
         dialog.close()
         currRestrictionLayer.removeSelection()
+
+        # reinstate Proposals Panel (if it needs it)
+        """proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        self.setupPanelTabs(self.iface, proposalPanel)"""
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
@@ -792,7 +797,12 @@ class RestrictionTypeUtilsMixin():
         
         restrictionTransaction.deleteTransactionGroup()
         
+        # reinstate Proposals Panel (if it needs it)
 
+        """self.iface.cadDockWidget().disable()
+
+        proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        self.setupPanelTabs(self.iface, proposalPanel)"""
 
     def onAttributeChangedClass(self, fieldName, value):
         QgsMessageLog.logMessage(
@@ -1350,3 +1360,16 @@ class RestrictionTypeUtilsMixin():
             return row.attribute("Description") # make assumption that only one row
 
         return None
+
+    def setupPanelTabs(self, iface, parent):
+
+        # https: // gis.stackexchange.com / questions / 257603 / activate - a - panel - in -tabbed - panels?utm_medium = organic & utm_source = google_rich_qa & utm_campaign = google_rich_qa
+
+        dws = iface.mainWindow().findChildren(QDockWidget)
+        #parent = iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
+        dockstate = iface.mainWindow().dockWidgetArea(parent)
+        for d in dws:
+            if d is not parent:
+                if iface.mainWindow().dockWidgetArea(d) == dockstate and d.isHidden() == False:
+                    iface.mainWindow().tabifyDockWidget(parent, d)
+        parent.raise_()
