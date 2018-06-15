@@ -117,15 +117,18 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
                             currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID,
                                                                                       currRestrictionLayer)
 
-                            tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
-                            self.MapGrid.selectByIds(tileIDsList)
-                            currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
-                            self.MapGrid.removeSelection()
+                            # TODO: Deal with restrictions that have been deleted, i.e., are not in the current view
 
-                            for tile in currRestrictionTileFeaturesList:
-                                # check if exists in tileList or not
-                                if tile not in tileFeatureList:
-                                    tileFeatureList.append(tile)
+                            if currRestriction:
+                                tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
+                                self.MapGrid.selectByIds(tileIDsList)
+                                currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
+                                self.MapGrid.removeSelection()
+
+                                for tile in currRestrictionTileFeaturesList:
+                                    # check if exists in tileList or not
+                                    if tile not in tileFeatureList:
+                                        tileFeatureList.append(tile)
 
 
                 pass

@@ -36,7 +36,6 @@ from .expressions import registerFunctions, unregisterFunctions
 
 from .proposals_panel import proposalsPanel
 from .search_bar import searchBar
-from TOMs.InstantPrint.InstantPrintPlugin import InstantPrintPlugin
 
 from .manage_restriction_details import manageRestrictionDetails
 
