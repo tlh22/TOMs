@@ -1056,7 +1056,7 @@ class generateGeometryUtils:
 
         for poly in CPZLayer.getFeatures():
 
-            currentCPZ = poly.attribute("zone_no")
+            currentCPZ = poly.attribute("CPZ")
             if currentCPZ == cpzNr:
                 #QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel")
                 cpzWaitingTimeID = poly.attribute("WaitingTimeID")
