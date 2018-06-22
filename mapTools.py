@@ -117,7 +117,7 @@ class MapToolMixin:
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
-            self.currLayer = RestrictionTypeUtils.getRestrictionsLayer (layerDetails)
+            self.currLayer = RestrictionTypeUtilsMixin.getRestrictionsLayer (layerDetails)
 
             # Loop through all features in the layer to find the closest feature
             for f in self.currLayer.getFeatures(request):
@@ -676,7 +676,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
                 #currForm = dialog.attributeForm()
                 #currForm.disconnectButtonBox()
 
-                QgsMessageLog.logMessage("In restrictionFormOpen. currRestrictionLayer: " + str(self.layer.name()),
+                QgsMessageLog.logMessage("In In CreateRestrictionTool - getPointsCaptured. currRestrictionLayer: " + str(self.layer.name()),
                                          tag="TOMs panel")
 
                 #button_box = currForm.findChild(QDialogButtonBox, "button_box")
