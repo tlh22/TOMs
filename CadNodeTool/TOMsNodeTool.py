@@ -208,10 +208,10 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
                                  tag="TOMs panel")
 
         # Trying to unset map tool to force updates ...
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        self.restrictionTransaction.commitTransactionGroup()
-        self.restrictionTransaction.deleteTransactionGroup()
+        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+        #self.restrictionTransaction.deleteTransactionGroup()
 
         #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, origLayer))
 
