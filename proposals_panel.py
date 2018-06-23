@@ -207,6 +207,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalsManager.clearRestrictionFilters()
 
         # TODO: Delete any objects that are no longer needed
+        self.proposalTransaction.rollbackTransactionGroup()
 
         pass
 
