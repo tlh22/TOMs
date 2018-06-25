@@ -911,25 +911,25 @@ class generateGeometryUtils:
         TariffZoneMaxStayID = generateGeometryUtils.getTariffZoneMaxStayID(restrictionPTA)
         TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
 
-        #QgsMessageLog.logMessage(
-        #    "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID),
-        #    tag="TOMs panel")
+        """QgsMessageLog.logMessage(
+            "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID),
+            tag="TOMs panel")"""
 
         if CPZWaitingTimeID:
-            #QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
-            #                         tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
+                                     tag="TOMs panel")"""
             if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
 
         if TariffZoneMaxStayID:
-            #QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-            #                         tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
+                                     tag="TOMs panel")"""
             if TariffZoneMaxStayID == maxStayID:
                 maxStayDesc = None
 
         if TariffZoneNoReturnID:
-            #QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-            #                         tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
+                                     tag="TOMs panel")"""
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
 
@@ -1052,7 +1052,7 @@ class generateGeometryUtils:
 
         #QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel")
 
-        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
+        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("CPZs")[0]
 
         for poly in CPZLayer.getFeatures():
 
