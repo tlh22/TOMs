@@ -244,6 +244,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.geometry().exportToWkt(),
                                  tag="TOMs panel")
 
+
         """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
         QgsMessageLog.logMessage(
             "In TOMsNodeTool:cloneRestriction - originalGeom: " + originalGeomBuffer.exportToWkt(),
@@ -251,6 +252,12 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - geometries switched.", tag="TOMs panel")"""
+        
+        # Trying to unset map tool to force updates ...
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+
+        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+        #self.restrictionTransaction.deleteTransactionGroup()
 
         self.addRestrictionToProposal(originalFeature[idxRestrictionID],
                                       self.getRestrictionLayerTableID(self.origLayer),
