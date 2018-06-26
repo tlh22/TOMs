@@ -70,6 +70,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         NodeTool.__init__(self, canvas, cadDock)
 
+        # set current layer to active layer to avoid any issues in NodeTools cadCanvasReleaseEvent
+        #canvas.setCurrentLayer(self.iface.activeLayer())
+
         self.proposalsManager = proposalsManager
         self.restrictionTransaction = restrictionTransaction
 
@@ -103,8 +106,42 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         QgsMapToolAdvancedDigitizing.deactivate(self)
         QgsMapToolAdvancedDigitizing.activate(self)
 
+        idxRestrictionID = self.origLayer.fieldNameIndex("RestrictionID")
+
+        self.newFeature = None
+
+        # if required, clone the current restriction and enter details into "RestrictionsInProposals" table
+        if not self.restrictionInProposal(self.origFeature.getFeature()[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal()):
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
+            #  This one is not in the current Proposal, so now we need to:
+            #  - generate a new ID and assign it to the feature for which the geometry has changed
+            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+            #  - add the details to RestrictionsInProposal
+
+            # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ... and the fid is obtained
+            self.newFid = None
+            self.origLayer.featureAdded.connect(self.onFeatureAdded)
+
+            self.newFeature = self.cloneRestriction(self.origFeature.getFeature())
+
+            self.origLayer.featureAdded.disconnect(self.onFeatureAdded)
+            #newFeatureValid = False
+            #self.newFeature.setValid(newFeatureValid)
+
+        else:
+
+            self.newFeature = self.origFeature.getFeature()
+            self.newFid = self.newFeature.id()
+
+        self.origLayer.selectByIds([self.newFid])
+
     """def deactivate(self):
         pass """
+
+    def onFeatureAdded(self, fid):
+        QgsMessageLog.logMessage("In TOMsNodeTool:onFeatureAdded - newFid: " + str(fid),
+                                 tag="TOMs panel")
+        self.newFid = fid
 
     def THgetFeature(self, fid, layer):
         fids = [fid]
@@ -151,64 +188,15 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(currRestriction[idxRestrictionID]), tag="TOMs panel")
 
-        if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal()):
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
-            #  This one is not in the current Proposal, so now we need to:
-            #  - generate a new ID and assign it to the feature for which the geometry has changed
-            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
-            #  - add the details to RestrictionsInProposal
-
-            originalfeature = self.origFeature.getFeature()
-
-            newFeature = QgsFeature(self.origLayer.fields())
-
-            newFeature.setAttributes(currRestriction.attributes())
-            newFeature.setGeometry(newGeometry)
-            newRestrictionID = str(uuid.uuid4())
-
-            newFeature[idxRestrictionID] = newRestrictionID
-
-            idxOpenDate = self.origLayer.fieldNameIndex("OpenDate")
-            idxGeometryID = self.origLayer.fieldNameIndex("GeometryID")
-
-            newFeature[idxOpenDate] = None
-            newFeature[idxGeometryID] = None
-
-            #currLayer.addFeature(newFeature)
-            self.origLayer.addFeatures([newFeature])
-
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), tag="TOMs panel")
-
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + newFeature.geometry().exportToWkt(), tag="TOMs panel")
-
-            originalGeomBuffer = QgsGeometry(originalfeature.geometry())
-            QgsMessageLog.logMessage(
-                "In TOMsNodeTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.exportToWkt(),
-                tag="TOMs panel")
-            self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
-
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
-
-            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), ACTION_CLOSE_RESTRICTION()) # close the original feature
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", tag="TOMs panel")
-
-            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
-
-            #self.proposalsManager.updateMapCanvas()
-
-        else:
-
-            # assign the changed geometry to the current feature
-            #currRestriction.setGeometry(newGeometry)
-            pass
-
-
-        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom (2): " + currRestriction.geometry().exportToWkt(),
-                                 tag="TOMs panel")
-
         # Trying to unset map tool to force updates ...
         #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(self.newFeature.attributes()),
+                                 tag="TOMs panel")
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + self.newFeature.geometry().exportToWkt(),
+                                 tag="TOMs panel")
 
         self.restrictionTransaction.commitTransactionGroup(self.origLayer)
         #self.restrictionTransaction.deleteTransactionGroup()
@@ -218,6 +206,71 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometry saved.", tag="TOMs panel")
 
         return
+
+    def cloneRestriction(self, originalFeature):
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - adding details to RestrictionsInProposal",
+                                 tag="TOMs panel")
+        #  This one is not in the current Proposal, so now we need to:
+        #  - generate a new ID and assign it to the feature for which the geometry has changed
+        #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+        #  - add the details to RestrictionsInProposal
+
+        #originalFeature = self.origFeature.getFeature()
+
+        newFeature = QgsFeature()
+
+        newFeature.setAttributes(originalFeature.attributes())
+        newFeature.setGeometry(originalFeature.geometry())
+        newRestrictionID = str(uuid.uuid4())
+
+        idxRestrictionID = self.origLayer.fieldNameIndex("RestrictionID")
+        idxOpenDate = self.origLayer.fieldNameIndex("OpenDate")
+        idxGeometryID = self.origLayer.fieldNameIndex("GeometryID")
+
+        newFeature[idxRestrictionID] = newRestrictionID
+        newFeature[idxOpenDate] = None
+        newFeature[idxGeometryID] = None
+
+        # currLayer.addFeature(newFeature)
+        addStatus = self.origLayer.addFeature(newFeature, True)
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - addStatus: " + str(addStatus),
+                                 tag="TOMs panel")
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - attributes: " + str(newFeature.attributes()),
+                                 tag="TOMs panel")
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.geometry().exportToWkt(),
+                                 tag="TOMs panel")
+
+
+        """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
+        QgsMessageLog.logMessage(
+            "In TOMsNodeTool:cloneRestriction - originalGeom: " + originalGeomBuffer.exportToWkt(),
+            tag="TOMs panel")
+        self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - geometries switched.", tag="TOMs panel")"""
+        
+        # Trying to unset map tool to force updates ...
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+
+        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+        #self.restrictionTransaction.deleteTransactionGroup()
+
+        self.addRestrictionToProposal(originalFeature[idxRestrictionID],
+                                      self.getRestrictionLayerTableID(self.origLayer),
+                                      self.proposalsManager.currentProposal(),
+                                      ACTION_CLOSE_RESTRICTION())  # close the original feature
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature closed.", tag="TOMs panel")
+
+        self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer),
+                                      self.proposalsManager.currentProposal(),
+                                      ACTION_OPEN_RESTRICTION())  # open the new one
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature opened.", tag="TOMs panel")
+
+        return newFeature
 
     def cadCanvasPressEvent(self, e):
 
@@ -249,6 +302,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
          of any editable vector layer, to allow selection of node for editing
          (if snapped to edge, it would offer creation of a new vertex there).
         """
+        QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer", tag="TOMs panel")
 
         map_point = self.toMapCoordinates(e.pos())
         tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
@@ -282,7 +336,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         ### TH: Amend to choose only from selected feature (and layer)
 
-        filter_last = OneFeatureFilter(self.origLayer, self.origFeature.getFeature().id())
+        filter_last = OneFeatureFilter(self.origLayer, self.newFeature.id())
         m = snap_util.snapToMap(map_point, filter_last)
         """if m_last.isValid() and m_last.distance() <= m.distance():
             m = m_last"""
@@ -295,3 +349,15 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         return m
 
+    def keyPressEvent(self, e):
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:keyPressEvent", tag="TOMs panel")
+
+        # want to pick up "esc" and exit tool
+
+        if e.key() == Qt.Key_Escape:
+            self.restrictionTransaction.rollBackTransactionGroup()
+            self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+            return
+
+        NodeTool.keyPressEvent(self, e)
