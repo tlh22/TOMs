@@ -20,7 +20,7 @@ import functools
 from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
 from TOMs.core.proposalsManager import *
-from .TOMsTableNames import TOMsTableNames
+
 from .manage_restriction_details import manageRestrictionDetails
 from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
@@ -163,15 +163,19 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # self.dock.setUserVisible(True)
 
         # set up a canvas refresh if there are any changes to the restrictions
-        self.RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+        #self.RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        #self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
         #self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
         #self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
 
         #self.Proposals.committedFeaturesAdded.connect(self.onNewProposalSaved)
         self.proposalsManager.newProposalCreated.connect(self.onNewProposalCreated)
 
-        self.RestrictionTools.enableTOMsToolbarItems()
+        # Create a transaction object for the Proposals
+
+        self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+
+        self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
@@ -179,10 +183,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         shortcutEsc.setContext(Qt.ApplicationShortcut)
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
-
-        # Create a transaction object for the Proposals
-
-        self.proposalTransaction = TOMsTransaction(self.iface)
 
         pass
 
@@ -207,6 +207,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalsManager.clearRestrictionFilters()
 
         # TODO: Delete any objects that are no longer needed
+        self.proposalTransaction.rollbackTransactionGroup()
 
         pass
 
@@ -271,7 +272,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
 
         # set up a transaction
-        self.proposalTransaction.createTransactionGroup()
+        self.proposalTransaction.startTransactionGroup()
 
         # create a new Proposal
 
@@ -335,7 +336,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.rollbackCurrentEdits()
 
-        self.proposalTransaction.deleteTransactionGroup()
+        self.proposalTransaction.rollbackTransactionGroup()
 
 
         pass
@@ -344,7 +345,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel")
 
         # set up transaction
-        self.proposalTransaction.createTransactionGroup()
+        self.proposalTransaction.startTransactionGroup()
 
         # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
         currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
@@ -421,11 +422,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
-    def onChangeProposalStatus(self):
+        """ onChangeProposalStatus(self):
         QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fieldNameIndex("ProposalStatusID")), tag="TOMs panel")
 
         # check to see if the proposal is "Accepted"
-
         acceptProposal = False
 
         newProposalStatus = int(self.Proposals.fieldNameIndex("ProposalStatusID"))
@@ -444,7 +444,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dlg.activateWindow()
 
-        return acceptProposal
+        return acceptProposal"""
 
         """def getRestrictionLayerTableID(self, currRestLayer):
         QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
