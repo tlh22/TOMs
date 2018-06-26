@@ -118,7 +118,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
             #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
             #  - add the details to RestrictionsInProposal
 
-            # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ...
+            # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ... and the fid is obtained
             self.newFid = None
             self.origLayer.featureAdded.connect(self.onFeatureAdded)
 
@@ -129,11 +129,11 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
             #self.newFeature.setValid(newFeatureValid)
 
         else:
-            if self.newFeature is None:
-                self.newFeature = self.origFeature.getFeature()
-                self.Fid = self.newFeature.id()
 
-            self.origLayer.selectByIds([self.Fid])
+            self.newFeature = self.origFeature.getFeature()
+            self.newFid = self.newFeature.id()
+
+        self.origLayer.selectByIds([self.newFid])
 
     """def deactivate(self):
         pass """
@@ -233,7 +233,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         newFeature[idxGeometryID] = None
 
         # currLayer.addFeature(newFeature)
-        addStatus = self.origLayer.addFeatures([newFeature], True)
+        addStatus = self.origLayer.addFeature(newFeature, True)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - addStatus: " + str(addStatus),
                                  tag="TOMs panel")
