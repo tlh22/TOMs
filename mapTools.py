@@ -428,7 +428,6 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, currTransaction):
 
-        #def __init__(self, iface, layer, dialog):
         QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())

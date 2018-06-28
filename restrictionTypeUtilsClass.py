@@ -64,7 +64,7 @@ class TOMsTransaction (QObject):
 
         self.iface = iface
 
-        self.proposalsManager = proposalsManager
+        self.proposalsManager = proposalsManager  # included to allow call to updateMapCanvas
 
         #self.currTransactionGroup = None
         self.currTransactionGroup = QgsTransactionGroup()
@@ -76,7 +76,7 @@ class TOMsTransaction (QObject):
 
         self.tableNames = setupTableNames(self.iface)
 
-        QgsMessageLog.logMessage("In TOMsTransaction.create: ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
 
         idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fieldNameIndex("RestrictionLayerName")
 
@@ -90,10 +90,13 @@ class TOMsTransaction (QObject):
             restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             self.setTransactionGroup.append(restrictionLayer)
-            QgsMessageLog.logMessage("In In TOMsTransaction.create. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
 
 
     def createTransactionGroup(self):
+
+        QgsMessageLog.logMessage("In TOMsTransaction.createTransactionGroup",
+                                 tag="TOMs panel")
 
         """if self.currTransactionGroup:
             QgsMessageLog.logMessage("In createTransactionGroup. Transaction ALREADY exists",
@@ -160,6 +163,8 @@ class TOMsTransaction (QObject):
 
     def commitTransactionGroup(self, currRestrictionLayer):
 
+        QgsMessageLog.logMessage("In commitTransactionGroup",
+                                 tag="TOMs panel")
         if not self.currTransactionGroup:
             QgsMessageLog.logMessage("In commitTransactionGroup. Transaction DOES NOT exist",
                                     tag="TOMs panel")
@@ -227,8 +232,8 @@ class TOMsTransaction (QObject):
         QgsMessageLog.logMessage("In errorInTransaction: " + errorMsg,
                                  tag="TOMs panel")
 
-    def __del__(self):
-        pass
+        #def __del__(self):
+        #pass
       
     def deleteTransactionGroup(self):
 
@@ -246,8 +251,15 @@ class TOMsTransaction (QObject):
 
         return
       
-        def rollBackTransactionGroup(self):
-            return self.tableNames.PROPOSALS.rollBack()  # could be any table ...
+    def rollBackTransactionGroup(self):
+        self.tableNames.PROPOSALS.rollBack()  # could be any table ...
+        #self.iface.activeLayer().stopEditing()
+
+        self.modified = False
+        self.errorOccurred = False
+        self.errorMessage = None
+
+        return
 
 class setupTableNames():
     def __init__(self, iface):
@@ -514,7 +526,6 @@ class RestrictionTypeUtilsMixin():
                 # Create a new feature using the current details
 
                 idxOpenDate = currRestriction.fieldNameIndex("OpenDate")
-                #idxRestrictionTypeID = currRestriction.fieldNameIndex("RestrictionTypeID")
                 newRestrictionID = str(uuid.uuid4())
 
                 if currRestriction[idxRestrictionID] is None:
@@ -524,23 +535,11 @@ class RestrictionTypeUtilsMixin():
                     #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
                     #  So, need to continue to modify dialog value which will be eventually saved
 
-                    #currRestriction = dialog.feature()
-                    #currRestriction[idxRestrictionID] = newRestrictionID
-
-                    #dialog.changeAttribute("RestrictionID", newRestrictionID)
-
-                    #currRestriction.setAttribute(idxRestrictionID, newRestrictionID)
                     dialog.attributeForm().changeAttribute("RestrictionID", newRestrictionID)
-                    #currRestriction = dialog.feature()
-                    #currRestriction.setAttribute("RestrictionID", newRestrictionID)
-                    #currRestrictionLayer.changeAttributeValue(currRestriction.id(), "RestrictionID", str(currRestriction[idxRestrictionID]))
-                    # currRestrictionLayer.updateFeature(currRestriction)
-                    #dialog.accept()
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxRestrictionID]),
                         tag="TOMs panel")
-                    # currRestrictionLayer.addFeatures([currRestriction])
 
                     status = self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
@@ -631,7 +630,7 @@ class RestrictionTypeUtilsMixin():
                 tag="TOMs panel")
             # Trying to unset map tool to force updates ...
             #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-            dialog.accept()
+            #dialog.accept()
             QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 5: " + str(
                     restrictionTransaction.currTransactionGroup.modified()),
@@ -865,17 +864,6 @@ class RestrictionTypeUtilsMixin():
         proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
         self.setupPanelTabs(self.iface, proposalPanel)"""
 
-        """def onAttributeChangedClass(self, fieldName, value):
-        QgsMessageLog.logMessage(
-            "In restrictionFormOpen:onAttributeChanged - layer: " + str(self.currRestrictionLayer.name()) + " (" + str(
-                self.currRestriction.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
-
-        # self.currRestriction.setAttribute(fieldName, value)
-        setStatus = self.currRestriction.setAttribute(self.currRestrictionLayer.fieldNameIndex(fieldName), value)
-        # self.currRestrictionLayer.changeAttributeValue(self.currRestriction, self.currRestrictionLayer.fieldNameIndex(fieldName), value)
-
-        return setStatus"""
-
     def onAttributeChangedClass2(self, currFeature, layer, fieldName, value):
         QgsMessageLog.logMessage(
             "In FormOpen:onAttributeChangedClass 2 - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), tag="TOMs panel")
@@ -891,9 +879,6 @@ class RestrictionTypeUtilsMixin():
             reply = QMessageBox.information(None, "Error",
                                                 "onAttributeChangedClass2. Update failed for: " + str(layer.name()) + " (" + fieldName + "): " + str(value),
                                                 QMessageBox.Ok)  # rollback all changes
-
-        # self.currRestrictionLayer.changeAttributeValue(self.currRestriction, self.currRestrictionLayer.fieldNameIndex(fieldName), value)
-        #return setStatus
         return
 
     def photoDetails(self, dialog, currRestLayer, currRestrictionFeature):
@@ -1448,3 +1433,120 @@ class RestrictionTypeUtilsMixin():
                 if iface.mainWindow().dockWidgetArea(d) == dockstate and d.isHidden() == False:
                     iface.mainWindow().tabifyDockWidget(parent, d)
         parent.raise_()
+
+    def prepareRestrictionForEdit(self, currRestriction, currRestrictionLayer):
+
+        QgsMessageLog.logMessage("In prepareRestrictionForEdit",
+                                 tag="TOMs panel")
+
+        # if required, clone the current restriction and enter details into "RestrictionsInProposals" table
+
+        newFeature = currRestriction
+
+        idxRestrictionID = currRestrictionLayer.fieldNameIndex("RestrictionID")
+
+        if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer), self.proposalsManager.currentProposal()):
+            QgsMessageLog.logMessage("In prepareRestrictionForEdit - adding details to RestrictionsInProposal", tag="TOMs panel")
+            #  This one is not in the current Proposal, so now we need to:
+            #  - generate a new ID and assign it to the feature for which the geometry has changed
+            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+            #  - add the details to RestrictionsInProposal
+
+            newFeature = self.cloneRestriction(currRestriction, currRestrictionLayer)
+
+            # Check to see if the feature is added
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature exists in layer - " + newFeature.attribute("RestrictionID"), tag="TOMs panel")
+
+            # Add details to "RestrictionsInProposals"
+
+            self.addRestrictionToProposal(currRestriction[idxRestrictionID],
+                                          self.getRestrictionLayerTableID(currRestrictionLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          ACTION_CLOSE_RESTRICTION())  # close the original feature
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature closed.", tag="TOMs panel")
+
+            self.addRestrictionToProposal(newFeature[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          ACTION_OPEN_RESTRICTION())  # open the new one
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature opened.", tag="TOMs panel")
+
+
+        else:
+
+            QgsMessageLog.logMessage("In TOMsNodeTool:init - restriction exists in RestrictionsInProposal", tag="TOMs panel")
+            #newFeature = currRestriction
+
+        # test to see if the geometry is correct
+        #self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+
+        return newFeature
+
+    def onFeatureAdded(self, fid):
+        QgsMessageLog.logMessage("In onFeatureAdded - newFid: " + str(fid),
+                                 tag="TOMs panel")
+        self.newFid = fid
+
+    def cloneRestriction(self, originalFeature, restrictionLayer):
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction",
+                                 tag="TOMs panel")
+        #  This one is not in the current Proposal, so now we need to:
+        #  - generate a new ID and assign it to the feature for which the geometry has changed
+        #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+        #  - add the details to RestrictionsInProposal
+
+        #originalFeature = self.origFeature.getFeature()
+
+        newFeature = QgsFeature(originalFeature)
+
+        #newFeature.setAttributes(originalFeature.attributes())
+
+        newRestrictionID = str(uuid.uuid4())
+
+        idxRestrictionID = restrictionLayer.fieldNameIndex("RestrictionID")
+        idxOpenDate = restrictionLayer.fieldNameIndex("OpenDate")
+        idxGeometryID = restrictionLayer.fieldNameIndex("GeometryID")
+
+        newFeature[idxRestrictionID] = newRestrictionID
+        newFeature[idxOpenDate] = None
+        newFeature[idxGeometryID] = None
+
+        #abstractGeometry = originalFeature.geometry().geometry().clone()  # make a deep copy of the geometry ... https://gis.stackexchange.com/questions/232056/how-to-deep-copy-a-qgis-memory-layer
+
+        #newFeature.setGeometry(QgsGeometry(originalFeature.geometry()))
+        #geomStatus = restrictionLayer.changeGeometry(newFeature.id(), QgsGeometry(abstractGeometry))
+
+        # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ... and the fid is obtained
+        # self.newFid = None
+        restrictionLayer.featureAdded.connect(self.onFeatureAdded)
+
+        addStatus = restrictionLayer.addFeature(newFeature, True)
+        #addStatus = restrictionLayer.addFeatures([newFeature], True)
+
+        restrictionLayer.featureAdded.disconnect(self.onFeatureAdded)
+
+        restrictionLayer.updateExtents()
+        restrictionLayer.updateFields()
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - addStatus: " + str(addStatus) + " featureID: " + str(self.newFid), #+ " geomStatus: " + str(geomStatus),
+                                 tag="TOMs panel")
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - attributes: (fid=" + str(newFeature.id()) + ") " + str(newFeature.attributes()),
+                                 tag="TOMs panel")
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.geometry().exportToWkt(),
+                                 tag="TOMs panel")
+
+        # test to see that feature has been added ...
+        feat = restrictionLayer.getFeatures(QgsFeatureRequest(newFeature.id())).next()
+
+        """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
+        QgsMessageLog.logMessage(
+            "In TOMsNodeTool:cloneRestriction - originalGeom: " + originalGeomBuffer.exportToWkt(),
+            tag="TOMs panel")
+        self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - geometries switched.", tag="TOMs panel")"""
+
+        return newFeature
+

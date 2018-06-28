@@ -172,18 +172,17 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         self.edge_band = None
         self.endpoint_marker = None
 
-    def deactivate(self):
+    """def deactivate(self):
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()
-        QgsMapToolAdvancedDigitizing.deactivate(self)
+        QgsMapToolAdvancedDigitizing.deactivate(self)"""
 
 
     def can_use_current_layer(self):
-        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer", tag="TOMs panel")
 
         layer = self.canvas().currentLayer()
 
-        #QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
 
         if not layer:
             QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel")
