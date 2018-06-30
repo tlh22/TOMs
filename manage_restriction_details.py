@@ -671,15 +671,17 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                         self.restrictionTransaction.startTransactionGroup()
 
-                        currRestriction = currRestrictionLayer.selectedFeatures()[0]
+                        """currRestriction = currRestrictionLayer.selectedFeatures()[0]
                         restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
                         currRestrictionLayer.deselect(currRestriction.id())
                         currRestrictionLayer.select(restrictionForEdit.id())
-                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])
+                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])"""
 
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsNodeTool(self.iface,
-                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??
+                                                    self.proposalsManager, self.restrictionTransaction)  # This is where we use the Node Tool ... need canvas and panel??
+                        """self.mapTool = TOMsNodeTool(self.iface,
+                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??"""
                         self.mapTool.setAction(self.actionEditRestriction)
                         self.iface.mapCanvas().setMapTool(self.mapTool)
 

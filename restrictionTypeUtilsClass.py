@@ -165,6 +165,10 @@ class TOMsTransaction (QObject):
 
         QgsMessageLog.logMessage("In commitTransactionGroup",
                                  tag="TOMs panel")
+
+        # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+
         if not self.currTransactionGroup:
             QgsMessageLog.logMessage("In commitTransactionGroup. Transaction DOES NOT exist",
                                     tag="TOMs panel")
@@ -203,10 +207,19 @@ class TOMsTransaction (QObject):
                                      tag="TOMs panel")
 
             commitStatus = layer.commitChanges()
-            commitErrors = layer.commitErrors()
+            #commitStatus = True  # for testing ...
 
-            QgsMessageLog.logMessage("In commitTransactionGroup. error: " + str(layer.commitErrors()),
-                                     tag="TOMs panel")
+            """try:
+                #layer.commitChanges()
+                QTimer.singleShot(0, layer.commitChanges())
+                commitStatus = True
+            except:
+                #commitErrors = layer.commitErrors()
+                commitStatus = False
+
+                QgsMessageLog.logMessage("In commitTransactionGroup. error: " + str(layer.commitErrors()),
+                                     tag="TOMs panel")"""
+
             if commitStatus == False:
                 reply = QMessageBox.information(None, "Error",
                                                 "Changes to " + layer.name() + " failed: " + str(
@@ -252,7 +265,13 @@ class TOMsTransaction (QObject):
         return
       
     def rollBackTransactionGroup(self):
-        self.tableNames.PROPOSALS.rollBack()  # could be any table ...
+
+        try:
+            self.tableNames.PROPOSALS.rollBack()  # could be any table ...
+        except:
+            QgsMessageLog.logMessage("In rollBackTransactionGroup. error: ...",
+                                     tag="TOMs panel")
+
         #self.iface.activeLayer().stopEditing()
 
         self.modified = False
@@ -498,7 +517,7 @@ class RestrictionTypeUtilsMixin():
 
                 # restriction already is part of the current proposal
                 # simply make changes to the current restriction in the current layer
-                QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form." + str(currRestriction.attribute("RestrictionTypeID")),
+                QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form." + str(currRestriction.attribute("GeometryID")),
                                          tag="TOMs panel")
 
                 #res = dialog.save()
@@ -602,6 +621,8 @@ class RestrictionTypeUtilsMixin():
                             newRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
+                    dialog.attributeForm().resetValues()
+
                 pass
 
             # Now commit changes and redraw
@@ -622,7 +643,7 @@ class RestrictionTypeUtilsMixin():
                     restrictionTransaction.currTransactionGroup.modified()),
                 tag="TOMs panel")
 
-            restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
+            commitStatus = restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
             #restrictionTransaction.deleteTransactionGroup()
             QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 4: " + str(
@@ -631,13 +652,15 @@ class RestrictionTypeUtilsMixin():
             # Trying to unset map tool to force updates ...
             #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
             #dialog.accept()
-            QgsMessageLog.logMessage(
+            """QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 5: " + str(
-                    restrictionTransaction.currTransactionGroup.modified()),
-                tag="TOMs panel")
+                    restrictionTransaction.currTransactionGroup.modified()) + " commitStatus " + str(commitStatus),
+                tag="TOMs panel")"""
             #status = dialog.attributeForm().close()
             #dialog.accept()
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
+
+            status = dialog.reject()
 
         else:   # currProposal = 0, i.e., no change allowed
 
@@ -1538,7 +1561,9 @@ class RestrictionTypeUtilsMixin():
                                  tag="TOMs panel")
 
         # test to see that feature has been added ...
-        feat = restrictionLayer.getFeatures(QgsFeatureRequest(newFeature.id())).next()
+        #feat = restrictionLayer.getFeatures(QgsFeatureRequest(newFeature.id())).next()
+        feat = restrictionLayer.getFeatures(
+            QgsFeatureRequest().setFilterExpression('GeometryID = \'{}\''.format(newFeature['GeometryID']))).next()
 
         """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
         QgsMessageLog.logMessage(
