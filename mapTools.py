@@ -661,10 +661,6 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
                 # set any geometry related attributes ...
 
-                generateGeometryUtils.setRoadName(feature)
-                if self.layer.geometryType() == 1:  # Line or Bay
-                    generateGeometryUtils.setAzimuthToRoadCentreLine(feature)
-
                 self.setDefaultRestrictionDetails(feature, self.layer)
 
                 # is there any other tidying to do ??

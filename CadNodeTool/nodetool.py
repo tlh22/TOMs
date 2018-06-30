@@ -281,10 +281,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 layer_rect = self.toLayerCoordinates(layer, map_rect)
                 for f in layer.getFeatures(QgsFeatureRequest(layer_rect)):
                     g = f.geometry()
-                    for i in xrange(g.geometry().nCoordinates()):
-                        pt = g.vertexAt(i)
-                        if layer_rect.contains(pt):
-                            nodes.append( Vertex(layer, f.id(), i) )
+
+                    # TH (180630): Changed to deal with g = None
+
+                    if g is not None:
+                        for i in xrange(g.geometry().nCoordinates()):
+                            pt = g.vertexAt(i)
+                            if layer_rect.contains(pt):
+                                nodes.append( Vertex(layer, f.id(), i) )
 
             self.set_highlighted_nodes(nodes)
 

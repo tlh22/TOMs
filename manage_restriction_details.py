@@ -157,8 +157,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.tableNames = setupTableNames(self.iface)
         self.restrictionTransaction = restrictionTransaction
 
+        #self.iface.mapCanvas().mapToolSet.connect(self.unCheckNodeTool)
+
         pass
 
+    def unCheckNodeTool(self):
+        self.actionEditRestriction.setChecked(False)
 
     def disableTOMsToolbarItems(self):
 
@@ -248,6 +252,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             pass
 
+            self.currRestrictionLayer.deselect(currRestriction.id())
+
         else:
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information",
@@ -255,6 +261,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                             QMessageBox.Ok)
 
         pass
+
 
     def doCreateBayRestriction(self):
 
@@ -637,7 +644,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Now save all changes
 
         # Trying to unset map tool to force updates ...
-        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         self.restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
         #self.restrictionTransaction.deleteTransactionGroup()

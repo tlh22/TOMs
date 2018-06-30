@@ -96,6 +96,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #self.origLayer.startEditing()
         self.origFeature.printFeature()
 
+        self.origLayer.geometryChanged.connect(self.on_cached_geometry_changed)
+        self.origLayer.featureDeleted.connect(self.on_cached_geometry_deleted)
 
         #*** New
 
@@ -104,15 +106,17 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         #RestInProp.editCommandEnded.connect(self.proposalsManager.updateMapCanvas())
 
-        """advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
+        advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
         advancedDigitizingPanel.setVisible(True)
         self.setupPanelTabs(self.iface, advancedDigitizingPanel)
 
         QgsMapToolAdvancedDigitizing.deactivate(self)
-        QgsMapToolAdvancedDigitizing.activate(self)"""
+        QgsMapToolAdvancedDigitizing.activate(self)
 
         #self.newFeature = None
         self.finishEdit = False
+
+        self.iface.mapCanvas().mapToolSet.connect(self.setUnCheck)
 
         # get details of the selected feature
         #self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
@@ -133,9 +137,30 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #self.origLayer.selectByIds([self.newFid])
         #self.origLayer.setSelectedFeatures([self.newFid])
 
+    def setUnCheck(self):
+        pass
+
     def deactivate(self):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:deactivate .... ", tag="TOMs panel")
+
+        #NodeTool.deactivate()
+
+    def shutDownNodeTool(self):
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:shutDownNodeTool .... ", tag="TOMs panel")
+
+        # TODO: May need to disconnect geometryChange and featureDeleted signals
+        self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
+        self.origLayer.featureDeleted.disconnect(self.on_cached_geometry_deleted)
+
+        self.set_highlighted_nodes([])
+        self.remove_temporary_rubber_bands()
+
+        #currAction = self.iface.mapCanvas().mapTool().action()
+        #currAction.setChecked(False)
+
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         #NodeTool.deactivate()
 
@@ -231,6 +256,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         self.restrictionTransaction.commitTransactionGroup(self.origLayer)
         #self.restrictionTransaction.deleteTransactionGroup()
 
+        self.origLayer.deselect(self.origFeature.getFeature().id())
+
+        self.shutDownNodeTool()
 
         # **** New
         """"#currRestrictionRestrictionID = currFeature[idxRestrictionID]
@@ -257,14 +285,6 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, origLayer))
 
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometry saved.", tag="TOMs panel")"""
-
-        # TODO: May need to disconnect geometryChange and featureDeleted signals
-        self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
-        self.origLayer.featureDeleted.disconnect(self.on_cached_geometry_deleted)
-
-        self.set_highlighted_nodes([])
-        self.remove_temporary_rubber_bands()
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         return
 
@@ -366,8 +386,12 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         # want to pick up "esc" and exit tool
 
         if e.key() == Qt.Key_Escape:
-            self.restrictionTransaction.rollBackTransactionGroup()
+
             self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+            self.restrictionTransaction.rollBackTransactionGroup()
+
+            self.shutDownNodeTool()
+
             return
 
         NodeTool.keyPressEvent(self, e)

@@ -46,6 +46,7 @@ from TOMs.constants import (
     PROPOSAL_STATUS_REJECTED
 )
 
+from generateGeometryUtils import generateGeometryUtils
 #from TOMs.core.proposalsManager import *
 from TOMs.core.proposalsManager import *
 
@@ -347,6 +348,7 @@ class RestrictionTypeUtilsMixin():
         #super().__init__()
         self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()
+        #self.proposalPanel = None
 
         pass
 
@@ -681,123 +683,41 @@ class RestrictionTypeUtilsMixin():
         currRestrictionLayer.removeSelection()
 
         # reinstate Proposals Panel (if it needs it)
-        """proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
-        self.setupPanelTabs(self.iface, proposalPanel)"""
+        #if not self.proposalPanel:
+        self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
+
+        self.setupPanelTabs(self.iface, self.proposalPanel)
+        #self.setupPanelTabs(self.iface, self.dock)
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
 
+        generateGeometryUtils.setRoadName(currRestriction)
+        if currRestrictionLayer.geometryType() == 1:  # Line or Bay
+            generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+
+        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+
+        currRestriction.setAttribute("CPZ", currentCPZ)
+
         if currRestrictionLayer.name() == "Lines":
             currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines) or Resident Permit Holders Bays (Bays)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
+
+            currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
+
         elif currRestrictionLayer.name() == "Bays":
             currRestriction.setAttribute("RestrictionTypeID", 28)  # 28 = Permit Holders Bays (Bays)
             currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
+
+            currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
+
+            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+
+            currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
+            currRestriction.setAttribute("NoReturnTimeID", ptaNoReturnTimeID)
+
         pass
-
-        #def commitRestrictionChanges(self):
-        # Function to save changes to current layer and to RestrictionsInProposal
-        pass
-
-        """#QgsMessageLog.logMessage("In commitRestrictionChanges: currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
-        #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
-
-        # Trying to unset map tool to force updates ...
-        #qgis.utils.iface.mapCanvas().unsetMapTool(qgis.utils.iface.mapCanvas().mapTool())
-        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-
-        # Added to stop save actions
-        #return
-
-        # save changes to currRestrictionLayer
-
-        errMessage = str()
-
-        self.currTransaction.commitError.connect(self.showTransactionErrorMessage)
-
-        #try:
-        modifiedTransaction = self.currTransaction.modified()
-        #statusTrans = currRestrictionLayer.commitChanges()
-        #commitErrors = currRestrictionLayer.commitErrors()
-
-        localTrans = TOMsTransaction(self.iface)
-
-        localTrans.prepareLayerSet()
-        setLayers = localTrans.layersInTransaction()
-
-        for layerID in setLayers:
-
-            transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
-            QgsMessageLog.logMessage("In commitProposalChanges. Considering: " + transLayer.name(), tag="TOMs panel")
-
-            commitStatus = transLayer.commitChanges()
-            commitErrors = transLayer.commitErrors()
-
-            if commitErrors:
-                reply = QMessageBox.information(None, "Error",
-                                            "Changes to " + transLayer.name() + " failed: " + str(
-                                                transLayer.commitErrors()), QMessageBox.Ok)
-
-            break
-
-        self.currTransaction.commitError.disconnect()
-        self.currTransaction = None
-        self.rollbackCurrentEdits()
-
-        return"""
-
-        """if currTransaction.commit() == False:
-
-            reply = QMessageBox.information(None, "Error",
-                                                "Proposal changes failed: " + str(errMessage),
-                                                QMessageBox.Ok)  # rollback all changes
-
-            if currTransaction.rollback() == False:
-                reply = QMessageBox.information(None, "Error",
-                                                "Proposal rollback failed: " + str(errMessage),
-                                                QMessageBox.Ok)  # rollback all changes
-
-        del currTransaction
-        self.rollbackCurrentEdits()"""
-
-        """res = True
-        res = currRestrictionLayer.commitChanges()
-
-        QgsMessageLog.logMessage("In commitRestrictionChanges: res ...", tag="TOMs panel")
-        if res == False:
-            # save the active layer
-
-            reply = QMessageBox.information(None, "Error",
-                                            "Changes to " + currRestrictionLayer.name() + " failed: " + str(
-                                                currRestrictionLayer.commitErrors()),
-                                            QMessageBox.Ok)
-
-            # Should we rollback?
-
-        else:
-
-            # save changes to RestrictionsInProposal
-            RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-
-            QgsMessageLog.logMessage("Committing to RestrictionsInProposalsLayer ... ", tag="TOMs panel")
-
-            if RestrictionsInProposalsLayer.isEditable():
-                #time.sleep(.300)
-                res2 = True
-                res2 = RestrictionsInProposalsLayer.commitChanges()
-
-                if res2 == False:
-
-                    reply = QMessageBox.information(None, "Error",
-                                                    "Changes to RestrictionsInProposal failed: " + str(
-                                                        RestrictionsInProposalsLayer.commitErrors()),
-                                                    QMessageBox.Ok)
-
-                pass
-            pass
-        pass"""
-
-        # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
 
     def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
         # update the Open/Close date for the restriction
@@ -882,10 +802,10 @@ class RestrictionTypeUtilsMixin():
         
         # reinstate Proposals Panel (if it needs it)
 
-        """self.iface.cadDockWidget().disable()
+        #if not self.proposalPanel:
+        self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
 
-        proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
-        self.setupPanelTabs(self.iface, proposalPanel)"""
+        self.setupPanelTabs(self.iface, self.proposalPanel)
 
     def onAttributeChangedClass2(self, currFeature, layer, fieldName, value):
         QgsMessageLog.logMessage(
