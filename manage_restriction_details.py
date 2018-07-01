@@ -157,8 +157,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.tableNames = setupTableNames(self.iface)
         self.restrictionTransaction = restrictionTransaction
 
+        #self.iface.mapCanvas().mapToolSet.connect(self.unCheckNodeTool)
+
         pass
 
+    def unCheckNodeTool(self):
+        self.actionEditRestriction.setChecked(False)
 
     def disableTOMsToolbarItems(self):
 
@@ -200,25 +204,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         """
         QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
 
-        """if not self.actionRestrictionDetails.isChecked():
-            self.actionRestrictionDetails.setChecked(False)
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            self.mapTool = None
-            # self.actionPan.connect()
-            return
-
-        self.actionRestrictionDetails.setChecked(True)
-
-        self.mapTool = GeometryInfoMapTool(self.iface)
-        self.mapTool.setAction(self.actionRestrictionDetails)
-        self.iface.mapCanvas().setMapTool(self.mapTool)"""
-
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
         currRestrictionLayer = self.iface.activeLayer()
-
-        #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
 
         if currRestrictionLayer:
 
@@ -226,9 +215,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if currRestrictionLayer.selectedFeatureCount() > 0:
 
-                if currProposalID > 0:
-
-                    self.restrictionTransaction.startTransactionGroup()
+                if currProposalID == 0:
+                    # Ensure that no updates can occur for Proposal = 0
+                    self.restrictionTransaction.rollBackTransactionGroup() # stop any editing
+                else:
+                    self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 selectedRestrictions = currRestrictionLayer.selectedFeatures()
                 for currRestriction in selectedRestrictions:
@@ -261,6 +252,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             pass
 
+            self.currRestrictionLayer.deselect(currRestriction.id())
+
         else:
 
             reply = QMessageBox.information(self.iface.mainWindow(), "Information",
@@ -269,39 +262,6 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         pass
 
-        #def onDisplayRestrictionDetails(self, currRestriction, currRestrictionLayer):
-        """ Called by map tool when a restriction is selected
-
-        self.currRestriction = currRestriction
-        self.currRestrictionLayer = currRestrictionLayer
-
-        QgsMessageLog.logMessage(("Start onDisplayRestrictionDetails. currLayer: " + self.currRestrictionLayer.name() + " currType: "),
-                                 tag="TOMs panel")
-
-        # Get the current proposal from the session variables
-        self.currProposalID = self.proposalsManager.currentProposal()
-
-        # Choose the dialog based on the layer
-        #self.dlg = restrictionDetailsDialog()
-
-        # show the dialog
-        #self.dlg.show()
-
-        QgsMessageLog.logMessage(("In onDisplayRestrictionDetails. Waiting for changes to form."),
-                                 tag="TOMs panel")
-
-        # pick up a singal that something has changed (not sure which one)
-        # self.dlg.attributeChanged.connect(self.onProposalChanged)
-        # https://nathanw.net/2011/09/05/qgis-tips-custom-feature-forms-with-python-logic/
-        # Disconnect the signal that QGIS has wired up for the dialog to the button box.
-        #self.dlg.button_box.accepted.disconnect()
-
-        # Wire up our own signals.
-        #self.newProposalRequired = False
-
-        #self.dlg.button_box.accepted.connect(functools.partial(RestrictionTypeUtils.onSaveRestrictionDetails, self.currRestriction, self.currRestrictionLayer, self.dlg))
-
-        pass        """
 
     def doCreateBayRestriction(self):
 
@@ -327,7 +287,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.iface.setActiveLayer(currLayer)
 
-                self.restrictionTransaction.startTransactionGroup()
+                self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
@@ -384,7 +344,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 currLayer = self.tableNames.LINES
                 self.iface.setActiveLayer(currLayer)
 
-                self.restrictionTransaction.startTransactionGroup()
+                self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
@@ -684,7 +644,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Now save all changes
 
         # Trying to unset map tool to force updates ...
-        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         self.restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
         #self.restrictionTransaction.deleteTransactionGroup()
@@ -718,9 +678,17 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                         self.restrictionTransaction.startTransactionGroup()
 
+                        """currRestriction = currRestrictionLayer.selectedFeatures()[0]
+                        restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
+                        currRestrictionLayer.deselect(currRestriction.id())
+                        currRestrictionLayer.select(restrictionForEdit.id())
+                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])"""
+
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsNodeTool(self.iface,
                                                     self.proposalsManager, self.restrictionTransaction)  # This is where we use the Node Tool ... need canvas and panel??
+                        """self.mapTool = TOMsNodeTool(self.iface,
+                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??"""
                         self.mapTool.setAction(self.actionEditRestriction)
                         self.iface.mapCanvas().setMapTool(self.mapTool)
 

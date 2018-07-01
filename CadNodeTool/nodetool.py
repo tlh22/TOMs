@@ -172,18 +172,17 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         self.edge_band = None
         self.endpoint_marker = None
 
-    def deactivate(self):
+    """def deactivate(self):
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()
-        QgsMapToolAdvancedDigitizing.deactivate(self)
+        QgsMapToolAdvancedDigitizing.deactivate(self)"""
 
 
     def can_use_current_layer(self):
-        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer", tag="TOMs panel")
 
         layer = self.canvas().currentLayer()
 
-        #QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
 
         if not layer:
             QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel")
@@ -282,10 +281,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 layer_rect = self.toLayerCoordinates(layer, map_rect)
                 for f in layer.getFeatures(QgsFeatureRequest(layer_rect)):
                     g = f.geometry()
-                    for i in xrange(g.geometry().nCoordinates()):
-                        pt = g.vertexAt(i)
-                        if layer_rect.contains(pt):
-                            nodes.append( Vertex(layer, f.id(), i) )
+
+                    # TH (180630): Changed to deal with g = None
+
+                    if g is not None:
+                        for i in xrange(g.geometry().nCoordinates()):
+                            pt = g.vertexAt(i)
+                            if layer_rect.contains(pt):
+                                nodes.append( Vertex(layer, f.id(), i) )
 
             self.set_highlighted_nodes(nodes)
 

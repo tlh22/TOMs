@@ -121,7 +121,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # set up tabbing for Panels
         self.setupPanelTabs(self.iface, self.dock)
 
-        self.dock.closingPlugin.connect(self.closeTOMsTools)
+        #self.dock.closingPlugin.connect(self.closeTOMsTools)
 
         #self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
@@ -191,23 +191,23 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel")
 
+        # TODO: Delete any objects that are no longer needed
+        self.proposalTransaction.rollBackTransactionGroup()
+        del self.proposalTransaction  # There is another call to this function from the dock.close()
+
+        # Now disable the items from the Toolbar
+
+        self.RestrictionTools.disableTOMsToolbarItems()
+
         self.actionProposalsPanel.setChecked(False)
 
         # Now close the proposals panel
 
         self.dock.close()
 
-        # Now disable the items from the Toolbar
-
-        #self.createProposalTransactionGroup.rollback()
-        self.RestrictionTools.disableTOMsToolbarItems()
-
         # Now clear the filters
 
         self.proposalsManager.clearRestrictionFilters()
-
-        # TODO: Delete any objects that are no longer needed
-        self.proposalTransaction.rollbackTransactionGroup()
 
         pass
 
