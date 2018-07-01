@@ -267,6 +267,12 @@ class TOMsTransaction (QObject):
       
     def rollBackTransactionGroup(self):
 
+        QgsMessageLog.logMessage("In rollBackTransactionGroup",
+                                 tag="TOMs panel")
+
+        # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
+        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+
         try:
             self.tableNames.PROPOSALS.rollBack()  # could be any table ...
         except:
@@ -715,7 +721,7 @@ class RestrictionTypeUtilsMixin():
             currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
-            currRestriction.setAttribute("NoReturnTimeID", ptaNoReturnTimeID)
+            currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
 
         pass
 
@@ -796,7 +802,7 @@ class RestrictionTypeUtilsMixin():
         #self.currRestrictionLayer.destroyEditCommand()
         restrictionDialog.reject()
 
-        self.rollbackCurrentEdits()
+        #self.rollbackCurrentEdits()
         
         restrictionTransaction.rollBackTransactionGroup()
         

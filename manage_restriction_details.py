@@ -252,7 +252,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             pass
 
-            self.currRestrictionLayer.deselect(currRestriction.id())
+            currRestrictionLayer.deselect(currRestriction.id())
 
         else:
 

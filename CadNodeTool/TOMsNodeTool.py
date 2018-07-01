@@ -160,7 +160,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #currAction = self.iface.mapCanvas().mapTool().action()
         #currAction.setChecked(False)
 
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
+        self.setupPanelTabs(self.iface, self.proposalPanel)
 
         #NodeTool.deactivate()
 
@@ -251,7 +252,14 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
                                  tag="TOMs panel")
 
         # Trying to unset map tool to force updates ...
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        currMapTool = self.iface.mapCanvas().mapTool()
+        currAction = currMapTool.action()
+        
+        currMapToolAction = self.iface.mapCanvas().mapTool().action().setChecked(False)
+
+        # uncheck current tool
+
 
         self.restrictionTransaction.commitTransactionGroup(self.origLayer)
         #self.restrictionTransaction.deleteTransactionGroup()
