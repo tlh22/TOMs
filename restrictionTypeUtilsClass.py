@@ -182,11 +182,14 @@ class TOMsTransaction (QObject):
             return False
 
         # Now check to see that there has been a change in the "main" restriction layer
-        if currRestrictionLayer.editBuffer().isModified() == False:
-            reply = QMessageBox.information(None, "Error",
-                                            "Problem with saving " + str(currRestrictionLayer.name()), QMessageBox.Ok)
-            self.rollBackTransactionGroup()
-            return False
+        if currRestrictionLayer:
+
+            if currRestrictionLayer.editBuffer().isModified() == False:
+                reply = QMessageBox.information(None, "Error",
+                                                "Problem with saving " + str(currRestrictionLayer.name()),
+                                                QMessageBox.Ok)
+                self.rollBackTransactionGroup()
+                return False
 
         QgsMessageLog.logMessage("In commitTransactionGroup. Committing transaction",
                                  tag="TOMs panel")

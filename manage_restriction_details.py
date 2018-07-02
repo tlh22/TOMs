@@ -252,7 +252,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             pass
 
-            currRestrictionLayer.deselect(currRestriction.id())
+            #currRestrictionLayer.deselect(currRestriction.id())
 
         else:
 
@@ -644,9 +644,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Now save all changes
 
         # Trying to unset map tool to force updates ...
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        self.restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
+        self.restrictionTransaction.commitTransactionGroup(None)
         #self.restrictionTransaction.deleteTransactionGroup()
 
         #currRestrictionLayer.triggerRepaint()  # This shouldn't be required ...
