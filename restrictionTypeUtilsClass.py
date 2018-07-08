@@ -558,6 +558,11 @@ class RestrictionTypeUtilsMixin():
                 idxOpenDate = currRestriction.fieldNameIndex("OpenDate")
                 newRestrictionID = str(uuid.uuid4())
 
+                QgsMessageLog.logMessage(
+                    "In onSaveRestrictionDetails. Adding new restriction (1). ID: " + str(
+                        newRestrictionID),
+                    tag="TOMs panel")
+
                 if currRestriction[idxRestrictionID] is None:
                     # This is a feature that has just been created. It exists but doesn't have a GeometryID.
 

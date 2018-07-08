@@ -143,7 +143,8 @@ def getWaitingRestrictionLabelText(feature, parent):
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
     # waitingText = "Test"
     if waitingText:
-        labelText = "No Waiting: " + waitingText
+        #labelText = "No Waiting: " + waitingText
+        labelText = waitingText
         return labelText
 
     return None
@@ -157,7 +158,8 @@ def getLoadingRestrictionLabelText(feature, parent):
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
     if loadingText:
-        labelText = "No Loading: " + loadingText
+        #labelText = "No Loading: " + loadingText
+        labelText = loadingText
         return labelText
 
     return None
@@ -182,7 +184,7 @@ def getBayMaxStayLabelText(feature, parent):
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText: " + str(baytext), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayMaxStayLabelText: " + str(maxStayText), tag="TOMs panel")
 
     return maxStayText
 
@@ -194,9 +196,32 @@ def getBayNoReturnLabelText(feature, parent):
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText: " + str(baytext), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayNoReturnLabelText: " + str(noReturnText), tag="TOMs panel")
 
     return noReturnText
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
+def getBayLabelText(feature, parent):
+	# Returns the text to label the feature
+
+    #QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel")
+
+    maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
+
+    labelText = ''
+
+    if timePeriodText:
+        labelText = '{text};'.format(text=timePeriodText)
+
+    if maxStayText:
+        labelText = '{origText} Max Stay: {text};'.format(origText=labelText, text=maxStayText)
+
+    if noReturnText:
+        labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
+
+    QgsMessageLog.logMessage("In getBayLabelText: " + str(labelText), tag="TOMs panel")
+
+    return labelText
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getCPZ(feature, parent):
@@ -237,6 +262,7 @@ functions = [
     getBayTimePeriodLabelText,
     getBayMaxStayLabelText,
     getBayNoReturnLabelText,
+    getBayLabelText,
     getCPZ,
     getPTA
 ]

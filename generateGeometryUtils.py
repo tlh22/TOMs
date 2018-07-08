@@ -974,7 +974,7 @@ class generateGeometryUtils:
     def getCurrentCPZDetails(feature):
 
         QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel")
-        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("edingburghcpzs")[0]
+        CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("CPZs")[0]
 
         restrictionID = feature.attribute("GeometryID")
         QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
