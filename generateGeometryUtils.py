@@ -870,9 +870,9 @@ class generateGeometryUtils:
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
-        #QgsMessageLog.logMessage(
-        #    "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID),
-        #    tag="TOMs panel")
+        QgsMessageLog.logMessage(
+            "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID),
+            tag="TOMs panel")
 
         if CPZWaitingTimeID:
             #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),

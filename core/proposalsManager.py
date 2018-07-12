@@ -115,7 +115,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             self.canvas.setExtent(box)
 
         # Rollback any edit session and stop editing ... need to find way to do "silently". Ideally check to see if there any outstanding edits
-        self.rollbackCurrentEdits()
+        #self.rollbackCurrentEdits()
 
     def updateMapCanvas(self):
         """

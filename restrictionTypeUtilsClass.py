@@ -958,6 +958,7 @@ class RestrictionTypeUtilsMixin():
 
         #updateStatus = False
         newProposal = False
+        proposalAcceptedRejected = False
 
         if currProposal[idxProposalStatusID] == PROPOSAL_STATUS_ACCEPTED():  # 2 = accepted
 
@@ -973,22 +974,21 @@ class RestrictionTypeUtilsMixin():
                 # TODO: Need to check that this is an authorised user
 
                 # Now close dialog
-                updateStatus = proposalsDialog.accept()
+                #updateStatus = proposalsDialog.accept()
 
-                updateStatus = True
+                #updateStatus = True
+
+                #if updateStatus == True:
+                currProposalID = currProposal[idxProposalID]
+                currOpenDate = currProposal[idxProposalOpenDate]
+                updateStatus = self.acceptProposal(currProposalID, currOpenDate)
 
                 if updateStatus == True:
-                    currProposalID = currProposal[idxProposalID]
-                    currOpenDate = currProposal[idxProposalOpenDate]
-                    updateStatus = self.acceptProposal(currProposalID, currOpenDate)
+                    updateStatus = proposalsDialog.attributeForm().save()
+                    proposalAcceptedRejected = True
 
-                if updateStatus == True:
-                    updateStatus = proposalsDialog.accept()
-                    #proposalsDialog.close()
                 else:
                     proposalsDialog.reject()
-
-                # proposalAccepted.emit()
 
             else:
                 proposalsDialog.reject()
@@ -1010,11 +1010,11 @@ class RestrictionTypeUtilsMixin():
                 updateStatus = True
 
                 if updateStatus == True:
-                    self.rejectProposal(currProposal[idxProposalID])
+                    updateStatus = proposalsDialog.attributeForm().save()
+                    proposalAcceptedRejected = True
 
-                #proposalsDialog.accept()
-                proposalsDialog.close()
-                # proposalAccepted.emit()
+                else:
+                    proposalsDialog.reject()
 
             else:
                 # proposalsDialog.reject ((currProposal[idxProposalID]))
@@ -1048,59 +1048,20 @@ class RestrictionTypeUtilsMixin():
             #proposalsDialog.attributeForm().save()
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
-        #QMessageBox.information(None, "Information", ("Just before Proposal save in onSaveProposalFormDetails"))
-
-        #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Saving: Proposals", tag="TOMs panel")
-
-        # A little pause for the db to catch up
-        """time.sleep(.1)
-
-        res = proposalsLayer.commitChanges()
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Saving: Proposals. res: " + str(res), tag="TOMs panel")
-
-        if res <> True:
-            # save the active layer
-
-            reply = QMessageBox.information(None, "Error",
-                                            "Changes to " + proposalsLayer.name() + " failed: " + str(
-                                                proposalsLayer.commitErrors()),
-                                            QMessageBox.Ok)
-        pass"""
-
-        #ProposalTypeUtils.commitProposalChanges(proposalsLayer)
 
         # Make sure that the saving will not be executed immediately, but
         # only when the event loop runs into the next iteration to avoid
         # problems
 
-        #self.Proposals.editCommandEnded.connect(self.proposalsManager.setCurrentProposal)
-
-        # QTimer.singleShot(0, functools.partial(self.commitProposalChanges, proposalsLayer))
         # Trying to unset map tool to force updates ...
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         #self.commitProposalChanges()
         proposalTransaction.commitTransactionGroup(self.tableNames.PROPOSALS)
         #proposalTransaction.deleteTransactionGroup()
+        status = proposalsDialog.close()
 
         #self.rollbackCurrentEdits()
-        
-        """if updateStatus == False:
-
-            reply = QMessageBox.information(None, "Error",
-                                            "Changes to " + proposalsLayer.name() + " failed: " + str(
-                                                proposalsLayer.commitErrors()),
-                                            QMessageBox.Ok)
-        else:
-
-            # set up action for when new proposal is created
-            # self.Proposals.editingStopped.connect(self.createProposalcb)
-            # self.Proposals.featureAdded.connect(self.proposalsManager.setCurrentProposal)
-            self.Proposals.editCommandEnded.connect(self.proposalsManager.setCurrentProposal)
-
-            #QTimer.singleShot(0, functools.partial(self.commitProposalChanges, proposalsLayer))
-            self.commitProposalChanges(proposalsLayer)
-        pass"""
 
         # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
 
@@ -1117,6 +1078,12 @@ class RestrictionTypeUtilsMixin():
                     #self.proposalsManager.setCurrentProposal(proposal[idxProposalID])
 
             self.proposalsManager.newProposalCreated.emit(newProposalID)
+
+        elif proposalAcceptedRejected:
+            # refresh the cbProposals and set current Proposal to 0
+            self.createProposalcb()
+            self.proposalsManager.setCurrentProposal(0)
+
 
     def acceptProposal(self, currProposalID, currProposalOpenDate):
         QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")

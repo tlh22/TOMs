@@ -334,9 +334,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.Proposals.destroyEditCommand()
         self.proposalDialog.reject()
 
-        self.rollbackCurrentEdits()
+        #self.rollbackCurrentEdits()
 
-        self.proposalTransaction.rollbackTransactionGroup()
+        self.proposalTransaction.rollBackTransactionGroup()
 
 
         pass
