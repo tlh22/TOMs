@@ -983,6 +983,9 @@ class RestrictionTypeUtilsMixin():
                 currOpenDate = currProposal[idxProposalOpenDate]
                 updateStatus = self.acceptProposal(currProposalID, currOpenDate)
 
+                QgsMessageLog.logMessage(
+                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
+
                 if updateStatus == True:
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
@@ -1043,9 +1046,10 @@ class RestrictionTypeUtilsMixin():
                 tag="TOMs panel")
             updateStatus = True"""
 
-            proposalsDialog.accept()
+            #proposalsDialog.accept()
             #proposalsDialog.close()
-            #proposalsDialog.attributeForm().save()
+            saveStatus = proposalsDialog.attributeForm().save()
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(saveStatus), tag="TOMs panel")
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
 
@@ -1057,7 +1061,8 @@ class RestrictionTypeUtilsMixin():
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         #self.commitProposalChanges()
-        proposalTransaction.commitTransactionGroup(self.tableNames.PROPOSALS)
+        #proposalTransaction.commitTransactionGroup(self.tableNames.PROPOSALS)
+        proposalTransaction.commitTransactionGroup(None)
         #proposalTransaction.deleteTransactionGroup()
         status = proposalsDialog.close()
 
