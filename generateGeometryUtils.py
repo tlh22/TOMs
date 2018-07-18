@@ -595,6 +595,7 @@ class generateGeometryUtils:
                     QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
                     diffEchelonAz = generateGeometryUtils.checkDegrees(orientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
+                    QgsMessageLog.logMessage("In geomType: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz), tag="TOMs panel")
                     cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
                     pass
 
@@ -952,7 +953,7 @@ class generateGeometryUtils:
             #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
             return row.attribute("Description") # make assumption that only one row
 
-        return NULL
+        return None
 
     @staticmethod
     def getLookupLabelText(lookupLayer, code):
@@ -968,7 +969,7 @@ class generateGeometryUtils:
             #QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
             return row.attribute("LabelText") # make assumption that only one row
 
-        return NULL
+        return None
 
     @staticmethod
     def getCurrentCPZDetails(feature):

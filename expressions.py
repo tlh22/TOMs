@@ -211,12 +211,16 @@ def getBayLabelText(feature, parent):
     labelText = ''
 
     if timePeriodText:
-        labelText = '{text};'.format(text=timePeriodText)
+        labelText = '{text}'.format(text=timePeriodText)
 
     if maxStayText:
-        labelText = '{origText} Max Stay: {text};'.format(origText=labelText, text=maxStayText)
+        if timePeriodText:
+            labelText = labelText + ';'
+        labelText = '{origText} Max Stay: {text}'.format(origText=labelText, text=maxStayText)
 
     if noReturnText:
+        if timePeriodText or noReturnText:
+            labelText = labelText + ';'
         labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
 
     QgsMessageLog.logMessage("In getBayLabelText: " + str(labelText), tag="TOMs panel")
