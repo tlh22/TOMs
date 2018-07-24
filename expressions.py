@@ -134,6 +134,15 @@ def getBayLabelLeader(feature, parent):
 
     return labelLeaderGeom
 
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def getPolygonLabelLeader(feature, parent):
+	# If the scale is within range (< 1250) and the label has been moved, create a line
+
+    #QgsMessageLog.logMessage("In getBayLabelLeader ", tag="TOMs panel")
+    labelLeaderGeom = generateGeometryUtils.generatePolygonLabelLeader(feature)
+
+    return labelLeaderGeom
+
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getWaitingRestrictionLabelText(feature, parent):
 	# Returns the text to label the feature
@@ -204,7 +213,7 @@ def getBayNoReturnLabelText(feature, parent):
 def getBayLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    #QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel")
+    QgsMessageLog.logMessage("In getBayLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
@@ -261,6 +270,7 @@ functions = [
     getWaitingLabelLeader,
     getLoadingLabelLeader,
     getBayLabelLeader,
+    getPolygonLabelLeader,
     getWaitingRestrictionLabelText,
     getLoadingRestrictionLabelText,
     getBayTimePeriodLabelText,
