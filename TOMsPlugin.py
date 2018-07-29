@@ -102,7 +102,7 @@ class TOMs:
     def write_log_message(self, message, tag, level):
         filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
         with open(self.filename, 'a') as logfile:
-            logfile.write('{tag}({level}): {message}\n'.format(tag=tag, level=level, message=message))
+            logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
