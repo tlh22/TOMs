@@ -938,9 +938,10 @@ class generateGeometryUtils:
         restrictionPTA = feature.attribute("ParkingTariffArea")
 
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
-        TariffZoneMaxStayID = generateGeometryUtils.getTariffZoneMaxStayID(restrictionPTA)
-        TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
-        TariffZoneTimePeriodID = generateGeometryUtils.getTariffZoneTimePeriodID(restrictionPTA)
+        TariffZoneTimePeriodID, TariffZoneMaxStayID, TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneDetails(restrictionPTA)
+        #TariffZoneMaxStayID = generateGeometryUtils.getTariffZoneMaxStayID(restrictionPTA)
+        #TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
+        #TariffZoneTimePeriodID = generateGeometryUtils.getTariffZoneTimePeriodID(restrictionPTA)
 
         QgsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
@@ -972,7 +973,6 @@ class generateGeometryUtils:
         QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
-
 
     @staticmethod
     def getLookupDescription(lookupLayer, code):
@@ -1102,6 +1102,26 @@ class generateGeometryUtils:
                 return cpzWaitingTimeID
 
         return None
+
+    @staticmethod
+    def getTariffZoneDetails(tpaNr):
+
+        #QgsMessageLog.logMessage("In getTariffZoneDetails", tag="TOMs panel")
+
+        tpaLayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
+
+        for poly in tpaLayer.getFeatures():
+
+            currentPTA = poly.attribute("Name")
+            if currentPTA == tpaNr:
+                QgsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", tag="TOMs panel")
+                ptaTimePeriodID = poly.attribute("TimePeriodID")
+                ptaMaxStayID = poly.attribute("MaxStayID")
+                ptaNoReturnTimeID = poly.attribute("NoReturnTimeID")
+                QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
+                return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnTimeID
+
+        return None, None, None
 
     @staticmethod
     def getTariffZoneMaxStayID(tpaNr):
