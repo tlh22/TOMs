@@ -947,12 +947,14 @@ class generateGeometryUtils:
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
             tag="TOMs panel")
         QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")
+
+        if timePeriodID == 1:  # 'At Any Time'
+            timePeriodDesc = None
+
         if CPZWaitingTimeID:
             QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
                                      tag="TOMs panel")
             if CPZWaitingTimeID == timePeriodID:
-                timePeriodDesc = None
-            if timePeriodID == 1:  # 'At Any Time'
                 timePeriodDesc = None
 
         if TariffZoneTimePeriodID == timePeriodID:
