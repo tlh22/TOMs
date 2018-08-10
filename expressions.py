@@ -151,7 +151,7 @@ def getWaitingRestrictionLabelText(feature, parent):
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
-    QgsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + waitingText + " Loading: " + loadingText, tag="TOMs panel")
+    QgsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), tag="TOMs panel")
     # waitingText = "Test"
     if waitingText:
         labelText = "No Waiting: " + waitingText
@@ -167,6 +167,9 @@ def getLoadingRestrictionLabelText(feature, parent):
     #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+    QgsMessageLog.logMessage(
+        "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
+        tag="TOMs panel")
 
     QgsMessageLog.logMessage(
         "In getWaitingRestrictionLabelText ****:" + " Waiting: " + waitingText + " Loading: " + loadingText,
