@@ -889,6 +889,7 @@ class generateGeometryUtils:
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
+        GeometryID = feature.attribute("GeometryID")
 
         TimePeriodsLayer = QgsMapLayerRegistry.instance().mapLayersByName("TimePeriods")[0]
 
@@ -901,7 +902,7 @@ class generateGeometryUtils:
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
         QgsMessageLog.logMessage(
-            "In getWaitingLoadingRestrictionLabelText (1): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID),
+            "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
             tag="TOMs panel")
 
         if CPZWaitingTimeID:
@@ -910,7 +911,13 @@ class generateGeometryUtils:
             if CPZWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
-        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        if waitingTimeID == 1:  # 'At Any Time'
+            waitDesc = None
+
+        if loadingTimeID == 1:  # 'At Any Time'
+            loadDesc = None
+
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
