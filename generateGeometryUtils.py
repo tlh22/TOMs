@@ -780,7 +780,8 @@ class generateGeometryUtils:
                 #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
                 # now generate line
-                return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+                length = feature.geometry().length()
+                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
 
             pass
 
@@ -806,7 +807,8 @@ class generateGeometryUtils:
                 #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
                 # now generate line
-                return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
+                length = feature.geometry().length()
+                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
 
             pass
 
@@ -832,7 +834,8 @@ class generateGeometryUtils:
                     "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
                 # now generate line
-                return QgsGeometry.fromPolyline([feature.geometry().centroid().asPoint(), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
+                length = feature.geometry().length()
+                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
 
             pass
 
