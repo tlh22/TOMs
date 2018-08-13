@@ -911,11 +911,11 @@ class generateGeometryUtils:
             if CPZWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
-        if waitingTimeID == 1:  # 'At Any Time'
+        """if waitingTimeID == 1:  # 'At Any Time'
             waitDesc = None
 
         if loadingTimeID == 1:  # 'At Any Time'
-            loadDesc = None
+            loadDesc = None """
 
         QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
