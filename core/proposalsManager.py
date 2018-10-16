@@ -427,3 +427,26 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             return row.attribute("ProposalStatusID")  # make assumption that only one row
 
         return None
+
+    def getProposalOpenDate(self, currProposalID):
+        # return proposal status code ??
+
+        # QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
+
+        query = "\"ProposalID\" = " + str(currProposalID)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        # QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+            self.Proposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table Proposals is not present"))
+
+        for row in self.Proposals.getFeatures(request):
+            # QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
+            return row.attribute("ProposalOpenDate")  # make assumption that only one row
+
+        return None

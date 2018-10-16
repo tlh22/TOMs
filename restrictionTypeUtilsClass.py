@@ -1148,8 +1148,10 @@ class RestrictionTypeUtilsMixin():
 
         for tile in tileList:
             currRevisionNr = tile["RevisionNr"]
+            currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
+            self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
             pass
 
     def getProposalTileList(self, currProposalID):
