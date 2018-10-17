@@ -28,7 +28,7 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
         self.proposalsManager = proposalsManager
 
 
-    def getTilesIDsInProposal(self, currProposalID):
+        """def getTilesIDsInProposal(self, currProposalID):
         # retrieve all the tiles that are affected by the currentProposal
 
         # get all the tiles that sit within the bounding box
@@ -188,4 +188,4 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
 
 
 
-        return tileFeatureList
+        return tileFeatureList"""

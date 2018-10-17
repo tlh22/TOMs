@@ -575,7 +575,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         #currProposalID = self.proposalsManager.currentProposal()
 
         # get the map tiles that are affected by the Proposal
-        tileFeatureList = self.getTilesIDsInProposal(currProposalID)
+        tileFeatureList = self.getProposalTileList(currProposalID)
 
         tileIDList = ""
         firstTile = True
@@ -592,10 +592,27 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currAtlas.beginRender()
         currComposition.setAtlasMode(QgsComposition.ExportAtlas)
 
+        #composerRevisionNr = currComposition.getComposerItemById('revisionNr')
+        #composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
+
+
         for i in range(0, currAtlas.numFeatures()):
 
             currAtlas.prepareForFeature(i)
+
             currAtlas.composition().refreshItems()
+
+            #composerMapTile = currComposition.getComposerItemById('mapTile')
+
+            #currTile =
+            #getattr(composerMapTile, currTile)
+            # need to add in revision number
+            #composerRevisionNr.setText('text1')
+            #composerRevisionNr.setText(self.revisionNrToPrint)
+            #composerEffectiveDate.setText('text')
+            #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
+
+
             filename = currAtlas.currentFilename() + "." + self.dialogui.comboBox_fileformat.currentText().lower()
             outputFile = os.path.join(dirName, filename)
 
