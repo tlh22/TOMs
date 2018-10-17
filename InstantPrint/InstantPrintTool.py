@@ -297,6 +297,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if self.populateCompositionFz:
             self.populateCompositionFz(self.composerView.composition())
 
+        # TH (181017) Need to add in values for items here
+
         success = False
         if filename[-3:].lower() == u"pdf":
             success = self.composerView.composition().exportAsPDF(filename)
@@ -481,6 +483,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                         if reply == QMessageBox.No:
                             return
 
+                else:
+                    return
+
             else:
 
                 proposalNrForPrinting = self.proposalsManager.currentProposal()
@@ -592,28 +597,30 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currAtlas.beginRender()
         currComposition.setAtlasMode(QgsComposition.ExportAtlas)
 
-        #composerRevisionNr = currComposition.getComposerItemById('revisionNr')
-        #composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
+        composerRevisionNr = currComposition.getComposerItemById('revisionNr')
+        composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
+        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
 
+        composerProposalStatus.setText(self.proposalForPrintingStatusText)
 
         for i in range(0, currAtlas.numFeatures()):
 
             currAtlas.prepareForFeature(i)
+            currTile = currAtlas.feature()
 
             currAtlas.composition().refreshItems()
 
-            #composerMapTile = currComposition.getComposerItemById('mapTile')
+            currTileNr = currTile["id"]
 
-            #currTile =
-            #getattr(composerMapTile, currTile)
-            # need to add in revision number
-            #composerRevisionNr.setText('text1')
-            #composerRevisionNr.setText(self.revisionNrToPrint)
-            #composerEffectiveDate.setText('text')
-            #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
+            QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr), tag="TOMs panel")
 
+            composerEffectiveDate.setText('{date}'.format(date=currTile["LastRevisionDate"].toString('dd-MMM-yyyy')))
+            if self.proposalForPrintingStatusText == "CONFIRMED":
+                composerRevisionNr.setText(str(currTile["RevisionNr"]))
+            else:
+                composerRevisionNr.setText(str(currTile["RevisionNr"]+1))
 
-            filename = currAtlas.currentFilename() + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+            filename = str(currProposalID) + "_" + str(currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
             outputFile = os.path.join(dirName, filename)
 
             if filename[-3:].lower() == u"pdf":
