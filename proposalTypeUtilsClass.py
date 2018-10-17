@@ -54,16 +54,16 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         #self.tableNames = TOMsTableNames()
         pass
 
-    def onSaveProposalFormDetails(self, currProposal, proposalsLayer, proposalsDialog):
+        """def onSaveProposalFormDetails(self, currProposal, proposalsLayer, proposalsDialog):
         QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
 
         # proposalsLayer.startEditing()
-
+        """
         """def onSaveProposalDetails(self):
         QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
         self.Proposals.startEditing()
         """
-
+        """
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
 
@@ -84,6 +84,13 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         #currTrans = ProposalTypeUtils.createProposalTransactionGroup(proposalsLayer)
         #transStatus = currTrans.begin()
 
+
+        if updateStatus == True:
+            reply = QMessageBox.information(None, "Information",
+                                            "About to accept proposal",
+                                            QMessageBox.Ok)
+            self.acceptProposal(currProposal[idxProposalID], currProposal[idxProposalOpenDate])
+
         if currProposal[idxProposalStatusID] == PROPOSAL_STATUS_ACCEPTED():  # 2 = accepted
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
@@ -97,10 +104,14 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
                 # TODO: Need to check that this is an authorised user
 
+                if updateStatus == True:
+                    reply = QMessageBox.information(None, "Information",
+                                                    "About to accept proposal",
+                                                    QMessageBox.Ok)
+                    self.acceptProposal(currProposal[idxProposalID], currProposal[idxProposalOpenDate])
+
                 updateStatus = proposalsLayer.updateFeature(currProposal)
 
-                if updateStatus == True:
-                    self.acceptProposal(currProposal[idxProposalID], currProposal[idxProposalOpenDate])
 
                 #proposalsDialog.save()
 
@@ -163,9 +174,13 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
         #QMessageBox.information(None, "Information", ("Just before Proposal save in onSaveProposalFormDetails"))
 
+        reply = QMessageBox.information(None, "Information",
+                                        "Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")),
+                                        QMessageBox.Ok)
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Saving: Proposals", tag="TOMs panel")
 
         # A little pause for the db to catch up
+        """
         """time.sleep(.1)
 
         res = proposalsLayer.commitChanges()
@@ -179,7 +194,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
                                                 proposalsLayer.commitErrors()),
                                             QMessageBox.Ok)
         pass"""
-
+        """
         #ProposalTypeUtils.commitProposalChanges(proposalsLayer)
 
         # Make sure that the saving will not be executed immediately, but
@@ -207,6 +222,9 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
     def acceptProposal(self, currProposalID, currProposalOpenDate):
         QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")
 
+        reply = QMessageBox.information(None, "Information",
+                                        "In accept Proposal",
+                                        QMessageBox.Ok)
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
@@ -228,7 +246,26 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
                 currRestrictionLayer.startEditing()
                 self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate)
 
+                reply = QMessageBox.information(None, "Information",
+                                            "Update made to " + str(currRestrictionID) + " on " + currRestrictionLayer.name(),
+                                            QMessageBox.Ok)
+
+        reply = QMessageBox.information(None, "Information",
+                                            "About to update tiles",
+                                            QMessageBox.Ok)
+
+        self.updateTileRevisionNrs(currProposalID)
+
         pass
+
+    def updateTileRevisionNrs(self, currProposalID):
+        QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
+        # Increment the relevant tile numbers
+        tileList = self.getProposalTileList(currProposalID)
+
+        for tile in tileList:
+            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile), tag="TOMs panel")
+            pass
 
     def rejectProposal(self, currProposalID):
         QgsMessageLog.logMessage("In rejectProposal.", tag="TOMs panel")
@@ -258,7 +295,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
             pass
 
-        pass
+        pass"""
 
     def commitProposalChanges(self, proposalsLayer):
         # Function to save changes to current layer and to RestrictionsInProposal
@@ -292,7 +329,11 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
                     restrictionLayer.commitChanges()
 
-            pass
+            # Include tile layer in the transaction commit
+            if self.tileLayer.isEditable():
+                QgsMessageLog.logMessage("In commitProposalChanges. Saving tileLayer Layer: " + str(self.tileLayer.name()),
+                                         tag="TOMs panel")
+                self.tileLayer.commitChanges()
 
         except:
 
@@ -313,8 +354,6 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
         pass
 
-
-
         # Once the changes are successfully made to RestrictionsInProposals, a signal shouldbe triggered to update the view
 
     def createProposalTransactionGroup(self, proposalsLayer):
@@ -326,6 +365,12 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         # save changes to all layers
 
         RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
+            self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
+            return
 
         idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
         idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
@@ -344,5 +389,9 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
             newTransaction.addLayer(restrictionLayer)
             QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
+
+        # Also add MapGrid to list of layers in transaction
+
+        newTransaction.addLayer(self.tileLayer)
 
         return newTransaction

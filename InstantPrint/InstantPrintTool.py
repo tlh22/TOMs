@@ -18,6 +18,16 @@ import os
 import math
 
 from TOMs.InstantPrint.ui.ui_printdialog import Ui_InstantPrintDialog
+#from TOMs.InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
+from TOMs.InstantPrint.ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
+
+import os.path
+
+from TOMs.constants import (
+    PROPOSAL_STATUS_IN_PREPARATION,
+    PROPOSAL_STATUS_ACCEPTED,
+    PROPOSAL_STATUS_REJECTED
+)
 
 class InstantPrintDialog(QDialog):
 
@@ -436,17 +446,102 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currComposition = self.composerView.composition()
         currAtlas = currComposition.atlasComposition()
 
-        if currAtlas.enabled():
-            if self.proposalsManager.currentProposal() == 0:
-                reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
-                                             'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
-                                             QMessageBox.Yes, QMessageBox.No)
-                if reply == QMessageBox.No:
-                    return
+        self.proposalForPrintingStatusText = "PROPOSED"
+        self.openDateForPrintProposal = self.proposalsManager.date()
 
-            self.TOMsExportAtlas(self.proposalsManager.currentProposal())
+        if currAtlas.enabled():
+
+            if self.proposalsManager.currentProposal() == 0:
+
+                # Include a dialog to check which proposal is required - or everything
+
+                self.proposalForPrintingStatusText = "CONFIRMED"
+
+                # set the dialog (somehow)
+                self.acceptedProposalDialog = acceptedProposalsDialog2()
+
+                self.createAcceptedProposalcb()
+                self.acceptedProposalDialog.show()
+
+                # Run the dialog event loop
+                result = self.acceptedProposalDialog.exec_()
+                # See if OK was pressed
+                if result:
+
+                    # Take the output from the form and set the current Proposal
+                    indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
+                    proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
+                    self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
+
+                    if proposalNrForPrinting == 0:
+
+                        reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
+                                                     'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
+                                                     QMessageBox.Yes, QMessageBox.No)
+                        if reply == QMessageBox.No:
+                            return
+
+            else:
+
+                proposalNrForPrinting = self.proposalsManager.currentProposal()
+
+            self.TOMsExportAtlas(proposalNrForPrinting)
+
         else:
+
             self.__export()
+
+    def createAcceptedProposalcb(self):
+
+        QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
+        # set up a "NULL" field for "No proposals to be shown"
+
+        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
+        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+            self.Proposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table Proposals is not present"))
+
+
+        self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
+
+        currProposalID = 0
+        currProposalTitle = "0 - No proposal shown"
+
+        # A little pause for the db to catch up
+        #time.sleep(.1)
+
+        QgsMessageLog.logMessage("In createAcceptedProposalcb: Adding 0", tag="TOMs panel")
+
+        self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+
+        """proposalsList = self.Proposals.getFeatures()
+        proposalsList.sort()
+
+        query = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
+        request = QgsFeatureRequest().setFilterExpression(query)"""
+
+        # for proposal in proposalsList:
+        for proposal in self.Proposals.getFeatures():
+
+            currProposalStatusID = proposal.attribute("ProposalStatusID")
+            """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
+                                     tag="TOMs panel")"""
+            if currProposalStatusID == PROPOSAL_STATUS_ACCEPTED():  # 1 = "in preparation"
+                currProposalID = proposal.attribute("ProposalID")
+                currProposalTitle = proposal.attribute("ProposalTitle")
+                #currProposalOpenDate = proposal.attribute("ProposalOpenDate")
+                self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+
+        pass
+
+        # set up action for when the proposal is changed
+        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
+
 
     def TOMsExportAtlas(self, currProposalID):
 
@@ -558,29 +653,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         # Need to set date and status
 
-        effectiveDate = self.proposalsManager.date()
+        #self.effectiveDate = self.proposalsManager.date()
+
         composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
-        composerEffectiveDate.setText('{date}'.format(date=effectiveDate.toString('dd-MMM-yyyy')))
-
-        if self.proposalsManager.currentProposal() == 0:
-            proposalStatusText = 'CURRENT'
-        else:
-            proposalStatusID = self.proposalsManager.getProposalStatusID(self.proposalsManager.currentProposal())
-            #proposalStatusText = 'PROPOSED'
-            if proposalStatusID:
-
-                if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
-                    self.ProposalStatusTypes = \
-                        QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
-                else:
-                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                            ("Table ProposalStatusTypes is not present"))
-
-                proposalStatusText = self.getLookupDescription(self.ProposalStatusTypes, proposalStatusID)
-
-            else:
-                proposalStatusText = 'UNKNOWN'
+        composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
 
         composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
-        composerProposalStatus.setText(proposalStatusText)
+        composerProposalStatus.setText(self.proposalForPrintingStatusText)
 
