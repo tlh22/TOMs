@@ -117,6 +117,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         self.finishEdit = False
 
         self.iface.mapCanvas().mapToolSet.connect(self.setUnCheck)
+        self.proposalsManager.TOMsToolChanged.connect(functools.partial(self.onGeometryChanged, self.origFeature.getFeature()))
 
         # get details of the selected feature
         #self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
@@ -154,6 +155,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
         self.origLayer.featureDeleted.disconnect(self.on_cached_geometry_deleted)
 
+        self.proposalsManager.TOMsToolChanged.disconnect()
+
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()
 
@@ -172,6 +175,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         # disconnect signal for geometryChanged
         #self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
+        #self.proposalsManager.TOMsToolChanged.disconnect()
 
         #self.currLayer = self.iface.activeLayer()
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. Layer: " + str(self.origLayer.name()), tag="TOMs panel")

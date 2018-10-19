@@ -71,6 +71,8 @@ class TOMsTransaction (QObject):
         self.currTransactionGroup = QgsTransactionGroup()
         self.prepareLayerSet()
 
+        self.errorOccurred = False
+
     def prepareLayerSet(self):
 
         # Function to create group of layers to be in Transaction for changing proposal
@@ -135,6 +137,9 @@ class TOMsTransaction (QObject):
         if self.currTransactionGroup.isEmpty():
             QgsMessageLog.logMessage("In startTransactionGroup. Currently empty adding layers", tag="TOMs panel")
             self.createTransactionGroup()
+        """else:
+            # transaction is currently open. So, close it and start another
+            self.commitTransactionGroup(self.tableNames.PROPOSALS)"""
 
         status = self.tableNames.PROPOSALS.startEditing()  # could be any table ...
         if status == False:
@@ -169,6 +174,8 @@ class TOMsTransaction (QObject):
                                  tag="TOMs panel")
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
+        currMapTool = self.iface.mapCanvas().mapTool()
+        #currMapTool.deactivate()
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         if not self.currTransactionGroup:
@@ -183,17 +190,22 @@ class TOMsTransaction (QObject):
             return False
 
         # Now check to see that there has been a change in the "main" restriction layer
-        if currRestrictionLayer:
+        if self.currTransactionGroup.modified() ==  False:
+            """reply = QMessageBox.information(None, "Error",
+                                            "Transactin group not modified", QMessageBox.Ok)"""
+            return True
 
-            if currRestrictionLayer.editBuffer().isModified() == False:
-                reply = QMessageBox.information(None, "Error",
-                                                "Problem with saving " + str(currRestrictionLayer.name()),
-                                                QMessageBox.Ok)
-                self.rollBackTransactionGroup()
-                return False
+            """if currRestrictionLayer.editBuffer():
+    
+                if currRestrictionLayer.editBuffer().isModified() == False:
+                    reply = QMessageBox.information(None, "Error",
+                                                    "Problem with saving " + str(currRestrictionLayer.name()),
+                                                    QMessageBox.Ok)
+                    self.rollBackTransactionGroup()
+                    return False"""
 
-        QgsMessageLog.logMessage("In commitTransactionGroup. Committing transaction",
-                                 tag="TOMs panel")
+            QgsMessageLog.logMessage("In commitTransactionGroup. Committing transaction",
+                                     tag="TOMs panel")
 
         #modifiedTransaction = self.currTransactionGroup.modified()
 
@@ -235,6 +247,9 @@ class TOMsTransaction (QObject):
 
         self.modified = False
         self.errorOccurred = False
+
+        #currMapTool.activate()
+        #self.iface.mapCanvas().setMapTool(currMapTool)
 
         # signal for redraw ...
         self.transactionCompleted.emit()

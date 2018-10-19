@@ -50,6 +50,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
     proposal = newProposalCreated = pyqtSignal(int)
     """Signal will be emitted when the current proposal is changed"""
 
+    TOMsToolChanged = pyqtSignal()
+    """ signal will be emitted when TOMs tool is changed """
+
     def __init__(self, iface):
         QObject.__init__(self)
         self.__date = QDate.currentDate()

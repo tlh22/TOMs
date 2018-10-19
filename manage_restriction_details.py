@@ -52,7 +52,7 @@ from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransa
 import functools
 
 class manageRestrictionDetails(RestrictionTypeUtilsMixin):
-    
+
     def __init__(self, iface, TOMsToolbar, proposalsManager):
 
         QgsMessageLog.logMessage("In manageRestrictionDetails::init", tag="TOMs panel")
@@ -156,6 +156,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # set up a Transaction object
         self.tableNames = setupTableNames(self.iface)
         self.restrictionTransaction = restrictionTransaction
+        """self.proposalsManager.TOMsToolChanged.connect(
+            functools.partial(self.restrictionTransaction.commitTransactionGroup, self.tableNames.PROPOSALS))"""
 
         #self.iface.mapCanvas().mapToolSet.connect(self.unCheckNodeTool)
 
@@ -186,6 +188,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In doSelectRestriction", tag="TOMs panel")
 
+        self.proposalsManager.TOMsToolChanged.emit()
+
         if not self.actionSelectRestriction.isChecked():
             self.actionSelectRestriction.setChecked(False)
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
@@ -203,6 +207,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         """ Select point and then display details
         """
         QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
+
+        self.proposalsManager.TOMsToolChanged.emit()
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
@@ -267,6 +273,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In doCreateBayRestriction", tag="TOMs panel")
 
+        self.proposalsManager.TOMsToolChanged.emit()
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -325,6 +333,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In doCreateLineRestriction", tag="TOMs panel")
 
+        self.proposalsManager.TOMsToolChanged.emit()
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -376,6 +386,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In doCreatePolygonRestriction", tag="TOMs panel")
 
+        self.proposalsManager.TOMsToolChanged.emit()
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -426,6 +438,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def doCreateSignRestriction(self):
 
         QgsMessageLog.logMessage("In doCreateSignRestriction", tag="TOMs panel")
+
+        self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -480,6 +494,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         QgsMessageLog.logMessage("In doCreateConstructionLine", tag="TOMs panel")
 
+        self.proposalsManager.TOMsToolChanged.emit()
+
         self.mapTool = None
 
         if self.actionCreateConstructionLine.isChecked():
@@ -528,6 +544,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def doRemoveRestriction(self):
         # pass control to MapTool and then deal with Proposals issues from there ??
         QgsMessageLog.logMessage("In doRemoveRestriction", tag="TOMs panel")
+
+        self.proposalsManager.TOMsToolChanged.emit()
 
         #self.mapTool = None
 
@@ -654,6 +672,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def doEditRestriction(self):
 
         QgsMessageLog.logMessage("In doEditRestriction - starting", tag="TOMs panel")
+
+        self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
