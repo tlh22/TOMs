@@ -30,12 +30,18 @@ from core.proposalsManager import *
 #from restrictionTypeUtils import RestrictionTypeUtils
 from generateGeometryUtils import generateGeometryUtils
 from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+#from TOMs.CadNodeTool.TOMsNodeTool import originalFeature
+
+from TOMs.constants import (
+    ACTION_CLOSE_RESTRICTION,
+    ACTION_OPEN_RESTRICTION
+)
 
 import functools
 
 #from cmath import rect, phase
 #import numpy as np
-#import uuid
+import uuid
 
 #from constants import *
 
@@ -706,7 +712,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
 class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
-    def __init__(self, iface, layer, proposalsManager, currTransaction):
+    def __init__(self, iface, layer, proposalsManager, restrictionTransaction):
 
         QgsMessageLog.logMessage(("In SplitRestrictionTool - init."), tag="TOMs panel")
 
@@ -715,51 +721,127 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         self.iface = iface
         self.layer = layer
         #self.dialog = dialog
-        self.currTransaction = currTransaction
+        self.restrictionTransaction = restrictionTransaction
         self.proposalsManager = proposalsManager
 
         #self.blade = QgsMapToolEdit.createRubberBand(canvas)
 
-        QgsMessageLog.logMessage(("In CreateRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
 
-        if self.layer.geometryType() == 0: # PointGeometry:
-            self.setMode(CreateRestrictionTool.CapturePoint)
-        elif self.layer.geometryType() == 1: # LineGeometry:
-            self.setMode(CreateRestrictionTool.CaptureLine)
-        elif self.layer.geometryType() == 2: # PolygonGeometry:
-            self.setMode(CreateRestrictionTool.CapturePolygon)
-        else:
-            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
-            return
+        self.setMode(CreateRestrictionTool.CaptureLine)
 
-        QgsMessageLog.logMessage(("In CreateRestrictionTool - mode set."), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - mode set."), tag="TOMs panel")
 
         # Seems that this is important - or at least to create a point list that is used later to create Geometry
         self.sketchPoints = self.points()
 
+        # get details of the selected feature
+        self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
+        QgsMessageLog.logMessage("In TOMsNodeTool:initialising ... saving original feature + " + self.selectedRestriction.attribute("GeometryID"), tag="TOMs panel")
+
+        # store the current restriction
+        self.origFeature = originalFeature()
+
+        self.origFeature.setFeature(self.selectedRestriction)
+        self.origLayer = self.iface.activeLayer()
+        #self.origLayer.startEditing()
+        self.origFeature.printFeature()
 
     def cadCanvasReleaseEvent(self, event):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
-        QgsMessageLog.logMessage(("In Split - cadCanvasReleaseEvent"), tag="TOMs panel")
+        QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - cadCanvasReleaseEvent"), tag="TOMs panel")
 
         if event.button() == Qt.LeftButton:
             if not self.isCapturing():
                 self.startCapturing()
 
-            self.currPoint = event.snapPoint(1)
-            pt1 = self.toMapCoordinates(event.pos())
+            self.currPoint = event.mapPoint()
+            #pt1 = self.toMapCoordinates(event.pos())
 
             # add point to rubber band
             self.result = self.addVertex(self.currPoint)
+
+            QgsMessageLog.logMessage("In TOMsSplitRestrictionTool - added pt: " + str(self.size()) + " X: " +str(self.currPoint.x()) + " Y: " + str(self.currPoint.y()), tag="TOMs panel")
             #QgsMapToolCapture.addVertex(self.toMapCoordinates(event.pos()))
 
         elif (event.button() == Qt.RightButton):
             # Stop capture when right button or escape key is pressed
             # points = self.getCapturedPoints()
-            self.stopCapturing()
-            #self.getPointsCaptured()
+
+            self.getPointsCaptured()
 
             # also need to process split
+
+    def getPointsCaptured(self):
+        # Check the number of points
+        self.nrPoints = self.size()
+        QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - getPointsCaptured; Stopping: " + str(self.nrPoints)),
+                                 tag="TOMs panel")
+
+        self.sketchPoints = self.points()
+
+        for point in self.sketchPoints:
+            QgsMessageLog.logMessage(("In SplitRestrictionTool - getPointsCaptured X:" + str(point.x()) + " Y: " + str(point.y())), tag="TOMs panel")
+
+        # stop capture activity
+        self.stopCapturing()
+
+        if self.nrPoints <= 0:
+            reply = QMessageBox.information(None, "Error",
+                                            "No cutting line created",
+                                            QMessageBox.Ok)
+            return
+            # take points from the rubber band and create a geometry
+
+        QgsMessageLog.logMessage(("In SplitRestrictionTool. getPointsCaptured, layerType: " + str(self.layer.geometryType())), tag="TOMs panel")
+
+        # now split the restriction. (NB: THis is done at layer level
+
+        self.layer.featureAdded.connect(self.splitFeatureAdded)
+        self.layer.geometryChanged.connect(self.splitGeometryChanged)
+
+        self.idxRestrictionID = self.origLayer.fieldNameIndex("RestrictionID")
+        self.idxOpenDate = self.origLayer.fieldNameIndex("OpenDate")
+        self.idxGeometryID = self.origLayer.fieldNameIndex("GeometryID")
+
+        self.splitRestrictionSaved = True
+        self.proposalsManager.TOMsSplitRestrictionSaved.connect(self.notifySplitRestrictionSaved)
+
+        result = self.layer.splitFeatures(self.sketchPoints)
+
+        if result <> 0:
+            reply = QMessageBox.information(None, "Error",
+                                            "Issue splitting feature. Status: " + str(result),
+                                            QMessageBox.Ok)
+            return
+
+        # if split, need to get parts and deal with appropriately
+        self.onGeometryChanged(self.selectedRestriction)
+
+    def splitFeatureAdded(self, fid):
+        QgsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureAdded: " + str(fid), tag="TOMs panel")
+        self.layer.featureAdded.disconnect()
+        # Now remove "GeometryID", "Opendate" and give the restriction a new "RestrictionID" - and add it to the proposal.
+
+        newRestrictionID = str(uuid.uuid4())
+
+        status = self.layer.changeAttributeValue(fid, self.idxRestrictionID, newRestrictionID)
+        QgsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureAdded(RestID): " + str(self.idxRestrictionID) + "; " + str(newRestrictionID) + " status: " + str(status), tag="TOMs panel")
+        status = self.layer.changeAttributeValue(fid, self.idxOpenDate, None)
+        QgsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureAdded(OpenDate): " + str(self.idxOpenDate) + "; " + " status: " + str(status), tag="TOMs panel")
+
+        #self.layer.changeAttributeValue(fid, self.idxGeometryID, None)
+
+        self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer),
+                                  self.proposalsManager.currentProposal(),
+                                  ACTION_OPEN_RESTRICTION())  # close the original feature
+
+        self.proposalsManager.TOMsSplitRestrictionSaved.emit()
+
+    def notifySplitRestrictionSaved(self):
+        # set flag to indicate that new restriction has been saved
+        QgsMessageLog.logMessage("In SplitRestrictionTool. notified split saved ", tag="TOMs panel")
+        self.splitRestrictionSaved = True
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete) or (event.key() == Qt.Key_Escape):
@@ -768,7 +850,109 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             pass
 
+    def splitGeometryChanged(self, fid, geom):
+        QgsMessageLog.logMessage("In SplitRestrictionTool. splitGeometryChanged: " + str(fid), tag="TOMs panel")
+        self.layer.geometryChanged.disconnect(self.splitGeometryChanged)
 
+        # Added by TH to deal with RestrictionsInProposals
+        # When a geometry is changed; we need to check whether or not the feature is part of the current proposal
+
+        # Now obtain the changed feature (not sure which geometry)
+        #newGeometry = QgsGeometry(self.selectedRestriction.geometry())
+        newGeometry = geom
+
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(self.selectedRestriction[self.idxRestrictionID]), tag="TOMs panel")
+
+        if not self.restrictionInProposal(self.selectedRestriction[self.idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal()):
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", tag="TOMs panel")
+            #  This one is not in the current Proposal, so now we need to:
+            #  - generate a new ID and assign it to the feature for which the geometry has changed
+            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+            #  - add the details to RestrictionsInProposal
+
+            originalfeature = self.origFeature.getFeature()
+
+            newFeature = QgsFeature(self.origLayer.fields())
+
+            newFeature.setAttributes(originalfeature.attributes())
+            newFeature.setGeometry(newGeometry)
+            newRestrictionID = str(uuid.uuid4())
+            newFeature[self.idxRestrictionID] = newRestrictionID
+
+            newFeature[self.idxOpenDate] = None
+            newFeature[self.idxGeometryID] = None
+
+            #currLayer.addFeature(newFeature)
+            self.origLayer.addFeatures([newFeature])
+
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()),
+                                     tag="TOMs panel")
+
+            QgsMessageLog.logMessage(
+                "In TOMsNodeTool:onGeometryChanged - newGeom: " + newFeature.geometry().exportToWkt(), tag="TOMs panel")
+
+            originalGeomBuffer = QgsGeometry(originalfeature.geometry())
+            QgsMessageLog.logMessage(
+                "In TOMsNodeTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.exportToWkt(),
+                tag="TOMs panel")
+            self.origLayer.changeGeometry(fid, originalGeomBuffer)
+
+            QgsMessageLog.logMessage("In SplitTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
+
+            self.addRestrictionToProposal(originalfeature[self.idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), ACTION_CLOSE_RESTRICTION()) # close the original feature
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", tag="TOMs panel")
+
+            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), ACTION_OPEN_RESTRICTION()) # open the new one
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", tag="TOMs panel")
+
+        else:
+
+            # assign the changed geometry to the current feature
+            #currRestriction.setGeometry(newGeometry)
+            pass
+
+        # Now wait for the new feature to be saved
+
+        while self.splitRestrictionSaved == False:
+            QgsMessageLog.logMessage("In SplitTool:onGeometryChanged - waiting.", tag="TOMs panel")
+            time.sleep(0.1)
+
+        self.proposalsManager.TOMsSplitRestrictionSaved.disconnect()
+
+        # .. and commit ...
+
+        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+
+        #self.proposalsManager.TOMsToolChanged.disconnect()
+
+        #currAction = self.iface.mapCanvas().mapTool().action()
+        #currAction.setChecked(False)
+
+        self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
+        self.setupPanelTabs(self.iface, self.proposalPanel)
+
+        #self.origLayer.deselect(self.origFeature.getFeature().id())
+
+class originalFeature(object):
+    def __init__(self, feature=None):
+        self.savedFeature = None
+
+    def setFeature(self, feature):
+        self.savedFeature = QgsFeature(feature)
+        #self.printFeature()
+
+    def getFeature(self):
+        #self.printFeature()
+        return self.savedFeature
+
+    def getGeometryID(self):
+        return self.savedFeature.attribute("GeometryID")
+
+    def printFeature(self):
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
+                                 tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().exportToWkt()),
+                                 tag="TOMs panel")
 
 class EditRestrictionTool(QgsMapTool, MapToolMixin):
     def __init__(self, canvas, layer, onTrackEdited):

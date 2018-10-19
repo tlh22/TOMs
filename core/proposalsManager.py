@@ -52,6 +52,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
     TOMsToolChanged = pyqtSignal()
     """ signal will be emitted when TOMs tool is changed """
+    TOMsOpenFailure = pyqtSignal()
+    """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
+    TOMsSplitRestrictionSaved = pyqtSignal()
 
     def __init__(self, iface):
         QObject.__init__(self)
