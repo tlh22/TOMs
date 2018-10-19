@@ -109,6 +109,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                self.iface.mainWindow())
         self.actionEditRestriction.setCheckable(True)
 
+        self.actionSplitRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionSetEndPoint.svg"),
+                               QCoreApplication.translate("MyPlugin", "Split Restriction"),
+                               self.iface.mainWindow())
+        self.actionSplitRestriction.setCheckable(True)
+
         self.actionCreateConstructionLine = QAction(QIcon(":/plugins/TOMs/resources/CreateConstructionLine.svg"),
                                QCoreApplication.translate("MyPlugin", "Create construction line"),
                                self.iface.mainWindow())
@@ -124,6 +129,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.TOMsToolbar.addAction(self.actionCreateSignRestriction)
         self.TOMsToolbar.addAction(self.actionRemoveRestriction)
         self.TOMsToolbar.addAction(self.actionEditRestriction)
+        self.TOMsToolbar.addAction(self.actionSplitRestriction)
         self.TOMsToolbar.addAction(self.actionCreateConstructionLine)
 
         # Connect action signals to slots
@@ -135,6 +141,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateSignRestriction.triggered.connect(self.doCreateSignRestriction)
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
+        self.actionSplitRestriction.triggered.connect(self.doSplitRestriction)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
 
         pass
@@ -151,6 +158,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateSignRestriction.setEnabled(True)
         self.actionRemoveRestriction.setEnabled(True)
         self.actionEditRestriction.setEnabled(True)
+        self.actionSplitRestriction.setEnabled(True)
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
@@ -178,6 +186,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateSignRestriction.setEnabled(False)
         self.actionRemoveRestriction.setEnabled(False)
         self.actionEditRestriction.setEnabled(False)
+        self.actionSplitRestriction.setEnabled(False)
         self.actionCreateConstructionLine.setEnabled(False)
 
         pass
@@ -760,6 +769,100 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         pass
 
         QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
+
+        pass
+
+    def doSplitRestriction(self):
+
+        QgsMessageLog.logMessage("In doSplitRestriction - starting", tag="TOMs panel")
+
+        self.proposalsManager.TOMsToolChanged.emit()
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionSplitRestriction.isChecked():
+
+                QgsMessageLog.logMessage("In doSplitRestriction - tool being activated", tag="TOMs panel")
+
+                # Need to clear any other maptools ....   ********
+
+                currRestrictionLayer = self.iface.activeLayer()
+
+                if currRestrictionLayer:
+
+                    QgsMessageLog.logMessage("In doSplitRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+
+                    if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                        self.restrictionTransaction.startTransactionGroup()
+
+                        """currRestriction = currRestrictionLayer.selectedFeatures()[0]
+                        restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
+                        currRestrictionLayer.deselect(currRestriction.id())
+                        currRestrictionLayer.select(restrictionForEdit.id())
+                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])"""
+
+                        #self.actionEditRestriction.setChecked(True)
+                        self.mapTool = TOMsSplitRestrictionTool(self.iface, currRestrictionLayer,
+                                                    self.proposalsManager, self.restrictionTransaction)  # This is where we use the Node Tool ... need canvas and panel??
+                        """self.mapTool = TOMsNodeTool(self.iface,
+                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??"""
+                        self.mapTool.setAction(self.actionSplitRestriction)
+                        self.iface.mapCanvas().setMapTool(self.mapTool)
+
+                        #currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+
+                    else:
+
+                        reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                        "Select restriction for edit",
+                                                        QMessageBox.Ok)
+
+                        self.actionSplitRestriction.setChecked(False)
+                        self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                        self.mapTool = None
+
+                else:
+
+                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                    "Select restriction for edit",
+                                                    QMessageBox.Ok)
+                    self.actionSplitRestriction.setChecked(False)
+                    self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                    self.mapTool = None
+
+            else:
+
+                QgsMessageLog.logMessage("In doSplitRestriction - tool deactivated", tag="TOMs panel")
+
+                self.actionSplitRestriction.setChecked(False)
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+
+            pass
+
+        else:
+
+            """if self.actionEditRestriction.isChecked():
+                self.actionEditRestriction.setChecked(False)
+                if self.mapTool == None:
+                    self.actionEditRestriction.setChecked(False)"""
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                            "Changes to current data are not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+            self.actionSplitRestriction.setChecked(False)
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+
+        pass
+
+        QgsMessageLog.logMessage("In doSplitRestriction - leaving", tag="TOMs panel")
 
         pass
 

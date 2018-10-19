@@ -704,6 +704,72 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
 #############################################################################
 
+class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
+
+    def __init__(self, iface, layer, proposalsManager, currTransaction):
+
+        QgsMessageLog.logMessage(("In SplitRestrictionTool - init."), tag="TOMs panel")
+
+        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
+        canvas = iface.mapCanvas()
+        self.iface = iface
+        self.layer = layer
+        #self.dialog = dialog
+        self.currTransaction = currTransaction
+        self.proposalsManager = proposalsManager
+
+        #self.blade = QgsMapToolEdit.createRubberBand(canvas)
+
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
+
+        if self.layer.geometryType() == 0: # PointGeometry:
+            self.setMode(CreateRestrictionTool.CapturePoint)
+        elif self.layer.geometryType() == 1: # LineGeometry:
+            self.setMode(CreateRestrictionTool.CaptureLine)
+        elif self.layer.geometryType() == 2: # PolygonGeometry:
+            self.setMode(CreateRestrictionTool.CapturePolygon)
+        else:
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
+            return
+
+        QgsMessageLog.logMessage(("In CreateRestrictionTool - mode set."), tag="TOMs panel")
+
+        # Seems that this is important - or at least to create a point list that is used later to create Geometry
+        self.sketchPoints = self.points()
+
+
+    def cadCanvasReleaseEvent(self, event):
+        QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
+        QgsMessageLog.logMessage(("In Split - cadCanvasReleaseEvent"), tag="TOMs panel")
+
+        if event.button() == Qt.LeftButton:
+            if not self.isCapturing():
+                self.startCapturing()
+
+            self.currPoint = event.snapPoint(1)
+            pt1 = self.toMapCoordinates(event.pos())
+
+            # add point to rubber band
+            self.result = self.addVertex(self.currPoint)
+            #QgsMapToolCapture.addVertex(self.toMapCoordinates(event.pos()))
+
+        elif (event.button() == Qt.RightButton):
+            # Stop capture when right button or escape key is pressed
+            # points = self.getCapturedPoints()
+            self.stopCapturing()
+            #self.getPointsCaptured()
+
+            # also need to process split
+
+    def keyPressEvent(self, event):
+        if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete) or (event.key() == Qt.Key_Escape):
+            self.undo()
+            pass
+        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
+            pass
+
+
+
 class EditRestrictionTool(QgsMapTool, MapToolMixin):
     def __init__(self, canvas, layer, onTrackEdited):
         QgsMapTool.__init__(self, canvas)
