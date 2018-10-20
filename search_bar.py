@@ -57,6 +57,7 @@ class searchBar():
                                             QCoreApplication.translate("MyPlugin", "Start TOMs"), self.iface.mainWindow())
         self.TOMsSearchBar.addAction(self.actionGoToItem)
         self.actionGoToItem.triggered.connect(self.doGoToItem)
+        self.actionGoToItem.setCheckable(True)
 
         # Add in details of the Instant Print plugin
         self.toolButton = QToolButton(self.iface.mainWindow())
@@ -70,6 +71,20 @@ class searchBar():
 
         self.toolButton.toggled.connect(self.__enablePrintTool)
         self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
+
+    def enableSearchBar(self):
+        QgsMessageLog.logMessage("In enableSearchBar", tag="TOMs panel")
+
+        self.actionGoToItem.setEnabled(True)
+        self.toolButton.setEnabled(True)
+        self.textbox.textChanged.connect(self.doLookupItem)
+
+    def disableSearchBar(self):
+        QgsMessageLog.logMessage("In disableSearchBar", tag="TOMs panel")
+
+        self.actionGoToItem.setEnabled(False)
+        self.toolButton.setEnabled(False)
+        self.textbox.textChanged.disconnect(self.doLookupItem)
 
     def doLookupItem(self):
 

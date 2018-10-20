@@ -22,6 +22,8 @@ from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 from TOMs.core.proposalsManager import *
 
 from .manage_restriction_details import manageRestrictionDetails
+from .search_bar import searchBar
+
 from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
 from TOMs.constants import (
@@ -54,6 +56,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.RestrictionTools = manageRestrictionDetails(self.iface, self.TOMsToolBar, self.proposalsManager)
         self.RestrictionTools.disableTOMsToolbarItems()
+        self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
+        self.searchBar.disableSearchBar()
 
         pass
 
@@ -180,6 +184,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
 
         self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
+        self.searchBar.enableSearchBar()
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
@@ -208,6 +213,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # Now disable the items from the Toolbar
 
         self.RestrictionTools.disableTOMsToolbarItems()
+        self.searchBar.disableSearchBar()
 
         self.actionProposalsPanel.setChecked(False)
 
