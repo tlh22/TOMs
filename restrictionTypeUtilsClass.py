@@ -77,7 +77,7 @@ class TOMsTransaction (QObject):
 
         # Function to create group of layers to be in Transaction for changing proposal
 
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
 
         QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
 
@@ -307,10 +307,13 @@ class TOMsTransaction (QObject):
         return
 
 class setupTableNames():
-    def __init__(self, iface):
+
+
+    def __init__(self, iface, proposalsManager):
 
         self.iface = iface
         found = True
+        self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
@@ -368,7 +371,34 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("CPZs"):
+            self.CPZs = QgsMapLayerRegistry.instance().mapLayersByName("CPZs")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table CPZs is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas"):
+            self.PARKING_TARIFF_AREAS = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ParkingTariffAreas is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords"):
+            self.GAZETTEER = QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement"):
+            self.ROAD_CASEMENT = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
+            found = False
+
         # TODO: need to deal with any errors arising ...
+
+        if found == False:
+            self.proposalsManager.TOMsStartupFailure.emit()
 
         return
 
@@ -378,7 +408,7 @@ class RestrictionTypeUtilsMixin():
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
         #super().__init__()
         self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()

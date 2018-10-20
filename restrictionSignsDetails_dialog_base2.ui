@@ -329,113 +329,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Conformance">
-      <attribute name="title">
-       <string>Conformance</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_TimePeriod_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Fading:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="Compl_Signs_Faded"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lbl_MaxStay_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Obscurred:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="Compl_Signs_Obscured"/>
-       </item>
-       <item row="2" column="1">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="Compl_Signs_Direction">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Facing wrong direction:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="Compl_Signs_Obsolete">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Sign Obsolete: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCheckBox" name="Compl_Signs_OtherOptions">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Other placement options:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Notes:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QTextEdit" name="Signs_Notes"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Photos taken:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QCheckBox" name="PhotoTaken">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="TicketMachine">
       <attribute name="title">
        <string>Ticket Machine</string>
@@ -545,78 +438,108 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="Conformance">
       <attribute name="title">
-       <string>Checking</string>
+       <string>Conformance</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_4">
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QCheckBox" name="MHTC_Checked">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
+        <widget class="QLabel" name="lbl_TimePeriod_5">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="text">
-          <string>Checked</string>
+          <string>Fading:</string>
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="Compl_Signs_Faded"/>
+       </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_13">
+        <widget class="QLabel" name="lbl_MaxStay_5">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
-          <string>Checked By: </string>
+          <string>Obscurred:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="MHTC_PersonChecking"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="text">
-          <string>Date Checked:</string>
-         </property>
-        </widget>
+        <widget class="QComboBox" name="Compl_Signs_Obscured"/>
        </item>
        <item row="2" column="1">
-        <widget class="QgsDateTimeEdit" name="MHTC_CheckDate"/>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="Compl_Signs_Direction">
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Facing wrong direction:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="Compl_Signs_Obsolete">
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Sign Obsolete: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="Compl_Signs_OtherOptions">
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Other placement options:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Issue identified:</string>
+          <string>Notes:</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QComboBox" name="MHTC_CheckIssueTypeID"/>
+        <widget class="QTextEdit" name="Signs_Notes"/>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="label_12">
+        <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Notes:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          <string>Photos taken:</string>
          </property>
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QTextEdit" name="MHTC_CheckNotes"/>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QCheckBox" name="MHTC_CheckFieldVisitRequired">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
+        <widget class="QCheckBox" name="PhotoTaken">
          <property name="text">
-          <string>Field Visit Required</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QCheckBox" name="MHTC_CheckStatus">
-         <property name="text">
-          <string>Action Completed</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -626,13 +549,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsDateTimeEdit</class>
-   <extends>QDateTimeEdit</extends>
-   <header>qgsdatetimeedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

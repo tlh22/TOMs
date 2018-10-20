@@ -68,6 +68,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #    first run of plugin
         #    removed on close (see self.onClosePlugin method)
 
+        self.proposalsManager.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
+        #self.RestrictionTypeUtilsMixin.tableNames.TOMsStartupFailure.connect(self.closeTOMsTools)
+
         if self.actionProposalsPanel.isChecked():
 
             QgsMessageLog.logMessage("In onInitProposalsPanel. Activating ...", tag="TOMs panel")
@@ -86,10 +89,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
         QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
+        self.closeTOMs = False
 
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
 
         """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
@@ -184,7 +188,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
 
+        if self.closeTOMs == True:
+            self.closeTOMsTools()
         pass
+
+    def setCloseTOMsFlag(self):
+        self.closeTOMs = True
 
     def closeTOMsTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
@@ -192,6 +201,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel")
 
         # TODO: Delete any objects that are no longer needed
+
         self.proposalTransaction.rollBackTransactionGroup()
         del self.proposalTransaction  # There is another call to this function from the dock.close()
 

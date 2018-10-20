@@ -52,6 +52,8 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
     TOMsToolChanged = pyqtSignal()
     """ signal will be emitted when TOMs tool is changed """
+    TOMsStartupFailure = pyqtSignal()
+    """ signal will be emitted if there is a problem starting the plugin - typically a layer missing """
 
     def __init__(self, iface):
         QObject.__init__(self)
