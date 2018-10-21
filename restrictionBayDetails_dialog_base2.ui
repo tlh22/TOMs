@@ -238,8 +238,15 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
-          <widget class="QComboBox" name="ParkingTariffArea"/>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="ParkingTariffArea">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item row="5" column="1">
           <widget class="QComboBox" name="BaysWordingID">
@@ -266,24 +273,41 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="label_7">
            <property name="text">
             <string>PTA:</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
+         <item row="11" column="0">
           <widget class="QLabel" name="lbl_OpenDate">
            <property name="text">
             <string>Effective Date:</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
-          <widget class="QDateEdit" name="dateEdit">
+         <item row="11" column="1">
+          <widget class="QDateEdit" name="OpenDate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lbl_CPZ">
+           <property name="text">
+            <string>CPZ</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="CPZ">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
           </widget>
          </item>

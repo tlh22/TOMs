@@ -365,6 +365,12 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionPolygons is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines"):
+            self.RESTRICTION_POLYGONS = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
+            found = False
+
         if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
             self.MAP_GRID = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
         else:
@@ -387,6 +393,12 @@ class setupTableNames():
             self.GAZETTEER = QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine"):
+            self.GAZETTEER = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCentreLine is not present"))
             found = False
 
         if QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement"):
@@ -770,7 +782,7 @@ class RestrictionTypeUtilsMixin():
         currRestriction.setAttribute("CPZ", currentCPZ)
 
         if currRestrictionLayer.name() == "Lines":
-            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines) or Resident Permit Holders Bays (Bays)
+            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
 
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
@@ -785,6 +797,9 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
             currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
+
+        elif currRestrictionLayer.name() == "RestrictionPolygons":
+            currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
 
         pass
 
