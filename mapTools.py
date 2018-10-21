@@ -798,7 +798,7 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         # now split the restriction. (NB: THis is done at layer level
 
         self.layer.featureAdded.connect(self.splitFeatureAdded)
-        self.layer.geometryChanged.connect(self.splitGeometryChanged)
+        self.layer.geometryChanged.connect(self.onGeometryChanged)
 
         self.idxRestrictionID = self.origLayer.fieldNameIndex("RestrictionID")
         self.idxOpenDate = self.origLayer.fieldNameIndex("OpenDate")
@@ -816,7 +816,7 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
             return
 
         # if split, need to get parts and deal with appropriately
-        self.onGeometryChanged(self.selectedRestriction)
+        #self.onGeometryChanged(self.selectedRestriction)
 
     def splitFeatureAdded(self, fid):
         QgsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureAdded: " + str(fid), tag="TOMs panel")
@@ -850,7 +850,8 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             pass
 
-    def splitGeometryChanged(self, fid, geom):
+
+        """def splitGeometryChanged(self, fid, geom):
         QgsMessageLog.logMessage("In SplitRestrictionTool. splitGeometryChanged: " + str(fid), tag="TOMs panel")
         self.layer.geometryChanged.disconnect(self.splitGeometryChanged)
 
@@ -859,7 +860,7 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
         # Now obtain the changed feature (not sure which geometry)
         #newGeometry = QgsGeometry(self.selectedRestriction.geometry())
-        newGeometry = geom
+        newGeometry = QgsGeometry(geom)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(self.selectedRestriction[self.idxRestrictionID]), tag="TOMs panel")
 
@@ -883,7 +884,7 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
             newFeature[self.idxGeometryID] = None
 
             #currLayer.addFeature(newFeature)
-            self.origLayer.addFeatures([newFeature])
+            #self.origLayer.addFeatures([newFeature])
 
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()),
                                      tag="TOMs panel")
@@ -895,7 +896,7 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
             QgsMessageLog.logMessage(
                 "In TOMsNodeTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.exportToWkt(),
                 tag="TOMs panel")
-            self.origLayer.changeGeometry(fid, originalGeomBuffer)
+            #self.origLayer.changeGeometry(fid, originalGeomBuffer)
 
             QgsMessageLog.logMessage("In SplitTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
 
@@ -928,10 +929,11 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         #currAction = self.iface.mapCanvas().mapTool().action()
         #currAction.setChecked(False)
 
-        self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
-        self.setupPanelTabs(self.iface, self.proposalPanel)
+        #self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
+        #self.setupPanelTabs(self.iface, self.proposalPanel)
 
         #self.origLayer.deselect(self.origFeature.getFeature().id())
+        """
 
 class originalFeature(object):
     def __init__(self, feature=None):
