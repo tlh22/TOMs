@@ -366,7 +366,7 @@ class setupTableNames():
             found = False
 
         if QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines"):
-            self.RESTRICTION_POLYGONS = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+            self.CONSTRUCTION_LINES = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
             found = False
@@ -797,6 +797,9 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
             currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
+
+        elif currRestrictionLayer.name() == "Signs":
+            currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
 
         elif currRestrictionLayer.name() == "RestrictionPolygons":
             currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
