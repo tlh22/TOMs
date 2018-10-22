@@ -59,7 +59,8 @@ def _is_circular_vertex(geom, vertex_index):
     if geom.type() != QGis.Line and geom.type() != QGis.Polygon:
         return False
     v_id = QgsVertexId()
-    res = geom.vertexIdFromVertexNr(vertex_index, v_id)
+    res, v_id = geom.vertexIdFromVertexNr(vertex_index)  # seems to have been a change in signature
+    #v_id = geom.vertexIdFromVertexNr(vertex_index)
 
     # we need to get vertex type in this painful way because the above function
     # does not actually set "type" attribute (surprise surprise)
