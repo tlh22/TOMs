@@ -506,7 +506,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             QgsMessageLog.logMessage("In doCreateConstructionLine - tool activated", tag="TOMs panel")
 
-            currLayer = self.tableNames.CONSTRUCTION_LINES
+            self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
             self.iface.setActiveLayer(self.currLayer)
 
             self.currLayer.startEditing()
