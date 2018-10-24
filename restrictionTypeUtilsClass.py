@@ -728,7 +728,7 @@ class RestrictionTypeUtilsMixin():
         self.setupPanelTabs(self.iface, self.proposalPanel)
         #self.setupPanelTabs(self.iface, self.dock)
 
-    def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
+    def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
 
         generateGeometryUtils.setRoadName(currRestriction)
@@ -739,15 +739,19 @@ class RestrictionTypeUtilsMixin():
 
         currRestriction.setAttribute("CPZ", currentCPZ)
 
+        #currDate = self.proposalsManager.date()
+
         if currRestrictionLayer.name() == "Lines":
             currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines) or Resident Permit Holders Bays (Bays)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
 
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
+            currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
             currRestriction.setAttribute("RestrictionTypeID", 28)  # 28 = Permit Holders Bays (Bays)
             currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
+            currRestriction.setAttribute("NrBays", -1)
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
 
@@ -755,6 +759,54 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
             currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
+            currRestriction.setAttribute("ParkingTariffArea", currentPTA)
+
+            currRestriction.setAttribute("Bays_DateTime", currDate)
+
+        pass
+
+    def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
+        QgsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), tag="TOMs panel")
+
+        generateGeometryUtils.setRoadName(currRestriction)
+        if currRestrictionLayer.geometryType() == 1:  # Line or Bay
+            generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+
+        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+
+        currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                  currRestrictionLayer.fieldNameIndex("CPZ"), currentCPZ)
+
+        # Now need to clear some details
+
+        #currDate = self.proposalsManager.date()
+
+        if currRestrictionLayer.name() == "Lines":
+
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_DateTime"), currDate)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
+
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_PhotoTaken"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_Faded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_SignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_02"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_03"), None)
+
+        elif currRestrictionLayer.name() == "Bays":
+
+            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("ParkingTariffArea"), currentPTA)
+
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_DateTime"), currDate)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
+
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_PhotoTaken"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_Faded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_SignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_02"), None)
 
         pass
 

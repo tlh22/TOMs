@@ -109,7 +109,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                self.iface.mainWindow())
         self.actionEditRestriction.setCheckable(True)
 
-        self.actionSplitRestriction = QAction(QIcon(":/plugins/TOMs/resources/mActionSetEndPoint.svg"),
+        self.actionSplitRestriction = QAction(QIcon(":/plugins/TOMs/resources/scissors.png"),
                                QCoreApplication.translate("MyPlugin", "Split Restriction"),
                                self.iface.mainWindow())
         self.actionSplitRestriction.setCheckable(True)
@@ -306,7 +306,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
-                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
+                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -365,7 +365,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
-                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
+                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -418,7 +418,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.restrictionTransaction.startTransactionGroup()
 
-                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
+                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -471,7 +471,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 self.restrictionTransaction.startTransactionGroup()
 
-                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.restrictionTransaction)
+                self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
                 self.mapTool.setAction(self.actionCreateSignRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -520,7 +520,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             self.currLayer.startEditing()
 
-            self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.restrictionTransaction)
+            self.mapTool = CreateRestrictionTool(self.iface, self.currLayer, self.proposalsManager, self.restrictionTransaction)
             self.mapTool.setAction(self.actionCreateConstructionLine)
             self.iface.mapCanvas().setMapTool(self.mapTool)
 
