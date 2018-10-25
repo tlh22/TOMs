@@ -935,7 +935,6 @@ class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
             updatedRestriction = self.cloneChangeGeometry(currLayer, currRestriction, changedGeometry)
 
             # Now reset some of the attributes
-            self.updateDefaultRestrictionDetails(currRestriction, currLayer, self.proposalsManager.date())
             self.updateDefaultRestrictionDetails(updatedRestriction, currLayer, self.proposalsManager.date())
 
             """newFeature.setGeometry(self.changedGeometry)

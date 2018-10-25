@@ -776,6 +776,7 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+            currRestriction.setAttribute("Length", currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
@@ -805,6 +806,12 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("Bays_DateTime", currDate)
 
+        elif currRestrictionLayer.name() == "Signs":
+            currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
+
+        elif currRestrictionLayer.name() == "RestrictionPolygons":
+            currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
+
         pass
 
     def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
@@ -813,6 +820,9 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+            currRestriction.setAttribute("Length", currRestriction.geometry().length())
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                      currRestrictionLayer.fieldNameIndex("Length"), currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
@@ -826,9 +836,12 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.name() == "Lines":
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_DateTime"), currDate)
+            currRestriction.setAttribute("Lines_DateTime", currDate)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
+            currRestriction.setAttribute("Surveyor", None)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_PhotoTaken"), None)
+
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_Faded"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_SignIssue"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_01"), None)
@@ -842,19 +855,15 @@ class RestrictionTypeUtilsMixin():
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("ParkingTariffArea"), currentPTA)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_DateTime"), currDate)
+            currRestriction.setAttribute("Bays_DateTime", currDate)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
-
+            currRestriction.setAttribute("Surveyor", None)
+            
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_PhotoTaken"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_Faded"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_SignIssue"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_01"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_02"), None)
-
-        elif currRestrictionLayer.name() == "Signs":
-            currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
-
-        elif currRestrictionLayer.name() == "RestrictionPolygons":
-            currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
 
         pass
 
