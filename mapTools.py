@@ -462,7 +462,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         # I guess at this point, it is possible to set things like capture mode, snapping preferences, ... (not sure of all the elements that are required)
         # capture mode (... not sure if this has already been set? - or how to set it)
 
-        QgsMessageLog.logMessage(("In CreateRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
+        QgsMessageLog.logMessage("In CreateRestrictionTool - geometryType for " + str(self.layer.name()) + ": " + str(self.layer.geometryType()), tag="TOMs panel")
 
         if self.layer.geometryType() == 0: # PointGeometry:
             self.setMode(CreateRestrictionTool.CapturePoint)

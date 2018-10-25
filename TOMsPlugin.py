@@ -167,9 +167,11 @@ class TOMs:
         QgsMessageLog.logMessage("Adding toolbars", tag="TOMs panel")
 
         # set up a search box (for street names and GeometryIDs)
+        """
         self.TOMsSearchBar = self.iface.addToolBar("TOMs Search Bar")
         self.TOMsSearchBar.setObjectName("TOMs Search Bar")
         self.doSearchBar = searchBar(self.iface, self.TOMsSearchBar, self.proposalsManager)
+        """
         #self.doInstantPrint = InstantPrintPlugin(self.iface, self.TOMsSearchBar)
 
         # Add toolbar 
@@ -177,6 +179,7 @@ class TOMs:
         self.TOMsToolbar.setObjectName("TOMs Toolbar")
         #self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
 
+        #self.doSearchBar = searchBar(self.iface, self.TOMsToolbar, self.proposalsManager)
         self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar, self.proposalsManager)
 
         pass

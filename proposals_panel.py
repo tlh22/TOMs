@@ -22,6 +22,8 @@ from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
 from TOMs.core.proposalsManager import *
 
 from .manage_restriction_details import manageRestrictionDetails
+from .search_bar import searchBar
+
 from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
 from TOMs.constants import (
@@ -54,6 +56,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.RestrictionTools = manageRestrictionDetails(self.iface, self.TOMsToolBar, self.proposalsManager)
         self.RestrictionTools.disableTOMsToolbarItems()
+        self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
+        self.searchBar.disableSearchBar()
 
         pass
 
@@ -67,6 +71,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # dockwidget may not exist if:
         #    first run of plugin
         #    removed on close (see self.onClosePlugin method)
+
+        self.proposalsManager.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
+        #self.RestrictionTypeUtilsMixin.tableNames.TOMsStartupFailure.connect(self.closeTOMsTools)
 
         if self.actionProposalsPanel.isChecked():
 
@@ -86,10 +93,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
         QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
+        self.closeTOMs = False
 
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
 
         """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
@@ -176,6 +184,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
 
         self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
+        self.searchBar.enableSearchBar()
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
@@ -184,7 +193,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
 
+        if self.closeTOMs == True:
+            self.closeTOMsTools()
         pass
+
+    def setCloseTOMsFlag(self):
+        self.closeTOMs = True
 
     def closeTOMsTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
@@ -192,12 +206,14 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel")
 
         # TODO: Delete any objects that are no longer needed
+
         self.proposalTransaction.rollBackTransactionGroup()
         del self.proposalTransaction  # There is another call to this function from the dock.close()
 
         # Now disable the items from the Toolbar
 
         self.RestrictionTools.disableTOMsToolbarItems()
+        self.searchBar.disableSearchBar()
 
         self.actionProposalsPanel.setChecked(False)
 

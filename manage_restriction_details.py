@@ -162,7 +162,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
         self.restrictionTransaction = restrictionTransaction
         """self.proposalsManager.TOMsToolChanged.connect(
             functools.partial(self.restrictionTransaction.commitTransactionGroup, self.tableNames.PROPOSALS))"""
@@ -299,6 +299,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateBayRestriction - tool activated", tag="TOMs panel")
 
+                self.restrictionTransaction.startTransactionGroup()  # start editing
+
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 currLayer = self.tableNames.BAYS
 
@@ -307,6 +309,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
+
                 self.mapTool.setAction(self.actionCreateBayRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -359,6 +362,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateLineRestriction - tool activated", tag="TOMs panel")
 
+                self.restrictionTransaction.startTransactionGroup()  # start editing
+
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 currLayer = self.tableNames.LINES
                 self.iface.setActiveLayer(currLayer)
@@ -366,6 +371,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
+
                 self.mapTool.setAction(self.actionCreateLineRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -415,10 +421,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
                 currLayer = self.tableNames.RESTRICTION_POLYGONS
                 self.iface.setActiveLayer(currLayer)
-
                 self.restrictionTransaction.startTransactionGroup()
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
+
                 self.mapTool.setAction(self.actionCreatePolygonRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -465,6 +471,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateSignRestriction - tool activated", tag="TOMs panel")
 
+                self.restrictionTransaction.startTransactionGroup()
+
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
                 currLayer = self.tableNames.SIGNS
                 self.iface.setActiveLayer(currLayer)
@@ -472,6 +480,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()
 
                 self.mapTool = CreateRestrictionTool(self.iface, currLayer, self.proposalsManager, self.restrictionTransaction)
+
                 self.mapTool.setAction(self.actionCreateSignRestriction)
                 self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -599,11 +608,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
 
-                self.restrictionTransaction.startTransactionGroup()
-
                 if currRestrictionLayer.selectedFeatureCount() > 0:
 
                     selectedRestrictions = currRestrictionLayer.selectedFeatures()
+
+                    self.restrictionTransaction.startTransactionGroup()
+
                     for currRestriction in selectedRestrictions:
                         self.onRemoveRestriction(currRestrictionLayer, currRestriction)
 

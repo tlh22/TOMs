@@ -257,10 +257,10 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         # Trying to unset map tool to force updates ...
         #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-        currMapTool = self.iface.mapCanvas().mapTool()
-        currAction = currMapTool.action()
+        #currMapTool = self.iface.mapCanvas().mapTool()
+        #currAction = currMapTool.action()
 
-        currMapToolAction = self.iface.mapCanvas().mapTool().action().setChecked(False)
+        #currMapToolAction = self.iface.mapCanvas().mapTool().action().setChecked(False)
 
         # uncheck current tool
 

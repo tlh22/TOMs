@@ -82,6 +82,16 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
+     <item row="1" column="0">
+      <widget class="QDialogButtonBox" name="button_box">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
        <property name="minimumSize">
@@ -228,6 +238,23 @@
            </property>
           </widget>
          </item>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="ParkingTariffArea">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="BaysWordingID">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
          <item row="5" column="0">
           <widget class="QLabel" name="lbl_PaymentType_2">
            <property name="minimumSize">
@@ -246,10 +273,41 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QComboBox" name="BaysWordingID">
-           <property name="currentIndex">
-            <number>-1</number>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>PTA:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="lbl_OpenDate">
+           <property name="text">
+            <string>Effective Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QDateEdit" name="OpenDate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lbl_CPZ">
+           <property name="text">
+            <string>CPZ</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="CPZ">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -493,6 +551,69 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="Photos_01">
+        <attribute name="title">
+         <string>Photo1</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Photo_Widget_01">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>640</width>
+             <height>480</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Photo not found</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="Photos_2">
+        <attribute name="title">
+         <string>Photo2</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Photo_Widget_02">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>640</width>
+             <height>480</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Sans Serif</family>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Photo not found</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="conformaceTab">
         <attribute name="title">
          <string>Conformance</string>
@@ -566,169 +687,12 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="Photos_01">
-        <attribute name="title">
-         <string>Photo1</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Photo_Widget_01">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>640</width>
-             <height>480</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Photo not found</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="Photos_2">
-        <attribute name="title">
-         <string>Photo2</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Photo_Widget_02">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>640</width>
-             <height>480</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Sans Serif</family>
-            </font>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Photo not found</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab">
-        <attribute name="title">
-         <string>Checking</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="13" column="0" colspan="3">
-          <widget class="QCheckBox" name="MHTC_CheckFieldVisitRequired">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Field Visit Required</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="0">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Notes:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Date Checked:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Checked By: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>Issue identified:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" colspan="2">
-          <widget class="QComboBox" name="MHTC_PersonChecking"/>
-         </item>
-         <item row="6" column="1" colspan="2">
-          <widget class="QgsDateTimeEdit" name="MHTC_CheckDate"/>
-         </item>
-         <item row="10" column="1" colspan="2">
-          <widget class="QComboBox" name="MHTC_CheckIssueTypeID"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="MHTC_Checked">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Checked</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="1" colspan="2">
-          <widget class="QTextEdit" name="MHTC_CheckNotes"/>
-         </item>
-         <item row="14" column="0">
-          <widget class="QCheckBox" name="MHTC_CheckStatus">
-           <property name="text">
-            <string>Action Completed</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QDialogButtonBox" name="button_box">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsDateTimeEdit</class>
-   <extends>QDateTimeEdit</extends>
-   <header>qgsdatetimeedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

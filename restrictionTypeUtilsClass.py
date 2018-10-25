@@ -77,7 +77,7 @@ class TOMsTransaction (QObject):
 
         # Function to create group of layers to be in Transaction for changing proposal
 
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
 
         QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
 
@@ -307,10 +307,13 @@ class TOMsTransaction (QObject):
         return
 
 class setupTableNames():
-    def __init__(self, iface):
+
+
+    def __init__(self, iface, proposalsManager):
 
         self.iface = iface
         found = True
+        self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
@@ -362,13 +365,52 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionPolygons is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines"):
+            self.CONSTRUCTION_LINES = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
+            found = False
+
         if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
             self.MAP_GRID = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
             found = False
 
+        if QgsMapLayerRegistry.instance().mapLayersByName("CPZs"):
+            self.CPZs = QgsMapLayerRegistry.instance().mapLayersByName("CPZs")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table CPZs is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas"):
+            self.PARKING_TARIFF_AREAS = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ParkingTariffAreas is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords"):
+            self.GAZETTEER = QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine"):
+            self.GAZETTEER = QgsMapLayerRegistry.instance().mapLayersByName("RoadCentreLine")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCentreLine is not present"))
+            found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement"):
+            self.ROAD_CASEMENT = QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
+            found = False
+
         # TODO: need to deal with any errors arising ...
+
+        if found == False:
+            self.proposalsManager.TOMsStartupFailure.emit()
 
         return
 
@@ -378,7 +420,7 @@ class RestrictionTypeUtilsMixin():
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
-        self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
         #super().__init__()
         self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()
@@ -742,7 +784,7 @@ class RestrictionTypeUtilsMixin():
         #currDate = self.proposalsManager.date()
 
         if currRestrictionLayer.name() == "Lines":
-            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines) or Resident Permit Holders Bays (Bays)
+            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
 
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
@@ -807,6 +849,12 @@ class RestrictionTypeUtilsMixin():
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_SignIssue"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_01"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_02"), None)
+
+        elif currRestrictionLayer.name() == "Signs":
+            currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
+
+        elif currRestrictionLayer.name() == "RestrictionPolygons":
+            currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
 
         pass
 
