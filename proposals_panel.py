@@ -373,7 +373,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.currProposal = self.getProposal(currProposalID)
 
-
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
         self.proposalDialog.attributeForm().disconnectButtonBox()
