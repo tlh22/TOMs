@@ -449,6 +449,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currAtlas = currComposition.atlasComposition()
 
         self.proposalForPrintingStatusText = "PROPOSED"
+        self.proposalPrintTypeDetails = "Print Date"
         self.openDateForPrintProposal = self.proposalsManager.date()
 
         if currAtlas.enabled():
@@ -458,6 +459,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 # Include a dialog to check which proposal is required - or everything
 
                 self.proposalForPrintingStatusText = "CONFIRMED"
+                self.proposalPrintTypeDetails = "Effective Date"
 
                 # set the dialog (somehow)
                 self.acceptedProposalDialog = acceptedProposalsDialog2()
@@ -600,8 +602,12 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         composerRevisionNr = currComposition.getComposerItemById('revisionNr')
         composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
         composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        composerPrintTypeDetails = currComposition.getComposerItemById('printTypeDetails')
 
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
+        composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
+
+        currProposalTitle = self.getProposalTitle(currProposalID)
 
         for i in range(0, currAtlas.numFeatures()):
 
@@ -620,7 +626,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             else:
                 composerRevisionNr.setText(str(currTile["RevisionNr"]+1))
 
-            filename = str(currProposalID) + "_" + str(currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+            filename = currProposalTitle + "_" + str(currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
             outputFile = os.path.join(dirName, filename)
 
             if filename[-3:].lower() == u"pdf":

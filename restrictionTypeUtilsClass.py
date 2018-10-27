@@ -1396,6 +1396,24 @@ class RestrictionTypeUtilsMixin():
         #sorted(list(set(output)))
         return self.tileList
 
+    def getProposalTitle(self, proposalID):
+        # return the layer given the row in "RestrictionLayers"
+        QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel")
+
+        #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
+        idxProposalTitle = self.tableNames.PROPOSALS.fieldNameIndex("ProposalTitle")
+        queryString = "\"ProposalID\" = " + str(proposalID)
+
+        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        for feature in self.tableNames.PROPOSALS.getFeatures(QgsFeatureRequest(expr)):
+            return feature[idxProposalTitle]
+
+        QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel")
+        return None
+
     def getTilesForRestriction(self, currRestriction):
 
         # get the tile(s) for a given restriction

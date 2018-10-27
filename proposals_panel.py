@@ -195,7 +195,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         if self.closeTOMs == True:
             self.closeTOMsTools()
-        pass
+        else:
+            self.proposalsManager.TOMsActivated.emit()
+
 
     def setCloseTOMsFlag(self):
         self.closeTOMs = True
