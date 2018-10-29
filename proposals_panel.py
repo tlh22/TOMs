@@ -195,7 +195,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         if self.closeTOMs == True:
             self.closeTOMsTools()
-        pass
+        else:
+            self.proposalsManager.TOMsActivated.emit()
+
 
     def setCloseTOMsFlag(self):
         self.closeTOMs = True
@@ -372,7 +374,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
 
         self.currProposal = self.getProposal(currProposalID)
-
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 

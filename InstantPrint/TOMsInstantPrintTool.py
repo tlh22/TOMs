@@ -17,7 +17,7 @@ from qgis.core import *
 from qgis.gui import *
 
 from TOMs.InstantPrint.InstantPrintTool import InstantPrintTool
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
 
@@ -27,6 +27,10 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
         InstantPrintTool.__init__(self, iface)
         self.proposalsManager = proposalsManager
 
+        self.proposalsManager.TOMsActivated.connect(self.setupTables)
+
+    def setupTables(self):
+        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
 
         """def getTilesIDsInProposal(self, currProposalID):
         # retrieve all the tiles that are affected by the currentProposal
