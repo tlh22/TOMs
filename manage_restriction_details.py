@@ -222,7 +222,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
-        currRestrictionLayer = self.iface.setActiveLayer()
+        currRestrictionLayer = self.iface.activeLayer()
 
         if currRestrictionLayer:
 
