@@ -392,6 +392,7 @@ class generateGeometryUtils:
         #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
 
         restGeomType = feature.attribute("GeomShapeID")
+        AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
 
         # set up parameters for different shapes
 
@@ -401,11 +402,19 @@ class generateGeometryUtils:
             offset = bayOffsetFromKerb
             shpExtent = bayWidth
         elif restGeomType == 2:  # 2 = half on/half off
-            offset = 0
-            shpExtent = 0
+            offset = bayOffsetFromKerb
+            shpExtent = bayWidth / 2
+            if (AzimuthToCentreLine + 180) > 360:
+                secondAzimuthToCentreLine = AzimuthToCentreLine - 180
+            else:
+                secondAzimuthToCentreLine = AzimuthToCentreLine + 180
         elif restGeomType == 3:  # 3 = on pavement
-            offset = 0
-            shpExtent = 0
+            offset = bayOffsetFromKerb
+            shpExtent = bayWidth
+            if (AzimuthToCentreLine + 180) > 360:
+                AzimuthToCentreLine = AzimuthToCentreLine - 180
+            else:
+                AzimuthToCentreLine = AzimuthToCentreLine + 180
         elif restGeomType == 4 or restGeomType == 24:  # 4 = Perpendicular
             offset = bayOffsetFromKerb
             shpExtent = bayLength
@@ -445,10 +454,10 @@ class generateGeometryUtils:
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
-                                                         shpExtent, orientation)
+                                                         shpExtent, orientation, AzimuthToCentreLine)
         else:
             outputGeometry = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
-                                                                     orientation)
+                                                                     orientation, AzimuthToCentreLine)
 
         #QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
@@ -459,7 +468,7 @@ class generateGeometryUtils:
                 outputGeometry1 = outputGeometry
                 # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
                 outputGeometry2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
-                                                                         orientation)
+                                                                         orientation, AzimuthToCentreLine)
                 # remove the first and the last points
 
                 #ptsList = []
@@ -499,11 +508,30 @@ class generateGeometryUtils:
 
             #outputGeometry = newGeometry
 
+        if restGeomType == 2:  # 2 = half on/half off
+
+            outputGeometry1 = outputGeometry
+            # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
+            outputGeometry2A = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
+                                                                     orientation, secondAzimuthToCentreLine)
+
+            #QgsMessageLog.logMessage(
+            #    "In getRestrictionGeometry - newGeometry prepared for " + str(feature.attribute("GeometryID")),
+            #    tag="TOMs panel")
+
+            # ... and combine the two geometries
+            # https://gis.stackexchange.com/questions/108343/what-is-the-inverse-of-qgsgeometry-asgeometrycollection-in-qgis-python
+            #newgeom = QgsGeometry.fromMultiPolyline([part for part in geom.asMultiPolyline()])
+
+            #outputGeometry1.convertToMultiType()
+            #QgsMessageLog.logMessage("In getRestrictionGeometry - converting to multi", tag="TOMs panel")
+            outputGeometry = outputGeometry1.combine(outputGeometry2A)
+            QgsMessageLog.logMessage("In getRestrictionGeometry - combined ...", tag="TOMs panel")
 
         return outputGeometry
 
     @staticmethod
-    def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation):
+    def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation, AzimuthToCentreLine):
         # Obtain relevant variables
         #QgsMessageLog.logMessage("In getDisplayGeometry: restGeomType = " + str(restGeomType), tag="TOMs panel")
 
@@ -512,7 +540,7 @@ class generateGeometryUtils:
         restrictionID = feature.attribute("GeometryID")
         #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
         # restGeomType = feature.attribute("GeomShapeID")
-        AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
+        #AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
 
         # Need to check feature class. If it is a bay, obtain the number
@@ -660,7 +688,7 @@ class generateGeometryUtils:
         return newLine
 
     @staticmethod
-    def zigzag(feature, wavelength, amplitude, restGeometryType, offset, shpExtent, orientation):
+    def zigzag(feature, wavelength, amplitude, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine):
         """
             Taken from: https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=8&cad=rja&uact=8&ved=0ahUKEwi06c6nkMzWAhWCwxoKHWHMC34QFghEMAc&url=http%3A%2F%2Fwww.geoinformations.developpement-durable.gouv.fr%2Ffichier%2Fodt%2Fgenerateur_de_zigzag_v1_cle0d3366.odt%3Farg%3D177834503%26cle%3Df6f59e5a812d5c3e7a829f05497213f839936080%26file%3Dodt%252Fgenerateur_de_zigzag_v1_cle0d3366.odt&usg=AOvVaw0JoVM0llmrvSCdxOEaGCOH
             www.geoinformations.developpement-durable.gouv.fr
@@ -676,7 +704,7 @@ class generateGeometryUtils:
 
         QgsMessageLog.logMessage("In zigzag", tag="TOMs panel")
 
-        line = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation)
+        line = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine)
 
         #QgsMessageLog.logMessage("In zigzag - have geometry + " + line.exportToWkt(), tag="TOMs panel")
 
