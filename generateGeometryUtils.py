@@ -390,9 +390,15 @@ class generateGeometryUtils:
         bayOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
         lineOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("LineOffsetFromKerb"))
         #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
+        nrBays = 0
 
         restGeomType = feature.attribute("GeomShapeID")
         AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
+
+        if generateGeometryUtils.checkFeatureIsBay(restGeomType) == True:
+            nrBays = float(feature.attribute("NrBays"))
+        else:
+            nrBays = 0
 
         # set up parameters for different shapes
 
@@ -456,7 +462,7 @@ class generateGeometryUtils:
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
                                                          shpExtent, orientation, AzimuthToCentreLine)
         else:
-            outputGeometry = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
+            outputGeometry, parallelLine = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation, AzimuthToCentreLine)
 
         #QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
@@ -467,7 +473,7 @@ class generateGeometryUtils:
             if restGeomType in [21, 24, 25]:
                 outputGeometry1 = outputGeometry
                 # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
-                outputGeometry2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
+                outputGeometry2A, parallelLine2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
                                                                          orientation, AzimuthToCentreLine)
                 # remove the first and the last points
 
@@ -512,7 +518,7 @@ class generateGeometryUtils:
 
             outputGeometry1 = outputGeometry
             # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
-            outputGeometry2A = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
+            outputGeometry2A, parallelLine2A = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation, secondAzimuthToCentreLine)
 
             #QgsMessageLog.logMessage(
@@ -528,7 +534,19 @@ class generateGeometryUtils:
             outputGeometry = outputGeometry1.combine(outputGeometry2A)
             QgsMessageLog.logMessage("In getRestrictionGeometry - combined ...", tag="TOMs panel")
 
+        if nrBays > 1:
+            # divide parallelLine by the number of bays
+        
+
         return outputGeometry
+
+    @staticmethod
+    def checkFeatureIsBay(restGeomType):
+        QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
+        if restGeomType >= 10 and restGeomType <=20:
+            return True
+        else:
+            return False
 
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation, AzimuthToCentreLine):
@@ -578,6 +596,7 @@ class generateGeometryUtils:
         # QgsMessageLog.logMessage("In getDisplayGeometry:  Now processing line", tag="TOMs panel")
 
         ptsList = []
+        parallelPtsList = []
         nextAz = 0
         diffEchelonAz = 0
 
@@ -654,6 +673,9 @@ class generateGeometryUtils:
                 ptsList.append(
                     QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
+                parallelPtsList.append(
+                    QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
+
             # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
 
             prevAz = Az
@@ -682,10 +704,10 @@ class generateGeometryUtils:
                                 line[len(line) - 1].y() + (float(offset) * cosb)))
 
         newLine = QgsGeometry.fromPolyline(ptsList)
-
+        parallelLine = QgsGeometry.fromPolyline(parallelPtsList)
         #QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
-        return newLine
+        return newLine, parallelPtsList
 
     @staticmethod
     def zigzag(feature, wavelength, amplitude, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine):
@@ -704,7 +726,7 @@ class generateGeometryUtils:
 
         QgsMessageLog.logMessage("In zigzag", tag="TOMs panel")
 
-        line = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine)
+        line, parallelLine = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine)
 
         #QgsMessageLog.logMessage("In zigzag - have geometry + " + line.exportToWkt(), tag="TOMs panel")
 
