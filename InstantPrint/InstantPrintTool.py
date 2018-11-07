@@ -620,11 +620,16 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
             QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr), tag="TOMs panel")
 
-            composerEffectiveDate.setText('{date}'.format(date=currTile["LastRevisionDate"].toString('dd-MMM-yyyy')))
+
             if self.proposalForPrintingStatusText == "CONFIRMED":
                 composerRevisionNr.setText(str(currTile["RevisionNr"]))
+                composerEffectiveDate.setText(
+                    '{date}'.format(date=currTile["LastRevisionDate"].toString('dd-MMM-yyyy')))
             else:
                 composerRevisionNr.setText(str(currTile["RevisionNr"]+1))
+                # For the Proposal, use the current view date
+                composerEffectiveDate.setText(
+                    '{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
 
             filename = currProposalTitle + "_" + str(currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
             outputFile = os.path.join(dirName, filename)
@@ -685,8 +690,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         #self.effectiveDate = self.proposalsManager.date()
 
+        #self.openDateForPrintProposal
+
         composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
-        composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
+        #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
 
         composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
