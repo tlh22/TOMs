@@ -536,7 +536,7 @@ class generateGeometryUtils:
 
         if nrBays > 1:
             # divide parallelLine by the number of bays
-        
+            pass
 
         return outputGeometry
 
