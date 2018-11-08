@@ -1122,6 +1122,7 @@ class RestrictionTypeUtilsMixin():
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
                 if updateStatus == True:
+                    status = self.tableNames.PROPOSALS.updateFeature(currProposal)
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
 
