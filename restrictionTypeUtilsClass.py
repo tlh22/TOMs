@@ -1285,7 +1285,23 @@ class RestrictionTypeUtilsMixin():
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
-            pass
+
+            # Now need to add the details of this tile to “TilesWithinAcceptedProposals” (including revision numbers at time of acceptance)
+
+            newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
+
+            idxProposalNr = self.tableNames.MAP_GRID.fieldNameIndex("ProposalNr")
+            idxTileNr = self.tableNames.MAP_GRID.fieldNameIndex("TileNr")
+            idxRevisionNr = self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr")
+
+            newRecord[idxProposalNr]= currProposalID
+            newRecord[idxTileNr]= currProposalID
+            newRecord[idxRevisionNr]= currProposalID
+            newRecord.setGeometry(QgsGeometry())
+
+            status = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.addFeature(newRecord)
+
+            # TODO: Check return status from add
 
     def getProposalTileList(self, currProposalID):
 
