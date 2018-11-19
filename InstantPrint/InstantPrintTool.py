@@ -608,6 +608,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
 
         currProposalTitle = self.getProposalTitle(currProposalID)
+        if currProposalTitle == None:
+            currProposalTitle = "CurrentRestrictions"
 
         for i in range(0, currAtlas.numFeatures()):
 

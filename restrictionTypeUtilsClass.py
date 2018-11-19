@@ -325,7 +325,7 @@ class setupTableNames():
             found = False
 
         if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
-            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
             found = False
@@ -1293,29 +1293,33 @@ class RestrictionTypeUtilsMixin():
         QgsMessageLog.logMessage("In getProposalTileList.", tag="TOMs panel")
         self.tileList = set()
 
+        # Logic is:
+        #Loop through each map tile
+        #    Check whether or not there are any currently open restrictions within it
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+            self.RestrictionsInProposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table RestrictionsInProposals is not present"))
+            # raise LayerNotPresent
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
+            return
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
+            self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
+            return
+
         if currProposalID > 0:  # need to consider a proposal
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-                self.RestrictionsInProposals = \
-                    QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                        ("Table RestrictionsInProposals is not present"))
-                # raise LayerNotPresent
-
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
-                return
-
-            if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
-                self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-                return
-
-            # loop through all the layers that might have restrictions
+           # loop through all the layers that might have restrictions
 
             listRestrictionLayers = self.RestrictionLayers.getFeatures()
             # listRestrictionLayers2 = self.tableNames.RESTRICTIONLAYERS.getFeatures()
@@ -1393,6 +1397,36 @@ class RestrictionTypeUtilsMixin():
                 pass
 
             self.proposalsManager.setCurrentProposal(currProposalID)
+
+        else:
+
+            # Deal with proposal 0, i.e., print of all current restrictions (for the current display date)
+
+
+            #tileList = self.tableNames.MapGrid().getFeatures
+            # Setup a request
+            request = QgsFeatureRequest().setFlags(QgsFeatureRequest)
+
+            request.setFilterExpression(u"\"{0}\" = '%{1}%'".format(fieldname, txtFilter))
+
+            # Grab the results from the layer
+            listOfTiles = self.tileLayer.getFeatures(request)
+
+            for tile in listOfTiles:
+
+                # Check to see whether or not it has a revision number ...
+
+                # if tile[revisionNr] IS NOT NULL:
+                #    currRevisionNr = getCurrentRevisionNr (tile, date)
+                #    ... add to set of tiles ...
+                pass
+                #listRestrictions = self.getRestrictionsWithinTile(tile)
+
+                """if listRestrictions IS NOT NULL:
+                    self.tileList.add((tile))"""
+
+            pass
+
 
         #sorted(list(set(output)))
         return self.tileList

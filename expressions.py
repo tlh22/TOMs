@@ -151,7 +151,7 @@ def getWaitingRestrictionLabelText(feature, parent):
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
-    QgsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), tag="TOMs panel")
     # waitingText = "Test"
     if waitingText:
         labelText = "No Waiting: " + waitingText
@@ -167,15 +167,15 @@ def getLoadingRestrictionLabelText(feature, parent):
     #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel")
 
     waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
-    QgsMessageLog.logMessage(
+    """QgsMessageLog.logMessage(
         "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
-        tag="TOMs panel")
+        tag="TOMs panel")"""
 
     if loadingText:
         #labelText = "No Loading: " + loadingText
         labelText = loadingText
 
-        QgsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), tag="TOMs panel")
         return labelText
 
     return None
@@ -220,7 +220,7 @@ def getBayNoReturnLabelText(feature, parent):
 def getBayLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayLabelText:", tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayLabelText:", tag="TOMs panel")
 
     maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
@@ -239,7 +239,7 @@ def getBayLabelText(feature, parent):
             labelText = labelText + ';'
         labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
 
-    QgsMessageLog.logMessage("In getBayLabelText: " + str(labelText), tag="TOMs panel")
+    #QgsMessageLog.logMessage("In getBayLabelText: " + str(labelText), tag="TOMs panel")
 
     return labelText
 
