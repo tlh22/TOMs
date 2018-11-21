@@ -409,10 +409,10 @@ class setupTableNames():
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
             found = False
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement"):
-            self.TILES_IN_ACCEPTED_PROPOSALS = QgsMapLayerRegistry.instance().mapLayersByName("TileInAcceptedProposals")[0]
+        if QgsMapLayerRegistry.instance().mapLayersByName("TilesInAcceptedProposals"):
+            self.TILES_IN_ACCEPTED_PROPOSALS = QgsMapLayerRegistry.instance().mapLayersByName("TilesInAcceptedProposals")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TileInAcceptedProposals is not present"))
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
             found = False
 
 
@@ -1294,7 +1294,7 @@ class RestrictionTypeUtilsMixin():
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
 
-            # Now need to add the details of this tile to “TilesWithinAcceptedProposals” (including revision numbers at time of acceptance)
+            # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
 
             newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
 

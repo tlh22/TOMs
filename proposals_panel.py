@@ -97,7 +97,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
+        self.proposalsManager.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
         self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+
+        if self.closeTOMs:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table is missing. Unable to start TOMs ..."))
+            self.actionProposalsPanel.setChecked(False)
+            return
 
         """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
