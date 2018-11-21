@@ -86,6 +86,7 @@ class TOMsTransaction (QObject):
         self.setTransactionGroup = [self.tableNames.PROPOSALS]
         self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS)
         self.setTransactionGroup.append(self.tableNames.MAP_GRID)
+        self.setTransactionGroup.append(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS)
 
         for layer in self.tableNames.RESTRICTIONLAYERS.getFeatures():
 
@@ -407,6 +408,13 @@ class setupTableNames():
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
             found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("RoadCasement"):
+            self.TILES_IN_ACCEPTED_PROPOSALS = QgsMapLayerRegistry.instance().mapLayersByName("TileInAcceptedProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TileInAcceptedProposals is not present"))
+            found = False
+
 
         # TODO: need to deal with any errors arising ...
 
@@ -1290,9 +1298,9 @@ class RestrictionTypeUtilsMixin():
 
             newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
 
-            idxProposalNr = self.tableNames.MAP_GRID.fieldNameIndex("ProposalNr")
-            idxTileNr = self.tableNames.MAP_GRID.fieldNameIndex("TileNr")
-            idxRevisionNr = self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr")
+            idxProposalNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("ProposalNr")
+            idxTileNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("TileNr")
+            idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
 
             newRecord[idxProposalNr]= currProposalID
             newRecord[idxTileNr]= currProposalID
