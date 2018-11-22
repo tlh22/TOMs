@@ -86,6 +86,7 @@ class TOMsTransaction (QObject):
         self.setTransactionGroup = [self.tableNames.PROPOSALS]
         self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS)
         self.setTransactionGroup.append(self.tableNames.MAP_GRID)
+        self.setTransactionGroup.append(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS)
 
         for layer in self.tableNames.RESTRICTIONLAYERS.getFeatures():
 
@@ -325,7 +326,7 @@ class setupTableNames():
             found = False
 
         if QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes"):
-            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+            self.PROPOSAL_STATUS_TYPES = QgsMapLayerRegistry.instance().mapLayersByName("ProposalStatusTypes")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
             found = False
@@ -407,6 +408,13 @@ class setupTableNames():
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
             found = False
+
+        if QgsMapLayerRegistry.instance().mapLayersByName("TilesInAcceptedProposals"):
+            self.TILES_IN_ACCEPTED_PROPOSALS = QgsMapLayerRegistry.instance().mapLayersByName("TilesInAcceptedProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
+            found = False
+
 
         # TODO: need to deal with any errors arising ...
 
@@ -1122,6 +1130,7 @@ class RestrictionTypeUtilsMixin():
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
                 if updateStatus == True:
+                    status = self.tableNames.PROPOSALS.updateFeature(currProposal)
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
 
@@ -1276,45 +1285,69 @@ class RestrictionTypeUtilsMixin():
     def updateTileRevisionNrs(self, currProposalID):
         QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
         # Increment the relevant tile numbers
-        tileList = self.getProposalTileList(currProposalID)
 
-        for tile in tileList:
+        currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
+
+        self.getProposalTileList(currProposalID, currRevisionDate)
+
+        for tile in self.tileSet:
             currRevisionNr = tile["RevisionNr"]
-            currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
-            pass
 
-    def getProposalTileList(self, currProposalID):
+            # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
+
+            newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
+
+            idxProposalID = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("ProposalID")
+            idxTileNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("TileNr")
+            idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
+
+            newRecord[idxProposalID]= currProposalID
+            newRecord[idxTileNr]= tile["id"]
+            newRecord[idxRevisionNr]= currRevisionNr + 1
+            newRecord.setGeometry(QgsGeometry())
+
+            status = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.addFeature(newRecord)
+
+            # TODO: Check return status from add
+
+    def getProposalTileList(self, listProposalID, currRevisionDate):
 
         # returns list of tiles in the proposal and their current revision numbers
         QgsMessageLog.logMessage("In getProposalTileList.", tag="TOMs panel")
-        self.tileList = set()
+        self.tileSet = set()
 
-        if currProposalID > 0:  # need to consider a proposal
+        # Logic is:
+        #Loop through each map tile
+        #    Check whether or not there are any currently open restrictions within it
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-                self.RestrictionsInProposals = \
-                    QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                        ("Table RestrictionsInProposals is not present"))
-                # raise LayerNotPresent
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+            self.RestrictionsInProposals = \
+                QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table RestrictionsInProposals is not present"))
+            # raise LayerNotPresent
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
-                return
+        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
+            return
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
-                self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-                return
+        if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
+            self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
+            return
 
-            # loop through all the layers that might have restrictions
+        currProposalID = self.proposalsManager.currentProposal()
+
+        if listProposalID > 0:  # need to consider a proposal
+
+           # loop through all the layers that might have restrictions
 
             listRestrictionLayers = self.RestrictionLayers.getFeatures()
             # listRestrictionLayers2 = self.tableNames.RESTRICTIONLAYERS.getFeatures()
@@ -1356,7 +1389,7 @@ class RestrictionTypeUtilsMixin():
 
                     # check to see if the current row is for the current proposal and for the correct proposedAction
 
-                    if proposalID == currProposalID:
+                    if proposalID == listProposalID:
                         if restrictionTableID == currLayerID:
 
                             currRestrictionID = str(row["RestrictionID"])
@@ -1370,7 +1403,7 @@ class RestrictionTypeUtilsMixin():
                                                                                           currRestrictionLayer)
                                 if currRestriction:
                                     # Now find the tile for the restriction
-                                    self.getTilesForRestriction(currRestriction)
+                                    self.getTilesForRestriction(currRestriction, currRevisionDate)
 
                                     # geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
 
@@ -1383,7 +1416,7 @@ class RestrictionTypeUtilsMixin():
                                 if currRestriction:
                                     # Now find the tile for the restriction
                                     # geometryBoundingBox = currRestriction.geometry().boundingBox()
-                                    self.getTilesForRestriction(currRestriction)
+                                    self.getTilesForRestriction(currRestriction, currRevisionDate)
 
                                     firstRestriction = False
 
@@ -1393,8 +1426,46 @@ class RestrictionTypeUtilsMixin():
 
             self.proposalsManager.setCurrentProposal(currProposalID)
 
+        else:
+
+            # Deal with proposal 0, i.e., print of all current restrictions (for the current display date)
+
+            #tileList = self.tableNames.MapGrid().getFeatures
+            # Setup a request
+            queryString = "\"RevisionNr\" IS NOT NULL "
+
+            QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel")
+
+            expr = QgsExpression(queryString)
+
+            for tile in self.tileLayer.getFeatures(QgsFeatureRequest(expr)):
+
+                QgsMessageLog.logMessage("In getProposalTileList (after fetch): " + str(tile["id"]) + " RevisionNr: " + str(
+                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+
+                currRevisionNr = tile["RevisionNr"]
+                currLastRevisionDate = tile["LastRevisionDate"]
+
+                currTileNr = tile.attribute("id")
+
+                revisionNr, revisionDate = self.getTileRevisionNrAtDate(currTileNr, currRevisionDate)
+
+                if revisionNr:
+                    if revisionNr <> tile.attribute("RevisionNr"):
+                        tile.setAttribute("RevisionNr", revisionNr)
+                    if revisionDate <> tile.attribute("LastRevisionDate"):
+                        tile.setAttribute("LastRevisionDate", revisionDate)
+
+                    QgsMessageLog.logMessage("In getProposalTileList (before write): " + str(tile["id"]) + " RevisionNr: " + str(
+                            tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+
+                self.tileSet.add((tile))
+
+        for tile in self.tileSet:
+            QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+
         #sorted(list(set(output)))
-        return self.tileList
+        #return self.tileList
 
     def getProposalTitle(self, proposalID):
         # return the layer given the row in "RestrictionLayers"
@@ -1402,6 +1473,7 @@ class RestrictionTypeUtilsMixin():
 
         #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
         idxProposalTitle = self.tableNames.PROPOSALS.fieldNameIndex("ProposalTitle")
+        idxProposalOpenDate = self.tableNames.PROPOSALS.fieldNameIndex("ProposalOpenDate")
         queryString = "\"ProposalID\" = " + str(proposalID)
 
         QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
@@ -1409,16 +1481,16 @@ class RestrictionTypeUtilsMixin():
         expr = QgsExpression(queryString)
 
         for feature in self.tableNames.PROPOSALS.getFeatures(QgsFeatureRequest(expr)):
-            return feature[idxProposalTitle]
+            return feature[idxProposalTitle], feature[idxProposalOpenDate]
 
         QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel")
-        return None
+        return None, None
 
-    def getTilesForRestriction(self, currRestriction):
+    def getTilesForRestriction(self, currRestriction, filterDate):
 
         # get the tile(s) for a given restriction
 
-        QgsMessageLog.logMessage("In getTileForRestriction.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileForRestriction. ", tag="TOMs panel")
 
         #a.geometry().intersects(f.geometry()):
 
@@ -1429,8 +1501,37 @@ class RestrictionTypeUtilsMixin():
             if tile.geometry().intersects(currRestriction.geometry()):
                 # get revision number and add tile to list
                 #currRevisionNrForTile = self.getTileRevisionNr(tile)
-                QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")), tag="TOMs panel")
-                self.tileList.add((tile))
+                QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel")
+
+                # check revision nr, etc
+                currTileNr = tile.attribute("id")
+                revisionNr, revisionDate = self.getTileRevisionNrAtDate(currTileNr, filterDate)
+
+                if revisionNr:
+
+                    if revisionNr <> tile.attribute("RevisionNr"):
+                        tile.setAttribute("RevisionNr", revisionNr)
+                    if revisionDate <> tile.attribute("LastRevisionDate"):
+                        tile.setAttribute("LastRevisionDate", revisionDate)
+
+                        """QgsMessageLog.logMessage(
+                            "In getTileForRestriction. revised details: " + str(revisionNr) + "; " + str(revisionDate),
+                            tag="TOMs panel")"""
+
+                    QgsMessageLog.logMessage(
+                            "In getTileForRestriction. After update: Tile: " + str(tile.attribute("id")) + "; " + str(
+                                tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")),
+                            tag="TOMs panel")
+
+                else:
+
+                    # if there is no RevisionNr for the tile, set it to 0. This should only be the case for proposals.
+
+                    tile.setAttribute("RevisionNr", 0)
+
+                #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
+
+                self.tileSet.add((tile))
                 pass
 
         pass
@@ -1441,7 +1542,7 @@ class RestrictionTypeUtilsMixin():
 
         #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
 
-        queryString = "\"id\" = " + str(currTile.attribute("id"))
+        queryString = "\"id\" = " + + str(currTile.attribute("id"))
 
         QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel")
 
@@ -1453,6 +1554,50 @@ class RestrictionTypeUtilsMixin():
 
         QgsMessageLog.logMessage("In getTileRevisionNr: tile not found", tag="TOMs panel")
         return None
+
+    def getTileRevisionNrAtDate(self, tileNr, filterDate):
+        # return the revision number for the tile
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate.", tag="TOMs panel")
+
+        #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
+
+        queryString = "\"TileNr\" = " + str(tileNr)
+
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        """request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
+
+        request.setFilterExpression(
+                u"\"TileNr\" = {1}".format(str(currTile.attribute("id"))))"""
+
+        # Grab the results from the layer
+        features = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.getFeatures(QgsFeatureRequest(expr))
+
+        for feature in sorted(features, key=lambda f: f[2], reverse=True):
+            lastProposalID = feature["ProposalID"]
+            lastRevisionNr = feature["RevisionNr"]
+            #return currRevisionNr
+            #lastProposalTitle, lastProposalOpendate = self.getProposalTitle(lastProposalID)
+
+            lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
+
+            QgsMessageLog.logMessage(
+                "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                tag="TOMs panel")
+
+            QgsMessageLog.logMessage(
+                "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
+                tag="TOMs panel")
+
+            if lastProposalOpendate <= filterDate:
+                QgsMessageLog.logMessage(
+                    "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                    tag="TOMs panel")
+                return lastRevisionNr, lastProposalOpendate
+
+        return None, None
 
     def rejectProposal(self, currProposalID):
         QgsMessageLog.logMessage("In rejectProposal.", tag="TOMs panel")
