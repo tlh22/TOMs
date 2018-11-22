@@ -580,13 +580,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.TOMsSetAtlasValues(currComposition)
 
         #currProposalID = self.proposalsManager.currentProposal()
+        currRevisionDate = self.proposalsManager.date()
 
         # get the map tiles that are affected by the Proposal
-        tileFeatureList = self.getProposalTileList(currProposalID)
+        self.getProposalTileList(currProposalID, currRevisionDate)
 
         tileIDList = ""
         firstTile = True
-        for tile in tileFeatureList:
+        for tile in self.tileSet:
             if firstTile:
                 tileIDList = str(tile.attribute("id"))
                 firstTile = False
@@ -607,9 +608,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
         composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
 
-        currProposalTitle = self.getProposalTitle(currProposalID)
+        currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
         if currProposalTitle == None:
             currProposalTitle = "CurrentRestrictions"
+
+        QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currAtlas.numFeatures()) + " items ....", tag="TOMs panel")
 
         for i in range(0, currAtlas.numFeatures()):
 
@@ -619,16 +622,20 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             currAtlas.composition().refreshItems()
 
             currTileNr = currTile["id"]
+            tileWithDetails = self.tileFromTileSet(currTileNr)
 
-            QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr), tag="TOMs panel")
+            if tileWithDetails == None:
+                QgsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", tag="TOMs panel")
+                tileWithDetails = currTile
 
+            QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " RevisionNr: " + str(tileWithDetails["RevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"]), tag="TOMs panel")
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
-                composerRevisionNr.setText(str(currTile["RevisionNr"]))
+                composerRevisionNr.setText(str(tileWithDetails["RevisionNr"]))
                 composerEffectiveDate.setText(
-                    '{date}'.format(date=currTile["LastRevisionDate"].toString('dd-MMM-yyyy')))
+                    '{date}'.format(date=tileWithDetails["LastRevisionDate"].toString('dd-MMM-yyyy')))
             else:
-                composerRevisionNr.setText(str(currTile["RevisionNr"]+1))
+                composerRevisionNr.setText(str(tileWithDetails["RevisionNr"]+1))
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
                     '{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
@@ -646,8 +653,17 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             if not success:
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
                                     self.tr("Failed to print the composition."))
+                break
 
         currAtlas.endRender()
+
+    def tileFromTileSet(self, tileNr):
+
+        for tile in self.tileSet:
+            if tile.attribute("id") == tileNr:
+                return tile
+
+        return None
 
     def TOMsReloadComposers(self, removed=None):
         if not self.dialog.isVisible():
