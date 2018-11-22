@@ -248,31 +248,24 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         currProposalID = 0
         currProposalTitle = "0 - No proposal shown"
 
-        # A little pause for the db to catch up
-        #time.sleep(.1)
-
         QgsMessageLog.logMessage("In createProposalcb: Adding 0", tag="TOMs panel")
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-        """proposalsList = self.Proposals.getFeatures()
-        proposalsList.sort()
+        queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
 
-        query = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
-        request = QgsFeatureRequest().setFilterExpression(query)"""
+        QgsMessageLog.logMessage("In createProposalcb: queryString: " + str(queryString), tag="TOMs panel")
 
-        # for proposal in proposalsList:
-        for proposal in self.Proposals.getFeatures():
+        expr = QgsExpression(queryString)
 
-            currProposalStatusID = proposal.attribute("ProposalStatusID")
-            """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
-                                     tag="TOMs panel")"""
-            if currProposalStatusID == PROPOSAL_STATUS_IN_PREPARATION():  # 1 = "in preparation"
-                currProposalID = proposal.attribute("ProposalID")
-                currProposalTitle = proposal.attribute("ProposalTitle")
-                self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
+        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
 
-        pass
+        for proposal in sorted(proposals, key=lambda f: f[4]):
+
+            currProposalID = proposal.attribute("ProposalID")
+            currProposalTitle = proposal.attribute("ProposalTitle")
+
+            self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
         # set up action for when the proposal is changed
         self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)

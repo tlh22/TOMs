@@ -516,7 +516,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
 
-        currProposalID = 0
+        """currProposalID = 0
         currProposalTitle = "0 - No proposal shown"
 
         # A little pause for the db to catch up
@@ -524,7 +524,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         QgsMessageLog.logMessage("In createAcceptedProposalcb: Adding 0", tag="TOMs panel")
 
-        self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+        self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)"""
 
         """proposalsList = self.Proposals.getFeatures()
         proposalsList.sort()
@@ -533,16 +533,25 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         request = QgsFeatureRequest().setFilterExpression(query)"""
 
         # for proposal in proposalsList:
-        for proposal in self.Proposals.getFeatures():
+        queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_ACCEPTED())
 
-            currProposalStatusID = proposal.attribute("ProposalStatusID")
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
+
+        for proposal in sorted(proposals, key=lambda f: f[4]):
+            #for proposal in self.Proposals.getFeatures():
+
+            #currProposalStatusID = proposal.attribute("ProposalStatusID")
             """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")"""
-            if currProposalStatusID == PROPOSAL_STATUS_ACCEPTED():  # 1 = "in preparation"
-                currProposalID = proposal.attribute("ProposalID")
-                currProposalTitle = proposal.attribute("ProposalTitle")
-                #currProposalOpenDate = proposal.attribute("ProposalOpenDate")
-                self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+            #if currProposalStatusID == PROPOSAL_STATUS_ACCEPTED():  # 1 = "in preparation"
+            currProposalID = proposal.attribute("ProposalID")
+            currProposalTitle = proposal.attribute("ProposalTitle")
+            #    #currProposalOpenDate = proposal.attribute("ProposalOpenDate")
+            self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
 
         pass
 

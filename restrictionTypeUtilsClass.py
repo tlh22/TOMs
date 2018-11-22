@@ -1523,6 +1523,12 @@ class RestrictionTypeUtilsMixin():
                                 tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")),
                             tag="TOMs panel")
 
+                else:
+
+                    # if there is no RevisionNr for the tile, set it to 0. This should only be the case for proposals.
+
+                    tile.setAttribute("RevisionNr", 0)
+
                 #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
 
                 self.tileSet.add((tile))
