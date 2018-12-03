@@ -618,7 +618,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
 
         currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
-        if currProposalTitle == None:
+        if currProposalID == 0:
             currProposalTitle = "CurrentRestrictions"
 
         QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currAtlas.numFeatures()) + " items ....", tag="TOMs panel")
