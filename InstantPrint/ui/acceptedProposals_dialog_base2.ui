@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Print accepted proposals</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="1" column="0">
@@ -37,7 +37,7 @@
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Choose proposal (Confirmed Order) that you wish to print. To print all map sheets choose &quot;0&quot;</string>
+      <string>Choose the proposal (Confirmed Order) that you wish to print. To print current map sheets choose &quot;0 - No proposal shown&quot;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

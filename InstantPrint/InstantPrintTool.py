@@ -725,3 +725,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
 
+    def TOMsChooseTiles(self):
+
+        pass
+
+        # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
