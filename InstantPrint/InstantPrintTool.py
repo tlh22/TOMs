@@ -20,7 +20,7 @@ import math
 from TOMs.InstantPrint.ui.ui_printdialog import Ui_InstantPrintDialog
 #from TOMs.InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
 from TOMs.InstantPrint.ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
-from TOMs.InstantPrint.ui.printList_dialog import printListDialog
+#from TOMs.InstantPrint.ui.printList_dialog import printListDialog
 
 import os.path
 
