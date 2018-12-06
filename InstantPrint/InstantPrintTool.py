@@ -753,7 +753,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         pass
 
-class nnDialog(QtGui.QDialog):
+class nnDialog(QDialog):
     '''Dedicated n,n relations Form Class - https://medspx.fr/blog/Qgis/ '''
     def __init__(self, parent, layer, shownField, IdField, initValues):
         '''Constructor'''
