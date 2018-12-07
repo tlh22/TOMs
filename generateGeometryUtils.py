@@ -432,7 +432,7 @@ class generateGeometryUtils:
                 orientation = 0
         elif restGeomType == 6:  # 6 = Perpendicular on pavement
             offset = 0
-            shpExtent = 0
+            shpExtent = bayLength
         elif restGeomType == 7:  # 7 = Other
             offset = 0
             shpExtent = 0
