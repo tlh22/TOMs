@@ -14,13 +14,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-import os
+import os, copy
 import math
 
 from TOMs.InstantPrint.ui.ui_printdialog import Ui_InstantPrintDialog
 #from TOMs.InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
 from TOMs.InstantPrint.ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
-#from TOMs.InstantPrint.ui.printList_dialog import printListDialog
+from TOMs.InstantPrint.ui.printList_dialog import printListDialog
 
 import os.path
 
@@ -571,18 +571,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currComposition = self.composerView.composition()
         currAtlas = currComposition.atlasComposition()
 
-        dirName = QFileDialog.getExistingDirectory(
-            self.iface.mainWindow(),
-            self.tr("Export Composition"),
-            settings.value("/instantprint/lastdir", ""),
-            QFileDialog.ShowDirsOnly
-        )
-        if not dirName:
-            return
-
-        settings.setValue("/instantprint/lastdir", dirName)
-        # self.TOMsExportAtlas()
-
         success = False
 
         # https://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -596,11 +584,24 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.getProposalTileList(currProposalID, currRevisionDate)
 
         # Now check which tiles to use
-        #self.TOMsChooseTiles()
+        self.TOMsChooseTiles()
+
+        # get the output location
+        dirName = QFileDialog.getExistingDirectory(
+            self.iface.mainWindow(),
+            self.tr("Export Composition"),
+            settings.value("/instantprint/lastdir", ""),
+            QFileDialog.ShowDirsOnly
+        )
+        if not dirName:
+            return
+
+        settings.setValue("/instantprint/lastdir", dirName)
+        # self.TOMsExportAtlas()
 
         tileIDList = ""
         firstTile = True
-        for tile in self.tileSet:
+        for tile in self.tilesToPrint:
             if firstTile:
                 tileIDList = str(tile.attribute("id"))
                 firstTile = False
@@ -733,299 +734,160 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # function to display and allow choice of tiles for printing
 
         # set the dialog (somehow)
-        """self.tileListDialog = printListDialog()
 
-        self.populateTileListDialog()
+        self.tilesToPrint = []
+        idxMapTileId = self.tableNames.MAP_GRID.fieldNameIndex("id")
+
+        self.tileListDialog = printListDialogB(self.tileSet, idxMapTileId)
+        #self.tileListDialog = TOMsTileListDialog(self.dialog, self.tableNames.MAP_GRID, 0, 0, allTilesInProposal)
+
+        #self.tileListDialog.buttonBox.accepted.disconnect()
+        #self.tileListDialog.buttonBox.accepted.connect(self.tileListDialog.getValues)
 
         self.tileListDialog.show()
 
         # Run the dialog event loop
-        result = self.acceptedProposalDialog.exec_()
+        result = self.tileListDialog.exec_()
         # See if OK was pressed
         if result:
+            QgsMessageLog.logMessage("In TOMsChooseTiles. Now printing - getValues ...",
+                                     tag="TOMs panel")
+            self.tilesToPrint = self.tileListDialog.getValues()
 
-            pass"""
+        # ToDo: deal with cancel
 
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         pass
 
-    def populateTileListDialog(self):
+class printListDialogB(printListDialog):
+    def __init__(self, initValues, idxValue, parent=None):
+        printListDialog.__init__(self)
+        #super(printListDialogB, self).__init__(parent)
+        # initValues is set of features (in this case MapTile features); idxValue is the index to the set
+        # Set up the user interface from Designer.
+        self.setupUi(self)
 
-        pass
-
-class nnDialog(QDialog):
-    '''Dedicated n,n relations Form Class - https://medspx.fr/blog/Qgis/ '''
-    def __init__(self, parent, layer, shownField, IdField, initValues):
-        '''Constructor'''
-        QtGui.QDialog.__init__(self,parent)
+        QgsMessageLog.logMessage("In printListDialogB. Initiating ...",             tag="TOMs panel")
 
         self.initValues = initValues
-        self.shownField = shownField
-        self.layer =  layer
-        self.IdField = IdField
-        #self.search = search
-        #if self.layer is None and DEBUGMODE:
-        #    QgsMessageLog.logMessage(u"nnDialog constructor: The layer {0} doesn't exists !".format(layer.name()),"nnForms", QgsMessageLog.INFO)
+        self.idxValue = idxValue
+        self.tilesToPrint = self.initValues.copy()
 
-        # Build the GUI and populate the list with the good values
-        self.setupUi()
-        self.populateList()
+        self.LIST = self.findChild(QListWidget, "tileList")
+        self.cbToggleTiles = self.findChild(QCheckBox, "cb_ToggleTiles")
+        self.buttonBox = self.findChild(QDialogButtonBox, "buttonBox")
+        self.cbToggleTiles.setCheckState(Qt.Checked)
 
-        # Add dynamic control when list is changing
-        #self.SEARCH.textChanged.connect(self.populateList)
+        QMetaObject.connectSlotsByName(self)
+
+        self.populateTileListDialog()
+
         self.LIST.itemChanged.connect(self.changeValues)
+        self.cbToggleTiles.stateChanged.connect(self.toggleValues)
 
-    def setupUi(self):
-        '''Builds the QDialog'''
-        # Form building
-        self.setObjectName(u"nnDialog")
-        self.resize(550, 535)
-        self.setMinimumSize(QtCore.QSize(0, 0))
-        self.buttonBox = QtGui.QDialogButtonBox(self)
-        self.buttonBox.setGeometry(QtCore.QRect(190, 500, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(u"buttonBox")
-        self.verticalLayoutWidget = QtGui.QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(9, 9, 521, 491))
-        self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setMargin(0)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label = QtGui.QLabel(self.verticalLayoutWidget)
-        self.label.setObjectName(u"label")
-        self.horizontalLayout.addWidget(self.label)
-        #self.SEARCH = QtGui.QLineEdit(self.verticalLayoutWidget)
-        #self.SEARCH.setObjectName(u"SEARCH")
-        #self.horizontalLayout.addWidget(self.SEARCH)
-        #self.verticalLayout.addLayout(self.horizontalLayout)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.LIST = QtGui.QListWidget(self.verticalLayoutWidget)
-        self.LIST.setObjectName(u"LIST")
-        self.horizontalLayout_2.addWidget(self.LIST)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
-
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        QtCore.QMetaObject.connectSlotsByName(self)
+        #self.disconnectButtonBox()
+        #self.buttonBox.accepted.disconnect()
+        #self.buttonBox.accepted.connect(self.getValues)
 
     def changeValues(self, element):
         '''Whenever a checkbox is checked, modify the values'''
         # Check if we check or uncheck the value:
-        if element.checkState() == Qt.Checked:
-            self.initValues.append(element.data(Qt.UserRole))
-        else:
-            self.initValues.remove(element.data(Qt.UserRole))
+        QgsMessageLog.logMessage(
+            "In TOMsTileListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
+            tag="TOMs panel")
 
-    def populateList(self, txtFilter=None):
+        if element.checkState() == Qt.Checked:
+            #self.tilesToPrint.append(element.data(Qt.DisplayRole))
+            self.addFeatureToSet(element.data(Qt.DisplayRole))
+        else:
+            self.removedFeatureFromSet(element.data(Qt.DisplayRole))
+
+    def addFeatureToSet(self, valueToAdd):
+
+        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
+            attr = feature.attributes()
+            currValue = attr[self.idxValue]
+
+            if int(currValue) == int(valueToAdd):
+                self.tilesToPrint.add(feature)
+                QgsMessageLog.logMessage(
+                    "In TOMsTileListDialog. Adding: " + str(currValue) + " ; " + str(len(self.tilesToPrint)),
+                    tag="TOMs panel")
+                return
+
+    def removedFeatureFromSet(self, valueToRemove):
+
+        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
+            attr = feature.attributes()
+            currValue = attr[self.idxValue]
+
+            if int(currValue) == int(valueToRemove):
+                self.tilesToPrint.remove(feature)
+                QgsMessageLog.logMessage(
+                    "In TOMsTileListDialog. Removing: " + str(currValue) + " ; " + str(len(self.tilesToPrint)) ,
+                    tag="TOMs panel")
+                return
+
+    def toggleValues(self):
+        '''Whenever a checkbox is checked, modify the values'''
+        # Check if we check or uncheck the value:
+
+        QgsMessageLog.logMessage(
+            "In TOMsTileListDialog. In toggleValues. toggleState: " + str(self.cbToggleTiles.checkState()),
+            tag="TOMs panel")
+
+        if self.cbToggleTiles.checkState() == Qt.Checked:
+            for i in range(self.LIST.count()):
+                # attr = feature.attributes()
+                element = QListWidgetItem(self.LIST.item(i).text())
+                self.LIST.item(i).setCheckState(Qt.Checked)
+                QgsMessageLog.logMessage(
+                    "In TOMsTileListDialog. In toggleValues. setting: " + str(self.LIST.item(i).text()),
+                    tag="TOMs panel")
+
+                # element.setData(Qt.UserRole, attr[self.IdField])
+
+                # element.setCheckState(Qt.Checked)
+
+        else:
+
+            for i in range(self.LIST.count()):
+                # attr = feature.attributes()
+                element = QListWidgetItem(self.LIST.item(i).text())
+                self.LIST.item(i).setCheckState(Qt.Unchecked)
+
+    def populateTileListDialog(self, txtFilter=None):
         '''Fill the QListWidget with values'''
         # Delete everything
+        QgsMessageLog.logMessage("In TOMsTileListDialog. In populateList",
+                                 tag="TOMs panel")
+
         self.LIST.clear()
 
-        # We need a request
-        """request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
-        if txtFilter is not None:
-            fields = self.layer.dataProvider().fields()
-            fieldname = fields[self.shownField].name()
-            request.setFilterExpression(u"\"{0}\" LIKE '%{1}%'".format(fieldname, txtFilter))
-
-        # Grab the results from the layer
-        features = self.layer.getFeatures(request)"""
-
-        for feature in sorted(self.initValues, key = lambda f: f[0]):
+        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
             attr = feature.attributes()
-            value = attr[self.shownField]
-            element = QListWidgetItem(value)
-            element.setData(Qt.UserRole, attr[self.IdField])
+            value = attr[self.idxValue]
+            element = QListWidgetItem(str(value))
+            element.setData(Qt.UserRole, attr[self.idxValue])
 
-            # initValues will be checked
-            if attr[self.IdField] in self.initValues:
-                element.setCheckState(Qt.Checked)
-            else:
-                element.setCheckState(Qt.Unchecked)
+            QgsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),
+                                     tag="TOMs panel")
+
+            self.tilesToPrint.add(feature)
+            element.setCheckState(Qt.Checked)
+
             self.LIST.addItem(element)
 
     def getValues(self):
         '''Return the selected values of the QListWidget'''
-        return self.initValues
 
+        QgsMessageLog.logMessage("In TOMsTileListDialog. In getValues. Len List = " + str(len(self.tilesToPrint)),
+                                 tag="TOMs panel")
 
-    class nnForm:
-        '''Class to handle forms to type data'''
-        def __init__(self, dialog, layerid, featureid):
-            self.dialog = dialog
-            self.layerid = layerid
-            self.featureid = featureid
-            self.nullValue = QSettings().value("qgis/nullValue" , u"NULL")
-            self.search = False
+        for feature in sorted(self.tilesToPrint, key=lambda f: f[self.idxValue]):
+            attr = feature.attributes()
+            currValue = attr[self.idxValue]
+            QgsMessageLog.logMessage("In Choose tiles form ... Returning " + str(attr[self.idxValue]),
+                                     tag="TOMs panel")
 
-        def id2listWidget(self, table, values, listWidget):
-            '''Show all the selected values of a link table on a QListWidget'''
-            # Find the Widget
-            if listWidget is None or table is None:
-                QgsMessageLog.logMessage(u"id2listWidget: We need to have a relation and a true widget !", "nnForms", QgsMessageLog.INFO)
-                return False
-
-            # Empty the list
-            listWidget.clear()
-
-            # Get the params (for the first child table)
-            if self.valueRelationParams(table):
-                params = self.valueRelationParams(table)[0]
-            if params is None or not params:
-                QgsMessageLog.logMessage(u"id2listWidget: You need to add Value Relation to layer: {0} !".format(table.name()), "nnForms", QgsMessageLog.INFO)
-                return False
-
-            # Get target layer:
-            tgtLayer = params['tgtLayer']
-
-            # Handle values: need to escape \' characters
-            values = [v.replace(u"'", u"''") if isinstance(v, basestring) else v for v in values]
-
-            ## Then, get the real values from other-side table
-            if values:
-                request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
-                if params[u'tgtIdType'] in (QVariant.String, QVariant.Char):
-                    query = u"{0} IN ('{1}')".format(params[u'tgtId'], u"','".join(values))
-                else:
-                    query = u"{0} IN ({1})".format(params[u'tgtId'], u",".join([unicode(x) for x in values]))
-                request.setFilterExpression(query)
-
-                # and display them in the QListWidget
-                for feature in tgtLayer.getFeatures(request):
-                    value = feature.attributes()[params[u'tgtValueIdx']]
-                    if value != u"NULL":
-                        element = QListWidgetItem(value)
-                        element.setData(Qt.UserRole, feature.attributes()[params[u'tgtIdIdx']])
-                        listWidget.addItem(element)
-
-            return True
-
-        def valueRelationParams(self,layer):
-            '''Function that returns the configuration parameters of a valueRelation as a list of dict'''
-            params = []
-            if layer is not None:
-                for idx, field in enumerate(layer.dataProvider().fields()):
-                    if layer.editorWidgetV2(idx) == u"ValueRelation":
-                        param = {}
-                        param[u'srcId'] = field.name()
-                        param[u'srcIdIdx'] = idx
-                        if u"Layer" in layer.editorWidgetV2Config(idx):
-                            tgtLayerName = layer.editorWidgetV2Config(idx)[u"Layer"]
-                            tgtLayer = QgsMapLayerRegistry.instance().mapLayer(tgtLayerName)
-                            if tgtLayer is None:
-                                QgsMessageLog.logMessage(u"valueRelationParams: Can't find the layer {0} !".format(tgtLayerName), "nnForms", QgsMessageLog.INFO)
-                                return False
-
-                            param[u'tgtLayer'] = tgtLayer
-                            param[u'tgtId'] = layer.editorWidgetV2Config(idx)[u"Key"]
-                            param[u'tgtValue'] = layer.editorWidgetV2Config(idx)[u"Value"]
-
-                            # Find index of all fields:
-                            for indx, f in enumerate(tgtLayer.dataProvider().fields()):
-                                if f.name() == param[u'tgtId']:
-                                    param[u'tgtIdIdx'] = indx
-                                    param[u'tgtIdType'] = f.type()
-                                if f.name() == param[u'tgtValue']:
-                                    param[u'tgtValueIdx'] = indx
-                            params.append(param)
-
-            # notification
-            if not params:
-                QgsMessageLog.logMessage(u"valueRelationParams: There is not Value Relation for the layer {0} !".format(layer.name()), "nnForms", QgsMessageLog.INFO)
-
-            return params
-
-        def manageMultiple(self):
-            '''Handle specifics thesaurus form'''
-            # Scan all of the QgsRelations of the project
-            relations = QgsProject.instance().relationManager().relations()
-
-            for listWidget in [f for f in self.dialog.findChildren(QListWidget) if u"REL_" in f.objectName()]:
-                listName = listWidget.objectName()
-                if listName not in relations.keys():
-                    QgsMessageLog.logMessage(u"manageMultiple: There is no Relation for control {0} !".format(listWidget.objectName()), "nnforms", QgsMessageLog.INFO)
-                    continue
-
-                # Find what is the table to show
-                relation = relations[listName]
-                shownLayer = relation.referencingLayer()
-
-                # Find other side of n,n relation
-                if self.valueRelationParams(shownLayer):
-                    params = self.valueRelationParams(shownLayer)[0]
-                if params is None:
-                    continue
-
-                # When found, we are ready to populate the QListWidget with the good values
-                values = []
-                if self.featureid:
-                    # Get the features to display
-                    request = relation.getRelatedFeaturesRequest(self.featureid)
-                    request.setFlags(QgsFeatureRequest.NoGeometry)
-                    for feature in shownLayer.getFeatures(request):
-                        values.append(feature.attributes()[params[u'srcIdIdx']])
-                    self.id2listWidget(shownLayer, values, listWidget)
-
-                buttonWidget = self.dialog.findChild(QPushButton, listName+u"_B")
-                if buttonWidget:
-                    if self.search or self.layerid.isEditable():
-                        buttonWidget.clicked.connect(partial(self.openSubform, listWidget, relation, values))
-                        buttonWidget.setEnabled(True)
-                    else:
-                        buttonWidget.setEnabled(False)
-                elif DEBUGMODE:
-                    QgsMessageLog.logMessage(u"manageMultiple: There is no button for control {0} !".format(listName), "nnForms", QgsMessageLog.INFO)
-
-        def openSubform(self, widget, relation, values):
-            '''Open a dedicated dialog form with values taken from a child table.'''
-            table = relation.referencingLayer()
-            if self.valueRelationParams(table):
-                params = self.valueRelationParams(table)[0]
-
-            if params is None or not params:
-                QgsMessageLog.logMessage(u"openSubform: There is no Value Relation for layer: {0} !".format(table.name()), "nnForms", QgsMessageLog.INFO)
-                return False
-
-            if widget is None:
-                QgsMessageLog.logMessage(u"openSubForm: no widgets found for field {0} !".format(field), "nnForms", QgsMessageLog.INFO)
-
-            # Open the form with the good values
-            dialog = nnDialog(self.dialog, params[u'tgtLayer'], params[u'tgtValueIdx'], params[u'tgtIdIdx'], values, self.search)
-
-            # handle results
-            if dialog.exec_():
-                # Get the results:
-                thevalues = dialog.getValues()
-
-                # Modify target table if we have a featureid
-                if self.featureid:
-                    table.startEditing()
-                    caps = table.dataProvider().capabilities()
-                    ## Delete all the previous values
-                    if caps & QgsVectorDataProvider.DeleteFeatures:
-                        request = relation.getRelatedFeaturesRequest(self.featureid)
-                        request.setFlags(QgsFeatureRequest.NoGeometry)
-                        fids = [f.id() for f in table.getFeatures(request)]
-                        table.dataProvider().deleteFeatures(fids)
-
-                    ## Add the new values
-                    if caps & QgsVectorDataProvider.AddFeatures:
-                        for value in thevalues:
-                            feat = QgsFeature()
-                            feat.setAttributes([None, self.featureid.attributes()[0], value])
-                            table.dataProvider().addFeatures([feat])
-                    ## Commit changes
-                    table.commitChanges()
-
-                # refresh listWidget aspect
-                self.id2listWidget(table, thevalues, widget)
-
-    def opennnForm(dialog, layerid, featureid):
-        '''Generic function to open a nnForm'''
-        form = nnForm(dialog, layerid, featureid)
-        QgsMessageLog.logMessage(u"opennnForm !", "nnforms", QgsMessageLog.INFO)
-        form.manageMultiple()
+        return self.tilesToPrint
