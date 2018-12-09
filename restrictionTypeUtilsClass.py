@@ -1316,7 +1316,7 @@ class RestrictionTypeUtilsMixin():
     def getProposalTileList(self, listProposalID, currRevisionDate):
 
         # returns list of tiles in the proposal and their current revision numbers
-        QgsMessageLog.logMessage("In getProposalTileList.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalTileList. consider Proposal: " + str (listProposalID), tag="TOMs panel")
         self.tileSet = set()
 
         # Logic is:
@@ -1461,6 +1461,8 @@ class RestrictionTypeUtilsMixin():
 
                 self.tileSet.add((tile))
 
+        QgsMessageLog.logMessage("In getProposalTileList: finished adding ... ", tag="TOMs panel")
+
         for tile in self.tileSet:
             QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
 
@@ -1495,6 +1497,7 @@ class RestrictionTypeUtilsMixin():
         #a.geometry().intersects(f.geometry()):
 
         #queryString2 = # bounding box of restriction
+        idxTileID = self.tableNames.MAP_GRID.fieldNameIndex("id")
 
         for tile in self.tileLayer.getFeatures(QgsFeatureRequest().setFilterRect(currRestriction.geometry().boundingBox())):
 
@@ -1518,11 +1521,6 @@ class RestrictionTypeUtilsMixin():
                             "In getTileForRestriction. revised details: " + str(revisionNr) + "; " + str(revisionDate),
                             tag="TOMs panel")"""
 
-                    QgsMessageLog.logMessage(
-                            "In getTileForRestriction. After update: Tile: " + str(tile.attribute("id")) + "; " + str(
-                                tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")),
-                            tag="TOMs panel")
-
                 else:
 
                     # if there is no RevisionNr for the tile, set it to 0. This should only be the case for proposals.
@@ -1531,10 +1529,45 @@ class RestrictionTypeUtilsMixin():
 
                 #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
 
-                self.tileSet.add((tile))
+                QgsMessageLog.logMessage(
+                            "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
+                                tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(idxTileID),
+                            tag="TOMs panel")
+
+                #self.tileSet.add((tile))
+                #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fieldNameIndex("id"))
+
+                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.MAP_GRID.fieldNameIndex("id")) == False:
+                    QgsMessageLog.logMessage(
+                        "In addFeatureToSet. Adding: " + str(currTileNr) + " ; " + str(len(self.tileSet)),
+                        tag="TOMs panel")
+                    self.tileSet.add((tile))
+
+                QgsMessageLog.logMessage(
+                            "In getTileForRestriction. len tileSet: " + str(len(self.tileSet)),
+                            tag="TOMs panel")
+
                 pass
 
         pass
+
+    def checkFeatureInSet(self, featureSet, currFeature, idxValue):
+
+        """QgsMessageLog.logMessage(
+            "In checkFeatureInSet. ", tag="TOMs panel")"""
+
+        found = False
+        currFeatureID = currFeature[idxValue]
+
+        for feature in sorted(featureSet, key=lambda f: f[idxValue]):
+            attr = feature.attributes()
+            currValue = attr[idxValue]
+
+            if currFeatureID == currValue:
+                found = True
+                return found
+
+        return found
 
     def getTileRevisionNr(self, currTile):
         # return the revision number for the tile

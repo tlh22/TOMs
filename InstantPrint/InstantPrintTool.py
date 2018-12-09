@@ -478,13 +478,13 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
                     self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
 
-                    if proposalNrForPrinting == 0:
+                    """if proposalNrForPrinting == 0:
 
                         reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
                                                      'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
                                                      QMessageBox.Yes, QMessageBox.No)
                         if reply == QMessageBox.No:
-                            return
+                            return"""
 
                 else:
                     return
@@ -586,6 +586,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # Now check which tiles to use
         self.TOMsChooseTiles()
 
+        if len(self.tilesToPrint) == 0:
+            return
+
         # get the output location
         dirName = QFileDialog.getExistingDirectory(
             self.iface.mainWindow(),
@@ -624,7 +627,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
         if currProposalID == 0:
-            currProposalTitle = "CurrentRestrictions"
+            currProposalTitle = "CurrentRestrictions_({date})".format(date=self.proposalsManager.date().toString('yyyyMMMdd'))
 
         QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currAtlas.numFeatures()) + " items ....", tag="TOMs panel")
 
@@ -733,16 +736,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def TOMsChooseTiles(self):
         # function to display and allow choice of tiles for printing
 
+        QgsMessageLog.logMessage("In TOMsChooseTiles ", tag="TOMs panel")
+
         # set the dialog (somehow)
 
         self.tilesToPrint = []
         idxMapTileId = self.tableNames.MAP_GRID.fieldNameIndex("id")
 
         self.tileListDialog = printListDialogB(self.tileSet, idxMapTileId)
-        #self.tileListDialog = TOMsTileListDialog(self.dialog, self.tableNames.MAP_GRID, 0, 0, allTilesInProposal)
-
-        #self.tileListDialog.buttonBox.accepted.disconnect()
-        #self.tileListDialog.buttonBox.accepted.connect(self.tileListDialog.getValues)
 
         self.tileListDialog.show()
 
@@ -759,10 +760,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         pass
 
-class printListDialogB(printListDialog):
+class printListDialogB(printListDialog, QDialog):
     def __init__(self, initValues, idxValue, parent=None):
-        printListDialog.__init__(self)
-        #super(printListDialogB, self).__init__(parent)
+        QDialog.__init__(self, parent)
+
         # initValues is set of features (in this case MapTile features); idxValue is the index to the set
         # Set up the user interface from Designer.
         self.setupUi(self)
@@ -785,16 +786,12 @@ class printListDialogB(printListDialog):
         self.LIST.itemChanged.connect(self.changeValues)
         self.cbToggleTiles.stateChanged.connect(self.toggleValues)
 
-        #self.disconnectButtonBox()
-        #self.buttonBox.accepted.disconnect()
-        #self.buttonBox.accepted.connect(self.getValues)
-
     def changeValues(self, element):
         '''Whenever a checkbox is checked, modify the values'''
         # Check if we check or uncheck the value:
-        QgsMessageLog.logMessage(
-            "In TOMsTileListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
-            tag="TOMs panel")
+        """QgsMessageLog.logMessage(
+            "In printListDialogB. In changeValues for: " + str(element.data(Qt.DisplayRole)),
+            tag="TOMs panel")"""
 
         if element.checkState() == Qt.Checked:
             #self.tilesToPrint.append(element.data(Qt.DisplayRole))
@@ -841,13 +838,9 @@ class printListDialogB(printListDialog):
                 # attr = feature.attributes()
                 element = QListWidgetItem(self.LIST.item(i).text())
                 self.LIST.item(i).setCheckState(Qt.Checked)
-                QgsMessageLog.logMessage(
+                """QgsMessageLog.logMessage(
                     "In TOMsTileListDialog. In toggleValues. setting: " + str(self.LIST.item(i).text()),
-                    tag="TOMs panel")
-
-                # element.setData(Qt.UserRole, attr[self.IdField])
-
-                # element.setCheckState(Qt.Checked)
+                    tag="TOMs panel")"""
 
         else:
 
@@ -870,8 +863,8 @@ class printListDialogB(printListDialog):
             element = QListWidgetItem(str(value))
             element.setData(Qt.UserRole, attr[self.idxValue])
 
-            QgsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),
-                                     tag="TOMs panel")
+            """QgsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),
+                                     tag="TOMs panel")"""
 
             self.tilesToPrint.add(feature)
             element.setCheckState(Qt.Checked)
