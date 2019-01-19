@@ -1450,7 +1450,11 @@ class RestrictionTypeUtilsMixin():
 
                 revisionNr, revisionDate = self.getTileRevisionNrAtDate(currTileNr, currRevisionDate)
 
-                if revisionNr:
+                QgsMessageLog.logMessage(
+                    "In getProposalTileList (after getTileRevisionNrAtDate): " + str(tile["id"]) + " RevisionNr: " + str(
+                        revisionNr) + " RevisionDate: " + str(revisionDate), tag="TOMs panel")
+
+                if revisionNr >= 0:
                     if revisionNr <> tile.attribute("RevisionNr"):
                         tile.setAttribute("RevisionNr", revisionNr)
                     if revisionDate <> tile.attribute("LastRevisionDate"):

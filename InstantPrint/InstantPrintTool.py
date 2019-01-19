@@ -674,6 +674,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         currAtlas.endRender()
 
+        QMessageBox.information(self.iface.mainWindow(), "Information",
+                                ("Printing completed"))
+
     def tileFromTileSet(self, tileNr):
 
         for tile in self.tileSet:
