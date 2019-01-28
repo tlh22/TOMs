@@ -382,14 +382,15 @@ class generateGeometryUtils:
     @staticmethod
     def getRestrictionGeometry(feature):
         # Function to control creation of geometry for any restriction
-        #QgsMessageLog.logMessage("In getRestrictionGeometry", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry: " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
         bayWidth = float(QgsExpressionContextUtils.projectScope().variable('BayWidth'))
-        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained bayWidth" + str(bayWidth), tag="TOMs panel")
         bayLength = float(QgsExpressionContextUtils.projectScope().variable("BayLength"))
         bayOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("BayOffsetFromKerb"))
         lineOffsetFromKerb = float(QgsExpressionContextUtils.projectScope().variable("LineOffsetFromKerb"))
-        #QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
+        crossoverShapeWidth = float(QgsExpressionContextUtils.projectScope().variable("CrossoverShapeWidth"))
+        QgsMessageLog.logMessage("In getRestrictionGeometry - obtained variables", tag="TOMs panel")
         nrBays = 0
 
         restGeomType = feature.attribute("GeomShapeID")
@@ -450,13 +451,21 @@ class generateGeometryUtils:
             shpExtent = 0
             wavelength = 1
             amplitude = 0.1
+        elif restGeomType == 35:  # 35 = Droppped Kerb (Crossover)
+            QgsMessageLog.logMessage("In getRestrictionGeometry - found crossover", tag="TOMs panel")
+            offset = lineOffsetFromKerb
+            shpExtent = crossoverShapeWidth
+            if (AzimuthToCentreLine + 180) > 360:
+                AzimuthToCentreLine = AzimuthToCentreLine - 180
+            else:
+                AzimuthToCentreLine = AzimuthToCentreLine + 180
         else:
             offset = 0
             shpExtent = 0
 
         # Now get the geometry
 
-        #QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry - calling display", tag="TOMs panel")
 
         if restGeomType == 12:  # ZigZag
             outputGeometry = generateGeometryUtils.zigzag(feature, wavelength, amplitude, restGeomType, offset,
@@ -465,12 +474,12 @@ class generateGeometryUtils:
             outputGeometry, parallelLine = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation, AzimuthToCentreLine)
 
-        #QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
         #if feature.attribute("RestrictionTypeID") == 18:  # Greenway Parking Bay
         if restGeomType >= 20:  # Polygon
 
-            if restGeomType in [21, 24, 25]:
+            if restGeomType in [21, 24, 25, 35]:
                 outputGeometry1 = outputGeometry
                 # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
                 outputGeometry2A, parallelLine2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
@@ -543,7 +552,7 @@ class generateGeometryUtils:
     @staticmethod
     def checkFeatureIsBay(restGeomType):
         QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
-        if restGeomType >= 10 and restGeomType <=20:
+        if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
             return True
         else:
             return False
