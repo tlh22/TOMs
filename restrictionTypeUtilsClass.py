@@ -1293,7 +1293,10 @@ class RestrictionTypeUtilsMixin():
         for tile in self.tileSet:
             currRevisionNr = tile["RevisionNr"]
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
-            self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
+            if currRevisionNr is None:
+                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(),self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), 1)
+            else:
+                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
             self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
 
             # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
