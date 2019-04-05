@@ -884,7 +884,7 @@ class generateGeometryUtils:
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
 
         if currScale <= minScale:
 
@@ -963,9 +963,9 @@ class generateGeometryUtils:
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
-        QgsMessageLog.logMessage(
+        """QgsMessageLog.logMessage(
             "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
-            tag="TOMs panel")
+            tag="TOMs panel")"""
 
         if CPZWaitingTimeID:
             #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
@@ -979,7 +979,7 @@ class generateGeometryUtils:
         if loadingTimeID == 1:  # 'At Any Time'
             loadDesc = None """
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
@@ -1001,7 +1001,7 @@ class generateGeometryUtils:
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
         timePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, timePeriodID)
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), tag="TOMs panel")
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionPTA = feature.attribute("ParkingTariffArea")
@@ -1012,17 +1012,17 @@ class generateGeometryUtils:
         #TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
         #TariffZoneTimePeriodID = generateGeometryUtils.getTariffZoneTimePeriodID(restrictionPTA)
 
-        QgsMessageLog.logMessage(
+        """QgsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
             tag="TOMs panel")
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")"""
 
         if timePeriodID == 1:  # 'At Any Time'
             timePeriodDesc = None
 
         if CPZWaitingTimeID:
-            QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
-                                     tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
+                                     tag="TOMs panel")"""
             if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
 
@@ -1030,18 +1030,18 @@ class generateGeometryUtils:
             timePeriodDesc = None
 
         if TariffZoneMaxStayID:
-            QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                                     tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
+                                     tag="TOMs panel")"""
             if TariffZoneMaxStayID == maxStayID:
                 maxStayDesc = None
 
         if TariffZoneNoReturnID:
-            QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                                     tag="TOMs panel")
+            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
+                                     tag="TOMs panel")"""
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 
@@ -1084,7 +1084,7 @@ class generateGeometryUtils:
         CPZLayer = QgsMapLayerRegistry.instance().mapLayersByName("CPZs")[0]
 
         restrictionID = feature.attribute("GeometryID")
-        QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
 
         geom = feature.geometry()
 
@@ -1094,7 +1094,7 @@ class generateGeometryUtils:
 
             currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
-            QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
 
             return currentCPZ, cpzWaitingTimeID
 
@@ -1103,11 +1103,11 @@ class generateGeometryUtils:
     @staticmethod
     def getCurrentPTADetails(feature):
 
-        QgsMessageLog.logMessage("In getCurrentPTADetails", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentPTADetails", tag="TOMs panel")
         PTALayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         restrictionID = feature.attribute("GeometryID")
-        QgsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), tag="TOMs panel")
 
         geom = feature.geometry()
 
@@ -1120,7 +1120,7 @@ class generateGeometryUtils:
             ptaNoReturnTimeID = currentPTAFeature.attribute("NoReturnTimeID")
             ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
-            QgsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), tag="TOMs panel")
 
             return currentPTA, ptaMaxStayID, ptaNoReturnTimeID
 
@@ -1185,11 +1185,11 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                QgsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", tag="TOMs panel")
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
                 ptaMaxStayID = poly.attribute("MaxStayID")
                 ptaNoReturnTimeID = poly.attribute("NoReturnTimeID")
-                QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
                 return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnTimeID
 
         return None, None, None
@@ -1205,9 +1205,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                QgsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", tag="TOMs panel")
                 ptaMaxStayID = poly.attribute("MaxStayID")
-                QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
                 return ptaMaxStayID
 
         return None
@@ -1223,9 +1223,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                QgsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", tag="TOMs panel")
                 ptaNoReturnID = poly.attribute("NoReturnTimeID")
-                QgsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), tag="TOMs panel")
                 return ptaNoReturnID
 
         return None
@@ -1233,7 +1233,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneTimePeriodID(tpaNr):
 
-        QgsMessageLog.logMessage("In getTariffZoneTimePeriodID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID", tag="TOMs panel")
 
         tpaLayer = QgsMapLayerRegistry.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1241,9 +1241,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", tag="TOMs panel")
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
-                QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. ID." + str(ptaTimePeriodID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. ID." + str(ptaTimePeriodID), tag="TOMs panel")
                 return ptaTimePeriodID
 
         return None

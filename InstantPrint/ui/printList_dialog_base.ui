@@ -6,25 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>119</height>
+    <width>250</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Print accepted proposals</string>
+   <string>Tiles to print</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Accepted Proposals:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="cb_AcceptedProposalsList"/>
-   </item>
-   <item row="2" column="0" colspan="2">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -35,15 +25,14 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="label_2">
+    <widget class="QCheckBox" name="cb_ToggleTiles">
      <property name="text">
-      <string>Choose the proposal (Confirmed Order) that you wish to print. 
-To print current map sheets choose &quot;0 - No proposal shown&quot;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
+      <string>Toggle selection of all tiles</string>
      </property>
     </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QListWidget" name="tileList"/>
    </item>
   </layout>
  </widget>
