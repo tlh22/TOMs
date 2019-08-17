@@ -489,9 +489,9 @@ class generateGeometryUtils:
                 #ptsList = []
                 vertices = outputGeometry2A.asPolyline()
 
-                #QgsMessageLog.logMessage(
-                #    "In getRestrictionGeometry - nrPts in 2A:  " + str(len(vertices)),
-                #    tag="TOMs panel")
+                QgsMessageLog.logMessage(
+                    "In getRestrictionGeometry - nrPts in 2A:  " + str(len(vertices)),
+                    tag="TOMs panel")
 
                 # ... and combine the two geometries
                 newGeometry = outputGeometry1.combine(outputGeometry2A)
@@ -565,7 +565,7 @@ class generateGeometryUtils:
         # Need to check why the project variable function is not working
 
         restrictionID = feature.attribute("GeometryID")
-        #QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
         # restGeomType = feature.attribute("GeomShapeID")
         #AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
@@ -714,7 +714,7 @@ class generateGeometryUtils:
 
         newLine = QgsGeometry.fromPolyline(ptsList)
         parallelLine = QgsGeometry.fromPolyline(parallelPtsList)
-        #QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.exportToWkt(), tag="TOMs panel")
 
         return newLine, parallelPtsList
 
@@ -947,7 +947,7 @@ class generateGeometryUtils:
     @staticmethod
     def getWaitingLoadingRestrictionLabelText(feature):
 
-        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", tag="TOMs panel")
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
@@ -958,7 +958,7 @@ class generateGeometryUtils:
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
-        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
 
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
@@ -979,7 +979,7 @@ class generateGeometryUtils:
         if loadingTimeID == 1:  # 'At Any Time'
             loadDesc = None """
 
-        #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
@@ -1012,17 +1012,17 @@ class generateGeometryUtils:
         #TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
         #TariffZoneTimePeriodID = generateGeometryUtils.getTariffZoneTimePeriodID(restrictionPTA)
 
-        """QgsMessageLog.logMessage(
+        QgsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
             tag="TOMs panel")
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")"""
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")
 
         if timePeriodID == 1:  # 'At Any Time'
             timePeriodDesc = None
 
         if CPZWaitingTimeID:
-            """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
-                                     tag="TOMs panel")"""
+            QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
+                                     tag="TOMs panel")
             if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
 
@@ -1041,7 +1041,7 @@ class generateGeometryUtils:
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
 
-        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 
