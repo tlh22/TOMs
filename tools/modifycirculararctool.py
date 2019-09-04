@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 from cadtools import resources
@@ -49,7 +49,7 @@ class ModifyCircularArcTool:
                 return
             
             self.type = vlayer.geometryType()
-            if self.type <> 1:
+            if self.type != 1:
                 QMessageBox.information(None, QCoreApplication.translate("ctools", "Modify Circular Arc"), QCoreApplication.translate("ctools", "Unsupported geometry type."))
                 self.action_modifycirculararc.setChecked(False)   
                 return
@@ -66,7 +66,7 @@ class ModifyCircularArcTool:
             layer = mc.currentLayer()
             
             ## Decide whether the plugin button/menu is enabled or disabled.
-            if layer <> None:
+            if layer != None:
                 ## Only for vector layers.
                 type = layer.type()
                 if type == 0:
@@ -90,7 +90,7 @@ class ModifyCircularArcTool:
 
 
         def unsetTool(self):
-            print "***************** unset tool modifycirculararctool"  
+            print ("***************** unset tool modifycirculararctool")
 #            self.p1 = None
 #            self.p2 = None
 #            self.p3 = None          
@@ -100,7 +100,7 @@ class ModifyCircularArcTool:
  
  
         def deactivate(self):
-            print "***************** deactivate modifycirculararctool"            
+            print ("***************** deactivate modifycirculararctool")
             self.action_modifycirculararc.setChecked(False)   
             
 

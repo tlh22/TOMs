@@ -10,8 +10,8 @@
 
 # T Hancock (180607) given the number of "private" functions, i.e., "__", have decided to amend this file rather than subclass
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import os, copy
@@ -170,7 +170,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         try:
             maps = composerView.composition().composerMapItems()
         except Exception:
-            # composerMapItems is not available with PyQt4 < 4.8.4
+            # composerMapItems is not available with PyQt5 < 4.8.4
             maps = []
             for item in composerView.composition().items():
                 if isinstance(item, QgsComposerMap):
@@ -200,7 +200,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rect = QRectF(self.corner.x(), self.corner.y(), extent.width(), extent.height())
         self.mapitem.setNewExtent(QgsRectangle(self.rect))
 
-        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
@@ -221,7 +221,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
             self.oldrect = QRectF(self.rect)
-            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
@@ -404,7 +404,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         try:
             maps = composerView.composition().composerMapItems()
         except Exception:
-            # composerMapItems is not available with PyQt4 < 4.8.4
+            # composerMapItems is not available with PyQt5 < 4.8.4
             maps = []
             for item in composerView.composition().items():
                 if isinstance(item, QgsComposerMap):
@@ -507,9 +507,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
         #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+        if QgsProject.instance().mapLayersByName("Proposals"):
             self.Proposals = \
-                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+                QgsProject.instance().mapLayersByName("Proposals")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                     ("Table Proposals is not present"))

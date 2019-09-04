@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -14,7 +14,7 @@ class OrthogonalDigitizer(QgsMapTool):
   def __init__(self, canvas):
     QgsMapTool.__init__(self,canvas)
     self.canvas=canvas
-    self.rb = QgsRubberBand(self.canvas, QGis.Polygon)
+    self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
     self.mCtrl = False
     self.length = -1
     #our own fancy cursor
@@ -75,11 +75,11 @@ class OrthogonalDigitizer(QgsMapTool):
         snapper = QgsMapCanvasSnapper(self.canvas)
         
         (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)   
-        if result <> []:
+        if result != []:
             point = result[0].snappedVertex
         else:
             (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-            if result <> []:
+            if result != []:
                 point = result[0].snappedVertex
             else:
                 point = self.canvas.getCoordinateTransform().toMapCoordinates( event.pos().x(), event.pos().y() );
@@ -156,7 +156,7 @@ class OrthogonalDigitizer(QgsMapTool):
         self.rb.reset()
     else:
         self.isPolygon = True
-        self.rb.reset(QGis.Polygon)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
         
     self.canvas.refresh()
         
@@ -294,11 +294,11 @@ class OrthogonalDigitizer(QgsMapTool):
     ## If we don't get one we try the backround snapper and
     ## at last we do not snap.
     (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)   
-    if result <> []:
+    if result != []:
         point = result[0].snappedVertex
     else:
         (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-        if result <> []:
+        if result != []:
             point = result[0].snappedVertex
         else:
             point = self.canvas.getCoordinateTransform().toMapCoordinates( event.pos().x(), event.pos().y() );
@@ -361,10 +361,10 @@ class OrthogonalDigitizer(QgsMapTool):
         self.rb.reset()
     else:
         self.isPolygon = True
-        self.rb.reset(QGis.Polygon)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
         
   def deactivate(self):
-    self.rb.reset(QGis.Polygon)
+    self.rb.reset(QgsWkbTypes.PolygonGeometry)
     self.count = 0
     pass
 

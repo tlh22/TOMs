@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 # Initialize Qt resources from file resources.py
@@ -85,7 +85,7 @@ class OrthogonalTraverseTool:
             
             line = OrthogonalTraverse.traverse(traverse, 0, 1)
             if line == None:
-                print "Line is None!"
+                print ("Line is None!")
             else:
                 points = line.asPolyline()
                 
@@ -120,7 +120,7 @@ class OrthogonalTraverseTool:
                     else:
                         lineTransformed = cadutils.helmert2d(line, x1, y1, rotationAngle, 1.0)
                     
-                    if lineTransformed <> None:
+                    if lineTransformed != None:
                         cadutils.addGeometryToCadLayer(lineTransformed)
                         self.canvas.refresh()
                     else:

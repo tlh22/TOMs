@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -57,7 +57,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
             
             if self.rb is not None:
                 if self.isPolygon:
-                    self.rb.reset(QGis.Polygon)
+                    self.rb.reset(QgsWkbTypes.PolygonGeometry)
                 else:
                     self.rb.reset()
 
@@ -78,11 +78,11 @@ class VertexAndObjectFinderTool(QgsMapTool):
 
             self.cf = QgsFeature()
             for f in vlayer.getFeatures():
-                if f.geometry() is not None:
-                    currentDistance = pointGeometry.distance( f.geometry() )
+                if f.get() is not None:
+                    currentDistance = pointGeometry.distance( f.get() )
                     if currentDistance < minDistance:
                         minDistance = currentDistance
-                        self.cf.setGeometry(f.geometry())
+                        self.cf.setGeometry(f.get())
             try:
                 if minDistance == float('inf'):
                     return
@@ -95,7 +95,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
 
 
             self.rb = self.createRubberBand(self.isPolygon)
-            self.rb.setToGeometry( self.cf.geometry(), vlayer )
+            self.rb.setToGeometry( self.cf.get(), vlayer )
 
             self.count += 1
 
@@ -117,7 +117,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
                                
               if result == []:
                   (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-              if result <> []:
+              if result != []:
                 self.p1.setX( result[0].snappedVertex.x() )  
                 self.p1.setY( result[0].snappedVertex.y() )  
                 
@@ -145,7 +145,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
 
     def createRubberBand( self, isPolygon ):
         if isPolygon:
-            rb = QgsRubberBand( self.canvas, QGis.Polygon )
+            rb = QgsRubberBand( self.canvas, QgsWkbTypes.PolygonGeometry )
         else:
             rb = QgsRubberBand( self.canvas )
         color = QColor(255,0,0,100)

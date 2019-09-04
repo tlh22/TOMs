@@ -1,8 +1,8 @@
 # -*- coding: latin1 -*-
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -57,7 +57,7 @@ class SingleVertexFinderTool(QgsMapTool):
     
     layer = self.canvas.currentLayer()
     
-    if layer <> None:
+    if layer != None:
       #the clicked point is our starting point
       startingPoint = QPoint(x,y)
       
@@ -71,7 +71,7 @@ class SingleVertexFinderTool(QgsMapTool):
       if result == []:
           (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
           
-      if result <> []:
+      if result != []:
         #mark the vertex 
         self.p1.setX( result[0].snappedVertex.x() )  
         self.p1.setY( result[0].snappedVertex.y() )  

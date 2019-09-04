@@ -11,13 +11,48 @@
 
 import math
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtGui import (
+    QColor,
+QMouseEvent
+)
+from PyQt5.QtCore import (
+    QSettings,
+    QEvent,
+    QPoint,
+    Qt,
+    QRect
+)
+from PyQt5.QtWidgets import (
+    QRubberBand
+)
 
-from qgis.core import *
-from qgis.gui import *
+# from qgis.core import *
+from qgis.core import (
+    QgsGeometry,
+    QgsGeometryCollection,
+    QgsCurve,
+    QgsCurvePolygon,
+    QgsMessageLog,
+    QgsMultiCurve,
+    QgsPoint,
+    QgsPointLocator,
+    QgsVertexId,
+    QgsVectorLayer,
+    QgsRectangle,
+    QgsProject,
+    QgsFeatureRequest,
+    QgsTolerance,
+    QgsSnappingUtils,
+    QgsWkbTypes
+)
+from qgis.gui import (
+    QgsVertexMarker,
+    QgsMapToolAdvancedDigitizing,
+    QgsRubberBand,
+    QgsMapMouseEvent
+)
 
-from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
+from TOMs.CadNodeTool.geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
 
 class Vertex(object):
     def __init__(self, layer, fid, vertex_id):
@@ -56,7 +91,7 @@ def _digitizing_color_width():
 
 def _is_circular_vertex(geom, vertex_index):
     """Find out whether geom (QgsGeometry) has a circular vertex on the given index"""
-    if geom.type() != QGis.Line and geom.type() != QGis.Polygon:
+    if geom.type() != QgsWkbTypes.LineGeometry and geom.type() != QgsWkbTypes.PolygonGeometry:
         return False
     v_id = QgsVertexId()
     res, v_id = geom.vertexIdFromVertexNr(vertex_index)  # seems to have been a change in signature
@@ -64,13 +99,13 @@ def _is_circular_vertex(geom, vertex_index):
 
     # we need to get vertex type in this painful way because the above function
     # does not actually set "type" attribute (surprise surprise)
-    g = geom.geometry()
-    if isinstance(g, QgsGeometryCollectionV2):
+    g = geom.get()
+    if isinstance(g, QgsGeometryCollection):
         g = g.geometryN(v_id.part)
-    if isinstance(g, QgsCurvePolygonV2):
+    if isinstance(g, QgsCurvePolygon):
         g = g.exteriorRing() if v_id.ring == 0 else g.interiorRing(v_id.ring - 1)
-    assert isinstance(g, QgsCurveV2)
-    p = QgsPointV2()
+    assert isinstance(g, QgsCurve)
+    p = QgsPoint()
     res, v_type = g.pointAt(v_id.vertex, p)
     if not res:
         return False
@@ -187,15 +222,15 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         if not layer:
             QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel")
-            print "no active layer!"
+            print ("no active layer!")
             return False
 
         if not isinstance(layer, QgsVectorLayer):
-            print "not vector layer"
+            print ("not vector layer")
             return False
 
         if not layer.isEditable():
-            print "layer not editable!"
+            print ("layer not editable!")
             return False
 
         QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - using current layer", tag="TOMs panel")
@@ -281,12 +316,12 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                     continue
                 layer_rect = self.toLayerCoordinates(layer, map_rect)
                 for f in layer.getFeatures(QgsFeatureRequest(layer_rect)):
-                    g = f.geometry()
+                    g = f.get()
 
                     # TH (180630): Changed to deal with g = None
 
                     if g is not None:
-                        for i in xrange(g.geometry().nCoordinates()):
+                        for i in range(g.get().nCoordinates()):
                             pt = g.vertexAt(i)
                             if layer_rect.contains(pt):
                                 nodes.append( Vertex(layer, f.id(), i) )
@@ -476,7 +511,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
     def is_match_at_endpoint(self, match):
         geom = self.cached_geometry(match.layer(), match.featureId())
 
-        if geom.type() != QGis.Line:
+        if geom.type() != QgsWkbTypes.LineGeometry:
             return False
 
         return is_endpoint_at_vertex_index(geom, match.vertexIndex())
@@ -561,8 +596,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             if self.feature_band_source == (m.layer(), m.featureId()):
                 return  # skip regeneration of rubber band if not needed
             geom = self.cached_geometry(m.layer(), m.featureId())
-            if QgsWKBTypes.isCurvedType(geom.geometry().wkbType()):
-                geom = QgsGeometry(geom.geometry().segmentize())
+            if QgsWkbTypes.isCurvedType(geom.get().wkbType()):
+                geom = QgsGeometry(geom.get().segmentize())
             self.feature_band.setToGeometry(geom, m.layer())
             self.feature_band.setVisible(True)
             self.feature_band_source = (m.layer(), m.featureId())
@@ -598,7 +633,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         if fid not in self.cache[layer]:
             f = layer.getFeatures(QgsFeatureRequest(fid)).next()
-            self.cache[layer][fid] = QgsGeometry(f.geometry())
+            self.cache[layer][fid] = QgsGeometry(f.get())
 
         return self.cache[layer][fid]
 
@@ -629,7 +664,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         m = self.snap_to_editable_layer(e)
         if not m.isValid():
-            print "wrong snap!"
+            print ("wrong snap!")
             return
 
         # activate advanced digitizing dock
@@ -720,8 +755,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 # result... the locator API needs a new method verticesInRect()
                 match_geom = self.nodetool.cached_geometry(match.layer(), match.featureId())
                 vid = QgsVertexId()
-                pt = QgsPointV2()
-                while match_geom.geometry().nextVertex(vid, pt):
+                pt = QgsPoint()
+                while match_geom.get().nextVertex(vid, pt):
                     vindex = match_geom.vertexNrFromVertexId(vid)
                     if pt.x() == match.point().x() and pt.y() == match.point().y() and vindex != match.vertexIndex():
                         extra_match = QgsPointLocator.Match(match.type(), match.layer(), match.featureId(),
@@ -844,7 +879,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         if match and match.hasVertex() and match.layer() and match.layer().crs() == dest_layer.crs():
             try:
                 f = match.layer().getFeatures(QgsFeatureRequest(match.featureId())).next()
-                layer_point = f.geometry().vertexAt(match.vertexIndex())
+                layer_point = f.get().vertexAt(match.vertexIndex())
             except StopIteration:
                 pass
 
@@ -911,14 +946,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             if adding_at_endpoint and drag_vertex != 0:  # appending?
                 drag_vertex += 1
             vid = QgsVertexId(drag_part, drag_ring, drag_vertex, QgsVertexId.SegmentVertex)
-            geom_tmp = geom.geometry().clone()
-            if not geom_tmp.insertVertex(vid, QgsPointV2(layer_point)):
-                print "append vertex failed!"
+            geom_tmp = geom.get().clone()
+            if not geom_tmp.insertVertex(vid, QgsPoint(layer_point)):
+                print ("append vertex failed!")
                 return
             geom.setGeometry(geom_tmp)
         else:
             if not geom.moveVertex(layer_point.x(), layer_point.y(), drag_vertex_id):
-                print "move vertex failed!"
+                print ("move vertex failed!")
                 return
 
         edits = { drag_layer: { drag_fid: geom } }  # dict { layer : { fid : geom } }
@@ -938,7 +973,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 point = self.toLayerCoordinates(topo.layer, map_point)
 
             if not topo_geom.moveVertex(point.x(), point.y(), topo.vertex_id):
-                print "[topo] move vertex failed!"
+                print ("[topo] move vertex failed!")
                 continue
             edits[topo.layer][topo.fid] = topo_geom
 
@@ -988,7 +1023,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                     if res != QgsVectorLayer.EmptyGeometry:
                         res = layer.deleteVertexV2(fid, vertex_id)
                     if res != QgsVectorLayer.EmptyGeometry and res != QgsVectorLayer.Success:
-                        print "failed to delete vertex!", layer.name(), fid, vertex_id, vertex_ids
+                        print ("failed to delete vertex!", layer.name(), fid, vertex_id, vertex_ids)
                         success = False
 
             if success:

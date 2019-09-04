@@ -11,8 +11,8 @@
 # T Hancock (180607) generate a subclass of Sandro's class
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -124,7 +124,7 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
                             # TODO: Deal with restrictions that have been deleted, i.e., are not in the current view
 
                             if currRestriction:
-                                tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
+                                tileIDsList = tileIndex.intersects(currRestriction.get().boundingBox())
                                 self.MapGrid.selectByIds(tileIDsList)
                                 currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
                                 self.MapGrid.removeSelection()
@@ -180,7 +180,7 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
 
                 for currRestriction in listRestrictions:
 
-                    tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
+                    tileIDsList = tileIndex.intersects(currRestriction.get().boundingBox())
                     self.MapGrid.selectByIds(tileIDsList)
                     currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
                     self.MapGrid.removeSelection()

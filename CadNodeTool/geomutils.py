@@ -1,15 +1,23 @@
 
-from qgis.core import *
+# from qgis.core import *
+from qgis.core import (
+    QgsGeometry,
+    QgsGeometryCollection,
+    QgsCurve,
+    QgsCurvePolygon,
+    QgsMultiCurve,
+    QgsPoint
+)
 
 
 def is_endpoint_at_vertex_index(geom, vertex_index):
     """ Find out whether vertex at the given index is an endpoint (assuming linear geometry) """
 
-    g = geom.geometry()
-    if isinstance(g, QgsCurveV2):
+    g = geom.get()
+    if isinstance(g, QgsCurve):
         return vertex_index == 0 or vertex_index == g.numPoints()-1
-    elif isinstance(g, QgsMultiCurveV2):
-        for i in xrange(g.numGeometries()):
+    elif isinstance(g, QgsMultiCurve):
+        for i in range(g.numGeometries()):
             part = g.geometryN(i)
             if vertex_index < part.numPoints():
                 return vertex_index == 0 or vertex_index == part.numPoints()-1
@@ -20,12 +28,12 @@ def is_endpoint_at_vertex_index(geom, vertex_index):
 
 def vertex_at_vertex_index(geom, vertex_index):
     """ Get coordinates of the vertex at particular index """
-    g = geom.geometry()
-    p = QgsPointV2()
-    if isinstance(g, QgsCurveV2):
+    g = geom.get()
+    p = QgsPoint()
+    if isinstance(g, QgsCurve):
         g.pointAt(vertex_index, p)
-    elif isinstance(g, QgsMultiCurveV2):
-        for i in xrange(g.numGeometries()):
+    elif isinstance(g, QgsMultiCurve):
+        for i in range(g.numGeometries()):
             part = g.geometryN(i)
             if vertex_index < part.numPoints():
                 part.pointAt(vertex_index, p)
@@ -38,12 +46,12 @@ def vertex_at_vertex_index(geom, vertex_index):
 
 def adjacent_vertex_index_to_endpoint(geom, vertex_index):
     """ Return index of vertex adjacent to the given endpoint. Assuming linear geometries. """
-    g = geom.geometry()
-    if isinstance(g, QgsCurveV2):
+    g = geom.get()
+    if isinstance(g, QgsCurve):
         return 1 if vertex_index == 0 else g.numPoints()-2
-    elif isinstance(g, QgsMultiCurveV2):
+    elif isinstance(g, QgsMultiCurve):
         offset = 0
-        for i in xrange(g.numGeometries()):
+        for i in range(g.numGeometries()):
             part = g.geometryN(i)
             if vertex_index < part.numPoints():
                 return offset+1 if vertex_index == 0 else offset+part.numPoints()-2
@@ -57,12 +65,12 @@ def vertex_index_to_tuple(g, vertex_index):
     """ Return a tuple (part, vertex) from vertex index """
 
     if isinstance(g, QgsGeometry):
-        g = g.geometry()
+        g = g.get()
 
-    if isinstance(g, QgsGeometryCollectionV2):
+    if isinstance(g, QgsGeometryCollection):
         part_index = 0
         offset = 0
-        for i in xrange(g.numGeometries()):
+        for i in range(g.numGeometries()):
             part = g.geometryN(i)
             if vertex_index < part.numPoints():
                 (_,ring_index,vertex) = vertex_index_to_tuple(part, vertex_index)
@@ -71,16 +79,16 @@ def vertex_index_to_tuple(g, vertex_index):
             offset += part.numPoints()
             part_index += 1
 
-    elif isinstance(g, QgsCurveV2):
+    elif isinstance(g, QgsCurve):
         return (0, 0, vertex_index)
 
-    elif isinstance(g, QgsCurvePolygonV2):
+    elif isinstance(g, QgsCurvePolygon):
         ring = g.exteriorRing()
         if vertex_index < ring.numPoints():
             return (0, 0, vertex_index)
         vertex_index -= ring.numPoints()
         ring_index = 1
-        for i in xrange(g.numInteriorRings()):
+        for i in range(g.numInteriorRings()):
             ring = g.interiorRing(i)
             if vertex_index < ring.numPoints():
                 return (0, ring_index, vertex_index)

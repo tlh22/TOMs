@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -143,7 +143,7 @@ class ParallelLineTool:
                 self.canvas.refresh()
 
             elif method == "vertex":
-                print "************************888"
+                print ("************************888")
                 points =  [self.p1,  self.p2]
                 g = QgsGeometry.fromPolyline(points)
                 g.translate( self.pv.x() - self.p1.x(),  self.pv.y() - self.p1.y() )
@@ -157,14 +157,14 @@ class ParallelLineTool:
             self.p2 = p2        
         
         def unsetTool(self):
-            print "***************** unset tool"
+            print ("***************** unset tool")
             mc = self.canvas
             mc.unsetMapTool(self.tool)      
             self.action_selectline.setChecked(False)       
             
             
         def deactivate(self):
-            print "***************** deactivate parallellinetool"  
+            print ("***************** deactivate parallellinetool")
             self.dummy = False
             self.rb1.reset()
             self.action_selectline.setChecked(False)       

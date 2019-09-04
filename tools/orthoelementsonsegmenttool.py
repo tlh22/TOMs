@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 
@@ -71,7 +71,7 @@ class OrthoElementsOnSegmentTool:
         
                 p = LineIntersection.intersectionPoint(self.p1, p0,  self.p2,  self.p3)
                 line = [self.p1, p]     
-                if p <> None:
+                if p != None:
                     
                     # Draw the point
                     cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(p))

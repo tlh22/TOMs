@@ -1038,10 +1038,10 @@ Enter the name of the function in the "Python Init function"
 field.
 An example follows:
 """
-from PyQt4.QtGui import QWidget
+from PyQt5.QtGui import QWidget
 
 def my_form_open(dialog, layer, feature):
-	geom = feature.geometry()
+	geom = feature.get()
 	control = dialog.findChild(QWidget, "RestrictionTypeID")
 	QMessageBox.information('abcd')
 ]]></editforminitcode>

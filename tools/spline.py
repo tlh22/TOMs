@@ -18,8 +18,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -33,7 +33,7 @@ class Spline(QgsMapTool):
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         QgsMapTool.__init__(self,self.canvas)
-        self.rb = QgsRubberBand(self.canvas,  QGis.Polygon)
+        self.rb = QgsRubberBand(self.canvas,  QgsWkbTypes.PolygonGeometry)
         self.points = [] # digitized, not yet interpolated points
 
         self.cursor = QCursor(QPixmap(["16 16 3 1",
@@ -76,11 +76,11 @@ class Spline(QgsMapTool):
             snapper = QgsMapCanvasSnapper(self.canvas)
             
             (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)   
-            if result <> []:
+            if result != []:
                 point = result[0].snappedVertex
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-                if result <> []:
+                if result != []:
                     point = result[0].snappedVertex
                 else:
                     point = self.canvas.getCoordinateTransform().toMapCoordinates( event.pos().x(), event.pos().y() );
@@ -162,11 +162,11 @@ class Spline(QgsMapTool):
         ## If we don't get one we try the backround snapper and
         ## at last we do not snap.
         (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)   
-        if result <> []:
+        if result != []:
             point = result[0].snappedVertex
         else:
             (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-            if result <> []:
+            if result != []:
                 point = result[0].snappedVertex
             else:
                 point = self.canvas.getCoordinateTransform().toMapCoordinates( event.pos().x(), event.pos().y() );
@@ -193,7 +193,7 @@ class Spline(QgsMapTool):
         layer = mc.currentLayer()
         self.type = layer.geometryType()
         self.isPolygon = False
-        if self.type == QGis.Polygon:
+        if self.type == QgsWkbTypes.PolygonGeometry:
             self.isPolygon = True
 
     def resetRubberBand(self):
@@ -206,7 +206,7 @@ class Spline(QgsMapTool):
             self.rb.addPoint( point, update )
 
     def deactivate(self):
-        self.rb.reset(QGis.Polygon)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
         self.count = 0
         pass
 

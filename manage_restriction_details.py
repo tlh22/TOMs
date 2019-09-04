@@ -11,26 +11,32 @@
 
 # Initialize Qt resources from file resources.py
 
-from PyQt4.QtCore import (
+from PyQt5.QtCore import (
     QObject,
     QDate,
     pyqtSignal,
     QCoreApplication
 )
 
-from PyQt4.QtGui import (
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction,
-    QIcon,
     QDialogButtonBox,
-    QPixmap,
-    QLabel
+    QLabel,
+    QDockWidget
 )
 
 from qgis.core import (
     QgsExpressionContextUtils,
-    QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry
+    QgsProject,
+    QgsMessageLog,
+    QgsFeature,
+    QgsGeometry
 )
 
 import os
@@ -524,7 +530,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             QgsMessageLog.logMessage("In doCreateConstructionLine - tool activated", tag="TOMs panel")
 
-            self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("ConstructionLines")[0]
+            self.currLayer = QgsProject.instance().mapLayersByName("ConstructionLines")[0]
             self.iface.setActiveLayer(self.currLayer)
 
             self.currLayer.startEditing()

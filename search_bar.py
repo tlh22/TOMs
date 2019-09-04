@@ -13,8 +13,8 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 from TOMs.InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
@@ -114,7 +114,7 @@ class searchBar():
 
         # https://gis.stackexchange.com/questions/155805/qstringlist-error-in-plugin-of-qgis-2-10
 
-        self.GazetteerLayer = QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords")[0]
+        self.GazetteerLayer = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
 
         for row in self.GazetteerLayer.getFeatures():
             streetName = row.attribute("Descriptor_")

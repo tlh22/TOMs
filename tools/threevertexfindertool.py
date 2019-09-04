@@ -1,8 +1,8 @@
 # -*- coding: latin1 -*-
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -61,7 +61,7 @@ class ThreeVertexFinderTool(QgsMapTool):
     
     layer = self.canvas.currentLayer()
     
-    if layer <> None:
+    if layer != None:
       #the clicked point is our starting point
       startingPoint = QPoint(x,y)
       
@@ -73,7 +73,7 @@ class ThreeVertexFinderTool(QgsMapTool):
       (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)
       if result == []:
           (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-      if result <> []:
+      if result != []:
           
         #mark the vertex 
         if self.count == 0:

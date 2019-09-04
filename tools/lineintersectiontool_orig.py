@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 # Initialize Qt resources from file resources.py
@@ -72,7 +72,7 @@ class LineIntersectionTool():
                 g = None
                 g = LineIntersection.intersectionLine(self.p11,  self.p12,  self.p21,  self.p22)
                 
-                if p <> None and g <> None:
+                if p != None and g != None:
                     cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(p))
                     cadutils.addGeometryToCadLayer(g)                    
                     self.canvas.refresh()
@@ -92,7 +92,7 @@ class LineIntersectionTool():
             else:
                 g = None
                 g = LineIntersection.intersectionLine(self.p11,  self.p12,  self.p21,  self.p22)
-                if g <> None:
+                if g != None:
                     cadutils.addGeometryToCadLayer(g)
                     self.canvas.refresh()
                     

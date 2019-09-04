@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'tools/cadtoolssettings.ui'
 #
 # Created: Tue Feb  4 18:18:51 2014
-#      by: PyQt4 UI code generator 4.9.3
+#      by: PyQt5 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

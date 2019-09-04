@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 # Initialize Qt resources from file resources.py
@@ -49,13 +49,13 @@ class SplineTool():
             layer = mc.currentLayer()
             
             #Decide whether the plugin button/menu is enabled or disabled.
-            if layer <> None:
+            if layer != None:
                 # Only for vector layers.
                 type = layer.type()
                 if type == 0:
                     gtype = layer.geometryType()
                     # Doesn't make sense for points.
-                    if gtype <> 0:
+                    if gtype != 0:
                         if layer.isEditable():
                             self.action_spline.setEnabled(True)
                             layer.editingStopped.connect(self.toggle)

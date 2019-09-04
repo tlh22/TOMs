@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -35,7 +35,9 @@ def addGeometryToCadLayer(g):
         feat.setGeometry(g)
         pr.addFeatures([feat])
         vl.updateExtents()
-        QgsMapLayerRegistry.instance().addMapLayer(vl, True)
+        # QgsProject.instance().addMapLayer(vl, True)  -- v2
+        QgsProject.instance().addMapLayer(vl, True)
+
     else:
         layer = getCadLayerByName(theName) 
         pr = layer.dataProvider()
@@ -49,7 +51,9 @@ def addGeometryToCadLayer(g):
                 
 
 def getCadLayerByName(cadname):
-    layermap = QgsMapLayerRegistry.instance().mapLayers()
+    # layermap = QgsMapLayerRegistry.instance().mapLayers()
+    layermap = QgsProject.instance().mapLayers()
+
     for name, layer in layermap.iteritems():
         if layer.name() == cadname:
             if layer.isValid():

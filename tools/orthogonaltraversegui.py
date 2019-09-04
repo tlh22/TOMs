@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 from vertexfindertool import VertexFinderTool
@@ -38,11 +38,11 @@ class OrthogonalTraverseGui(QDialog, QObject, Ui_OrthogonalTraverse):
         # traverse already adjusted?
         self.adjusted = False
         
-        if p1 <> None:
+        if p1 != None:
             self.lineEditStartX.setText(str(p1.x()))
             self.lineEditStartY.setText(str(p1.y()))
         
-        if p2 <> None:
+        if p2 != None:
             self.lineEditEndX.setText(str(p2.x()))
             self.lineEditEndY.setText(str(p2.y()))
             
@@ -121,7 +121,7 @@ class OrthogonalTraverseGui(QDialog, QObject, Ui_OrthogonalTraverse):
         if isValid == 1:
             self.sendTraverse.emit(str(self.lineEditTraverse.text()),  float(self.lineEditStartX.text()),  float(self.lineEditStartY.text()),  float(self.lineEditEndX.text()),  float(self.lineEditEndY.text()), True, False)
             self.adjusted = True
-            print "emitiert...EqlBtn"
+            print ("emitiert...EqlBtn")
         else:
             return
 
@@ -138,7 +138,7 @@ class OrthogonalTraverseGui(QDialog, QObject, Ui_OrthogonalTraverse):
                     self.sendTraverse.emit(str(self.lineEditTraverse.text()),  float(self.lineEditStartX.text()),  float(self.lineEditStartY.text()),  float(self.lineEditEndX.text()),  float(self.lineEditEndY.text()), True, True)
                 else:
                     self.sendTraverse.emit(str(self.lineEditTraverse.text()),  float(self.lineEditStartX.text()),  float(self.lineEditStartY.text()),  float(self.lineEditEndX.text()),  float(self.lineEditEndY.text()), False, True)
-            print "emitiert...OkBtn"
+            print ("emitiert...OkBtn")
         else:
             return
         

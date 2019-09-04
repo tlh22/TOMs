@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -58,7 +58,7 @@ class ArcFinderTool(QgsMapTool):
         snapper = QgsMapCanvasSnapper(self.canvas)
         (retval, result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
         
-        if result <> []:
+        if result != []:
 
             self.clicked = True
             
@@ -69,12 +69,12 @@ class ArcFinderTool(QgsMapTool):
             for f in self.layer.getFeatures(request):
                 feat = f
 
-            wkbType = feat.geometry().wkbType()
+            wkbType = feat.get().wkbType()
             
             if wkbType == 2:
-                line = feat.geometry().asPolyline()
+                line = feat.get().asPolyline()
             elif wkbType == 5:
-                line = feat.geometry().asMultiPolyline()
+                line = feat.get().asMultiPolyline()
                 line = line[0]
             else: 
                 QMessageBox.information(None,  QCoreApplication.translate("ctools", "Modify Circular Arc"),  QCoreApplication.translate("ctools", "Unsupported geometry type."))
@@ -113,11 +113,11 @@ class ArcFinderTool(QgsMapTool):
             startingPoint = QPoint(x,y)            
             snapper = QgsMapCanvasSnapper(self.canvas)
             (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)   
-            if result <> []:
+            if result != []:
                 newPoint = result[0].snappedVertex
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-                if result <> []:
+                if result != []:
                     newPoint = result[0].snappedVertex
                 else:
                     newPoint = self.toLayerCoordinates( self.layer, event.pos() )
@@ -143,7 +143,7 @@ class ArcFinderTool(QgsMapTool):
   
   
     def canvasReleaseEvent(self,event):
-        if self.rb2 <> None:
+        if self.rb2 != None:
             ## Reset the rubberband.
             self.rb2.reset()
             self.rb2 = None
@@ -156,11 +156,11 @@ class ArcFinderTool(QgsMapTool):
             startingPoint = QPoint(x,y)            
             snapper = QgsMapCanvasSnapper(self.canvas)
             (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToVertex)   
-            if result <> []:
+            if result != []:
                 newPoint = result[0].snappedVertex
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-                if result <> []:
+                if result != []:
                     newPoint = result[0].snappedVertex
                 else:
                     newPoint = self.toLayerCoordinates( self.layer, event.pos() )
@@ -231,7 +231,7 @@ class ArcFinderTool(QgsMapTool):
 
 
     def deactivate(self):
-        if self.rb2 <> None:
+        if self.rb2 != None:
             self.rb2.reset()
         pass
 

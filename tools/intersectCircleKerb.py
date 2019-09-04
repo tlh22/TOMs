@@ -5,8 +5,8 @@
 # List comprehensions in canvasMoveEvent functions are 
 # adapted from Benjamin Bohard`s part of rectovaldiams plugin.
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -80,7 +80,7 @@ class intersectCircleKerb(QgsMapTool):
         (retval,result) = snapper.snapToCurrentLayer (startingPoint,QgsSnapper.SnapToSegment)
                        
         #so if we have found a vertex
-        if result <> []:
+        if result != []:
 
         # if feature == None:
         #     return
@@ -103,11 +103,11 @@ class intersectCircleKerb(QgsMapTool):
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
             (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
+            if result != []:
                 point = result[0].snappedVertex
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
-                if result <> []:
+                if result != []:
                     point = result[0].snappedVertex
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())

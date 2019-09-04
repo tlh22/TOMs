@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 class LineIntersection:
@@ -49,7 +49,7 @@ class LineIntersection:
         p = QgsPoint()
         p = LineIntersection.intersectionPoint(p11,  p12,  p21,  p22)
         #QMessageBox.information(None,  "Cancel",  str(p.toString()))
-        if p <> None:
+        if p != None:
             p1 = LineIntersection.farestVertex(p11,  p12,  p)
             p2 = LineIntersection.farestVertex(p21,  p22,  p)
             

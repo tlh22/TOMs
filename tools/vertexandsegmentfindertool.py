@@ -1,8 +1,8 @@
 # -*- coding: latin1 -*-
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -58,7 +58,7 @@ class VertexAndSegmentFinderTool(QgsMapTool):
     
     layer = self.canvas.currentLayer()
     
-    if layer <> None:
+    if layer != None:
       #the clicked point is our starting point
       startingPoint = QPoint(x,y)
       
@@ -75,7 +75,7 @@ class VertexAndSegmentFinderTool(QgsMapTool):
         (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
                        
       #so if we have found a vertex
-      if result <> []:
+      if result != []:
         color = QColor(255,0,0)
           
         #mark the vertex 

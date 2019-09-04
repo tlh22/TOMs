@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 from cadtools import resources
@@ -75,7 +75,7 @@ class CircularArcTool:
         
 
         def unsetTool(self):
-            print "***************** unset tool"  
+            print ("***************** unset tool")
             self.p1 = None
             self.p2 = None
             self.p3 = None          
@@ -85,7 +85,7 @@ class CircularArcTool:
       
 
         def deactivate(self):
-            print "***************** deactivate circulararctool"            
+            print ("***************** deactivate circulararctool")
             self.action_selectthreepoints.setChecked(False)   
             
 

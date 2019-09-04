@@ -10,8 +10,8 @@
 
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 
 import time
@@ -483,7 +483,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def getProposal(self, proposalID):
         QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel")
 
-        proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        # proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]  -- v2
+        proposalsLayer = QgsProject.instance().mapLayersByName("Proposals")[0]
 
         # not sure if there is better way to search for something, .e.g., using SQL ??
 

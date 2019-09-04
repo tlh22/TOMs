@@ -20,21 +20,50 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+    QAction,
+    QDialogButtonBox,
+    QLabel,
+    QDockWidget
+)
+
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtCore import (
+    QObject, QTimer, pyqtSignal,
+    QTranslator,
+    QSettings,
+    QCoreApplication,
+    qVersion
+)
+
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsExpression,
+    QgsFeatureRequest,
+    # QgsMapLayerRegistry,
+    QgsMessageLog, QgsFeature, QgsGeometry,
+    QgsTransaction, QgsTransactionGroup,
+    QgsProject
+)
+
+#from qgis.core import *
 from qgis.gui import *
 
 # Initialize Qt resources from file resources.py
-import resources
+# import resources
 
 # Import the code for the dialog
 from TOMs.core.proposalsManager import TOMsProposalsManager
 
-from .expressions import registerFunctions, unregisterFunctions
+from TOMs.expressions import registerFunctions, unregisterFunctions
 #from TOMs.test5_module_dialog import Test5ClassDialog
 
-from .proposals_panel import proposalsPanel
+from TOMs.proposals_panel import proposalsPanel
 from .search_bar import searchBar
 
 from .manage_restriction_details import manageRestrictionDetails
@@ -100,7 +129,7 @@ class TOMs:
 
 
     def write_log_message(self, message, tag, level):
-        filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
+        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
         with open(self.filename, 'a') as logfile:
             logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 

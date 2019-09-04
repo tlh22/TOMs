@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from cadconsole import *
 
@@ -70,13 +70,13 @@ class OrthogonalDigitizerTool():
             layer = mc.currentLayer()
             
             #Decide whether the plugin button/menu is enabled or disabled
-            if layer <> None:
+            if layer != None:
                 # Only for vector layers
                 type = layer.type()
                 if type == 0:
                     gtype = layer.geometryType()
                     # Doesn't make sense for Points
-                    if gtype <> 0:
+                    if gtype != 0:
                         if layer.isEditable():
                             self.act_ortho.setEnabled(True)
                             layer.editingStopped.connect(self.toggle)

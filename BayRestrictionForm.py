@@ -12,7 +12,7 @@
 Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
 
 """
-from PyQt4.QtGui import (
+from PyQt5.QtGui import (
     QMessageBox,
     QPixmap,
     QDialog,
@@ -27,7 +27,7 @@ from qgis.core import (
 
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 from qgis.core import *
 from qgis.gui import *
 

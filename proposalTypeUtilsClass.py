@@ -12,11 +12,11 @@
 Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
 
 """
-from PyQt4.QtGui import (
+from PyQt5.QtGui import (
     QMessageBox
 )
 
-from PyQt4.QtCore import (
+from PyQt5.QtCore import (
     QTimer
 )
 
@@ -186,7 +186,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         res = proposalsLayer.commitChanges()
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Saving: Proposals. res: " + str(res), tag="TOMs panel")
 
-        if res <> True:
+        if res != True:
             # save the active layer
 
             reply = QMessageBox.information(None, "Error",
@@ -304,7 +304,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
         # save changes to all layers
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
         idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
         #idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
@@ -322,7 +322,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
                 currRestrictionLayerName = layer[idxRestrictionsLayerName]
 
-                restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+                restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
                 if restrictionLayer.isEditable():
                     QgsMessageLog.logMessage("In commitProposalChanges. Saving: " + str(restrictionLayer.name()), tag="TOMs panel")
@@ -364,10 +364,10 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
         # save changes to all layers
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
-            self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
+        if QgsProject.instance().mapLayersByName("MapGrid"):
+            self.tileLayer = QgsProject.instance().mapLayersByName("MapGrid")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
             return
@@ -385,7 +385,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
             currRestrictionLayerName = layer[idxRestrictionsLayerName]
 
-            restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+            restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             newTransaction.addLayer(restrictionLayer)
             QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
