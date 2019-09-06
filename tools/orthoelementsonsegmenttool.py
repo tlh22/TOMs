@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 
 
@@ -74,7 +74,7 @@ class OrthoElementsOnSegmentTool:
                 if p != None:
                     
                     # Draw the point
-                    cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(p))
+                    cadutils.addGeometryToCadLayer(QgsGeometry.fromPointXY(p))
 
                     # Draw the line
                     cadutils.addGeometryToCadLayer(QgsGeometry.fromPolyline(line))

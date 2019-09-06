@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -127,7 +127,7 @@ def rotate(geom,  point,  angle):
         p1 = QgsPoint(p0.x() - point.x(),  p0.y() - point.y())
         p2 = rotatePoint(p1,  angle)
         p3 = QgsPoint(point.x() + p2.x(),  point.y() + p2.y())
-        return QgsGeometry().fromPoint(p3)
+        return QgsGeometry().fromPointXY(p3)
         
     elif type == 2:
         coords = []
@@ -149,7 +149,7 @@ def rotate(geom,  point,  angle):
                 ring.append(p3)
             coords .append(ring)
             ring = []
-        return QgsGeometry().fromPolygon(coords)
+        return QgsGeometry().fromPolygonXY(coords)
             
     elif type == 4:
         coords = []

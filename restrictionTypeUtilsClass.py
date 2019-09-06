@@ -48,7 +48,7 @@ import functools
 import time
 import os
 
-from TOMs.constants import (
+from .constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION,
     PROPOSAL_STATUS_IN_PREPARATION,
@@ -56,9 +56,9 @@ from TOMs.constants import (
     PROPOSAL_STATUS_REJECTED
 )
 
-from TOMs.generateGeometryUtils import generateGeometryUtils
-#from TOMs.core.proposalsManager import *
-from TOMs.core.proposalsManager import *
+from .generateGeometryUtils import generateGeometryUtils
+#from core.proposalsManager import *
+from .core.proposalsManager import *
 
 from abc import ABCMeta
 
@@ -87,11 +87,12 @@ class TOMsTransaction (QObject):
 
         # Function to create group of layers to be in Transaction for changing proposal
 
-        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+        self.tableNames = setupTableNames(self.iface)
+        self.tableNames.getLayers()
 
         QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
 
-        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fieldNameIndex("RestrictionLayerName")
+        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("RestrictionLayerName")
 
         self.setTransactionGroup = [self.tableNames.PROPOSALS]
         self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS)
@@ -318,118 +319,160 @@ class TOMsTransaction (QObject):
 
         return
 
-class setupTableNames():
+class setupTableNames(QObject):
 
+    TOMsLayersNotFound = pyqtSignal()
+    """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
 
-    def __init__(self, iface, proposalsManager):
-
+    def __init__(self, iface):
+        QObject.__init__(self)
         self.iface = iface
-        found = True
-        self.proposalsManager = proposalsManager
+
+        QgsMessageLog.logMessage("In setupTableNames.init ...", tag="TOMs panel")
+        #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        self.TOMsLayerList = ["Proposals",
+                         "ProposalStatusTypes",
+                         "RestrictionLayers",
+                         "RestrictionsInProposals",
+                         "Bays",
+                         "Lines",
+                         "Signs",
+                         "RestrictionPolygons",
+                         "ConstructionLines",
+                         "MapGrid",
+                         "CPZs",
+                         "ParkingTariffAreas",
+                         "StreetGazetteerRecords",
+                         "RoadCasement",
+                         "TilesInAcceptedProposals"
+                         ]
+        self.TOMsLayerDict = {}
 
-        if QgsProject.instance().mapLayersByName("Proposals"):
-            self.PROPOSALS = QgsProject.instance().mapLayersByName("Proposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
+    def getLayers(self):
+
+        QgsMessageLog.logMessage("In setupTableNames.getLayers ...", tag="TOMs panel")
+        found = True
+
+        # Check for project being open
+        project = QgsProject.instance()
+
+        if len(project.fileName()) == 0:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
             found = False
 
-        if QgsProject.instance().mapLayersByName("ProposalStatusTypes"):
-            self.PROPOSAL_STATUS_TYPES = QgsProject.instance().mapLayersByName("ProposalStatusTypes")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
-            found = False
 
-        if QgsProject.instance().mapLayersByName("RestrictionLayers"):
-            self.RESTRICTIONLAYERS = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
-            found = False
+            for layer in self.TOMsLayerList:
+                if QgsProject.instance().mapLayersByName(layer):
+                    self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table " + layer + " is not present"))
+                    found = False
+                    break
 
-        if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
-            self.RESTRICTIONS_IN_PROPOSALS = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("Proposals"):
+                self.PROPOSALS = QgsProject.instance().mapLayersByName("Proposals")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("Bays"):
-            self.BAYS = QgsProject.instance().mapLayersByName("Bays")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Bays is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("ProposalStatusTypes"):
+                self.PROPOSAL_STATUS_TYPES = QgsProject.instance().mapLayersByName("ProposalStatusTypes")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("Lines"):
-            self.LINES = QgsProject.instance().mapLayersByName("Lines")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Lines is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("RestrictionLayers"):
+                self.RESTRICTIONLAYERS = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("Signs"):
-            self.SIGNS = QgsProject.instance().mapLayersByName("Signs")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Signs is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
+                self.RESTRICTIONS_IN_PROPOSALS = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("RestrictionPolygons"):
-            self.RESTRICTION_POLYGONS = QgsProject.instance().mapLayersByName("RestrictionPolygons")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionPolygons is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("Bays"):
+                self.BAYS = QgsProject.instance().mapLayersByName("Bays")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Bays is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("ConstructionLines"):
-            self.CONSTRUCTION_LINES = QgsProject.instance().mapLayersByName("ConstructionLines")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("Lines"):
+                self.LINES = QgsProject.instance().mapLayersByName("Lines")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Lines is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("MapGrid"):
-            self.MAP_GRID = QgsProject.instance().mapLayersByName("MapGrid")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("Signs"):
+                self.SIGNS = QgsProject.instance().mapLayersByName("Signs")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Signs is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("CPZs"):
-            self.CPZs = QgsProject.instance().mapLayersByName("CPZs")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table CPZs is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("RestrictionPolygons"):
+                self.RESTRICTION_POLYGONS = QgsProject.instance().mapLayersByName("RestrictionPolygons")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionPolygons is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("ParkingTariffAreas"):
-            self.PARKING_TARIFF_AREAS = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ParkingTariffAreas is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("ConstructionLines"):
+                self.CONSTRUCTION_LINES = QgsProject.instance().mapLayersByName("ConstructionLines")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("StreetGazetteerRecords"):
-            self.GAZETTEER = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("MapGrid"):
+                self.MAP_GRID = QgsProject.instance().mapLayersByName("MapGrid")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("RoadCentreLine"):
-            self.GAZETTEER = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCentreLine is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("CPZs"):
+                self.CPZs = QgsProject.instance().mapLayersByName("CPZs")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table CPZs is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("RoadCasement"):
-            self.ROAD_CASEMENT = QgsProject.instance().mapLayersByName("RoadCasement")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("ParkingTariffAreas"):
+                self.PARKING_TARIFF_AREAS = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ParkingTariffAreas is not present"))
+                found = False
 
-        if QgsProject.instance().mapLayersByName("TilesInAcceptedProposals"):
-            self.TILES_IN_ACCEPTED_PROPOSALS = QgsProject.instance().mapLayersByName("TilesInAcceptedProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
-            found = False
+            if QgsProject.instance().mapLayersByName("StreetGazetteerRecords"):
+                self.GAZETTEER = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
+                found = False
+
+            if QgsProject.instance().mapLayersByName("RoadCentreLine"):
+                self.GAZETTEER = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCentreLine is not present"))
+                found = False
+
+            if QgsProject.instance().mapLayersByName("RoadCasement"):
+                self.ROAD_CASEMENT = QgsProject.instance().mapLayersByName("RoadCasement")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
+                found = False
+
+            if QgsProject.instance().mapLayersByName("TilesInAcceptedProposals"):
+                self.TILES_IN_ACCEPTED_PROPOSALS = QgsProject.instance().mapLayersByName("TilesInAcceptedProposals")[0]
+            else:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
+                found = False
 
 
         # TODO: need to deal with any errors arising ...
 
         if found == False:
-            self.proposalsManager.TOMsStartupFailure.emit()
+            self.TOMsLayersNotFound.emit()
 
         return
 
@@ -439,7 +482,8 @@ class RestrictionTypeUtilsMixin():
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
-        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+        self.tableNames = setupTableNames(self.iface)
+        #self.tableNames.getLayers()
         #super().__init__()
         self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()
@@ -476,10 +520,10 @@ class RestrictionTypeUtilsMixin():
 
         #RestrictionsInProposalsLayer.startEditing()
 
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex(
+        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName(
             "ActionOnProposalAcceptance")
 
         newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
@@ -508,7 +552,7 @@ class RestrictionTypeUtilsMixin():
 
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
+        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
 
         currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
 
@@ -522,8 +566,8 @@ class RestrictionTypeUtilsMixin():
 
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
+        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
 
         for layer in RestrictionsLayers.getFeatures():
             if layer[idxRestrictionsLayerID] == currRestrictionTableID:
@@ -602,13 +646,13 @@ class RestrictionTypeUtilsMixin():
 
         #currRestrictionLayer.startEditing()
 
-        currProposalID = int(QgsExpressionContextUtils.projectScope().variable('CurrentProposal'))
+        currProposalID = int(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CurrentProposal'))
 
         if currProposalID > 0:
 
             currRestrictionLayerTableID = self.getRestrictionLayerTableID(currRestrictionLayer)
-            idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
-            idxGeometryID = currRestriction.fieldNameIndex("GeometryID")
+            idxRestrictionID = currRestriction.fields().indexFromName("RestrictionID")
+            idxGeometryID = currRestriction.fields().indexFromName("GeometryID")
 
             if self.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID, currProposalID):
 
@@ -641,7 +685,7 @@ class RestrictionTypeUtilsMixin():
 
                 # Create a new feature using the current details
 
-                idxOpenDate = currRestriction.fieldNameIndex("OpenDate")
+                idxOpenDate = currRestriction.fields().indexFromName("OpenDate")
                 newRestrictionID = str(uuid.uuid4())
 
                 QgsMessageLog.logMessage(
@@ -712,7 +756,7 @@ class RestrictionTypeUtilsMixin():
                     attrs2 = newRestriction.attributes()
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails: clone Restriction: " + str(attrs2),
                         tag="TOMs panel")
-                    QgsMessageLog.logMessage("In onSaveRestrictionDetails. Clone: {}".format(newRestriction.get().asWkt()),
+                    QgsMessageLog.logMessage("In onSaveRestrictionDetails. Clone: {}".format(newRestriction.geometry().asWkt()),
                                              tag="TOMs panel")
 
                     status = self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
@@ -733,7 +777,7 @@ class RestrictionTypeUtilsMixin():
             QgsMessageLog.logMessage("In onSaveRestrictionDetails: currRestriction: " + str(attrs1),
                                      tag="TOMs panel")
             QgsMessageLog.logMessage(
-                "In onSaveRestrictionDetails. curr: {}".format(currRestriction.get().asWkt()),
+                "In onSaveRestrictionDetails. curr: {}".format(currRestriction.geometry().asWkt()),
                 tag="TOMs panel")
 
             # Make sure that the saving will not be executed immediately, but
@@ -795,7 +839,7 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.get().length())
+            currRestriction.setAttribute("Length", currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
@@ -839,14 +883,14 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.get().length())
+            currRestriction.setAttribute("Length", currRestriction.geometry().length())
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                      currRestrictionLayer.fieldNameIndex("Length"), currRestriction.get().length())
+                                                      currRestrictionLayer.fields().indexFromName("Length"), currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
         currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                  currRestrictionLayer.fieldNameIndex("CPZ"), currentCPZ)
+                                                  currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
 
         # Now need to clear some details
 
@@ -854,35 +898,35 @@ class RestrictionTypeUtilsMixin():
 
         if currRestrictionLayer.name() == "Lines":
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_DateTime"), currDate)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_DateTime"), currDate)
             currRestriction.setAttribute("Lines_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
             currRestriction.setAttribute("Surveyor", None)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_PhotoTaken"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_PhotoTaken"), None)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Lines_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_02"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Lines_Photos_03"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_Faded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_SignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_02"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_03"), None)
 
         elif currRestrictionLayer.name() == "Bays":
 
             currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("ParkingTariffArea"), currentPTA)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ParkingTariffArea"), currentPTA)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_DateTime"), currDate)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_DateTime"), currDate)
             currRestriction.setAttribute("Bays_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Surveyor"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
             currRestriction.setAttribute("Surveyor", None)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_PhotoTaken"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Compl_Bays_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fieldNameIndex("Bays_Photos_02"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_PhotoTaken"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_Faded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_SignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_02"), None)
 
         pass
 
@@ -892,8 +936,8 @@ class RestrictionTypeUtilsMixin():
             currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
             currProposalOpenDate), tag="TOMs panel")
 
-        # idxOpenDate = currRestrictionLayer.fieldNameIndex("OpenDate2")
-        # idxCloseDate = currRestrictionLayer.fieldNameIndex("CloseDate2")
+        # idxOpenDate = currRestrictionLayer.fields().indexFromName("OpenDate2")
+        # idxCloseDate = currRestrictionLayer.fields().indexFromName("CloseDate2")
 
         # clear filter
         currRestrictionLayer.setSubsetString("")
@@ -907,13 +951,13 @@ class RestrictionTypeUtilsMixin():
                     tag="TOMs panel")
                 if currAction == ACTION_OPEN_RESTRICTION():  # Open
                     statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                              currRestrictionLayer.fieldNameIndex("OpenDate"),
+                                                              currRestrictionLayer.fields().indexFromName("OpenDate"),
                                                               currProposalOpenDate)
                     QgsMessageLog.logMessage(
                         "In updateRestriction. " + currRestrictionID + " Opened", tag="TOMs panel")
                 else:  # Close
                     statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                              currRestrictionLayer.fieldNameIndex("CloseDate"),
+                                                              currRestrictionLayer.fields().indexFromName("CloseDate"),
                                                               currProposalOpenDate)
                     QgsMessageLog.logMessage(
                         "In updateRestriction. " + currRestrictionID + " Closed", tag="TOMs panel")
@@ -981,8 +1025,8 @@ class RestrictionTypeUtilsMixin():
         # self.currRestriction.setAttribute(fieldName, value)
         try:
 
-            currFeature[layer.fieldNameIndex(fieldName)] = value
-            #currFeature.setAttribute(layer.fieldNameIndex(fieldName), value)
+            currFeature[layer.fields().indexFromName(fieldName)] = value
+            #currFeature.setAttribute(layer.fields().indexFromName(fieldName), value)
 
         except:
 
@@ -1001,7 +1045,7 @@ class RestrictionTypeUtilsMixin():
         FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
         FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
 
-        path_absolute = QgsExpressionContextUtils.projectScope().variable('PhotoPath')
+        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
         if path_absolute == None:
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
             return
@@ -1014,9 +1058,9 @@ class RestrictionTypeUtilsMixin():
         fileName2 = layerName + "_Photos_02"
         fileName3 = layerName + "_Photos_03"
 
-        idx1 = currRestLayer.fieldNameIndex(fileName1)
-        idx2 = currRestLayer.fieldNameIndex(fileName2)
-        idx3 = currRestLayer.fieldNameIndex(fileName3)
+        idx1 = currRestLayer.fields().indexFromName(fileName1)
+        idx2 = currRestLayer.fields().indexFromName(fileName2)
+        idx3 = currRestLayer.fields().indexFromName(fileName3)
 
         QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
                                  tag="TOMs panel")
@@ -1100,12 +1144,12 @@ class RestrictionTypeUtilsMixin():
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
 
         # set up field indexes
-        idxProposalID = self.tableNames.PROPOSALS.fieldNameIndex("ProposalID")
-        idxProposalTitle = self.tableNames.PROPOSALS.fieldNameIndex("ProposalTitle")
-        idxProposalStatusID = self.tableNames.PROPOSALS.fieldNameIndex("ProposalStatusID")
-        idxProposalNotes = self.tableNames.PROPOSALS.fieldNameIndex("ProposalNotes")
-        idxProposalCreateDate = self.tableNames.PROPOSALS.fieldNameIndex("ProposalCreateDate")
-        idxProposalOpenDate = self.tableNames.PROPOSALS.fieldNameIndex("ProposalOpenDate")
+        idxProposalID = self.tableNames.PROPOSALS.fields().indexFromName("ProposalID")
+        idxProposalTitle = self.tableNames.PROPOSALS.fields().indexFromName("ProposalTitle")
+        idxProposalStatusID = self.tableNames.PROPOSALS.fields().indexFromName("ProposalStatusID")
+        idxProposalNotes = self.tableNames.PROPOSALS.fields().indexFromName("ProposalNotes")
+        idxProposalCreateDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalCreateDate")
+        idxProposalOpenDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalOpenDate")
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposal[idxProposalStatusID]), tag="TOMs panel")
 
@@ -1257,10 +1301,10 @@ class RestrictionTypeUtilsMixin():
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
         RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex("ActionOnProposalAcceptance")
+        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
 
         # restrictionFound = False
 
@@ -1304,18 +1348,18 @@ class RestrictionTypeUtilsMixin():
             currRevisionNr = tile["RevisionNr"]
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             if currRevisionNr is None:
-                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(),self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), 1)
+                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(),self.tableNames.MAP_GRID.fields().indexFromName("RevisionNr"), 1)
             else:
-                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("RevisionNr"), currRevisionNr + 1)
-            self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fieldNameIndex("LastRevisionDate"), currRevisionDate)
+                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fields().indexFromName("RevisionNr"), currRevisionNr + 1)
+            self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fields().indexFromName("LastRevisionDate"), currRevisionDate)
 
             # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
 
             newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
 
-            idxProposalID = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("ProposalID")
-            idxTileNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("TileNr")
-            idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
+            idxProposalID = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("ProposalID")
+            idxTileNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("TileNr")
+            idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("RevisionNr")
 
             newRecord[idxProposalID]= currProposalID
             newRecord[idxTileNr]= tile["id"]
@@ -1418,7 +1462,7 @@ class RestrictionTypeUtilsMixin():
                                     # Now find the tile for the restriction
                                     self.getTilesForRestriction(currRestriction, currRevisionDate)
 
-                                    # geometryBoundingBox.combineExtentWith(currRestriction.get().boundingBox())
+                                    # geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
 
                             else:
 
@@ -1428,7 +1472,7 @@ class RestrictionTypeUtilsMixin():
                                                                                           currRestrictionLayer)
                                 if currRestriction:
                                     # Now find the tile for the restriction
-                                    # geometryBoundingBox = currRestriction.get().boundingBox()
+                                    # geometryBoundingBox = currRestriction.geometry().boundingBox()
                                     self.getTilesForRestriction(currRestriction, currRevisionDate)
 
                                     firstRestriction = False
@@ -1491,8 +1535,8 @@ class RestrictionTypeUtilsMixin():
         QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel")
 
         #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
-        idxProposalTitle = self.tableNames.PROPOSALS.fieldNameIndex("ProposalTitle")
-        idxProposalOpenDate = self.tableNames.PROPOSALS.fieldNameIndex("ProposalOpenDate")
+        idxProposalTitle = self.tableNames.PROPOSALS.fields().indexFromName("ProposalTitle")
+        idxProposalOpenDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalOpenDate")
         queryString = "\"ProposalID\" = " + str(proposalID)
 
         QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
@@ -1511,14 +1555,14 @@ class RestrictionTypeUtilsMixin():
 
         QgsMessageLog.logMessage("In getTileForRestriction. ", tag="TOMs panel")
 
-        #a.get().intersects(f.get()):
+        #a.geometry().intersects(f.geometry()):
 
         #queryString2 = # bounding box of restriction
-        idxTileID = self.tableNames.MAP_GRID.fieldNameIndex("id")
+        idxTileID = self.tableNames.MAP_GRID.fields().indexFromName("id")
 
-        for tile in self.tileLayer.getFeatures(QgsFeatureRequest().setFilterRect(currRestriction.get().boundingBox())):
+        for tile in self.tileLayer.getFeatures(QgsFeatureRequest().setFilterRect(currRestriction.geometry().boundingBox())):
 
-            if tile.get().intersects(currRestriction.get()):
+            if tile.geometry().intersects(currRestriction.geometry()):
                 # get revision number and add tile to list
                 #currRevisionNrForTile = self.getTileRevisionNr(tile)
                 QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel")
@@ -1544,7 +1588,7 @@ class RestrictionTypeUtilsMixin():
 
                     tile.setAttribute("RevisionNr", 0)
 
-                #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fieldNameIndex("RevisionNr")
+                #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("RevisionNr")
 
                 QgsMessageLog.logMessage(
                             "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
@@ -1552,9 +1596,9 @@ class RestrictionTypeUtilsMixin():
                             tag="TOMs panel")
 
                 #self.tileSet.add((tile))
-                #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fieldNameIndex("id"))
+                #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id"))
 
-                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.MAP_GRID.fieldNameIndex("id")) == False:
+                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id")) == False:
                     QgsMessageLog.logMessage(
                         "In addFeatureToSet. Adding: " + str(currTileNr) + " ; " + str(len(self.tileSet)),
                         tag="TOMs panel")
@@ -1657,10 +1701,10 @@ class RestrictionTypeUtilsMixin():
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
         RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex("ActionOnProposalAcceptance")
+        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
 
         # restrictionFound = False
 
@@ -1755,8 +1799,8 @@ class RestrictionTypeUtilsMixin():
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
-        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fieldNameIndex("RestrictionLayerName")
-        idxRestrictionsLayerID = self.tableNames.RESTRICTIONLAYERS.fieldNameIndex("id")
+        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("RestrictionLayerName")
+        idxRestrictionsLayerID = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("id")
 
         # create transaction
         #newTransaction = QgsTransaction("Test1")
@@ -1830,8 +1874,8 @@ class RestrictionTypeUtilsMixin():
         RestrictionsInProposalLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
+        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
 
         # create transaction
         #newTransaction = QgsTransaction("Test1")
@@ -1893,7 +1937,7 @@ class RestrictionTypeUtilsMixin():
 
         newFeature = currRestriction
 
-        idxRestrictionID = currRestrictionLayer.fieldNameIndex("RestrictionID")
+        idxRestrictionID = currRestrictionLayer.fields().indexFromName("RestrictionID")
 
         if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer), self.proposalsManager.currentProposal()):
             QgsMessageLog.logMessage("In prepareRestrictionForEdit - adding details to RestrictionsInProposal", tag="TOMs panel")
@@ -1953,17 +1997,17 @@ class RestrictionTypeUtilsMixin():
 
         newRestrictionID = str(uuid.uuid4())
 
-        idxRestrictionID = restrictionLayer.fieldNameIndex("RestrictionID")
-        idxOpenDate = restrictionLayer.fieldNameIndex("OpenDate")
-        idxGeometryID = restrictionLayer.fieldNameIndex("GeometryID")
+        idxRestrictionID = restrictionLayer.fields().indexFromName("RestrictionID")
+        idxOpenDate = restrictionLayer.fields().indexFromName("OpenDate")
+        idxGeometryID = restrictionLayer.fields().indexFromName("GeometryID")
 
         newFeature[idxRestrictionID] = newRestrictionID
         newFeature[idxOpenDate] = None
         newFeature[idxGeometryID] = None
 
-        #abstractGeometry = originalFeature.get().get().clone()  # make a deep copy of the geometry ... https://gis.stackexchange.com/questions/232056/how-to-deep-copy-a-qgis-memory-layer
+        #abstractGeometry = originalFeature.geometry().geometry().clone()  # make a deep copy of the geometry ... https://gis.stackexchange.com/questions/232056/how-to-deep-copy-a-qgis-memory-layer
 
-        #newFeature.setGeometry(QgsGeometry(originalFeature.get()))
+        #newFeature.setGeometry(QgsGeometry(originalFeature.geometry()))
         #geomStatus = restrictionLayer.changeGeometry(newFeature.id(), QgsGeometry(abstractGeometry))
 
         # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ... and the fid is obtained
@@ -1984,7 +2028,7 @@ class RestrictionTypeUtilsMixin():
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - attributes: (fid=" + str(newFeature.id()) + ") " + str(newFeature.attributes()),
                                  tag="TOMs panel")
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.get().asWkt(),
+        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.geometry().asWkt(),
                                  tag="TOMs panel")
 
         # test to see that feature has been added ...
@@ -1992,7 +2036,7 @@ class RestrictionTypeUtilsMixin():
         feat = restrictionLayer.getFeatures(
             QgsFeatureRequest().setFilterExpression('GeometryID = \'{}\''.format(newFeature['GeometryID']))).next()
 
-        """originalGeomBuffer = QgsGeometry(originalfeature.get())
+        """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
         QgsMessageLog.logMessage(
             "In TOMsNodeTool:cloneRestriction - originalGeom: " + originalGeomBuffer.asWkt(),
             tag="TOMs panel")

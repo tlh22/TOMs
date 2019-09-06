@@ -23,13 +23,15 @@
 
 import os
 
-from PyQt5 import QtGui, uic
-
+from PyQt5 import QtGui, uic, QtWidgets
+from qgis.PyQt.QtWidgets import (
+    QDialog
+)
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'acceptedProposals_dialog_base2.ui'))
 
 
-class acceptedProposalsDialog2(QtGui.QDialog, FORM_CLASS):
+class acceptedProposalsDialog2(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(acceptedProposalsDialog2, self).__init__(parent)

@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 import math
 from cadtools import resources
@@ -72,7 +72,7 @@ class RotateObjectTool:
 
 
     def rotateObject(self,  angle):
-        geom = cadutils.rotate(self.feat.get(), self.p1,  angle * math.pi / 180)
+        geom = cadutils.rotate(self.feat.geometry(), self.p1,  angle * math.pi / 180)
         if geom != None:
             cadutils.addGeometryToCadLayer(geom)
             self.canvas.refresh()

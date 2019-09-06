@@ -48,22 +48,23 @@ from qgis.core import (
     # QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsTransaction, QgsTransactionGroup,
-    QgsProject
+    QgsProject,
+    QgsApplication
 )
 
 #from qgis.core import *
 from qgis.gui import *
 
 # Initialize Qt resources from file resources.py
-# import resources
+from .resources import *
 
 # Import the code for the dialog
-from TOMs.core.proposalsManager import TOMsProposalsManager
+from .core.proposalsManager import TOMsProposalsManager
 
-from TOMs.expressions import registerFunctions, unregisterFunctions
-#from TOMs.test5_module_dialog import Test5ClassDialog
+from .expressions import registerFunctions, unregisterFunctions
+#from test5_module_dialog import Test5ClassDialog
 
-from TOMs.proposals_panel import proposalsPanel
+from .proposals_panel import proposalsPanel
 from .search_bar import searchBar
 
 from .manage_restriction_details import manageRestrictionDetails
@@ -120,7 +121,7 @@ class TOMs:
             logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
             self.filename = os.path.join(logFilePath, logfile)
             QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
-            QgsMessageLog.instance().messageReceived.connect(self.write_log_message)
+            QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)
 
 
         QgsMessageLog.logMessage("Finished init", tag="TOMs panel")

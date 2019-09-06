@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 
 
@@ -84,8 +84,8 @@ class ArcIntersectionTool:
                 mc.unsetMapTool(self.tool)             
                 return
             else:
-                cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(result[0]))
-                cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(result[1]))                
+                cadutils.addGeometryToCadLayer(QgsGeometry.fromPointXY(result[0]))
+                cadutils.addGeometryToCadLayer(QgsGeometry.fromPointXY(result[1]))
                 self.canvas.refresh()
                 mc = self.canvas
                 mc.unsetMapTool(self.tool)     

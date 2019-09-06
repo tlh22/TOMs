@@ -11,26 +11,27 @@
 # T Hancock (180607) generate a subclass of Sandro's class
 
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-from TOMs.InstantPrint.InstantPrintTool import InstantPrintTool
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
+from .InstantPrintTool_v3 import InstantPrintTool
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
 
     def __init__(self, iface, proposalsManager):
 
         self.iface = iface
-        InstantPrintTool.__init__(self, iface)
+        # InstantPrintTool.__init__(self, iface)
         self.proposalsManager = proposalsManager
 
         self.proposalsManager.TOMsActivated.connect(self.setupTables)
 
     def setupTables(self):
-        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+        self.tableNames = setupTableNames(self.iface)
+        self.tableNames.getLayers()
 
         """def getTilesIDsInProposal(self, currProposalID):
         # retrieve all the tiles that are affected by the currentProposal
@@ -124,7 +125,7 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
                             # TODO: Deal with restrictions that have been deleted, i.e., are not in the current view
 
                             if currRestriction:
-                                tileIDsList = tileIndex.intersects(currRestriction.get().boundingBox())
+                                tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
                                 self.MapGrid.selectByIds(tileIDsList)
                                 currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
                                 self.MapGrid.removeSelection()
@@ -180,7 +181,7 @@ class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
 
                 for currRestriction in listRestrictions:
 
-                    tileIDsList = tileIndex.intersects(currRestriction.get().boundingBox())
+                    tileIDsList = tileIndex.intersects(currRestriction.geometry().boundingBox())
                     self.MapGrid.selectByIds(tileIDsList)
                     currRestrictionTileFeaturesList = self.MapGrid.selectedFeatures()
                     self.MapGrid.removeSelection()

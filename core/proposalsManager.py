@@ -23,12 +23,13 @@ from qgis.core import (
     QgsExpressionContextUtils,
     # QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
-    QgsFeatureRequest
+    QgsFeatureRequest,
+    QgsProject
 )
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
-from TOMs.constants import (
+from ..constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
@@ -55,12 +56,12 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
     TOMsActivated = pyqtSignal()
     """ signal will be emitted when TOMs tools are activated"""
-    TOMsStartupFailure = pyqtSignal()
+    #TOMsStartupFailure = pyqtSignal()
     """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
     TOMsSplitRestrictionSaved = pyqtSignal()
 
     def __init__(self, iface):
-        QObject.__init__(self)
+        QObject.__init__(self, iface=iface)
         self.__date = QDate.currentDate()
         self.currProposalFeature = None
         #self.constants = TOMsConstants()
@@ -87,7 +88,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         """
         Returns the current proposal
         """
-        currProposal = QgsExpressionContextUtils.projectScope().variable('CurrentProposal')
+        currProposal = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CurrentProposal')
         if not currProposal:
             currProposal = 0
         return int(currProposal)
@@ -112,7 +113,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         Set the current proposal
         """
         QgsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), tag="TOMs panel")
-        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', value)
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentProposal', value)
 
         #self.currProposalFeature = QgsFeature(id=int(value))
 
@@ -389,7 +390,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
                                     tag="TOMs panel")"""
                                 currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID, currRestrictionLayer)
                                 if currRestriction:
-                                    geometryBoundingBox.combineExtentWith(currRestriction.get().boundingBox())
+                                    geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
 
                             else:
 
@@ -397,7 +398,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
                                 currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID, currRestrictionLayer)
                                 if currRestriction:
-                                    geometryBoundingBox = currRestriction.get().boundingBox()
+                                    geometryBoundingBox = currRestriction.geometry().boundingBox()
                                     firstRestriction = False
 
                             pass
@@ -417,11 +418,11 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         iter = currLayer.getFeatures(request)
         feat = QgsFeature()
         iter.nextFeature(feat)
-        # box = feat.get().boundingBox()
+        # box = feat.geometry().boundingBox()
 
         while iter.nextFeature(feat):
             QgsMessageLog.logMessage("In generateBoundingBox. feat: " + feat["RestrictionID"], tag="TOMs panel")
-            geometryBoundingBox.combineExtentWith(feat.get().boundingBox())
+            geometryBoundingBox.combineExtentWith(feat.geometry().boundingBox())
 
         pass"""
 

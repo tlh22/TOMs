@@ -10,32 +10,34 @@
 
 # T Hancock (180607) given the number of "private" functions, i.e., "__", have decided to amend this file rather than subclass
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+
+from PyQt5 import QtGui, uic, QtWidgets, QtPrintSupport
 from qgis.core import *
-from qgis.gui import *
+from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
+from qgis.utils import iface
 import os, copy
 import math
 
-from TOMs.InstantPrint.ui.ui_printdialog import Ui_InstantPrintDialog
-#from TOMs.InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
-from TOMs.InstantPrint.ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
-from TOMs.InstantPrint.ui.printList_dialog import printListDialog
+from .ui.ui_printdialog import Ui_InstantPrintDialog
+#from InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
+from .ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
+from .ui.printList_dialog import printListDialog
 
 import os.path
 
-from TOMs.constants import (
+from ..constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
 )
 
-class InstantPrintDialog(QDialog):
+class InstantPrintDialog_v2(QtWidgets.QDialog):
 
     hidden = pyqtSignal()
 
     def __init__(self, parent):
-        QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
 
     def hideEvent(self, ev):
         self.hidden.emit()
@@ -45,7 +47,7 @@ class InstantPrintDialog(QDialog):
             self.hidden.emit()
 
 
-class InstantPrintTool(QgsMapTool, InstantPrintDialog):
+class InstantPrintTool_v2(QgsMapTool, InstantPrintDialog):
 
     def __init__(self, iface, populateCompositionFz=None):
         QgsMapTool.__init__(self, iface.mapCanvas())
@@ -61,12 +63,12 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialog = InstantPrintDialog(self.iface.mainWindow())
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
-        self.dialogui.addScale.setIcon(QIcon(":/images/themes/default/mActionAdd.svg"))
-        self.dialogui.deleteScale.setIcon(QIcon(":/images/themes/default/symbologyRemove.svg"))
+        self.dialogui.addScale.setIcon(QtGui.QIcon(":/images/themes/default/mActionAdd.svg"))
+        self.dialogui.deleteScale.setIcon(QtGui.QIcon(":/images/themes/default/symbologyRemove.svg"))
         self.dialog.hidden.connect(self.__onDialogHidden)
-        self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
-        self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
-        self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
+        self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QtWidgets.QDialogButtonBox.ActionRole)
+        self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QtWidgets.QDialogButtonBox.ActionRole)
+        self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QtWidgets.QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
         self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
@@ -80,7 +82,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.exportButton.clicked.connect(self.__export)
         self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
-        self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
+        self.dialogui.buttonBox.button(QtWidgets.QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
         self.dialogui.addScale.clicked.connect(self.__addItems)
         self.dialogui.deleteScale.clicked.connect(self.__deleteItems)
         self.deactivated.connect(self.__cleanup)
@@ -177,7 +179,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     maps.append(item)
 
         if len(maps) != 1:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
+            QtWidgets.QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             self.exportButton.setEnabled(False)
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
@@ -202,7 +204,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
-        self.rubberband.setColor(QColor(127, 127, 255, 127))
+        self.rubberband.setColor(QtGui.QColor(127, 127, 255, 127))
 
         self.pressPos = None
 
@@ -223,7 +225,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
-            self.oldrubberband.setColor(QColor(127, 127, 255, 31))
+            self.oldrubberband.setColor(QtGui.QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
             self.iface.mapCanvas().setCursor(Qt.ClosedHandCursor)
 
@@ -281,7 +283,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __export(self):
         settings = QSettings()
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
-        filename = QFileDialog.getSaveFileName(
+        filename = QtWidgets.QFileDialog.getSaveFileName(
             self.iface.mainWindow(),
             self.tr("Print Composition"),
             settings.value("/instantprint/lastfile", ""),
@@ -308,20 +310,20 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             if not image.isNull():
                 success = image.save(filename)
         if not success:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+            QtWidgets.QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __print(self):
         if not self.printer:
-            self.printer = QPrinter()
+            self.printer = QtPrintSupport.QPrinter()
 
-        printdialog = QPrintDialog(self.printer)
-        if printdialog.exec_() != QDialog.Accepted:
+        printdialog = QtPrintSupport.QPrintDialog(self.printer)
+        if printdialog.exec_() != QtWidgets.QDialog.Accepted:
             return
 
         print_ = getattr(self.composerView.composition(), 'print')
         success = print_(self.printer)
         if not success:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+            QtWidgets.QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __reloadComposers(self, removed=None):
         if not self.dialog.isVisible():
@@ -352,7 +354,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __help(self):
         manualPath = os.path.join(os.path.dirname(__file__), "help", "documentation.pdf")
-        QDesktopServices.openUrl(QUrl.fromLocalFile(manualPath))
+        QtGui.QDesktopServices.openUrl(QUrl.fromLocalFile(manualPath))
 
     def scaleFromString(self, scaleText):
         locale = QLocale()
@@ -480,10 +482,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
                     """if proposalNrForPrinting == 0:
 
-                        reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
+                        reply = QtWidgets.QMessageBox.question(self.iface.mainWindow(), 'Print options',
                                                      'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
-                                                     QMessageBox.Yes, QMessageBox.No)
-                        if reply == QMessageBox.No:
+                                                     QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+                        if reply == QtWidgets.QMessageBox.No:
                             return"""
 
                 else:
@@ -511,7 +513,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.Proposals = \
                 QgsProject.instance().mapLayersByName("Proposals")[0]
         else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+            QtWidgets.QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                     ("Table Proposals is not present"))
 
 
@@ -668,13 +670,13 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     success = image.save(outputFile)
 
             if not success:
-                QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
+                QtWidgets.QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
                                     self.tr("Failed to print the composition."))
                 break
 
         currAtlas.endRender()
 
-        QMessageBox.information(self.iface.mainWindow(), "Information",
+        QtWidgets.QMessageBox.information(self.iface.mainWindow(), "Information",
                                 ("Printing completed"))
 
     def tileFromTileSet(self, tileNr):
@@ -744,7 +746,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # set the dialog (somehow)
 
         self.tilesToPrint = []
-        idxMapTileId = self.tableNames.MAP_GRID.fieldNameIndex("id")
+        idxMapTileId = self.tableNames.MAP_GRID.fields().indexFromName("id")
 
         self.tileListDialog = printListDialogB(self.tileSet, idxMapTileId)
 
@@ -763,9 +765,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         pass
 
-class printListDialogB(printListDialog, QDialog):
+class printListDialogB(printListDialog, QtWidgets.QDialog):
     def __init__(self, initValues, idxValue, parent=None):
-        QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
 
         # initValues is set of features (in this case MapTile features); idxValue is the index to the set
         # Set up the user interface from Designer.
@@ -777,9 +779,9 @@ class printListDialogB(printListDialog, QDialog):
         self.idxValue = idxValue
         self.tilesToPrint = self.initValues.copy()
 
-        self.LIST = self.findChild(QListWidget, "tileList")
-        self.cbToggleTiles = self.findChild(QCheckBox, "cb_ToggleTiles")
-        self.buttonBox = self.findChild(QDialogButtonBox, "buttonBox")
+        self.LIST = self.findChild(QtWidgets.QListWidget, "tileList")
+        self.cbToggleTiles = self.findChild(QtWidgets.QCheckBox, "cb_ToggleTiles")
+        self.buttonBox = self.findChild(QtWidgets.QDialogButtonBox, "buttonBox")
         self.cbToggleTiles.setCheckState(Qt.Checked)
 
         QMetaObject.connectSlotsByName(self)
@@ -839,7 +841,7 @@ class printListDialogB(printListDialog, QDialog):
         if self.cbToggleTiles.checkState() == Qt.Checked:
             for i in range(self.LIST.count()):
                 # attr = feature.attributes()
-                element = QListWidgetItem(self.LIST.item(i).text())
+                element = QtWidgets.QListWidgetItem(self.LIST.item(i).text())
                 self.LIST.item(i).setCheckState(Qt.Checked)
                 """QgsMessageLog.logMessage(
                     "In TOMsTileListDialog. In toggleValues. setting: " + str(self.LIST.item(i).text()),
@@ -849,7 +851,7 @@ class printListDialogB(printListDialog, QDialog):
 
             for i in range(self.LIST.count()):
                 # attr = feature.attributes()
-                element = QListWidgetItem(self.LIST.item(i).text())
+                element = QtWidgets.QListWidgetItem(self.LIST.item(i).text())
                 self.LIST.item(i).setCheckState(Qt.Unchecked)
 
     def populateTileListDialog(self, txtFilter=None):
@@ -863,7 +865,7 @@ class printListDialogB(printListDialog, QDialog):
         for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
             attr = feature.attributes()
             value = attr[self.idxValue]
-            element = QListWidgetItem(str(value))
+            element = QtWidgets.QListWidgetItem(str(value))
             element.setData(Qt.UserRole, attr[self.idxValue])
 
             """QgsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),

@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -74,7 +74,7 @@ class RectangularPointsTool():
                 mc.unsetMapTool(self.tool)             
                 return
             else:
-                cadutils.addGeometryToCadLayer(QgsGeometry.fromPoint(result))
+                cadutils.addGeometryToCadLayer(QgsGeometry.fromPointXY(result))
                 self.canvas.refresh()
                 
             self.p1 = pt1

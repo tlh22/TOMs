@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 
 class LineIntersection:
@@ -62,9 +62,9 @@ class LineIntersection:
             return None
             
     def farestVertex(p1,  p2,  p):
-        g1 = QgsGeometry.fromPoint(p1)
-        g2 = QgsGeometry.fromPoint(p2)
-        g = QgsGeometry.fromPoint(p)
+        g1 = QgsGeometry.fromPointXY(p1)
+        g2 = QgsGeometry.fromPointXY(p2)
+        g = QgsGeometry.fromPointXY(p)
         
         d1 = g1.distance(g)
         d2 = g2.distance(g)

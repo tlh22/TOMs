@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -69,12 +69,12 @@ class ArcFinderTool(QgsMapTool):
             for f in self.layer.getFeatures(request):
                 feat = f
 
-            wkbType = feat.get().wkbType()
+            wkbType = feat.geometry().wkbType()
             
             if wkbType == 2:
-                line = feat.get().asPolyline()
+                line = feat.geometry().asPolyline()
             elif wkbType == 5:
-                line = feat.get().asMultiPolyline()
+                line = feat.geometry().asMultiPolyline()
                 line = line[0]
             else: 
                 QMessageBox.information(None,  QCoreApplication.translate("ctools", "Modify Circular Arc"),  QCoreApplication.translate("ctools", "Unsupported geometry type."))

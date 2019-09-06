@@ -5,8 +5,8 @@
 # List comprehensions in canvasMoveEvent functions are 
 # adapted from Benjamin Bohard`s part of rectovaldiams plugin.
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -167,7 +167,7 @@ class CircleFromCentre(QgsMapTool):
             # seg = QgsFeature()
             # seg.setGeometry(QgsGeometry.fromPolyline([line_end, newpoint]))
             
-            polygon = QgsGeometry.fromPolygon([self.points])
+            polygon = QgsGeometry.fromPolygonXY([self.points])
 
             # QMessageBox.information(None, "Info", "circle created ...")
 

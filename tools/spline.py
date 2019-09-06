@@ -18,8 +18,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import math
@@ -126,7 +126,7 @@ class Spline(QgsMapTool):
               
         ## Add geometry to feature.
         if self.isPolygon == True:
-            g = QgsGeometry().fromPolygon([coords])
+            g = QgsGeometry().fromPolygonXY([coords])
         else:
             g = QgsGeometry().fromPolyline(coords)
         f.setGeometry(g)

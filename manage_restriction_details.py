@@ -10,8 +10,9 @@
 # Tim Hancock 2017
 
 # Initialize Qt resources from file resources.py
+from .resources import *
 
-from PyQt5.QtCore import (
+from qgis.PyQt.QtCore import (
     QObject,
     QDate,
     pyqtSignal,
@@ -43,16 +44,16 @@ import os
 
 from qgis.gui import *
 
-from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool
+from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
-from TOMs.mapTools import *
+from .mapTools import *
 #from TOMsUtils import *
-from TOMs.constants import (
+from .constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransaction, setupTableNames
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransaction, setupTableNames
 #from BayRestrictionForm import BayRestrictionForm
 
 import functools
@@ -168,7 +169,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
-        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+        self.tableNames = setupTableNames(self.iface)
+        self.tableNames.getLayers()
         self.restrictionTransaction = restrictionTransaction
         """self.proposalsManager.TOMsToolChanged.connect(
             functools.partial(self.restrictionTransaction.commitTransactionGroup, self.tableNames.PROPOSALS))"""
@@ -308,8 +310,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
-                currLayer = self.tableNames.BAYS
-
+                #currLayer = self.tableNames.BAYS
+                currLayer = self.TOMsLayerDict["Bays"]
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
@@ -371,7 +373,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
-                currLayer = self.tableNames.LINES
+                #currLayer = self.tableNames.LINES
+                currLayer = self.TOMsLayerDict["Lines"]
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
@@ -425,7 +428,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool activated", tag="TOMs panel")
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
-                currLayer = self.tableNames.RESTRICTION_POLYGONS
+                #currLayer = self.tableNames.RESTRICTION_POLYGONS
+                currLayer = self.TOMsLayerDict["RestrictionPolygons"]
                 self.iface.setActiveLayer(currLayer)
                 self.restrictionTransaction.startTransactionGroup()
 
@@ -480,7 +484,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.restrictionTransaction.startTransactionGroup()
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
-                currLayer = self.tableNames.SIGNS
+                #currLayer = self.tableNames.SIGNS
+                currLayer = self.TOMsLayerDict["Lines"]
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()
@@ -653,7 +658,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         currRestrictionLayerID = self.getRestrictionLayerTableID(currRestrictionLayer)
 
-        idxRestrictionID = currRestriction.fieldNameIndex("RestrictionID")
+        idxRestrictionID = currRestriction.fields().indexFromName("RestrictionID")
 
         if self.restrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID):
             # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
@@ -727,7 +732,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                         restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
                         currRestrictionLayer.deselect(currRestriction.id())
                         currRestrictionLayer.select(restrictionForEdit.id())
-                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])"""
+                        #currRestrictionLayer.selectByIds([editFeature.id()])"""
 
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsNodeTool(self.iface,
@@ -821,7 +826,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                         restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
                         currRestrictionLayer.deselect(currRestriction.id())
                         currRestrictionLayer.select(restrictionForEdit.id())
-                        #currRestrictionLayer.setSelectedFeatures([editFeature.id()])"""
+                        #currRestrictionLayer.selectByIds([editFeature.id()])"""
 
                         #self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsSplitRestrictionTool(self.iface, currRestrictionLayer,

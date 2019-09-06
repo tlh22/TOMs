@@ -27,10 +27,11 @@ import qgis
 from qgis.gui import *
 from qgis.utils import *
 from qgis.core import (
-    QgsMessageLog
+    QgsMessageLog,
+    QgsExpression
 )
 import math
-from TOMs.generateGeometryUtils import generateGeometryUtils
+from .generateGeometryUtils import generateGeometryUtils
 import sys, traceback
 
 

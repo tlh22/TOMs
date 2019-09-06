@@ -23,14 +23,14 @@
 
 import os
 
-from PyQt5 import QtGui, uic
+from PyQt5 import QtGui, uic, QtWidgets
 from qgis.gui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'restrictionBayDetails_dialog_base3.ui'))
 
 
-class restrictionBayDetailsDialog(QtGui.QDialog, FORM_CLASS):
+class restrictionBayDetailsDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(restrictionBayDetailsDialog, self).__init__(parent)

@@ -1,7 +1,7 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -85,7 +85,7 @@ class circleFromCentreTool():
             mc.unsetMapTool(self.tool)    
             
             self.actionCircleFromCenter.setChecked(False)
-            polygon = QgsGeometry.fromPolygon([self.points])
+            polygon = QgsGeometry.fromPolygonXY([self.points])
 
             cadutils.addGeometryToCadLayer(polygon)
 

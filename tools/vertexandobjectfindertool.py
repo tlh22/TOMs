@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -65,7 +65,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
             searchRadius = QgsTolerance.vertexSearchRadius( vlayer, self.canvas.mapRenderer() )
 
 
-            pointGeometry = QgsGeometry.fromPoint( layerCoords )
+            pointGeometry = QgsGeometry.fromPointXY( layerCoords )
             if pointGeometry is None:
               return
 
@@ -78,11 +78,11 @@ class VertexAndObjectFinderTool(QgsMapTool):
 
             self.cf = QgsFeature()
             for f in vlayer.getFeatures():
-                if f.get() is not None:
-                    currentDistance = pointGeometry.distance( f.get() )
+                if f.geometry() is not None:
+                    currentDistance = pointGeometry.distance( f.geometry() )
                     if currentDistance < minDistance:
                         minDistance = currentDistance
-                        self.cf.setGeometry(f.get())
+                        self.cf.setGeometry(f.geometry())
             try:
                 if minDistance == float('inf'):
                     return
@@ -95,7 +95,7 @@ class VertexAndObjectFinderTool(QgsMapTool):
 
 
             self.rb = self.createRubberBand(self.isPolygon)
-            self.rb.setToGeometry( self.cf.get(), vlayer )
+            self.rb.setToGeometry( self.cf.geometry(), vlayer )
 
             self.count += 1
 

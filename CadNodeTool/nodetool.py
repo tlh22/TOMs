@@ -11,18 +11,18 @@
 
 import math
 
-from PyQt5.QtGui import (
+from qgis.PyQt.QtGui import (
     QColor,
 QMouseEvent
 )
-from PyQt5.QtCore import (
+from qgis.PyQt.QtCore import (
     QSettings,
     QEvent,
     QPoint,
     Qt,
     QRect
 )
-from PyQt5.QtWidgets import (
+from qgis.PyQt.QtWidgets import (
     QRubberBand
 )
 
@@ -52,7 +52,7 @@ from qgis.gui import (
     QgsMapMouseEvent
 )
 
-from TOMs.CadNodeTool.geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
+from .geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
 
 class Vertex(object):
     def __init__(self, layer, fid, vertex_id):
@@ -316,7 +316,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                     continue
                 layer_rect = self.toLayerCoordinates(layer, map_rect)
                 for f in layer.getFeatures(QgsFeatureRequest(layer_rect)):
-                    g = f.get()
+                    g = f.geometry()
 
                     # TH (180630): Changed to deal with g = None
 
@@ -548,7 +548,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # possibility to move a node
         if m.type() == QgsPointLocator.Vertex:
-            self.vertex_band.setToGeometry(QgsGeometry.fromPoint(m.point()), None)
+            self.vertex_band.setToGeometry(QgsGeometry.fromPointXY(m.point()), None)
             self.vertex_band.setVisible(True)
             is_circular_vertex = False
             if m.layer:
@@ -633,7 +633,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         if fid not in self.cache[layer]:
             f = layer.getFeatures(QgsFeatureRequest(fid)).next()
-            self.cache[layer][fid] = QgsGeometry(f.get())
+            self.cache[layer][fid] = QgsGeometry(f.geometry())
 
         return self.cache[layer][fid]
 
@@ -879,7 +879,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         if match and match.hasVertex() and match.layer() and match.layer().crs() == dest_layer.crs():
             try:
                 f = match.layer().getFeatures(QgsFeatureRequest(match.featureId())).next()
-                layer_point = f.get().vertexAt(match.vertexIndex())
+                layer_point = f.geometry().vertexAt(match.vertexIndex())
             except StopIteration:
                 pass
 

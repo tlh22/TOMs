@@ -12,8 +12,8 @@
 
 import math
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
 
 from qgis.core import *
 from qgis.gui import *
@@ -21,18 +21,18 @@ from qgis.utils import iface
 import uuid
 import functools
 
-from TOMs.CadNodeTool.nodetool import NodeTool, OneFeatureFilter
+from .nodetool import NodeTool, OneFeatureFilter
 
-from TOMs.constants import (
+from ..constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
 #from geomutils import is_endpoint_at_vertex_index, vertex_at_vertex_index, adjacent_vertex_index_to_endpoint, vertex_index_to_tuple
 
-from TOMs.mapTools import MapToolMixin
-#from TOMs.restrictionTypeUtils import RestrictionTypeUtils
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
-from TOMs.core.proposalsManager import TOMsProposalsManager
+from ..mapTools import MapToolMixin
+#from restrictionTypeUtils import RestrictionTypeUtils
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from ..core.proposalsManager import TOMsProposalsManager
 
 class originalFeature(object):
     def __init__(self, feature=None):
@@ -52,7 +52,7 @@ class originalFeature(object):
     def printFeature(self):
         QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
                                  tag="TOMs panel")
-        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.get().asWkt()),
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
                                  tag="TOMs panel")
 
 # generate a subclass of Martin's class
@@ -136,7 +136,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
         #QgsMessageLog.logMessage("In TOMsNodeTool:init - fid: " + str(self.newFid), tag="TOMs panel")
         #self.origLayer.selectByIds([self.newFid])
-        #self.origLayer.setSelectedFeatures([self.newFid])
+        #self.origLayer.selectByIds([self.newFid])
 
     def setUnCheck(self):
         pass
@@ -183,7 +183,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         #currLayer.geometryChanged.disconnect(self.onGeometryChanged)
         #QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. geometryChange signal disconnected.", tag="TOMs panel")
 
-        idxRestrictionID = self.origLayer.fieldNameIndex("RestrictionID")
+        idxRestrictionID = self.origLayer.fields().indexFromName("RestrictionID")
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currProposal: " + str(self.proposalsManager.currentProposal()), tag="TOMs panel")
 
         # Now obtain the changed feature (not sure which geometry)
@@ -216,8 +216,8 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
             newFeature[idxRestrictionID] = newRestrictionID
 
-            idxOpenDate = self.origLayer.fieldNameIndex("OpenDate")
-            idxGeometryID = self.origLayer.fieldNameIndex("GeometryID")
+            idxOpenDate = self.origLayer.fields().indexFromName("OpenDate")
+            idxGeometryID = self.origLayer.fields().indexFromName("GeometryID")
 
             newFeature[idxOpenDate] = None
             newFeature[idxGeometryID] = None
@@ -227,9 +227,9 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
 
             QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), tag="TOMs panel")
 
-            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + newFeature.get().asWkt(), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + newFeature.geometry().asWkt(), tag="TOMs panel")
 
-            originalGeomBuffer = QgsGeometry(originalfeature.get())
+            originalGeomBuffer = QgsGeometry(originalfeature.geometry())
             QgsMessageLog.logMessage(
                 "In TOMsNodeTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.asWkt(),
                 tag="TOMs panel")
@@ -252,7 +252,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
             pass
 
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom (2): " + currRestriction.get().asWkt(),
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom (2): " + currRestriction.geometry().asWkt(),
                                  tag="TOMs panel")
 
         # Trying to unset map tool to force updates ...
@@ -282,7 +282,7 @@ class TOMsNodeTool(NodeTool, MapToolMixin, RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(self.currFeature.attributes()),
                                  tag="TOMs panel")
 
-        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + self.currFeature.get().asWkt(),
+        QgsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + self.currFeature.geometry().asWkt(),
                                  tag="TOMs panel")
 
         # Trying to unset map tool to force updates ...

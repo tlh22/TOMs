@@ -24,7 +24,7 @@
 import os
 
 from PyQt5 import QtGui, uic
-from PyQt5.QtCore import pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtWidgets import (
     QDockWidget
 )
