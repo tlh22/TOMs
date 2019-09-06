@@ -311,7 +311,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 #currLayer = self.tableNames.BAYS
-                currLayer = self.TOMsLayerDict["Bays"]
+                currLayer = self.proposalsManager.tableNames.TOMsLayerDict.get("Bays")
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
@@ -374,7 +374,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 #currLayer = self.tableNames.LINES
-                currLayer = self.TOMsLayerDict["Lines"]
+                currLayer = self.proposalsManager.tableNames.TOMsLayerDict.get("Lines")
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()  # start editing
@@ -429,7 +429,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
                 #currLayer = self.tableNames.RESTRICTION_POLYGONS
-                currLayer = self.TOMsLayerDict["RestrictionPolygons"]
+                currLayer = self.proposalsManager.tableNames.TOMsLayerDict.get("RestrictionPolygons")
                 self.iface.setActiveLayer(currLayer)
                 self.restrictionTransaction.startTransactionGroup()
 
@@ -485,7 +485,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
                 #currLayer = self.tableNames.SIGNS
-                currLayer = self.TOMsLayerDict["Lines"]
+                currLayer = self.proposalsManager.tableNames.TOMsLayerDict.get("Signs")
                 self.iface.setActiveLayer(currLayer)
 
                 self.restrictionTransaction.startTransactionGroup()

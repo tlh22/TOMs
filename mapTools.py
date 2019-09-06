@@ -18,13 +18,14 @@
 """
 
 import math
-#import time
+import time
 
 from qgis.core import *
 from qgis.gui import *
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import QMenu, QAction, QDockWidget, QMessageBox
 
 from .core.proposalsManager import TOMsProposalsManager
 #from restrictionTypeUtils import RestrictionTypeUtils
@@ -317,6 +318,9 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin, RestrictionTypeUtils
         layerList = []
 
         for layerDetails in self.RestrictionLayers.getFeatures():
+
+            if layerDetails.attribute("id") >= 6:   # CPZs, PTAs
+                continue
 
             self.currLayer = self.getRestrictionsLayer (layerDetails)
 

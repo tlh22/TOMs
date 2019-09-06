@@ -19,6 +19,7 @@ from qgis.core import (
     QgsGeometry,
     QgsFeatureRequest,
     QgsPoint,
+    QgsPointXY,
     QgsRectangle,
     QgsVectorLayer,
     QgsProject,
@@ -841,7 +842,7 @@ class generateGeometryUtils:
 
                 # now generate line
                 length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
 
             pass
 
@@ -868,7 +869,7 @@ class generateGeometryUtils:
 
                 # now generate line
                 length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
 
             pass
 
@@ -885,17 +886,38 @@ class generateGeometryUtils:
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        QgsMessageLog.logMessage("In generateBayLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
 
         if currScale <= minScale:
 
             if feature.attribute("label_X"):
-                QgsMessageLog.logMessage(
-                    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
-                # now generate line
                 length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([feature.geometry().interpolate(length/2.0).asPoint(), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
+                QgsMessageLog.logMessage(
+                    "In generateBayLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+
+                """
+                # now generate line
+                points = []
+                pt1 = QgsPoint(feature.geometry().interpolate(length/2.0).asPoint())
+                points.append(pt1)
+                pt2 = QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))
+                points.append(pt2)
+
+                for i, pt in enumerate(points):
+                    QgsMessageLog.logMessage(
+                        "In generateBayLabelLeader. pt: " + str(i) + "; " + pt.asWkt(), tag="TOMs panel")
+                    # + ":" + QgsWkbTypes.displayString(pt.wkbType())
+
+                lineGeom = QgsGeometry.fromPolyline(points)
+
+                QgsMessageLog.logMessage(
+                    "In generateBayLabelLeader. line: " + lineGeom.asWkt() ,
+                    tag="TOMs panel")
+                
+                return lineGeom
+                """
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
 
             pass
 
@@ -923,7 +945,7 @@ class generateGeometryUtils:
                 pt = feature.geometry().nearestPoint()
 
                 # now generate line
-                return QgsGeometry.fromPolyline([feature.geometry().nearestPoint().asPoint(), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().nearestPoint().asPoint()), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
 
             pass
 

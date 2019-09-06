@@ -986,13 +986,15 @@ class RestrictionTypeUtilsMixin():
                 "In setupRestrictionDialog. button box not found",
                 tag="TOMs panel")
 
-        button_box.accepted.disconnect(restrictionDialog.accept)
+        #button_box.accepted.disconnect(restrictionDialog.accept)
+        button_box.accepted.disconnect()
         button_box.accepted.connect(functools.partial(self.onSaveRestrictionDetails, currRestriction,
                                       currRestrictionLayer, restrictionDialog, restrictionTransaction))
 
         restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, currRestriction, currRestrictionLayer))
 
-        button_box.rejected.disconnect(restrictionDialog.reject)
+        #button_box.rejected.disconnect(restrictionDialog.reject)
+        button_box.rejected.disconnect()
         button_box.rejected.connect(functools.partial(self.onRejectRestrictionDetailsFromForm, restrictionDialog, restrictionTransaction))
 
         self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)
@@ -1143,13 +1145,15 @@ class RestrictionTypeUtilsMixin():
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
 
+        self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
+
         # set up field indexes
-        idxProposalID = self.tableNames.PROPOSALS.fields().indexFromName("ProposalID")
-        idxProposalTitle = self.tableNames.PROPOSALS.fields().indexFromName("ProposalTitle")
-        idxProposalStatusID = self.tableNames.PROPOSALS.fields().indexFromName("ProposalStatusID")
-        idxProposalNotes = self.tableNames.PROPOSALS.fields().indexFromName("ProposalNotes")
-        idxProposalCreateDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalCreateDate")
-        idxProposalOpenDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalOpenDate")
+        idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
+        idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
+        idxProposalStatusID = self.Proposals.fields().indexFromName("ProposalStatusID")
+        idxProposalNotes = self.Proposals.fields().indexFromName("ProposalNotes")
+        idxProposalCreateDate = self.Proposals.fields().indexFromName("ProposalCreateDate")
+        idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposal[idxProposalStatusID]), tag="TOMs panel")
 
@@ -1184,7 +1188,7 @@ class RestrictionTypeUtilsMixin():
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
                 if updateStatus == True:
-                    status = self.tableNames.PROPOSALS.updateFeature(currProposal)
+                    status = self.Proposals.updateFeature(currProposal)
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
 
@@ -1207,7 +1211,7 @@ class RestrictionTypeUtilsMixin():
 
                 # TODO: Need to check that this is an authorised user
 
-                updateStatus = self.tableNames.PROPOSALS.updateFeature(currProposal)
+                updateStatus = self.Proposals.updateFeature(currProposal)
                 updateStatus = True
 
                 if updateStatus == True:
@@ -1262,7 +1266,7 @@ class RestrictionTypeUtilsMixin():
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         #self.commitProposalChanges()
-        proposalTransaction.commitTransactionGroup(self.tableNames.PROPOSALS)
+        proposalTransaction.commitTransactionGroup(self.Proposals)
         #proposalTransaction.commitTransactionGroup(None)
         #proposalTransaction.deleteTransactionGroup()
         status = proposalsDialog.close()
@@ -1276,7 +1280,7 @@ class RestrictionTypeUtilsMixin():
             #self.proposalsManager.setCurrentProposal(currProposal[idxProposalID])
             #ProposalTypeUtils.iface.proposalChanged.emit()
 
-            for proposal in self.tableNames.PROPOSALS.getFeatures():
+            for proposal in self.Proposals.getFeatures():
                 if proposal[idxProposalTitle] == currProposal[idxProposalTitle]:
                     QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(proposal.id()),
                                              tag="TOMs panel")
@@ -1535,15 +1539,15 @@ class RestrictionTypeUtilsMixin():
         QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel")
 
         #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
-        idxProposalTitle = self.tableNames.PROPOSALS.fields().indexFromName("ProposalTitle")
-        idxProposalOpenDate = self.tableNames.PROPOSALS.fields().indexFromName("ProposalOpenDate")
+        idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
+        idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
         queryString = "\"ProposalID\" = " + str(proposalID)
 
         QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
 
         expr = QgsExpression(queryString)
 
-        for feature in self.tableNames.PROPOSALS.getFeatures(QgsFeatureRequest(expr)):
+        for feature in self.Proposals.getFeatures(QgsFeatureRequest(expr)):
             return feature[idxProposalTitle], feature[idxProposalOpenDate]
 
         QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel")
@@ -1806,7 +1810,7 @@ class RestrictionTypeUtilsMixin():
         #newTransaction = QgsTransaction("Test1")
 
         #QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding ProposalsLayer ", tag="TOMs panel")
-        self.setTransactionGroup = [self.tableNames.PROPOSALS.id()]
+        self.setTransactionGroup = [self.Proposals.id()]
 
         self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS.id())
         self.setTransactionGroup.append(self.tableNames.BAYS.id())
