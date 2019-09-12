@@ -296,8 +296,8 @@ class TOMs:
         digitizeToolBar = self.iface.digitizeToolBar()
         digitizeToolBar.setVisible( True )
 
-        advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
-        advancedDigitizeToolBar.setVisible( True )
+        # advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
+        # advancedDigitizeToolBar.setVisible( True )
 
         # Panels not required are Browser, Layer Order
 		

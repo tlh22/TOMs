@@ -19,12 +19,12 @@ from qgis.gui import *
 from .InstantPrintTool_v3 import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
-class TOMsInstantPrintTool(InstantPrintTool, RestrictionTypeUtilsMixin):
+class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
 
     def __init__(self, iface, proposalsManager):
 
         self.iface = iface
-        # InstantPrintTool.__init__(self, iface)
+        InstantPrintTool.__init__(self, iface)
         self.proposalsManager = proposalsManager
 
         self.proposalsManager.TOMsActivated.connect(self.setupTables)

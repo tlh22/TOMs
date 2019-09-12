@@ -297,8 +297,7 @@ class generateGeometryUtils:
 
         # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
 
-        testPt = feature.geometry().centroid().asPoint()
-        #lineGeom = QgsGeometry.fromPolyline((line[::])
+        testPt = feature.geometry().centroid().asPoint()        #lineGeom = QgsGeometry.fromPolyline((line[::])
         #lineLength = lineGeom.length()
         #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
         #testPt = lineGeom.interpolate(lineLength / 2.0)
@@ -333,18 +332,20 @@ class generateGeometryUtils:
 
         if featureFound:
             # now obtain the line between the testPt and the nearest feature
-            f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPointXY(testPt))
+            # f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPointXY(testPt))
+            startPt = QgsPoint(QgsGeometry.asPoint(closestFeature.geometry().nearestPoint(QgsGeometry.fromPointXY(testPt))))
 
             # get the start point (we know the end point)
-            startPtV2 = f_lineToCL.geometry().startPoint()
+            """startPtV2 = f_lineToCL.geometry().startPoint()
             startPt = QgsPoint()
             startPt.setX(startPtV2.x())
-            startPt.setY(startPtV2.y())
+            startPt.setY(startPtV2.y())"""
 
             QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
                                      tag="TOMs panel")
 
-            Az = generateGeometryUtils.checkDegrees(testPt.azimuth(startPt))
+            Az = QgsPoint(testPt).azimuth(startPt)
+            # Az = generateGeometryUtils.checkDegrees(testPt.azimuth(startPt))
             # QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
 
             return Az

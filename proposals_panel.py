@@ -336,7 +336,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
 
-        self.proposalDialog.attributeForm().disconnectButtonBox()
+        #self.proposalDialog.attributeForm().disconnectButtonBox()
         self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
         if self.button_box is None:
@@ -344,10 +344,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 "In onNewProposal. button box not found",
                 tag="TOMs panel")
 
-        self.button_box.accepted.disconnect()
+            #self.button_box.accepted.disconnect()
         self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.proposalDialog, self.proposalTransaction))
 
-        self.button_box.rejected.disconnect()
+        #self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
 
         self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.newProposal, self.Proposals))
@@ -409,7 +409,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
-        self.proposalDialog.attributeForm().disconnectButtonBox()
+        #self.proposalDialog.attributeForm().disconnectButtonBox()
         self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
         if self.button_box is None:

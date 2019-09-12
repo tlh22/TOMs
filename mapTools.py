@@ -211,7 +211,7 @@ class MapToolMixin:
 
 #############################################################################
 
-class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin, RestrictionTypeUtilsMixin):
+class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIdentify):
 
     # Modified from Erik Westra's book to deal specifically with restrictions
 
@@ -434,22 +434,46 @@ class GeometryInfoMapTool(QgsMapToolIdentify, MapToolMixin, RestrictionTypeUtils
 
 #############################################################################
 
-class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
+class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
     # helpful link - http://apprize.info/python/qgis/7.html ??
     def __init__(self, iface, layer, proposalsManager, currTransaction):
 
         QgsMessageLog.logMessage(("In CreateRestrictionTool - init."), tag="TOMs panel")
+        if layer.geometryType() == 0: # PointGeometry:
+            captureMode = (CreateRestrictionTool.CapturePoint)
+        elif layer.geometryType() == 1: # LineGeometry:
+            captureMode = (CreateRestrictionTool.CaptureLine)
+        elif layer.geometryType() == 2: # PolygonGeometry:
+            captureMode = (CreateRestrictionTool.CapturePolygon)
+        else:
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
+            return
 
-        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
-        #https: // qgis.org / api / classQgsMapToolCapture.html
+        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget(), captureMode)
+
+        # https: // qgis.org / api / classQgsMapToolCapture.html
         canvas = iface.mapCanvas()
         self.iface = iface
         self.layer = layer
+
+        """if self.layer.geometryType() == 0: # PointGeometry:
+            self.captureMode = (CreateRestrictionTool.CapturePoint)
+        elif self.layer.geometryType() == 1: # LineGeometry:
+            self.captureMode(CreateRestrictionTool.CaptureLine)
+        elif self.layer.geometryType() == 2: # PolygonGeometry:
+            self.captureMode(CreateRestrictionTool.CapturePolygon)
+        else:
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
+            return"""
+
         #self.dialog = dialog
         self.currTransaction = currTransaction
         self.proposalsManager = proposalsManager
 
         #advancedDigitizingPanel = self.iface.AdvancedDigitizingTools()
+        self.setAdvancedDigitizingAllowed(True)
+        self.setAutoSnapEnabled(True)
+
         advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
         if not advancedDigitizingPanel:
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
@@ -467,16 +491,6 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         # capture mode (... not sure if this has already been set? - or how to set it)
 
         QgsMessageLog.logMessage("In CreateRestrictionTool - geometryType for " + str(self.layer.name()) + ": " + str(self.layer.geometryType()), tag="TOMs panel")
-
-        if self.layer.geometryType() == 0: # PointGeometry:
-            self.setMode(CreateRestrictionTool.CapturePoint)
-        elif self.layer.geometryType() == 1: # LineGeometry:
-            self.setMode(CreateRestrictionTool.CaptureLine)
-        elif self.layer.geometryType() == 2: # PolygonGeometry:
-            self.setMode(CreateRestrictionTool.CapturePolygon)
-        else:
-            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
-            return
 
         QgsMessageLog.logMessage(("In CreateRestrictionTool - mode set."), tag="TOMs panel")
 
@@ -505,11 +519,11 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
         snapping_layer3 = QgsSnappingUtils.LayerConfig(ConstructionLines, QgsPointLocator.Vertex and QgsPointLocator.Edge, 0.5,
                                                        QgsTolerance.LayerUnits)
         """
-        self.snappingUtils = QgsSnappingUtils()
+        self.snappingConfig = QgsSnappingConfig()
 
         #self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
 
-        self.snappingUtils.setSnapToMapMode(QgsSnappingUtils.SnapAdvanced)
+        self.snappingConfig.setMode(QgsSnappingConfig.AdvancedConfiguration)
 
         # set up tracing configuration
         self.TOMsTracer = QgsTracer()
@@ -556,7 +570,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
             # Now wanting to add point(s) to new shape. Take account of snapping and tracing
             # self.toLayerCoordinates(self.layer, event.pos())
-            self.currPoint = event.snapPoint(1)    #  1 is value of QgsMapMouseEvent.SnappingMode (not sure where this is defined)
+            self.currPoint = event.snapPoint()    #  1 is value of QgsMapMouseEvent.SnappingMode (not sure where this is defined)
             self.lastEvent = event
             # If this is the first point, add and k
 
@@ -650,7 +664,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
             if self.layer.geometryType() == 0:  # Point
                 feature.setGeometry(QgsGeometry.fromPointXY(self.sketchPoints[0]))
             elif self.layer.geometryType() == 1:  # Line
-                feature.setGeometry(QgsGeometry.fromPolyline(self.sketchPoints))
+                feature.setGeometry(QgsGeometry.fromPolylineXY(self.sketchPoints))
             elif self.layer.geometryType() == 2:  # Polygon
                 feature.setGeometry(QgsGeometry.fromPolygonXY([self.sketchPoints]))
                 #feature.setGeometry(QgsGeometry.fromPolygonXY(self.sketchPoints))
@@ -682,7 +696,7 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
                 #currForm = dialog.attributeForm()
                 #currForm.disconnectButtonBox()
 
-                QgsMessageLog.logMessage("In In CreateRestrictionTool - getPointsCaptured. currRestrictionLayer: " + str(self.layer.name()),
+                QgsMessageLog.logMessage("In CreateRestrictionTool - getPointsCaptured. currRestrictionLayer: " + str(self.layer.name()),
                                          tag="TOMs panel")
 
                 #button_box = currForm.findChild(QDialogButtonBox, "button_box")
@@ -715,13 +729,23 @@ class CreateRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
 
 #############################################################################
 
-class TOMsSplitRestrictionTool(QgsMapToolCapture, RestrictionTypeUtilsMixin):
+class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
     def __init__(self, iface, layer, proposalsManager, restrictionTransaction):
 
         QgsMessageLog.logMessage(("In SplitRestrictionTool - init."), tag="TOMs panel")
 
-        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget())
+        if layer.geometryType() == 0: # PointGeometry:
+            captureMode = (CreateRestrictionTool.CapturePoint)
+        elif layer.geometryType() == 1: # LineGeometry:
+            captureMode = (CreateRestrictionTool.CaptureLine)
+        elif layer.geometryType() == 2: # PolygonGeometry:
+            captureMode = (CreateRestrictionTool.CapturePolygon)
+        else:
+            QgsMessageLog.logMessage(("In CreateRestrictionTool - No geometry type found. EXITING ...."), tag="TOMs panel")
+            return
+
+        QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget(), captureMode)
         canvas = iface.mapCanvas()
         self.iface = iface
         self.layer = layer

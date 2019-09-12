@@ -157,7 +157,8 @@ class TOMsTransaction (QObject):
         status = self.tableNames.PROPOSALS.startEditing()  # could be any table ...
         if status == False:
             QgsMessageLog.logMessage("In startTransactionGroup. *** Error starting transaction ...", tag="TOMs panel")
-
+        else:
+            QgsMessageLog.logMessage("In startTransactionGroup. Transaction started correctly!!! ...", tag="TOMs panel")
         return status
 
     def layerModified(self):
@@ -307,6 +308,8 @@ class TOMsTransaction (QObject):
 
         try:
             self.tableNames.PROPOSALS.rollBack()  # could be any table ...
+            QgsMessageLog.logMessage("In rollBackTransactionGroup. Transaction rolled back correctly ...",
+                                     tag="TOMs panel")
         except:
             QgsMessageLog.logMessage("In rollBackTransactionGroup. error: ...",
                                      tag="TOMs panel")
@@ -477,8 +480,9 @@ class setupTableNames(QObject):
         return
 
 class RestrictionTypeUtilsMixin():
-
+    #def __init__(self):
     def __init__(self, iface):
+
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
@@ -714,6 +718,7 @@ class RestrictionTypeUtilsMixin():
                             restrictionTransaction.currTransactionGroup.modified()),
                         tag="TOMs panel")
 
+                    """ attributeForm saves to the layer. Has the feature been added to the layer?"""
                     status = dialog.attributeForm().save()  # this issues a commit on the transaction?
                     #dialog.accept()
                     #QgsMessageLog.logMessage("Form accepted", tag="TOMs panel")
@@ -978,8 +983,9 @@ class RestrictionTypeUtilsMixin():
                 "In setupRestrictionDialog. dialog not found",
                 tag="TOMs panel")
 
-        restrictionDialog.attributeForm().disconnectButtonBox()
+        #restrictionDialog.attributeForm().disconnectButtonBox()
         button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
+        # button_box = restrictionDialog.buttonBox()
 
         if button_box is None:
             QgsMessageLog.logMessage(
@@ -987,14 +993,14 @@ class RestrictionTypeUtilsMixin():
                 tag="TOMs panel")
 
         #button_box.accepted.disconnect(restrictionDialog.accept)
-        button_box.accepted.disconnect()
+        #button_box.accepted.disconnect()
         button_box.accepted.connect(functools.partial(self.onSaveRestrictionDetails, currRestriction,
                                       currRestrictionLayer, restrictionDialog, restrictionTransaction))
 
         restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, currRestriction, currRestrictionLayer))
 
         #button_box.rejected.disconnect(restrictionDialog.reject)
-        button_box.rejected.disconnect()
+        #button_box.rejected.disconnect()
         button_box.rejected.connect(functools.partial(self.onRejectRestrictionDetailsFromForm, restrictionDialog, restrictionTransaction))
 
         self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)

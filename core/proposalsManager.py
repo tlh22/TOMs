@@ -34,7 +34,7 @@ from ..constants import (
     ACTION_OPEN_RESTRICTION
 )
 
-class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
+class TOMsProposalsManager(RestrictionTypeUtilsMixin, QObject):
     """
     Manages what is currently shown to the user.
 
@@ -61,13 +61,13 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
     TOMsSplitRestrictionSaved = pyqtSignal()
 
     def __init__(self, iface):
-        QObject.__init__(self, iface=iface)
+        QObject.__init__(self)
         self.__date = QDate.currentDate()
         self.currProposalFeature = None
         #self.constants = TOMsConstants()
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
-        #self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface)
 
     def date(self):
         """

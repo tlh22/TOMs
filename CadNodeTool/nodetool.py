@@ -43,6 +43,7 @@ from qgis.core import (
     QgsFeatureRequest,
     QgsTolerance,
     QgsSnappingUtils,
+    QgsSnappingConfig,
     QgsWkbTypes
 )
 from qgis.gui import (
@@ -320,7 +321,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
                     # TH (180630): Changed to deal with g = None
 
-                    if g is not None:
+                    if g.isNull() == False:
                         for i in range(g.get().nCoordinates()):
                             pt = g.vertexAt(i)
                             if layer_rect.contains(pt):
@@ -532,6 +533,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def mouse_move_not_dragging(self, e):
 
+        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging", tag="TOMs panel")
+
         if self.mouse_at_endpoint is not None:
             # check if we are still at the endpoint, i.e. whether to keep showing
             # the endpoint indicator - or go back to snapping to editable layers
@@ -546,8 +549,11 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # do not use snap from mouse event, use our own with any editable layer
         m = self.snap_to_editable_layer(e)
 
+        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: snap point " + str(m.type()) +";" + str(m.isValid()) + "; ", tag="TOMs panel")
+
         # possibility to move a node
         if m.type() == QgsPointLocator.Vertex:
+            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: showing vertex band ...", tag="TOMs panel")
             self.vertex_band.setToGeometry(QgsGeometry.fromPointXY(m.point()), None)
             self.vertex_band.setVisible(True)
             is_circular_vertex = False
@@ -593,6 +599,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # highlight feature
         if m.isValid() and m.layer():
+            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: highlighting feature ...", tag="TOMs panel")
             if self.feature_band_source == (m.layer(), m.featureId()):
                 return  # skip regeneration of rubber band if not needed
             geom = self.cached_geometry(m.layer(), m.featureId())

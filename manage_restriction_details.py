@@ -307,7 +307,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateBayRestriction - tool activated", tag="TOMs panel")
 
-                self.restrictionTransaction.startTransactionGroup()  # start editing
+                # self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Bays")[0]
                 #currLayer = self.tableNames.BAYS
@@ -370,7 +370,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateLineRestriction - tool activated", tag="TOMs panel")
 
-                self.restrictionTransaction.startTransactionGroup()  # start editing
+                # self.restrictionTransaction.startTransactionGroup()  # start editing
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Lines")[0]
                 #currLayer = self.tableNames.LINES
@@ -481,7 +481,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 QgsMessageLog.logMessage("In doCreateSignRestriction - tool activated", tag="TOMs panel")
 
-                self.restrictionTransaction.startTransactionGroup()
+                # self.restrictionTransaction.startTransactionGroup()
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("Signs")[0]
                 #currLayer = self.tableNames.SIGNS
