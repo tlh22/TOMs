@@ -749,7 +749,7 @@ class RestrictionTypeUtilsMixin():
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
                         tag="TOMs panel")
-                    currRestrictionLayer.addFeature(currRestriction)  # TH (added for v3)
+                    currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
 
                 else:
 

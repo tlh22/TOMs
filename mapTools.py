@@ -712,6 +712,10 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
                 #currForm.attributeChanged.connect(functools.partial(self.onAttributeChanged, feature))
                 # Can we now implement the logic from the form code ???
 
+                newRestrictionID = str(uuid.uuid4())
+                feature[self.layer.fields().indexFromName("RestrictionID")] = newRestrictionID
+                self.layer.addFeature(feature)  # TH (added for v3)
+
                 dialog = self.iface.getFeatureForm(self.layer, feature)
 
                 self.setupRestrictionDialog(dialog, self.layer, feature, self.currTransaction)  # connects signals, etc
