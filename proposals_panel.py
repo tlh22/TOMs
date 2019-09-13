@@ -45,6 +45,7 @@ from qgis.core import (
 )
 
 import time
+import uuid
 import functools
 
 from .ProposalPanel_dockwidget import ProposalPanelDockWidget
@@ -187,7 +188,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # Set up field details for table  ** what about errors here **
         idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
-        idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
+        self.idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
         self.idxCreateDate = self.Proposals.fields().indexFromName("ProposalCreateDate")
         self.idxOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
         self.idxProposalStatusID = self.Proposals.fields().indexFromName("ProposalStatusID")
@@ -329,10 +330,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
 
+        self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
         self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
         self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
         self.newProposal.setGeometry(QgsGeometry())
+
+        self.Proposals.addFeature(self.newProposal)  # TH (added for v3)
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
 
@@ -345,7 +349,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
             #self.button_box.accepted.disconnect()
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.proposalDialog, self.proposalTransaction))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
         #self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)

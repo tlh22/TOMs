@@ -479,6 +479,27 @@ class setupTableNames(QObject):
 
         return
 
+class originalFeature(object):
+    def __init__(self, feature=None):
+        self.savedFeature = None
+
+    def setFeature(self, feature):
+        self.savedFeature = QgsFeature(feature)
+        #self.printFeature()
+
+    def getFeature(self):
+        #self.printFeature()
+        return self.savedFeature
+
+    def getGeometryID(self):
+        return self.savedFeature.attribute("GeometryID")
+
+    def printFeature(self):
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
+                                 tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
+                                 tag="TOMs panel")
+
 class RestrictionTypeUtilsMixin():
     #def __init__(self):
     def __init__(self, iface):
@@ -486,7 +507,8 @@ class RestrictionTypeUtilsMixin():
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
-        self.tableNames = setupTableNames(self.iface)
+        #self.tableNames = setupTableNames(self.iface)
+
         #self.tableNames.getLayers()
         #super().__init__()
         self.currTransaction = None
@@ -698,7 +720,7 @@ class RestrictionTypeUtilsMixin():
                     tag="TOMs panel")
 
                 if currRestriction[idxRestrictionID] is None:
-                    # This is a feature that has just been created. It exists but doesn't have a GeometryID.
+                    # This is a feature that has just been created.
 
                     # Not quite sure what is happening here but think the following:
                     #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
@@ -719,6 +741,7 @@ class RestrictionTypeUtilsMixin():
                         tag="TOMs panel")
 
                     """ attributeForm saves to the layer. Has the feature been added to the layer?"""
+
                     status = dialog.attributeForm().save()  # this issues a commit on the transaction?
                     #dialog.accept()
                     #QgsMessageLog.logMessage("Form accepted", tag="TOMs panel")
@@ -726,6 +749,7 @@ class RestrictionTypeUtilsMixin():
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
                         tag="TOMs panel")
+                    currRestrictionLayer.addFeature(currRestriction)  # TH (added for v3)
 
                 else:
 
@@ -752,7 +776,8 @@ class RestrictionTypeUtilsMixin():
                     newRestriction[idxRestrictionID] = newRestrictionID
                     newRestriction[idxOpenDate] = None
                     newRestriction[idxGeometryID] = None
-                    currRestrictionLayer.addFeatures([newRestriction])
+
+                    currRestrictionLayer.addFeature(newRestriction)
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Clone restriction. New ID: " + str(newRestriction[idxRestrictionID]),
@@ -772,7 +797,9 @@ class RestrictionTypeUtilsMixin():
                             newRestriction[idxRestrictionID]),
                         tag="TOMs panel")
 
-                    dialog.attributeForm().resetValues()
+                    dialog.attributeForm().close()
+                    currRestriction = self.origFeature.getFeature()
+                    currRestrictionLayer.updateFeature(currRestriction)
 
                 pass
 
@@ -978,6 +1005,10 @@ class RestrictionTypeUtilsMixin():
         #self.currRestriction = currRestriction
         #self.restrictionTransaction = restrictionTransaction
 
+        # Create a copy of the feature
+        self.origFeature = originalFeature()
+        self.origFeature.setFeature(currRestriction)
+
         if restrictionDialog is None:
             QgsMessageLog.logMessage(
                 "In setupRestrictionDialog. dialog not found",
@@ -1138,7 +1169,7 @@ class RestrictionTypeUtilsMixin():
 
         pass
 
-    def onSaveProposalFormDetails(self, currProposal, proposalsDialog, proposalTransaction):
+    def onSaveProposalFormDetails(self, currProposal, proposalsLayer, proposalsDialog, proposalTransaction):
         QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
 
         # proposalsLayer.startEditing()
@@ -1151,7 +1182,8 @@ class RestrictionTypeUtilsMixin():
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
 
-        self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
+        #self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
+        self.Proposals = proposalsLayer
 
         # set up field indexes
         idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
@@ -1237,6 +1269,9 @@ class RestrictionTypeUtilsMixin():
                 "In onSaveProposalFormDetails. currProposalID = " + str(currProposal[idxProposalID]),
                 tag="TOMs panel")
 
+            updateStatus = proposalsDialog.attributeForm().save()
+            self.Proposals.updateFeature(currProposal)  # TH (added for v3)
+
             # anything else can be saved.
             if currProposal[idxProposalID] == None:
 
@@ -1247,6 +1282,10 @@ class RestrictionTypeUtilsMixin():
                 # add geometry
                 #currProposal.setGeometry(QgsGeometry())
 
+            else:
+
+                self.Proposals.updateFeature(currProposal)  # TH (added for v3)
+
             """updateStatus = proposalsLayer.updateFeature(currProposal)
 
             QgsMessageLog.logMessage(
@@ -1255,14 +1294,17 @@ class RestrictionTypeUtilsMixin():
             updateStatus = True"""
 
             #proposalsDialog.accept()
-            #proposalsDialog.close()
-            saveStatus = proposalsDialog.attributeForm().save()
-            QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(saveStatus), tag="TOMs panel")
+            proposalsDialog.reject()
+
+            #saveStatus = proposalsDialog.attributeForm().save()
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposal.attributes()), tag="TOMs panel")
+
             QgsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
                     proposalTransaction.currTransactionGroup.modified()),
             tag="TOMs panel")
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
+
 
         # Make sure that the saving will not be executed immediately, but
         # only when the event loop runs into the next iteration to avoid

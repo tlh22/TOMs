@@ -232,6 +232,8 @@ class TOMs:
             self.iface.removeToolBarIcon(action)
         '''
 
+        # Check whether or not there are any current map tools
+
         # remove the toolbar
         QgsMessageLog.logMessage("Clearing toolbar ... ", tag="TOMs panel")
         self.TOMsToolbar.clear()

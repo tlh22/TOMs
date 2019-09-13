@@ -169,8 +169,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
-        self.tableNames = setupTableNames(self.iface)
-        self.tableNames.getLayers()
+        # self.tableNames = setupTableNames(self.iface)
+        # self.tableNames.getLayers()
         self.restrictionTransaction = restrictionTransaction
         """self.proposalsManager.TOMsToolChanged.connect(
             functools.partial(self.restrictionTransaction.commitTransactionGroup, self.tableNames.PROPOSALS))"""

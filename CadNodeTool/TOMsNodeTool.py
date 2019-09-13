@@ -37,7 +37,7 @@ from ..mapTools import MapToolMixin
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 from ..core.proposalsManager import TOMsProposalsManager
 
-class originalFeature(object):
+"""class originalFeature(object):
     def __init__(self, feature=None):
         self.savedFeature = None
 
@@ -56,7 +56,7 @@ class originalFeature(object):
         QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
                                  tag="TOMs panel")
         QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel")"""
 
 # generate a subclass of Martin's class
 
@@ -82,7 +82,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         self.restrictionTransaction = restrictionTransaction
 
         #self.constants = TOMsConstants()
-        self.origFeature = originalFeature()
+        #self.origFeature = self.originalFeature()
 
         # taken from mapTools.CreateRestrictionTool (not sure if they will make a difference ...)
         # self.setMode(TOMsNodeTool.CaptureLine)
@@ -169,6 +169,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
         self.setupPanelTabs(self.iface, self.proposalPanel)
 
+        #self.iface.mapCanvas().unsetMapTool(self.mapTool)
         #NodeTool.deactivate()
 
     def onGeometryChanged(self, currRestriction):
