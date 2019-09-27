@@ -405,35 +405,39 @@ class generateGeometryUtils:
 
         orientation = 0
 
-        if restGeomType == 1 or restGeomType == 21:  # 1 = Parallel (bay)
+        if restGeomType in (1, 21):  # 1 = Parallel (bay)
             offset = bayOffsetFromKerb
             shpExtent = bayWidth
-        elif restGeomType == 2:  # 2 = half on/half off
+        elif restGeomType in (2, 22):  # 2 = half on/half off
             offset = bayOffsetFromKerb
             shpExtent = bayWidth / 2
             if (AzimuthToCentreLine + 180) > 360:
                 secondAzimuthToCentreLine = AzimuthToCentreLine - 180
             else:
                 secondAzimuthToCentreLine = AzimuthToCentreLine + 180
-        elif restGeomType == 3:  # 3 = on pavement
+        elif restGeomType in (3, 23):  # 3 = on pavement
             offset = bayOffsetFromKerb
             shpExtent = bayWidth
             if (AzimuthToCentreLine + 180) > 360:
                 AzimuthToCentreLine = AzimuthToCentreLine - 180
             else:
                 AzimuthToCentreLine = AzimuthToCentreLine + 180
-        elif restGeomType == 4 or restGeomType == 24:  # 4 = Perpendicular
+        elif restGeomType in (4, 24):  # 4 = Perpendicular
             offset = bayOffsetFromKerb
             shpExtent = bayLength
-        elif restGeomType == 5  or restGeomType == 25:  # 5 = Echelon
+        elif restGeomType in (5, 25):  # 5 = Echelon
             offset = bayOffsetFromKerb
             shpExtent = bayLength
             orientation = feature.attribute("BayOrientation")
             if not orientation:
                 orientation = 0
-        elif restGeomType == 6:  # 6 = Perpendicular on pavement
-            offset = 0
+        elif restGeomType in (6, 26):  # 6 = Perpendicular on pavement
+            offset = bayOffsetFromKerb
             shpExtent = bayLength
+            if (AzimuthToCentreLine + 180) > 360:
+                AzimuthToCentreLine = AzimuthToCentreLine - 180
+            else:
+                AzimuthToCentreLine = AzimuthToCentreLine + 180
         elif restGeomType == 7:  # 7 = Other
             offset = 0
             shpExtent = 0
@@ -477,9 +481,10 @@ class generateGeometryUtils:
         QgsMessageLog.logMessage("In getRestrictionGeometry - geometry1 prepared for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
 
         #if feature.attribute("RestrictionTypeID") == 18:  # Greenway Parking Bay
+
         if restGeomType >= 20:  # Polygon
 
-            if restGeomType in [21, 24, 25, 35]:
+            if restGeomType in [21, 23, 24, 25, 26, 35]:
                 outputGeometry1 = outputGeometry
                 # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
                 outputGeometry2A, parallelLine2A = generateGeometryUtils.getDisplayGeometry(feature, 10, bayOffsetFromKerb, bayOffsetFromKerb,
@@ -507,29 +512,37 @@ class generateGeometryUtils:
             # now convert the geometry to a polygon
             # https://gis.stackexchange.com/questions/64247/where-to-find-the-variables-of-qgspolygon-and-qgspolyline (see answer 2)
 
-            ptsList = []
+            if restGeomType != 22:
 
-            vertices = newGeometry.asPolyline()
-            #QgsMessageLog.logMessage(
-            #    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
-            #    tag="TOMs panel")
+                ptsList = []
 
-            for v in vertices:
-                ptsList.append(v)
-            #QgsMessageLog.logMessage(
-            #    "In getRestrictionGeometry - have points ",
-            #    tag="TOMs panel")
-            outputGeometry = QgsGeometry.fromPolygon([ptsList])
+                vertices = newGeometry.asPolyline()
+                #QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+                #    tag="TOMs panel")
 
-            #outputGeometry = newGeometry
+                for v in vertices:
+                    ptsList.append(v)
+                #QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - have points ",
+                #    tag="TOMs panel")
+                outputGeometry = QgsGeometry.fromPolygon([ptsList])
 
-        if restGeomType == 2:  # 2 = half on/half off
+                #outputGeometry = newGeometry
+
+        if restGeomType in [2, 22]:  # 2 = half on/half off
+
+            # Need to rethink this. Currently trying to add two distinct sets of lines together. May need to combine polygons to form multi-polygon ...
 
             outputGeometry1 = outputGeometry
             # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
             outputGeometry2A, parallelLine2A = generateGeometryUtils.getDisplayGeometry(feature, restGeomType, offset, shpExtent,
                                                                      orientation, secondAzimuthToCentreLine)
+            vertices = outputGeometry2A.asPolyline()
 
+            QgsMessageLog.logMessage(
+               "In getRestrictionGeometry - nrPts in 2A (for 22):  " + str(len(vertices)),
+                tag="TOMs panel")
             #QgsMessageLog.logMessage(
             #    "In getRestrictionGeometry - newGeometry prepared for " + str(feature.attribute("GeometryID")),
             #    tag="TOMs panel")
@@ -540,8 +553,27 @@ class generateGeometryUtils:
 
             #outputGeometry1.convertToMultiType()
             #QgsMessageLog.logMessage("In getRestrictionGeometry - converting to multi", tag="TOMs panel")
-            outputGeometry = outputGeometry1.combine(outputGeometry2A)
+            newGeometry = outputGeometry1.combine(outputGeometry2A)
             QgsMessageLog.logMessage("In getRestrictionGeometry - combined ...", tag="TOMs panel")
+
+            if restGeomType == 22:
+                ptsList = []
+
+                vertices = outputGeometry1.asPolyline()
+                QgsMessageLog.logMessage(
+                    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+                    tag="TOMs panel")
+
+                for v in vertices:
+                    ptsList.append(v)
+                # QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - have points ",
+                #    tag="TOMs panel")
+                outputGeometry = QgsGeometry.fromPolygon([ptsList])
+
+            else:
+
+                outputGeometry = newGeometry
 
         if nrBays > 1:
             # divide parallelLine by the number of bays
