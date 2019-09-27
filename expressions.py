@@ -239,7 +239,7 @@ def getLoadingRestrictionLabelText(feature, parent):
             'getLoadingRestrictionLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
             tag="TOMs panel")
 
-        """QgsMessageLog.logMessage(
+        QgsMessageLog.logMessage(
         "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
         tag="TOMs panel")
 
