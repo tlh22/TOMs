@@ -34,7 +34,7 @@ from ..constants import (
 
 from ..mapTools import MapToolMixin
 #from restrictionTypeUtils import RestrictionTypeUtils
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, originalFeature
 from ..core.proposalsManager import TOMsProposalsManager
 
 """class originalFeature(object):
@@ -94,6 +94,8 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
         QgsMessageLog.logMessage("In TOMsNodeTool:initialising ... saving original feature + " + self.selectedRestriction.attribute("GeometryID"), tag="TOMs panel")
 
+        # Create a copy of the feature
+        self.origFeature = originalFeature()
         self.origFeature.setFeature(self.selectedRestriction)
         self.origLayer = self.iface.activeLayer()
         #self.origLayer.startEditing()
@@ -113,8 +115,10 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         advancedDigitizingPanel.setVisible(True)
         self.setupPanelTabs(self.iface, advancedDigitizingPanel)
 
-        QgsMapToolAdvancedDigitizing.deactivate(self)
-        QgsMapToolAdvancedDigitizing.activate(self)
+        self.setAdvancedDigitizingAllowed(True)
+        self. setAutoSnapEnabled(True)
+        #QgsMapToolAdvancedDigitizing.deactivate(self)
+        #QgsMapToolAdvancedDigitizing.activate(self)
 
         #self.newFeature = None
         self.finishEdit = False
@@ -348,7 +352,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
          of any editable vector layer, to allow selection of node for editing
          (if snapped to edge, it would offer creation of a new vertex there).
         """
-        #QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer", tag="TOMs panel")
 
         map_point = self.toMapCoordinates(e.pos())
         tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
@@ -375,10 +379,11 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         # old_mode = snap_util.snapToMapMode()
         old_intersections = old_snap_config.intersectionSnapping()
 
+        """
         for layer in snap_config.individualLayerSettings().keys():
             snap_config.removeLayers([layer])
-
-        snap_config.addLayers([self.origLayer])
+        """
+        # snap_config.addLayers([self.origLayer])
         snap_config.setMode(QgsSnappingConfig.AdvancedConfiguration)
         snap_config.setIntersectionSnapping(False)  # only snap to layers
         #m = snap_util.snapToMap(map_point)
@@ -392,10 +397,18 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         ### TH: Amend to choose only from selected feature (and layer)
 
         filter_last = OneFeatureFilter(self.origLayer, self.origFeature.savedFeature.id())
-        m = snap_util.snapToMap(map_point, filter_last)
+        #m = snap_util.snapToMap(map_point, filter_last)
         """if m_last.isValid() and m_last.distance() <= m.distance():
             m = m_last"""
-        self.origFeature.printFeature()
+        #self.origFeature.printFeature()
+
+        """ v3 try to use some other elements of snap_config
+            - snapToCurrentLayer
+            - setCurrentLayer
+            
+        """
+        snap_util.setCurrentLayer(self.origLayer)
+        m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
 
         # snap_util.setLayers(old_layers)
         # snap_util.setSnapToMapMode(old_mode)

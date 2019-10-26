@@ -35,6 +35,7 @@ from qgis.core import (
     QgsMessageLog,
     QgsMultiCurve,
     QgsPoint,
+    QgsPointXY,
     QgsPointLocator,
     QgsVertexId,
     QgsVectorLayer,
@@ -324,7 +325,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                     if g.isNull() == False:
                         for i in range(g.get().nCoordinates()):
                             pt = g.vertexAt(i)
-                            if layer_rect.contains(pt):
+                            if layer_rect.contains(QgsPointXY(pt)):
                                 nodes.append( Vertex(layer, f.id(), i) )
 
             self.set_highlighted_nodes(nodes)
@@ -336,15 +337,20 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         else:  # selection rect is not being dragged
             if e.button() == Qt.LeftButton:
                 # accepting action
+                QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging ...", tag="TOMs panel")
                 if self.dragging:
+                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging vertex ...", tag="TOMs panel")
                     self.move_vertex(e.mapPoint(), e.mapPointMatch())
                 elif self.dragging_edge:
+                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging edge ...", tag="TOMs panel")
                     map_point = self.toMapCoordinates(e.pos())  # do not use e.mapPoint() as it may be snapped
                     self.move_edge(map_point)
                 else:
+                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging something ...", tag="TOMs panel")
                     self.start_dragging(e)
             elif e.button() == Qt.RightButton:
                 # cancelling action
+                QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Stop dragging.", tag="TOMs panel")
                 self.stop_dragging()
 
         self.dragging_rect_start_pos = None
@@ -362,13 +368,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def cadCanvasMoveEvent(self, e):
 
-        if not isinstance(e, QgsMapMouseEvent):
+        """if not isinstance(e, QgsMapMouseEvent):
             # due to a bug in QGIS, a generated fake QgsMapMouseEvent
             # by advanced digitizing dock will appear here as an invalid
             # QMouseEvent. This QGIS pull request fixes that:
             # https://github.com/qgis/QGIS/pull/3302
             # For now this is just a workaround - ignoring that event
-            return
+            return"""
 
         if self.dragging:
             self.mouse_move_dragging(e)
@@ -387,7 +393,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def mouse_move_dragging(self, e):
         if e.mapPointMatch().isValid():
-            self.snap_marker.setCenter(e.mapPoint())
+            self.snap_marker.setCenter(QgsPointXY(e.mapPoint()))
             self.snap_marker.setVisible(True)
         else:
             self.snap_marker.setVisible(False)
@@ -399,7 +405,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # in case of moving of standalone point geometry
         if self.drag_point_marker.isVisible():
-            self.drag_point_marker.setCenter(e.mapPoint())
+            self.drag_point_marker.setCenter(QgsPointXY(e.mapPoint()))
 
         # make sure the temporary feature rubber band is not visible
         self.remove_temporary_rubber_bands()
@@ -419,10 +425,12 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         diff_x, diff_y = map_point.x() - drag_start_point.x(), map_point.y() - drag_start_point.y()
 
         geom = QgsGeometry(self.cached_geometry(drag_layer, drag_fid))
-        orig_map_point_0 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0))
-        new_map_point_0 = QgsPoint(orig_map_point_0.x() + diff_x, orig_map_point_0.y() + diff_y)
+        # orig_map_point_0 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0))
+        orig_map_point_0 = QgsPointXY(geom.vertexAt(drag_vertex_0))
+        new_map_point_0 = QgsPointXY(orig_map_point_0.x() + diff_x, orig_map_point_0.y() + diff_y)
         orig_map_point_1 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0+1))
-        new_map_point_1 = QgsPoint(orig_map_point_1.x() + diff_x, orig_map_point_1.y() + diff_y)
+        orig_map_point_1 = QgsPointXY(geom.vertexAt(drag_vertex_0+1))
+        new_map_point_1 = QgsPointXY(orig_map_point_1.x() + diff_x, orig_map_point_1.y() + diff_y)
 
         band_0_1.movePoint(0, new_map_point_0)
         band_0_1.movePoint(1, new_map_point_1)
@@ -499,13 +507,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         if self.endpoint_marker_center is None:
             return False
 
-        dist_marker = math.sqrt(self.endpoint_marker_center.sqrDist(map_point))
+        dist_marker = math.sqrt(self.endpoint_marker_center.sqrDist(map_point.x(), map_point.y()))
         tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
 
         geom = self.cached_geometry_for_vertex(self.mouse_at_endpoint)
         vertex_point_v2 = vertex_at_vertex_index(geom, self.mouse_at_endpoint.vertex_id)
-        vertex_point = QgsPoint(vertex_point_v2.x(), vertex_point_v2.y())
-        dist_vertex = math.sqrt(vertex_point.sqrDist(map_point))
+        vertex_point = QgsPointXY(vertex_point_v2.x(), vertex_point_v2.y())
+        dist_vertex = math.sqrt(vertex_point.sqrDist(map_point.x(), map_point.y()))
 
         return dist_marker < tol and dist_marker < dist_vertex
 
@@ -529,7 +537,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         angle = math.atan2(dy, dx)  # to the top: angle=0, to the right: angle=90, to the left: angle=-90
         x = pt1.x() + math.cos(angle)*dist
         y = pt1.y() + math.sin(angle)*dist
-        return QgsPoint(x, y)
+        return QgsPointXY(x, y)
 
     def mouse_move_not_dragging(self, e):
 
@@ -549,11 +557,12 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # do not use snap from mouse event, use our own with any editable layer
         m = self.snap_to_editable_layer(e)
 
-        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: snap point " + str(m.type()) +";" + str(m.isValid()) + "; ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: snap point " + str(m.type()) +";" + str(m.isValid()) + "; " + self.toMapCoordinates(e.pos()).asWkt(), tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex " + str(m.hasVertex()) +"; edge" + str(m.hasEdge()) + "; area " + str(m.hasArea()), tag="TOMs panel")
 
         # possibility to move a node
         if m.type() == QgsPointLocator.Vertex:
-            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: showing vertex band ...", tag="TOMs panel")
+            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex ...", tag="TOMs panel")
             self.vertex_band.setToGeometry(QgsGeometry.fromPointXY(m.point()), None)
             self.vertex_band.setVisible(True)
             is_circular_vertex = False
@@ -583,15 +592,16 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # possibility to create new node here - or to move the edge
         if m.type() == QgsPointLocator.Edge:
+            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: edge ...", tag="TOMs panel")
             map_point = self.toMapCoordinates(e.pos())
             edge_center, is_near_center = self._match_edge_center_test(m, map_point)
-            self.edge_center_marker.setCenter(edge_center)
+            self.edge_center_marker.setCenter(QgsPointXY(edge_center))
             self.edge_center_marker.setColor(Qt.red if is_near_center else Qt.gray)
             self.edge_center_marker.setVisible(True)
             self.edge_center_marker.update()
 
             p0, p1 = m.edgePoints()
-            self.edge_band.setToGeometry(QgsGeometry.fromPolyline([p0, p1]), None)
+            self.edge_band.setToGeometry(QgsGeometry.fromPolylineXY([p0, p1]), None)
             self.edge_band.setVisible(not is_near_center)
         else:
             self.edge_center_marker.setVisible(False)
@@ -605,6 +615,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             geom = self.cached_geometry(m.layer(), m.featureId())
             if QgsWkbTypes.isCurvedType(geom.get().wkbType()):
                 geom = QgsGeometry(geom.get().segmentize())
+                QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: showing feature ...",
+                                         tag="TOMs panel")
             self.feature_band.setToGeometry(geom, m.layer())
             self.feature_band.setVisible(True)
             self.feature_band_source = (m.layer(), m.featureId())
@@ -639,7 +651,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             layer.featureDeleted.connect(self.on_cached_geometry_deleted)
 
         if fid not in self.cache[layer]:
-            f = layer.getFeatures(QgsFeatureRequest(fid)).next()
+            # f = layer.getFeatures(QgsFeatureRequest(fid)).next()
+            f = layer.getFeature(fid)
             self.cache[layer][fid] = QgsGeometry(f.geometry())
 
         return self.cache[layer][fid]
@@ -664,6 +677,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging(self, e):
 
+        QgsMessageLog.logMessage("In start_dragging", tag="TOMs panel")
+
         map_point = self.toMapCoordinates(e.pos())
         if self.is_near_endpoint_marker(map_point):
             self.start_dragging_add_vertex_at_endpoint(map_point)
@@ -675,7 +690,9 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             return
 
         # activate advanced digitizing dock
-        self.setMode(self.CaptureLine)
+        # self.setMode(self.CaptureLine)
+        self. setAutoSnapEnabled(True)  # v3
+        self.setAdvancedDigitizingAllowed(True)
 
         # adding a new vertex instead of moving a vertex
         if m.hasEdge():
@@ -703,17 +720,19 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         v0idx, v1idx = geom.adjacentVertices(m.vertexIndex())
         if v0idx != -1:
             layer_point0 = geom.vertexAt(v0idx)
-            map_point0 = self.toMapCoordinates(m.layer(), layer_point0)
+            #map_point0 = self.toMapCoordinates(m.layer(), layer_point0)
+            map_point0 = QgsPointXY(layer_point0)
             self.add_drag_band(map_point0, m.point())
         if v1idx != -1:
             layer_point1 = geom.vertexAt(v1idx)
-            map_point1 = self.toMapCoordinates(m.layer(), layer_point1)
+            #map_point1 = self.toMapCoordinates(m.layer(), layer_point1)
+            map_point1 = QgsPointXY(layer_point1)
             self.add_drag_band(map_point1, m.point())
 
         if v0idx == -1 and v1idx == -1:
             # this is a standalone point - we need to use a marker for it
             # to give some feedback to the user
-            self.drag_point_marker.setCenter(map_point)
+            self.drag_point_marker.setCenter(QgsPointXY(map_point))
             self.drag_point_marker.setVisible(True)
 
         self.override_cad_points = [m.point(), m.point()]
@@ -737,11 +756,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 v0idx, v1idx = other_g.adjacentVertices(other_m.vertexIndex())
                 if v0idx != -1:
                     other_point0 = other_g.vertexAt(v0idx)
-                    other_map_point0 = self.toMapCoordinates(other_m.layer(), other_point0)
+                    # other_map_point0 = self.toMapCoordinates(other_m.layer(), other_point0)
+                    other_map_point0 = QgsPointXY(other_point0)
                     self.add_drag_band(other_map_point0, other_m.point())
                 if v1idx != -1:
                     other_point1 = other_g.vertexAt(v1idx)
-                    other_map_point1 = self.toMapCoordinates(other_m.layer(), other_point1)
+                    # other_map_point1 = self.toMapCoordinates(other_m.layer(), other_point1)
+                    other_map_point1 = QgsPointXY(other_point1)
                     self.add_drag_band(other_map_point1, other_m.point())
 
     def layer_vertices_snapped_to_point(self, layer, map_point):
@@ -763,7 +784,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 match_geom = self.nodetool.cached_geometry(match.layer(), match.featureId())
                 vid = QgsVertexId()
                 pt = QgsPoint()
-                while match_geom.get().nextVertex(vid, pt):
+                # while match_geom.get().nextVertex(vid, pt):
+                while match_geom.get().nextVertex(vid):
                     vindex = match_geom.vertexNrFromVertexId(vid)
                     if pt.x() == match.point().x() and pt.y() == match.point().y() and vindex != match.vertexIndex():
                         extra_match = QgsPointLocator.Match(match.type(), match.layer(), match.featureId(),
@@ -780,10 +802,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_add_vertex(self, m):
 
+        QgsMessageLog.logMessage("In start_dragging_add_vertex", tag="TOMs panel")
         assert m.hasEdge()
 
         # activate advanced digitizing dock
-        self.setMode(self.CaptureLine)
+        # self.setMode(self.CaptureLine)
+        self. setAutoSnapEnabled(True)  # v3
+        self.setAdvancedDigitizingAllowed(True)
 
         self.dragging = Vertex(m.layer(), m.featureId(), (m.vertexIndex()+1, False))
         self.dragging_topo = []
@@ -794,8 +819,10 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         v0 = geom.vertexAt(m.vertexIndex())
         v1 = geom.vertexAt(m.vertexIndex()+1)
 
-        map_v0 = self.toMapCoordinates(m.layer(), v0)
-        map_v1 = self.toMapCoordinates(m.layer(), v1)
+        # map_v0 = self.toMapCoordinates(m.layer(), v0)
+        map_v0 = QgsPointXY(v0)
+        # map_v1 = self.toMapCoordinates(m.layer(), v1)
+        map_v1 = QgsPointXY(v1)
 
         if v0.x() != 0 or v0.y() != 0:
             self.add_drag_band(map_v0, m.point())
@@ -806,17 +833,21 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_add_vertex_at_endpoint(self, map_point):
 
+        QgsMessageLog.logMessage("In start_dragging_add_vertex_at_endpoint", tag="TOMs panel")
         assert self.mouse_at_endpoint is not None
 
         # activate advanced digitizing dock
-        self.setMode(self.CaptureLine)
+        # self.setMode(self.CaptureLine)
+        self. setAutoSnapEnabled(True)  # v3
+        self.setAdvancedDigitizingAllowed(True)
 
         self.dragging = Vertex(self.mouse_at_endpoint.layer, self.mouse_at_endpoint.fid, (self.mouse_at_endpoint.vertex_id, True))
         self.dragging_topo = []
 
         geom = self.cached_geometry(self.mouse_at_endpoint.layer, self.mouse_at_endpoint.fid)
         v0 = geom.vertexAt(self.mouse_at_endpoint.vertex_id)
-        map_v0 = self.toMapCoordinates(self.mouse_at_endpoint.layer, v0)
+        # map_v0 = self.toMapCoordinates(self.mouse_at_endpoint.layer, v0)
+        map_v0 = QgsPointXY(v0)
 
         self.add_drag_band(map_v0, map_point)
 
@@ -827,10 +858,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_edge(self, m, map_point):
 
+        QgsMessageLog.logMessage("In start_dragging_edge", tag="TOMs panel")
         assert m.hasEdge()
 
         # activate advanced digitizing
-        self.setMode(self.CaptureLine)
+        # self.setMode(self.CaptureLine)
+        self. setAutoSnapEnabled(True)  # v3
+        self.setAdvancedDigitizingAllowed(True)
 
         self.dragging_edge = Edge(m.layer(), m.featureId(), m.vertexIndex(), map_point)
         self.dragging_topo = []
@@ -846,12 +880,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         _, v1idx = geom.adjacentVertices(m.vertexIndex()+1)
         if v0idx != -1:
             layer_point0 = geom.vertexAt(v0idx)
-            map_point0 = self.toMapCoordinates(m.layer(), layer_point0)
+            # map_point0 = self.toMapCoordinates(m.layer(), layer_point0)
+            map_point0 = QgsPointXY(layer_point0)
             self.add_drag_band(map_point0, edge_p0)
             bands_to_p0.append(self.drag_bands[-1])
         if v1idx != -1:
             layer_point1 = geom.vertexAt(v1idx)
-            map_point1 = self.toMapCoordinates(m.layer(), layer_point1)
+            # map_point1 = self.toMapCoordinates(m.layer(), layer_point1)
+            map_point1 = QgsPointXY(layer_point1)
             self.add_drag_band(map_point1, edge_p1)
             bands_to_p1.append(self.drag_bands[-1])
 
@@ -864,8 +900,11 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def stop_dragging(self):
 
+        QgsMessageLog.logMessage("In stop_dragging", tag="TOMs panel")
         # deactivate advanced digitizing
-        self.setMode(self.CaptureNone)
+        # self.setMode(self.CaptureNone)
+        self. setAutoSnapEnabled(False)  # v3
+        self.setAdvancedDigitizingAllowed(False)
 
         # stop adv digitizing
         me = QgsMapMouseEvent(self.canvas(),
@@ -885,7 +924,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # try to use point coordinates in the original CRS if it is the same
         if match and match.hasVertex() and match.layer() and match.layer().crs() == dest_layer.crs():
             try:
-                f = match.layer().getFeatures(QgsFeatureRequest(match.featureId())).next()
+                # f = match.layer().getFeatures(QgsFeatureRequest(match.featureId())).next()
+                f = match.layer().getFeature(match.featureId())
                 layer_point = f.geometry().vertexAt(match.vertexIndex())
             except StopIteration:
                 pass
@@ -914,13 +954,15 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         drag_layer.beginEditCommand(self.tr("Moved edge"))
 
         # move first endpoint
-        orig_map_point_0 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0))
+        # orig_map_point_0 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0))
+        orig_map_point_0 = QgsPointXY(geom.vertexAt(drag_vertex_0))
         new_map_point_0 = QgsPoint(orig_map_point_0.x() + diff_x, orig_map_point_0.y() + diff_y)
         self.dragging = Vertex(drag_layer, drag_fid, drag_vertex_0)
         self.move_vertex(new_map_point_0, None)
 
         # move second endpoint
-        orig_map_point_1 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0+1))
+        # orig_map_point_1 = self.toMapCoordinates(drag_layer, geom.vertexAt(drag_vertex_0+1))
+        orig_map_point_1 = QgsPointXY(geom.vertexAt(drag_vertex_0+1))
         new_map_point_1 = QgsPoint(orig_map_point_1.x() + diff_x, orig_map_point_1.y() + diff_y)
         self.dragging = Vertex(drag_layer, drag_fid, drag_vertex_0+1)
         self.move_vertex(new_map_point_1, None)
@@ -930,7 +972,9 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
     def move_vertex(self, map_point, map_point_match):
 
         # deactivate advanced digitizing
-        self.setMode(self.CaptureNone)
+        # self.setMode(self.CaptureNone)
+        self. setAutoSnapEnabled(False)  # v3
+        self.setAdvancedDigitizingAllowed(False)
 
         drag_layer = self.dragging.layer
         drag_fid = self.dragging.fid
@@ -1065,7 +1109,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             #marker.setIconSize(5)
             #marker.setPenWidth(2)
             marker.setColor(Qt.blue)
-            marker.setCenter(geom.vertexAt(node.vertex_id))
+            marker.setCenter(QgsPointXY(geom.vertexAt(node.vertex_id)))
             self.selected_nodes_markers.append(marker)
         self.selected_nodes = list_nodes
 
@@ -1115,13 +1159,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         if not visible_extent.contains(p0) or not visible_extent.contains(p1):
             # clip line segment to the extent so the mid-point marker is always visible
             extent_geom = QgsGeometry.fromRect(visible_extent)
-            line_geom = QgsGeometry.fromPolyline([p0, p1])
+            line_geom = QgsGeometry.fromPolylineXY([p0, p1])
             line_geom = extent_geom.intersection(line_geom)
             p0, p1 = line_geom.asPolyline()
 
         edge_center = QgsPoint((p0.x() + p1.x())/2, (p0.y() + p1.y())/2)
 
-        dist_from_edge_center = math.sqrt(map_point.sqrDist(edge_center))
+        dist_from_edge_center = math.sqrt(map_point.sqrDist(edge_center.x(), edge_center.y()))
         tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
         is_near_center = dist_from_edge_center < tol
 

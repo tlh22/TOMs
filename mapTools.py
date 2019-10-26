@@ -761,7 +761,9 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - geometryType: " + str(self.layer.geometryType())), tag="TOMs panel")
 
-        self.setMode(CreateRestrictionTool.CaptureLine)
+        #self.setMode(CreateRestrictionTool.CaptureLine)
+        self.setAdvancedDigitizingAllowed(True)
+        self. setAutoSnapEnabled(True)
 
         QgsMessageLog.logMessage(("In TOMsSplitRestrictionTool - mode set."), tag="TOMs panel")
 
