@@ -1049,8 +1049,8 @@ class RestrictionTypeUtilsMixin():
                 pass
                 # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
             else:
-                FIELD1.setPixmap(pixmap2)
-                FIELD1.setScaledContents(True)
+                FIELD2.setPixmap(pixmap2)
+                FIELD2.setScaledContents(True)
                 QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
 
         if FIELD3:
@@ -1070,8 +1070,8 @@ class RestrictionTypeUtilsMixin():
                 pass
                 # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
             else:
-                FIELD1.setPixmap(pixmap3)
-                FIELD1.setScaledContents(True)
+                FIELD3.setPixmap(pixmap3)
+                FIELD3.setScaledContents(True)
                 QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
 
         pass
