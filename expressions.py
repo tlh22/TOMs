@@ -241,7 +241,7 @@ def getLoadingRestrictionLabelText(feature, parent):
 
         """QgsMessageLog.logMessage(
         "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
-        tag="TOMs panel")"""
+        tag="TOMs panel")
 
     if loadingText:
         #labelText = "No Loading: " + loadingText
