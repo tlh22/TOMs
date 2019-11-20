@@ -210,10 +210,11 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         self.edge_band = None
         self.endpoint_marker = None
 
-    """def deactivate(self):
+    def deactivate(self):
+        QgsMessageLog.logMessage("In nodeTool:deactivate .... ", tag="TOMs panel")
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()
-        QgsMapToolAdvancedDigitizing.deactivate(self)"""
+        QgsMapToolAdvancedDigitizing.deactivate(self)
 
 
     def can_use_current_layer(self):
@@ -357,14 +358,16 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # there may be a temporary list of points (up to two) that need to be injected
         # into CAD dock widget in order to make it behave as we need
-        if self.override_cad_points:
+        """if self.override_cad_points:
             for pt in self.override_cad_points:
                 me = QgsMapMouseEvent(self.canvas(),
                                       QMouseEvent(QEvent.MouseButtonRelease,
                                                   self.toCanvasCoordinates(pt),
                                                   Qt.LeftButton, Qt.LeftButton, Qt.NoModifier))
-                self.cadDockWidget().canvasReleaseEvent(me, True)
-            self.override_cad_points = None
+
+                # self.cadDockWidget().canvasReleaseEvent(me, True)
+                self.canvasReleaseEvent(me)
+            self.override_cad_points = None"""
 
     def cadCanvasMoveEvent(self, e):
 
@@ -711,6 +714,8 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         assert m.hasVertex()
 
+        QgsMessageLog.logMessage("In start_dragging_move_vertex ...", tag="TOMs panel")
+
         geom = self.cached_geometry(m.layer(), m.featureId())
 
         # start dragging of snapped point of current layer
@@ -745,8 +750,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             if not isinstance(layer, QgsVectorLayer) or not layer.isEditable():
                 continue
 
+            QgsMessageLog.logMessage("In start_dragging_move_vertex. Considering " + str(layer.name()), tag="TOMs panel")
+
             for other_m in self.layer_vertices_snapped_to_point(layer, map_point):
+                QgsMessageLog.logMessage("In start_dragging_move_vertex. Looking for match on " + str(layer.name()), tag="TOMs panel")
+
                 if other_m == m: continue
+
+                QgsMessageLog.logMessage("In start_dragging_move_vertex. Found locator for " + str(layer.name()), tag="TOMs panel")
 
                 other_g = self.cached_geometry(other_m.layer(), other_m.featureId())
 
@@ -784,13 +795,25 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 match_geom = self.nodetool.cached_geometry(match.layer(), match.featureId())
                 vid = QgsVertexId()
                 pt = QgsPoint()
+                vNr = 0
+
+                QgsMessageLog.logMessage("In layer_vertices_snapped_to_point.acceptMatch", tag="TOMs panel")
+
                 # while match_geom.get().nextVertex(vid, pt):
-                while match_geom.get().nextVertex(vid):
-                    vindex = match_geom.vertexNrFromVertexId(vid)
-                    if pt.x() == match.point().x() and pt.y() == match.point().y() and vindex != match.vertexIndex():
+                geomIter = match_geom.vertices()
+                while (geomIter.hasNext()):
+
+                    pt = geomIter.next()
+                    vindex = vNr
+
+                    # if pt.x() == match.point().x() and pt.y() == match.point().y() and vindex != match.vertexIndex():
+                    if pt.x() == match.point().x() and pt.y() == match.point().y():
                         extra_match = QgsPointLocator.Match(match.type(), match.layer(), match.featureId(),
                                                             0, match.point(), vindex)
                         self.matches.append(extra_match)
+
+                    vNr = vNr + 1
+
                 return True
 
         QgsMessageLog.logMessage("In layer_vertices_snapped_to_point", tag="TOMs panel")
@@ -905,13 +928,16 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # self.setMode(self.CaptureNone)
         self. setAutoSnapEnabled(False)  # v3
         self.setAdvancedDigitizingAllowed(False)
+        # self.deactivate()
 
-        # stop adv digitizing
+        """# stop adv digitizing
         me = QgsMapMouseEvent(self.canvas(),
                               QMouseEvent(QEvent.MouseButtonRelease,
                                           QPoint(),
                                           Qt.RightButton, Qt.RightButton, Qt.NoModifier))
-        self.cadDockWidget().canvasReleaseEvent(me, False)
+        self.cadDockWidget().canvasReleaseEvent(me, False)"""
+
+        self.cadDockWidget().disable()
 
         self.dragging = False
         self.dragging_edge = None
@@ -984,7 +1010,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         adding_vertex = False
         adding_at_endpoint = False
-        if isinstance(drag_vertex_id, tuple):
+        if isinstance(drag_vertex_id, tuple):   # TH (191027): Not sure why using tuple and how "adding_at_endpoint" is set
             adding_vertex = True
             drag_vertex_id, adding_at_endpoint = drag_vertex_id
 
@@ -1031,9 +1057,9 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # TODO: add topological points: when moving vertex - if snapped to something
 
         # do the changes to layers
-        for layer, features_dict in edits.iteritems():
+        for layer, features_dict in edits.items():
             layer.beginEditCommand( self.tr( "Moved vertex" ) )
-            for fid, geometry in features_dict.iteritems():
+            for fid, geometry in features_dict.items():
                 layer.changeGeometry(fid, geometry)
             layer.endEditCommand()
             layer.triggerRepaint()
@@ -1063,12 +1089,12 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             to_delete_grouped[vertex.layer][vertex.fid].append(vertex.vertex_id)
 
         # main for cycle to delete all selected vertices
-        for layer, features_dict in to_delete_grouped.iteritems():
+        for layer, features_dict in to_delete_grouped.items():
 
             layer.beginEditCommand( self.tr( "Deleted vertex" ) )
             success = True
 
-            for fid, vertex_ids in features_dict.iteritems():
+            for fid, vertex_ids in features_dict.items():
                 res = QgsVectorLayer.Success
                 for vertex_id in sorted(vertex_ids, reverse=True):
                     if res != QgsVectorLayer.EmptyGeometry:

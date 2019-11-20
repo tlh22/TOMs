@@ -14,7 +14,7 @@ from qgis.core import *
 from qgis.gui import *
 import os
 
-from .InstantPrintTool import InstantPrintTool
+from .InstantPrintTool_v3 import InstantPrintTool
 import resources_rc
 
 """class InstantPrintPlugin(QObject):

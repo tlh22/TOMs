@@ -42,7 +42,7 @@ from qgis.core import (
 
 import os
 
-from qgis.gui import *
+#from qgis.gui import *
 
 from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 

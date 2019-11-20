@@ -12,15 +12,55 @@
 
 import math
 
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtCore import *
+#from qgis.PyQt.QtGui import *
+#from qgis.PyQt.QtCore import *
+
 from qgis.PyQt.QtWidgets import (
     QDockWidget
 )
 
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import iface
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtCore import (
+    QObject,
+    QTimer,
+    pyqtSignal,
+    Qt
+)
+
+
+from qgis.core import (
+    QgsFeature,
+    QgsGeometry,
+    QgsGeometryCollection,
+    QgsCurve,
+    QgsCurvePolygon,
+    QgsMessageLog,
+    QgsMultiCurve,
+    QgsPoint,
+    QgsPointXY,
+    QgsPointLocator,
+    QgsVertexId,
+    QgsVectorLayer,
+    QgsRectangle,
+    QgsProject,
+    QgsFeatureRequest,
+    QgsTolerance,
+    QgsSnappingUtils,
+    QgsSnappingConfig,
+    QgsWkbTypes
+)
+
+from qgis.gui import (
+    QgsVertexMarker,
+    QgsMapToolAdvancedDigitizing,
+    QgsRubberBand,
+    QgsMapMouseEvent
+)
+
 import uuid
 import functools
 
@@ -151,8 +191,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
     def deactivate(self):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:deactivate .... ", tag="TOMs panel")
-
-        #NodeTool.deactivate()
+        NodeTool.deactivate(self)
 
     def shutDownNodeTool(self):
 
@@ -371,33 +410,46 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
             snap_layers.append(QgsSnappingUtils.LayerConfig(
                 layer, snap_type, tol, QgsTolerance.ProjectUnits))"""
 
-
         snap_util = self.canvas().snappingUtils()
         snap_config = snap_util.config()
         old_snap_config = snap_util.config()
         # old_layers = snap_util.layers()
-        # old_mode = snap_util.snapToMapMode()
-        old_intersections = old_snap_config.intersectionSnapping()
+        # old_mode = snap_util.mode()
+        # old_intersections = old_snap_config.intersectionSnapping()
 
         """
         for layer in snap_config.individualLayerSettings().keys():
             snap_config.removeLayers([layer])
         """
         # snap_config.addLayers([self.origLayer])
-        snap_config.setMode(QgsSnappingConfig.AdvancedConfiguration)
+        snap_util.setCurrentLayer(self.origLayer)
+
+        snap_config.setMode(QgsSnappingConfig.ActiveLayer)
         snap_config.setIntersectionSnapping(False)  # only snap to layers
         #m = snap_util.snapToMap(map_point)
         snap_config.setTolerance(tol)
         snap_config.setUnits(QgsTolerance.ProjectUnits)
         snap_config.setType(QgsSnappingConfig.VertexAndSegment)
+        snap_config.setEnabled(True)
+
+        """snap_config.setMode(QgsSnappingConfig.AdvancedConfiguration)
+
+        currLayerSnapSettings = snap_config.individualLayerSettings(self.origLayer)
+        currLayerSnapSettings.setTolerance(tol)
+        currLayerSnapSettings.setUnits(QgsTolerance.ProjectUnits)
+        currLayerSnapSettings.setType(QgsSnappingConfig.VertexAndSegment)
+        currLayerSnapSettings.setEnabled(True)
+
+        snap_config.setIndividualLayerSettings(self.origLayer, currLayerSnapSettings)"""
+
 
         # try to stay snapped to previously used feature
         # so the highlight does not jump around at nodes where features are joined
 
         ### TH: Amend to choose only from selected feature (and layer)
 
-        filter_last = OneFeatureFilter(self.origLayer, self.origFeature.savedFeature.id())
-        #m = snap_util.snapToMap(map_point, filter_last)
+        filter_last = OneFeatureFilter(self.origLayer, self.origFeature.getFeature().id())
+        # m = snap_util.snapToMap(map_point, filter_last)
         """if m_last.isValid() and m_last.distance() <= m.distance():
             m = m_last"""
         #self.origFeature.printFeature()
@@ -407,14 +459,16 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
             - setCurrentLayer
             
         """
-        snap_util.setCurrentLayer(self.origLayer)
+
         m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
 
-        # snap_util.setLayers(old_layers)
-        # snap_util.setSnapToMapMode(old_mode)
-        # snap_util.setIntersectionSnapping(False)
+        #snap_util.setLayers(old_layers)
+        #snap_config.setMode(old_mode)
+        #snap_config.setIntersectionSnapping(old_intersections)
         snap_util.setConfig(old_snap_config)
         #self.last_snap = m
+
+        # TODO: Tidy up ...
 
         QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer: snap point " + str(m.type()) +";" + str(m.isValid()) + "; ", tag="TOMs panel")
 
