@@ -8,17 +8,30 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale, QMetaObject
-from PyQt5.QtGui import QColor, QDesktopServices, QIcon
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QListWidgetItem, QListWidget, QCheckBox
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, QgsPrintLayout, QgsLayoutItemRegistry, PROJECT_SCALES, QgsLayoutItemMap, QgsMessageLog, QgsExpression, QgsFeatureRequest
-from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
+from PyQt5.QtCore import (
+    Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale, QMetaObject
+    )
+from PyQt5.QtGui import (
+    QColor, QDesktopServices, QIcon)
+from PyQt5.QtWidgets import (
+    QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QListWidgetItem, QListWidget, QCheckBox
+    )
+from PyQt5.QtPrintSupport import (
+    QPrintDialog, QPrinter
+    )
+from qgis.core import (
+    QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter,
+    QgsPrintLayout, QgsLayoutItemRegistry, PROJECT_SCALES, QgsLayoutItemMap,
+    QgsMessageLog, QgsExpression, QgsFeatureRequest
+    )
+from qgis.gui import (
+    QgisInterface, QgsMapTool, QgsRubberBand
+    )
 import os
 
 from .ui.ui_printdialog import Ui_InstantPrintDialog
 #from InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
-from .ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
+from .ui.accepted_Proposals_dialog import acceptedProposalsDialog
 from .ui.printList_dialog import printListDialog
 
 from ..constants import (
@@ -40,7 +53,6 @@ class InstantPrintDialog(QDialog):
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape:
             self.hidden.emit()
-
 
 class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
@@ -395,36 +407,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if activeIndex < 0:
             return
 
-            #project = QgsProject.instance()
-            #manager = project.layoutManager()
         layout_name = self.dialogui.comboBox_layouts.currentText()
         self.layoutView = self.projectLayoutManager.layoutByName(layout_name)
 
         layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
-        """try:
-            maps = layoutView.composition().composerMapItems()
-        except Exception:
-            # composerMapItems is not available with PyQt5 < 4.8.4
-            maps = []
-            for item in layoutView.composition().items():
-                if isinstance(item, QgsPrintLayout):
-                    maps.append(item)"""
-        """mapPrint = False
-        for item in layoutView.items():
-            if item.type() ==  QgsLayoutItemRegistry.LayoutMap:
-                mapPrint = True
-                break
-        # TH (180608): Assume that when no maps are within composer, that the composer is Legend ...
 
-        if mapPrint:
-            #self.exportButton.setEnabled(False)
-            self.iface.mapCanvas().scene().removeItem(self.rubberband)
-            self.rubberband = None
-            self.dialogui.comboBox_scale.setEnabled(False)
-            return
-
-        # TH (180608): Assume that when multiple maps are displayed, that composer is Atlas ...
-        """
         self.exportButton.setEnabled(True)
 
         #self.layoutView = layoutView
@@ -468,7 +455,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 self.proposalPrintTypeDetails = "Effective Date"
 
                 # set the dialog (somehow)
-                self.acceptedProposalDialog = acceptedProposalsDialog2()
+                self.acceptedProposalDialog = acceptedProposalsDialog()
 
                 self.createAcceptedProposalcb()
                 self.acceptedProposalDialog.show()
@@ -482,14 +469,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
                     self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
-
-                    """if proposalNrForPrinting == 0:
-
-                        reply = QtWidgets.QMessageBox.question(self.iface.mainWindow(), 'Print options',
-                                                     'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
-                                                     QMessageBox.Yes, QMessageBox.No)
-                        if reply == QMessageBox.No:
-                            return"""
 
                 else:
                     return
@@ -509,9 +488,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
-
         if QgsProject.instance().mapLayersByName("Proposals"):
             self.Proposals = \
                 QgsProject.instance().mapLayersByName("Proposals")[0]
@@ -519,24 +495,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                     ("Table Proposals is not present"))
 
-
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
-
-        """currProposalID = 0
-        currProposalTitle = "0 - No proposal shown"
-
-        # A little pause for the db to catch up
-        #time.sleep(.1)
-
-        QgsMessageLog.logMessage("In createAcceptedProposalcb: Adding 0", tag="TOMs panel")
-
-        self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)"""
-
-        """proposalsList = self.Proposals.getFeatures()
-        proposalsList.sort()
-
-        query = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
-        request = QgsFeatureRequest().setFilterExpression(query)"""
 
         # for proposal in proposalsList:
         queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_ACCEPTED())
@@ -548,22 +507,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
 
         for proposal in sorted(proposals, key=lambda f: f[4]):
-            #for proposal in self.Proposals.getFeatures():
 
-            #currProposalStatusID = proposal.attribute("ProposalStatusID")
             """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")"""
-            #if currProposalStatusID == PROPOSAL_STATUS_ACCEPTED():  # 1 = "in preparation"
             currProposalID = proposal.attribute("ProposalID")
             currProposalTitle = proposal.attribute("ProposalTitle")
-            #    #currProposalOpenDate = proposal.attribute("ProposalOpenDate")
+
             self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
 
         pass
-
-        # set up action for when the proposal is changed
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-
 
     def TOMsExportAtlas(self, currProposalID):
 
@@ -747,12 +699,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         # Need to set date and status
 
-        #self.effectiveDate = self.proposalsManager.date()
-
-        #self.openDateForPrintProposal
-
         composerEffectiveDate = currPrintLayout.itemById('effectiveDate')
-        #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
 
         composerProposalStatus = currPrintLayout.itemById('proposalStatus')
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
@@ -767,7 +714,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.tilesToPrint = []
         idxMapTileId = self.tableNames.MAP_GRID.fields().indexFromName("id")
 
-        self.tileListDialog = printListDialogB(self.tileSet, idxMapTileId)
+        self.tileListDialog = printListDialog(self.tileSet, idxMapTileId)
 
         self.tileListDialog.show()
 
@@ -784,7 +731,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         pass
 
-class printListDialogB(printListDialog, QDialog):
+class printListDialog(printListDialog, QDialog):
     def __init__(self, initValues, idxValue, parent=None):
         QDialog.__init__(self, parent)
 
@@ -792,7 +739,7 @@ class printListDialogB(printListDialog, QDialog):
         # Set up the user interface from Designer.
         self.setupUi(self)
 
-        QgsMessageLog.logMessage("In printListDialogB. Initiating ...",             tag="TOMs panel")
+        QgsMessageLog.logMessage("In printListDialog. Initiating ...",             tag="TOMs panel")
 
         self.initValues = initValues
         self.idxValue = idxValue
@@ -814,7 +761,7 @@ class printListDialogB(printListDialog, QDialog):
         '''Whenever a checkbox is checked, modify the values'''
         # Check if we check or uncheck the value:
         """QgsMessageLog.logMessage(
-            "In printListDialogB. In changeValues for: " + str(element.data(Qt.DisplayRole)),
+            "In printListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
             tag="TOMs panel")"""
 
         if element.checkState() == Qt.Checked:

@@ -16,7 +16,7 @@ from qgis.PyQt.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-from .InstantPrintTool_v3 import InstantPrintTool
+from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
