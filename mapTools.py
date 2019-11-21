@@ -124,6 +124,10 @@ class MapToolMixin:
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
+            # Exclude consideration of CPZs
+            if layerDetails.attribute("id") >= 6:  # CPZs
+                continue
+
             self.currLayer = RestrictionTypeUtilsMixin.getRestrictionsLayer (layerDetails)
 
             # Loop through all features in the layer to find the closest feature
@@ -318,6 +322,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
         layerList = []
 
         for layerDetails in self.RestrictionLayers.getFeatures():
+
 
             if layerDetails.attribute("id") >= 6:   # CPZs, PTAs
                 continue
