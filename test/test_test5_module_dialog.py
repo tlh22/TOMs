@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2017, TH'
 
 import unittest
 
-from PyQt4.QtGui import QDialogButtonBox, QDialog
+from qgis.PyQt.QtGui import QDialogButtonBox, QDialog
 
 from test5_module_dialog import Test5ClassDialog
 

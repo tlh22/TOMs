@@ -359,9 +359,6 @@
    </item>
    <item row="4" column="1">
     <widget class="QDialogButtonBox" name="button_box">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
@@ -378,12 +375,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>465</y>
+     <x>335</x>
+     <y>324</y>
     </hint>
     <hint type="destinationlabel">
-     <x>249</x>
-     <y>239</y>
+     <x>292</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>
@@ -394,12 +391,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>465</y>
+     <x>335</x>
+     <y>324</y>
     </hint>
     <hint type="destinationlabel">
-     <x>249</x>
-     <y>239</y>
+     <x>292</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>

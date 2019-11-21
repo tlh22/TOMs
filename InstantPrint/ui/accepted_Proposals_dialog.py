@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- distanceDialog
+ TOMsSnapTraceDialog
                                  A QGIS plugin
- Start of TOMs
+ snap and trace functions for TOMs
                              -------------------
-        begin                : 2017-01-01
+        begin                : 2017-12-15
         git sha              : $Format:%H$
         copyright            : (C) 2017 by TH
         email                : th@mhtc.co.uk
@@ -23,16 +23,18 @@
 
 import os
 
-from PyQt4 import QtGui, uic
-
+from PyQt5 import QtGui, uic, QtWidgets
+from qgis.PyQt.QtWidgets import (
+    QDialog
+)
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'distance_dialog_base.ui'))
+    os.path.dirname(__file__), 'acceptedProposals_dialog_base.ui'))
 
 
-class distanceDialog(QtGui.QDialog, FORM_CLASS):
+class acceptedProposalsDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(distanceDialog, self).__init__(parent)
+        super(acceptedProposalsDialog, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

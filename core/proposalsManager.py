@@ -8,32 +8,33 @@
 #---------------------------------------------------------------------
 # Tim Hancock/Matthias Kuhn 2017
 
-from PyQt4.QtCore import (
+from qgis.PyQt.QtCore import (
     QObject,
     QDate,
     pyqtSignal
 )
 
-from PyQt4.QtGui import (
+from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction
 )
 
 from qgis.core import (
     QgsExpressionContextUtils,
-    QgsMapLayerRegistry,
+    # QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
-    QgsFeatureRequest
+    QgsFeatureRequest,
+    QgsProject
 )
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
-from TOMs.constants import (
+from ..constants import (
     ACTION_CLOSE_RESTRICTION,
     ACTION_OPEN_RESTRICTION
 )
 
-class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
+class TOMsProposalsManager(RestrictionTypeUtilsMixin, QObject):
     """
     Manages what is currently shown to the user.
 
@@ -55,7 +56,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
     TOMsActivated = pyqtSignal()
     """ signal will be emitted when TOMs tools are activated"""
-    TOMsStartupFailure = pyqtSignal()
+    #TOMsStartupFailure = pyqtSignal()
     """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
     TOMsSplitRestrictionSaved = pyqtSignal()
 
@@ -66,7 +67,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         #self.constants = TOMsConstants()
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
-        #self.tableNames = setupTableNames(self.iface)
+        self.tableNames = setupTableNames(self.iface)
 
     def date(self):
         """
@@ -87,7 +88,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         """
         Returns the current proposal
         """
-        currProposal = QgsExpressionContextUtils.projectScope().variable('CurrentProposal')
+        currProposal = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CurrentProposal')
         if not currProposal:
             currProposal = 0
         return int(currProposal)
@@ -112,7 +113,7 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         Set the current proposal
         """
         QgsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), tag="TOMs panel")
-        QgsExpressionContextUtils.setProjectVariable('CurrentProposal', value)
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentProposal', value)
 
         #self.currProposalFeature = QgsFeature(id=int(value))
 
@@ -154,8 +155,10 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         # For PostGIS - "OpenDate" <= '02-09-2017' AND ("CloseDate" > '02-09-2017' OR "CloseDate"  IS NULL)
         filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+        #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        if QgsProject.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
         else:
             QMessageBox.information(None, "ERROR", ("Table RestrictionLayers is not present"))
             return
@@ -173,8 +176,11 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             QgsMessageLog.logMessage(
                 "In updateMapCanvas. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
 
-            if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
-                currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
+            # if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+            #     currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
+            if QgsProject.instance().mapLayersByName(currLayerName):
+                currRestrictionLayer = QgsProject.instance().mapLayersByName(currLayerName)[
+                    0]  # **** should we use self.currRestrictionLayer ??
             else:
                 QMessageBox.information(None, "ERROR",
                                         ("Table " + currLayerName + " is not present"))
@@ -214,8 +220,10 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-            self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
+        #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        if QgsProject.instance().mapLayersByName("RestrictionLayers"):
+            self.RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
         else:
             QMessageBox.information(None, "ERROR", ("Table RestrictionLayers is not present"))
             return
@@ -233,8 +241,11 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
             QgsMessageLog.logMessage(
                 "In clearRestrictionFilters. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
 
-            if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
-                currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
+            # if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
+            #     currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]                # **** should we use self.currRestrictionLayer ??
+            if QgsProject.instance().mapLayersByName(currLayerName):
+                currRestrictionLayer = QgsProject.instance().mapLayersByName(currLayerName)[
+                    0]  # **** should we use self.currRestrictionLayer ??
             else:
                 QMessageBox.information(None, "ERROR",
                                         ("Table " + currLayerName + " is not present"))
@@ -254,8 +265,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
         restrictionsString = ''
         firstRestriction = True
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+
+        if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
+            self.RestrictionsInProposals = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
         else:
             QMessageBox.information(None, "ERROR", ("Table RestrictionsInProposals is not present"))
             raise LayerNotPresent
@@ -313,16 +325,16 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         if currProposalID > 0:  # need to consider a proposal
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
+            if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
                 self.RestrictionsInProposals = \
-                QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
+                QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
             else:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                         ("Table RestrictionsInProposals is not present"))
                 #raise LayerNotPresent
 
-            if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-                self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+            if QgsProject.instance().mapLayersByName("RestrictionLayers"):
+                self.RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
             else:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
                 return
@@ -343,8 +355,8 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
                 QgsMessageLog.logMessage(
                     "In getProposalBoundingBox. Considering layer: " + currLayerDetails["RestrictionLayerName"], tag="TOMs panel")
 
-                if QgsMapLayerRegistry.instance().mapLayersByName(currLayerName):
-                    currRestrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currLayerName)[0]
+                if QgsProject.instance().mapLayersByName(currLayerName):
+                    currRestrictionLayer = QgsProject.instance().mapLayersByName(currLayerName)[0]
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                             ("Table " + currLayerName + " is not present"))
@@ -424,9 +436,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         # QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+        if QgsProject.instance().mapLayersByName("Proposals"):
             self.Proposals = \
-                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+                QgsProject.instance().mapLayersByName("Proposals")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                     ("Table Proposals is not present"))
@@ -447,9 +459,9 @@ class TOMsProposalsManager(QObject, RestrictionTypeUtilsMixin):
 
         # QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
+        if QgsProject.instance().mapLayersByName("Proposals"):
             self.Proposals = \
-                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+                QgsProject.instance().mapLayersByName("Proposals")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
                                     ("Table Proposals is not present"))

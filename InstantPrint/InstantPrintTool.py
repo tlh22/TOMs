@@ -8,23 +8,33 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-# T Hancock (180607) given the number of "private" functions, i.e., "__", have decided to amend this file rather than subclass
+from PyQt5.QtCore import (
+    Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale, QMetaObject
+    )
+from PyQt5.QtGui import (
+    QColor, QDesktopServices, QIcon)
+from PyQt5.QtWidgets import (
+    QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QListWidgetItem, QListWidget, QCheckBox
+    )
+from PyQt5.QtPrintSupport import (
+    QPrintDialog, QPrinter
+    )
+from qgis.core import (
+    QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter,
+    QgsPrintLayout, QgsLayoutItemRegistry, PROJECT_SCALES, QgsLayoutItemMap,
+    QgsMessageLog, QgsExpression, QgsFeatureRequest
+    )
+from qgis.gui import (
+    QgisInterface, QgsMapTool, QgsRubberBand
+    )
+import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-import os, copy
-import math
+from .ui.ui_printdialog import Ui_InstantPrintDialog
+#from InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
+from .ui.accepted_Proposals_dialog import acceptedProposalsDialog
+from .ui.printList_dialog import printListDialog
 
-from TOMs.InstantPrint.ui.ui_printdialog import Ui_InstantPrintDialog
-#from TOMs.InstantPrint.ui.acceptedProposals_dialog import acceptedProposalsDialog
-from TOMs.InstantPrint.ui.accepted_Proposals_dialog2 import acceptedProposalsDialog2
-from TOMs.InstantPrint.ui.printList_dialog import printListDialog
-
-import os.path
-
-from TOMs.constants import (
+from ..constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
@@ -44,17 +54,19 @@ class InstantPrintDialog(QDialog):
         if e.key() == Qt.Key_Escape:
             self.hidden.emit()
 
-
 class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __init__(self, iface, populateCompositionFz=None):
         QgsMapTool.__init__(self, iface.mapCanvas())
 
         self.iface = iface
+
+        projectInstance = QgsProject.instance()
+        self.projectLayoutManager = projectInstance.layoutManager()
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
-        self.printer = None
+        self.printer = QPrinter()
         self.mapitem = None
         self.populateCompositionFz = populateCompositionFz
 
@@ -71,18 +83,17 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
         self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
         self.dialogui.comboBox_fileformat.addItem("PNG", self.tr("PNG Image (*.png);;"))
-
-        self.iface.composerAdded.connect(lambda view: self.__reloadComposers())
-        self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
-        self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
+        self.iface.layoutDesignerOpened.connect(lambda view: self.__reloadLayouts())
+        self.iface.layoutDesignerWillBeClosed.connect(self.__reloadLayouts)
+        self.dialogui.comboBox_layouts.currentIndexChanged.connect(self.__selectLayout)
         self.dialogui.comboBox_scale.lineEdit().textChanged.connect(self.__changeScale)
         self.dialogui.comboBox_scale.scaleChanged.connect(self.__changeScale)
         self.exportButton.clicked.connect(self.__export)
         self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
-        self.dialogui.addScale.clicked.connect(self.__addItems)
-        self.dialogui.deleteScale.clicked.connect(self.__deleteItems)
+        self.dialogui.addScale.clicked.connect(self.add_new_scale)
+        self.dialogui.deleteScale.clicked.connect(self.remove_scale)
         self.deactivated.connect(self.__cleanup)
         self.setCursor(Qt.OpenHandCursor)
 
@@ -92,48 +103,49 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if settings.value("instantprint/scales") is not None:
             for scale in settings.value("instantprint/scales").split(";"):
                 if scale:
-                    self.addItem(scale)
+                    self.retrieve_scales(scale)
         self.check_scales()
 
         # TH (180608) change signals to new functions
-        self.dialogui.comboBox_composers.currentIndexChanged.disconnect(self.__selectComposer)
-        self.dialogui.comboBox_composers.currentIndexChanged.connect(self.TOMsSelectComposer)
+        self.dialogui.comboBox_layouts.currentIndexChanged.disconnect(self.__selectLayout)
+        self.dialogui.comboBox_layouts.currentIndexChanged.connect(self.TOMsSelectLayout)
 
         self.exportButton.clicked.disconnect(self.__export)
         self.exportButton.clicked.connect(self.TOMsExport)
 
-        self.iface.composerAdded.disconnect()
-        self.iface.composerWillBeRemoved.disconnect(self.__reloadComposers)
-        self.iface.composerAdded.connect(lambda view: self.TOMsReloadComposers())
-        self.iface.composerWillBeRemoved.connect(self.TOMsReloadComposers)
+        # self.iface.composerAdded.disconnect()
+        # self.iface.composerWillBeRemoved.disconnect(self.__reloadLayouts)
+        # self.iface.composerAdded.connect(lambda view: self.TOMsReloadLayouts())
+        # self.iface.composerWillBeRemoved.connect(self.TOMsReloadLayouts)
 
     def __onDialogHidden(self):
         self.setEnabled(False)
+        self.iface.mapCanvas().unsetMapTool(self)
         QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
         list = []
         for i in range(self.dialogui.comboBox_scale.count()):
             list.append(self.dialogui.comboBox_scale.itemText(i))
         QSettings().setValue("instantprint/scales", ";".join(list))
 
-    def addItem(self, checkScale):
+    def retrieve_scales(self, checkScale):
         if self.dialogui.comboBox_scale.findText(checkScale) == -1:
             self.dialogui.comboBox_scale.addItem(checkScale)
 
-    def __addItems(self):
-        newScale = self.dialogui.comboBox_scale.currentText()
-        if self.dialogui.comboBox_scale.findText(newScale) == -1:
-            self.dialogui.comboBox_scale.addItem(newScale)
+    def add_new_scale(self):
+        new_layout = self.dialogui.comboBox_scale.currentText()
+        if self.dialogui.comboBox_scale.findText(new_layout) == -1:
+            self.dialogui.comboBox_scale.addItem(new_layout)
         self.check_scales()
 
-    def __deleteItems(self):
-        delitem = self.dialogui.comboBox_scale.currentIndex()
-        self.dialogui.comboBox_scale.removeItem(delitem)
+    def remove_scale(self):
+        layout_to_delete = self.dialogui.comboBox_scale.currentIndex()
+        self.dialogui.comboBox_scale.removeItem(layout_to_delete)
         self.check_scales()
 
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
-            self.__reloadComposers()
+            self.__reloadLayouts()
             self.iface.mapCanvas().setMapTool(self)
         else:
             self.dialog.setVisible(False)
@@ -142,10 +154,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __changeScale(self):
         if not self.mapitem:
             return
-        scaledenom = self.dialogui.comboBox_scale.scale()
-        if math.isinf(scaledenom) or math.isnan(scaledenom) or abs(scaledenom) < 1E-6:
+        newscale = self.dialogui.comboBox_scale.scale()
+        if abs(newscale) < 1E-6:
             return
-        newscale = 1. / scaledenom
         extent = self.mapitem.extent()
         center = extent.center()
         newwidth = extent.width() / self.mapitem.scale() * newscale
@@ -154,30 +165,26 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         y1 = center.y() - 0.5 * newheight
         x2 = center.x() + 0.5 * newwidth
         y2 = center.y() + 0.5 * newheight
-        self.mapitem.setNewExtent(QgsRectangle(x1, y1, x2, y2))
+        self.mapitem.setExtent(QgsRectangle(x1, y1, x2, y2))
         self.__createRubberBand()
         self.check_scales()
 
-    def __selectComposer(self):
+    def __selectLayout(self):
         if not self.dialog.isVisible():
             return
-        activeIndex = self.dialogui.comboBox_composers.currentIndex()
+        activeIndex = self.dialogui.comboBox_layouts.currentIndex()
         if activeIndex < 0:
             return
 
-        composerView = self.dialogui.comboBox_composers.itemData(activeIndex)
-
-        try:
-            maps = composerView.composition().composerMapItems()
-        except Exception:
-            # composerMapItems is not available with PyQt4 < 4.8.4
-            maps = []
-            for item in composerView.composition().items():
-                if isinstance(item, QgsComposerMap):
-                    maps.append(item)
-
+        layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
+        maps = []
+        layout_name = self.dialogui.comboBox_layouts.currentText()
+        layout = self.projectLayoutManager.layoutByName(layout_name)
+        for item in layoutView.items():
+            if isinstance(item, QgsLayoutItemMap):
+                maps.append(item)
         if len(maps) != 1:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid layout"), self.tr("The layout must have exactly one map item."))
             self.exportButton.setEnabled(False)
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
@@ -187,9 +194,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.comboBox_scale.setEnabled(True)
         self.exportButton.setEnabled(True)
 
-        self.composerView = composerView
-        self.mapitem = maps[0]
-        self.dialogui.comboBox_scale.setScale(1 / self.mapitem.scale())
+        self.layoutView = layoutView
+        self.mapitem = layout.referenceMap()
+        self.dialogui.comboBox_scale.setScale(self.mapitem.scale())
         self.__createRubberBand()
 
     def __createRubberBand(self):
@@ -198,9 +205,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         center = self.iface.mapCanvas().extent().center()
         self.corner = QPointF(center.x() - 0.5 * extent.width(), center.y() - 0.5 * extent.height())
         self.rect = QRectF(self.corner.x(), self.corner.y(), extent.width(), extent.height())
-        self.mapitem.setNewExtent(QgsRectangle(self.rect))
-
-        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+        self.mapitem.setExtent(QgsRectangle(self.rect))
+        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
@@ -221,7 +227,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
             self.oldrect = QRectF(self.rect)
-            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
@@ -270,7 +276,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.oldrect = None
             self.oldrubberband = None
-            self.mapitem.setNewExtent(QgsRectangle(self.rect))
+            self.mapitem.setExtent(QgsRectangle(self.rect))
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
@@ -281,69 +287,68 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __export(self):
         settings = QSettings()
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
-        filename = QFileDialog.getSaveFileName(
+        filepath = QFileDialog.getSaveFileName(
             self.iface.mainWindow(),
-            self.tr("Print Composition"),
+            self.tr("Export Layout"),
             settings.value("/instantprint/lastfile", ""),
             format
         )
-        if not filename:
+        if not all(filepath):
             return
 
         # Ensure output filename has correct extension
-        filename = os.path.splitext(filename)[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
-
-        settings.setValue("/instantprint/lastfile", filename)
+        filename = os.path.splitext(filepath[0])[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+        settings.setValue("/instantprint/lastfile", filepath[0])
 
         if self.populateCompositionFz:
-            self.populateCompositionFz(self.composerView.composition())
-
-        # TH (181017) Need to add in values for items here
+            self.populateCompositionFz(self.layoutView.composition())
 
         success = False
+        layout_name = self.dialogui.comboBox_layouts.currentText()
+        layout_item = self.projectLayoutManager.layoutByName(layout_name)
+        exporter = QgsLayoutExporter(layout_item)
         if filename[-3:].lower() == u"pdf":
-            success = self.composerView.composition().exportAsPDF(filename)
+            success = exporter.exportToPdf(filepath[0], QgsLayoutExporter.PdfExportSettings())
         else:
-            image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
-            if not image.isNull():
-                success = image.save(filename)
-        if not success:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+            success = exporter.exportToImage(filepath[0], QgsLayoutExporter.ImageExportSettings())
+        if success != 0:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Export Failed"), self.tr("Failed to export the layout."))
 
     def __print(self):
-        if not self.printer:
-            self.printer = QPrinter()
+        layout_name = self.dialogui.comboBox_layouts.currentText()
+        layout_item = self.projectLayoutManager.layoutByName(layout_name)
+        actual_printer = QgsLayoutExporter(layout_item)
 
         printdialog = QPrintDialog(self.printer)
         if printdialog.exec_() != QDialog.Accepted:
             return
 
-        print_ = getattr(self.composerView.composition(), 'print')
-        success = print_(self.printer)
-        if not success:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+        success = actual_printer.print(self.printer, QgsLayoutExporter.PrintExportSettings())
 
-    def __reloadComposers(self, removed=None):
+        if success != 0:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the layout."))
+
+    def __reloadLayouts(self, removed=None):
         if not self.dialog.isVisible():
             # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
             return
 
-        self.dialogui.comboBox_composers.blockSignals(True)
+        self.dialogui.comboBox_layouts.blockSignals(True)
         prev = None
-        if self.dialogui.comboBox_composers.currentIndex() >= 0:
-            prev = self.dialogui.comboBox_composers.currentText()
-        self.dialogui.comboBox_composers.clear()
+        if self.dialogui.comboBox_layouts.currentIndex() >= 0:
+            prev = self.dialogui.comboBox_layouts.currentText()
+        self.dialogui.comboBox_layouts.clear()
         active = 0
-        for composer in self.iface.activeComposers():
-            if composer != removed and composer.composerWindow():
-                cur = composer.composerWindow().windowTitle()
-                self.dialogui.comboBox_composers.addItem(cur, composer)
+        for layout in self.projectLayoutManager.layouts():
+            if layout != removed and layout.name():
+                cur = layout.name()
+                self.dialogui.comboBox_layouts.addItem(cur, layout)
                 if prev == cur:
-                    active = self.dialogui.comboBox_composers.count() - 1
-        self.dialogui.comboBox_composers.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
-        self.dialogui.comboBox_composers.blockSignals(False)
-        if self.dialogui.comboBox_composers.count() > 0:
-            self.dialogui.comboBox_composers.setCurrentIndex(active)
+                    active = self.dialogui.comboBox_layouts.count() - 1
+        self.dialogui.comboBox_layouts.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
+        self.dialogui.comboBox_layouts.blockSignals(False)
+        if self.dialogui.comboBox_layouts.count() > 0:
+            self.dialogui.comboBox_layouts.setCurrentIndex(active)
             self.dialogui.comboBox_scale.setEnabled(True)
             self.exportButton.setEnabled(True)
         else:
@@ -357,11 +362,13 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def scaleFromString(self, scaleText):
         locale = QLocale()
         parts = [locale.toInt(part) for part in scaleText.split(":")]
-        # catch 0 Division
-        if len(parts) == 2 and parts[0][1] and parts[1][1] and parts[0][0] != 0 and parts[1][0] != 0:
-            return float(parts[0][0]) / float(parts[1][0])
-        else:
-            return None
+        try:
+            if len(parts) == 2 and parts[0][1] and parts[1][1] and parts[0][0] != 0 and parts[1][0] != 0:
+                return float(parts[0][0]) / float(parts[1][0])
+            else:
+                return None
+        except ZeroDivisionError:
+            return
 
     def check_scales(self):
         predefScalesStr = QSettings().value("Map/scales", PROJECT_SCALES).split(",")
@@ -390,43 +397,28 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 self.dialogui.addScale.setEnabled(True)
                 self.dialogui.deleteScale.setVisible(False)
 
-    def TOMsSelectComposer(self):
+    def TOMsSelectLayout(self):
 
         # TH (180608): Need to be able to accept composers with multiple maps - so over ride original
 
         if not self.dialog.isVisible():
             return
-        activeIndex = self.dialogui.comboBox_composers.currentIndex()
+        activeIndex = self.dialogui.comboBox_layouts.currentIndex()
         if activeIndex < 0:
             return
 
-        composerView = self.dialogui.comboBox_composers.itemData(activeIndex)
-        try:
-            maps = composerView.composition().composerMapItems()
-        except Exception:
-            # composerMapItems is not available with PyQt4 < 4.8.4
-            maps = []
-            for item in composerView.composition().items():
-                if isinstance(item, QgsComposerMap):
-                    maps.append(item)
+        layout_name = self.dialogui.comboBox_layouts.currentText()
+        self.layoutView = self.projectLayoutManager.layoutByName(layout_name)
 
-        # TH (180608): Assume that when no maps are within composer, that the composer is Legend ...
-
-        if len(maps) == 0:
-            #self.exportButton.setEnabled(False)
-            self.iface.mapCanvas().scene().removeItem(self.rubberband)
-            self.rubberband = None
-            self.dialogui.comboBox_scale.setEnabled(False)
-            return
-
-        # TH (180608): Assume that when multiple maps are displayed, that composer is Atlas ...
+        layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
 
         self.exportButton.setEnabled(True)
 
-        self.composerView = composerView
-        self.mapitem = maps[0]
+        #self.layoutView = layoutView
+        #self.mapitem = maps[0]
 
-        if len(maps) != 1:
+        if self.layoutView.atlas():
+            #if len(maps) != 1:
             #QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             #self.exportButton.setEnabled(False)
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
@@ -446,14 +438,22 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
 
         # TH (180608): Check to see whether or not the Composer is an Atlas
-        currComposition = self.composerView.composition()
-        currAtlas = currComposition.atlasComposition()
+        currPrintLayout = self.layoutView
+        # currLayoutAtlas = currPrintLayout.atlasComposition()
 
         self.proposalForPrintingStatusText = "PROPOSED"
         self.proposalPrintTypeDetails = "Print Date"
         self.openDateForPrintProposal = self.proposalsManager.date()
 
-        if currAtlas.enabled():
+        # TODO: Move to plugin wide variable for datasource
+        if QgsProject.instance().mapLayersByName("Proposals"):
+            self.Proposals = \
+                QgsProject.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table Proposals is not present"))
+
+        if currPrintLayout.atlas():
 
             if self.proposalsManager.currentProposal() == 0:
 
@@ -463,7 +463,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 self.proposalPrintTypeDetails = "Effective Date"
 
                 # set the dialog (somehow)
-                self.acceptedProposalDialog = acceptedProposalsDialog2()
+                self.acceptedProposalDialog = acceptedProposalsDialog()
 
                 self.createAcceptedProposalcb()
                 self.acceptedProposalDialog.show()
@@ -477,14 +477,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
                     self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
-
-                    """if proposalNrForPrinting == 0:
-
-                        reply = QMessageBox.question(self.iface.mainWindow(), 'Print options',
-                                                     'You are about to export all the map sheets containing restrictions current as at {date}?. Is this as intended?.'.format(date=self.proposalsManager.date().toString('dd-MMM-yyyy')),
-                                                     QMessageBox.Yes, QMessageBox.No)
-                        if reply == QMessageBox.No:
-                            return"""
 
                 else:
                     return
@@ -504,34 +496,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
-
-        if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
-            self.Proposals = \
-                QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                    ("Table Proposals is not present"))
-
-
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
-
-        """currProposalID = 0
-        currProposalTitle = "0 - No proposal shown"
-
-        # A little pause for the db to catch up
-        #time.sleep(.1)
-
-        QgsMessageLog.logMessage("In createAcceptedProposalcb: Adding 0", tag="TOMs panel")
-
-        self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)"""
-
-        """proposalsList = self.Proposals.getFeatures()
-        proposalsList.sort()
-
-        query = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
-        request = QgsFeatureRequest().setFilterExpression(query)"""
 
         # for proposal in proposalsList:
         queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_ACCEPTED())
@@ -543,22 +508,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
 
         for proposal in sorted(proposals, key=lambda f: f[4]):
-            #for proposal in self.Proposals.getFeatures():
 
-            #currProposalStatusID = proposal.attribute("ProposalStatusID")
             """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
                                      tag="TOMs panel")"""
-            #if currProposalStatusID == PROPOSAL_STATUS_ACCEPTED():  # 1 = "in preparation"
             currProposalID = proposal.attribute("ProposalID")
             currProposalTitle = proposal.attribute("ProposalTitle")
-            #    #currProposalOpenDate = proposal.attribute("ProposalOpenDate")
+
             self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
 
         pass
-
-        # set up action for when the proposal is changed
-        #self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-
 
     def TOMsExportAtlas(self, currProposalID):
 
@@ -568,16 +526,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
 
         # TH (180608): Check to see whether or not the Composer is an Atlas
-        currComposition = self.composerView.composition()
-        currAtlas = currComposition.atlasComposition()
+        currPrintLayout = self.layoutView
+        currLayoutAtlas = currPrintLayout.atlas()
 
         success = False
 
         # https://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
-        self.TOMsSetAtlasValues(currComposition)
-
-        #currProposalID = self.proposalsManager.currentProposal()
+        self.TOMsSetAtlasValues(currPrintLayout)
+        
         currRevisionDate = self.proposalsManager.date()
 
         # get the map tiles that are affected by the Proposal
@@ -600,7 +557,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             return
 
         settings.setValue("/instantprint/lastdir", dirName)
-        # self.TOMsExportAtlas()
 
         tileIDList = ""
         firstTile = True
@@ -611,39 +567,51 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             else:
                 tileIDList = tileIDList + ',' + str(tile.attribute("id"))
 
-        currAtlas.setFilterFeatures(True)
-        currAtlas.setFeatureFilter(' "id" in ({tileList})'.format(tileList=tileIDList))
+        currLayoutAtlas.setFilterFeatures(True)
+        currLayoutAtlas.setFilterExpression(' "id" in ({tileList})'.format(tileList=tileIDList))
 
-        currAtlas.beginRender()
-        currComposition.setAtlasMode(QgsComposition.ExportAtlas)
+        composerRevisionNr = currPrintLayout.itemById('revisionNr')
+        composerEffectiveDate = currPrintLayout.itemById('effectiveDate')
+        composerProposalStatus = currPrintLayout.itemById('proposalStatus')
 
-        composerRevisionNr = currComposition.getComposerItemById('revisionNr')
-        composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
-        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
-        composerPrintTypeDetails = currComposition.getComposerItemById('printTypeDetails')
+        if composerProposalStatus is not None:
+            composerProposalStatus.setText(self.proposalForPrintingStatusText)
+        else:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Missing label in Layout"),
+                                self.tr("Missing label 'proposalStatus'"))
 
-        composerProposalStatus.setText(self.proposalForPrintingStatusText)
-        composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
+        composerPrintTypeDetails = currPrintLayout.itemById('printTypeDetails')
+        if composerPrintTypeDetails is not None:
+            composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
+        else:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Missing label in Layout"),
+                                self.tr("Missing label 'printTypeDetails'"))
 
         currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
         if currProposalID == 0:
             currProposalTitle = "CurrentRestrictions_({date})".format(date=self.proposalsManager.date().toString('yyyyMMMdd'))
 
-        QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currAtlas.numFeatures()) + " items ....", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currLayoutAtlas.count()) + " items ....", tag="TOMs panel")
 
-        for i in range(0, currAtlas.numFeatures()):
+        currLayoutAtlas.setEnabled(True)
+        currLayoutAtlas.updateFeatures()
+        currLayoutAtlas.beginRender()
 
-            currAtlas.prepareForFeature(i)
-            currTile = currAtlas.feature()
+        altasFeatureFound = currLayoutAtlas.first()
 
-            currAtlas.composition().refreshItems()
+        while altasFeatureFound:
 
-            currTileNr = currTile["id"]
+            currTileNr = int(currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber()))
+
+            currLayoutAtlas.refreshCurrentFeature()
+
             tileWithDetails = self.tileFromTileSet(currTileNr)
 
             if tileWithDetails == None:
                 QgsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", tag="TOMs panel")
-                tileWithDetails = currTile
+                QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
+                                    self.tr("Could not find details for " + str(currTileNr)))
+                break
 
             QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " RevisionNr: " + str(tileWithDetails["RevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"]), tag="TOMs panel")
 
@@ -660,19 +628,25 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             filename = currProposalTitle + "_" + str(currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
             outputFile = os.path.join(dirName, filename)
 
-            if filename[-3:].lower() == u"pdf":
-                success = currAtlas.composition().exportAsPDF(outputFile)
-            else:
-                image = currAtlas.composition().printPageAsRaster(0)
-                if not image.isNull():
-                    success = image.save(outputFile)
+            exporter = QgsLayoutExporter(currLayoutAtlas.layout())
 
-            if not success:
+            if self.dialogui.comboBox_fileformat.currentText().lower() == u"pdf":
+                result = exporter.exportToPdf (outputFile, QgsLayoutExporter.PdfExportSettings())
+                # success = currLayoutAtlas.composition().exportAsPDF(outputFile)
+            else:
+                result = exporter.exportToImage(outputFile, 'png', QgsLayoutExporter.ImageExportSettings())
+                """image = currLayoutAtlas.composition().printPageAsRaster(0)
+                if not image.isNull():
+                    success = image.save(outputFile)"""
+
+            if result != QgsLayoutExporter.Success:
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
-                                    self.tr("Failed to print the composition."))
+                                    self.tr("Failed to print " + exporter.errorFile()))
                 break
 
-        currAtlas.endRender()
+            altasFeatureFound = currLayoutAtlas.next()
+
+        currLayoutAtlas.endRender()
 
         QMessageBox.information(self.iface.mainWindow(), "Information",
                                 ("Printing completed"))
@@ -685,34 +659,34 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         return None
 
-    def TOMsReloadComposers(self, removed=None):
+    def TOMsReloadLayouts(self, removed=None):
         if not self.dialog.isVisible():
             # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
             return
 
-        self.dialogui.comboBox_composers.blockSignals(True)
+        self.dialogui.comboBox_layouts.blockSignals(True)
         prev = None
-        if self.dialogui.comboBox_composers.currentIndex() >= 0:
-            prev = self.dialogui.comboBox_composers.currentText()
-        self.dialogui.comboBox_composers.clear()
+        if self.dialogui.comboBox_layouts.currentIndex() >= 0:
+            prev = self.dialogui.comboBox_layouts.currentText()
+        self.dialogui.comboBox_layouts.clear()
         active = 0
         for composer in self.iface.activeComposers():
             if composer != removed and composer.composerWindow():
                 cur = composer.composerWindow().windowTitle()
-                self.dialogui.comboBox_composers.addItem(cur, composer)
+                self.dialogui.comboBox_layouts.addItem(cur, composer)
                 if prev == cur:
-                    active = self.dialogui.comboBox_composers.count() - 1
-        self.dialogui.comboBox_composers.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
-        self.dialogui.comboBox_composers.blockSignals(False)
-        if self.dialogui.comboBox_composers.count() > 0:
-            self.dialogui.comboBox_composers.setCurrentIndex(active)
+                    active = self.dialogui.comboBox_layouts.count() - 1
+        self.dialogui.comboBox_layouts.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
+        self.dialogui.comboBox_layouts.blockSignals(False)
+        if self.dialogui.comboBox_layouts.count() > 0:
+            self.dialogui.comboBox_layouts.setCurrentIndex(active)
 
             # TH (180608): Check whether or not the active item is an Atlas
-            composerView = self.dialogui.comboBox_composers.itemData(active)
-            currComposition = composerView.composition()
-            currAtlas = currComposition.atlasComposition()
+            layoutView = self.dialogui.comboBox_layouts.itemData(active)
+            currPrintLayout = layoutView.composition()
+            currLayoutAtlas = currPrintLayout.atlasComposition()
 
-            if currAtlas.enabled():
+            if currLayoutAtlas.enabled():
                 self.dialogui.comboBox_scale.setEnabled(False)
             else:
                 self.dialogui.comboBox_scale.setEnabled(True)
@@ -722,18 +696,13 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.exportButton.setEnabled(False)
             self.dialogui.comboBox_scale.setEnabled(False)
 
-    def TOMsSetAtlasValues(self, currComposition):
+    def TOMsSetAtlasValues(self, currPrintLayout):
 
         # Need to set date and status
 
-        #self.effectiveDate = self.proposalsManager.date()
+        composerEffectiveDate = currPrintLayout.itemById('effectiveDate')
 
-        #self.openDateForPrintProposal
-
-        composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
-        #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
-
-        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        composerProposalStatus = currPrintLayout.itemById('proposalStatus')
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
 
     def TOMsChooseTiles(self):
@@ -744,9 +713,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # set the dialog (somehow)
 
         self.tilesToPrint = []
-        idxMapTileId = self.tableNames.MAP_GRID.fieldNameIndex("id")
+        idxMapTileId = self.tableNames.MAP_GRID.fields().indexFromName("id")
 
-        self.tileListDialog = printListDialogB(self.tileSet, idxMapTileId)
+        self.tileListDialog = printListDialog(self.tileSet, idxMapTileId)
 
         self.tileListDialog.show()
 
@@ -763,7 +732,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         pass
 
-class printListDialogB(printListDialog, QDialog):
+class printListDialog(printListDialog, QDialog):
     def __init__(self, initValues, idxValue, parent=None):
         QDialog.__init__(self, parent)
 
@@ -771,7 +740,7 @@ class printListDialogB(printListDialog, QDialog):
         # Set up the user interface from Designer.
         self.setupUi(self)
 
-        QgsMessageLog.logMessage("In printListDialogB. Initiating ...",             tag="TOMs panel")
+        QgsMessageLog.logMessage("In printListDialog. Initiating ...",             tag="TOMs panel")
 
         self.initValues = initValues
         self.idxValue = idxValue
@@ -793,7 +762,7 @@ class printListDialogB(printListDialog, QDialog):
         '''Whenever a checkbox is checked, modify the values'''
         # Check if we check or uncheck the value:
         """QgsMessageLog.logMessage(
-            "In printListDialogB. In changeValues for: " + str(element.data(Qt.DisplayRole)),
+            "In printListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
             tag="TOMs panel")"""
 
         if element.checkState() == Qt.Checked:

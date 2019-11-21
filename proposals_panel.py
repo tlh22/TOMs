@@ -10,23 +10,54 @@
 
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+    QAction,
+    QDialogButtonBox,
+    QLabel,
+    QDockWidget
+)
+
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtCore import (
+    QObject, QTimer, pyqtSignal,
+    QTranslator,
+    QSettings,
+    QCoreApplication,
+    qVersion,
+    Qt
+)
+# from qgis.PyQt import QtCore, QtGui, QtWidgets
+# from qgis.PyQt.QtGui import *
+# from qgis import core
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsExpression,
+    QgsFeatureRequest,
+    # QgsMapLayerRegistry,
+    QgsMessageLog, QgsFeature, QgsGeometry,
+    QgsTransaction, QgsTransactionGroup,
+    QgsProject
+)
 
 import time
+import uuid
 import functools
 
-from TOMs.ProposalPanel_dockwidget import ProposalPanelDockWidget
+from .ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
-from TOMs.core.proposalsManager import *
+from .core.proposalsManager import *
 
 from .manage_restriction_details import manageRestrictionDetails
 from .search_bar import searchBar
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
-from TOMs.constants import (
+from .constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
@@ -72,7 +103,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #    first run of plugin
         #    removed on close (see self.onClosePlugin method)
 
-        self.proposalsManager.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
+        # self.setupTableNames.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
         #self.RestrictionTypeUtilsMixin.tableNames.TOMsStartupFailure.connect(self.closeTOMsTools)
 
         if self.actionProposalsPanel.isChecked():
@@ -95,13 +126,16 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
         self.closeTOMs = False
 
+        # self.tableNames = setupTableNames(self.iface)
+
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
-        self.proposalsManager.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
-        self.tableNames = setupTableNames(self.iface, self.proposalsManager)
+        self.proposalsManager.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
+
+        self.proposalsManager.tableNames.getLayers()
 
         if self.closeTOMs:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table is missing. Unable to start TOMs ..."))
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start TOMs ..."))
             self.actionProposalsPanel.setChecked(False)
             return
 
@@ -144,7 +178,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
-        self.Proposals = self.tableNames.PROPOSALS
+        self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
 
         """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
             self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
@@ -153,11 +187,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
             raise LayerNotPresent"""
 
         # Set up field details for table  ** what about errors here **
-        idxProposalID = self.Proposals.fieldNameIndex("ProposalID")
-        idxProposalTitle = self.Proposals.fieldNameIndex("ProposalTitle")
-        self.idxCreateDate = self.Proposals.fieldNameIndex("ProposalCreateDate")
-        self.idxOpenDate = self.Proposals.fieldNameIndex("ProposalOpenDate")
-        self.idxProposalStatusID = self.Proposals.fieldNameIndex("ProposalStatusID")
+        idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
+        self.idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
+        self.idxCreateDate = self.Proposals.fields().indexFromName("ProposalCreateDate")
+        self.idxOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
+        self.idxProposalStatusID = self.Proposals.fields().indexFromName("ProposalStatusID")
 
         self.createProposalcb()
 
@@ -296,14 +330,17 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
 
+        self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
         self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
         self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
         self.newProposal.setGeometry(QgsGeometry())
 
+        self.Proposals.addFeature(self.newProposal)  # TH (added for v3)
+
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
 
-        self.proposalDialog.attributeForm().disconnectButtonBox()
+        #self.proposalDialog.attributeForm().disconnectButtonBox()
         self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
         if self.button_box is None:
@@ -311,10 +348,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 "In onNewProposal. button box not found",
                 tag="TOMs panel")
 
-        self.button_box.accepted.disconnect(self.proposalDialog.accept)
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.proposalDialog, self.proposalTransaction))
+            #self.button_box.accepted.disconnect()
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
-        self.button_box.rejected.disconnect(self.proposalDialog.reject)
+        #self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
 
         self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.newProposal, self.Proposals))
@@ -376,7 +413,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
-        self.proposalDialog.attributeForm().disconnectButtonBox()
+        #self.proposalDialog.attributeForm().disconnectButtonBox()
         self.button_box = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
         if self.button_box is None:
@@ -384,10 +421,10 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 "In onNewProposal. button box not found",
                 tag="TOMs panel")
 
-        self.button_box.accepted.disconnect(self.proposalDialog.accept)
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.proposalDialog, self.proposalTransaction))
+        self.button_box.accepted.disconnect()
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
-        self.button_box.rejected.disconnect(self.proposalDialog.reject)
+        self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
 
         self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.currProposal, self.Proposals))
@@ -439,12 +476,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.dock.filterDate.setDate(date)
 
         """ onChangeProposalStatus(self):
-        QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fieldNameIndex("ProposalStatusID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fields().indexFromName("ProposalStatusID")), tag="TOMs panel")
 
         # check to see if the proposal is "Accepted"
         acceptProposal = False
 
-        newProposalStatus = int(self.Proposals.fieldNameIndex("ProposalStatusID"))
+        newProposalStatus = int(self.Proposals.fields().indexFromName("ProposalStatusID"))
 
         if newProposalStatus == 1:    # should be 2 but with list ...
 
@@ -483,7 +520,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def getProposal(self, proposalID):
         QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel")
 
-        proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
+        # proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]  -- v2
+        proposalsLayer = QgsProject.instance().mapLayersByName("Proposals")[0]
 
         # not sure if there is better way to search for something, .e.g., using SQL ??
 

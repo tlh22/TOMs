@@ -23,14 +23,14 @@
 
 import os
 
-from PyQt4 import QtGui, uic
+from PyQt5 import QtGui, uic, QtWidgets
 from qgis.gui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'restrictionPolygonDetails_dialog_base.ui'))
 
 
-class restrictionPolygonDetailsDialog(QtGui.QDialog, FORM_CLASS):
+class restrictionPolygonDetailsDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(restrictionPolygonDetailsDialog, self).__init__(parent)

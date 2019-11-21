@@ -13,11 +13,12 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QListWidgetItem, QListWidget, QCheckBox, QLineEdit, QToolButton, QAction, QCompleter
 from qgis.core import *
 
-from TOMs.InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
+from .InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
 
 class searchBar():
 
@@ -114,7 +115,7 @@ class searchBar():
 
         # https://gis.stackexchange.com/questions/155805/qstringlist-error-in-plugin-of-qgis-2-10
 
-        self.GazetteerLayer = QgsMapLayerRegistry.instance().mapLayersByName("StreetGazetteerRecords")[0]
+        self.GazetteerLayer = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
 
         for row in self.GazetteerLayer.getFeatures():
             streetName = row.attribute("Descriptor_")
@@ -160,7 +161,7 @@ class searchBar():
 
         it = self.GazetteerLayer.getFeatures(QgsFeatureRequest(expr))
         ids = [i.id() for i in it]  # select only the features for which the expression is true
-        self.GazetteerLayer.setSelectedFeatures(ids)
+        self.GazetteerLayer.selectByIds(ids)
 
         # And zoom to the location
         #canvas = self.iface.mapCanvas()

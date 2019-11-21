@@ -12,14 +12,15 @@
 Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
 
 """
-from PyQt4.QtGui import (
+from qgis.PyQt.QtGui import (
+    QPixmap
+)
+from qgis.PyQt.QtWidgets import (
     QMessageBox,
-    QPixmap,
     QDialog,
     QDialogButtonBox,
     QLabel
 )
-
 from qgis.core import (
     QgsMessageLog,
     QgsExpressionContextUtils
@@ -27,13 +28,13 @@ from qgis.core import (
 
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from qgis.core import *
 from qgis.gui import *
 
 from restrictionBayDetails_dialog import restrictionBayDetailsDialog
 
-class RestrictionFormUtils(QtGui.QDialog):
+class RestrictionFormUtils(QtWidgets.QDialog):
 
     def __init__(self, iface, currRestrictionLayer, currRestriction):
         QtGui.QDialog.__init__(self)
@@ -75,7 +76,7 @@ class RestrictionFormUtils(QtGui.QDialog):
         FIELD2 = self.ui.findChild(QLabel, "Photo_Widget_02")
         FIELD3 = self.ui.findChild(QLabel, "Photo_Widget_03")
 
-        path_absolute = QgsExpressionContextUtils.projectScope().variable('PhotoPath')
+        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
         if path_absolute == None:
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
             return
@@ -88,9 +89,9 @@ class RestrictionFormUtils(QtGui.QDialog):
         fileName2 = layerName + "_Photos_02"
         fileName3 = layerName + "_Photos_03"
 
-        idx1 = self.currRestrictionLayer.fieldNameIndex(fileName1)
-        idx2 = self.currRestrictionLayer.fieldNameIndex(fileName2)
-        idx3 = self.currRestrictionLayer.fieldNameIndex(fileName3)
+        idx1 = self.currRestrictionLayer.fields().indexFromName(fileName1)
+        idx2 = self.currRestrictionLayer.fields().indexFromName(fileName2)
+        idx3 = self.currRestrictionLayer.fields().indexFromName(fileName3)
 
         QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3), tag="TOMs panel")
         #if currRestrictionFeature[idx1]:

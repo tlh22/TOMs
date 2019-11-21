@@ -12,35 +12,38 @@
 Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
 
 """
-from PyQt4.QtGui import (
+from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
 
-from PyQt4.QtCore import (
+from qgis.PyQt.QtCore import (
     QTimer
 )
 
 from qgis.core import (
     QgsExpressionContextUtils,
-    QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry, QgsTransaction
+    QgsMessageLog,
+    QgsFeature,
+    QgsGeometry,
+    QgsTransaction,
+    QgsProject
 )
 
 from qgis.gui import *
 import functools
 
-from TOMs.constants import (
+from .constants import (
     PROPOSAL_STATUS_IN_PREPARATION,
     PROPOSAL_STATUS_ACCEPTED,
     PROPOSAL_STATUS_REJECTED
 )
 
-#from TOMs.TOMsTableNames import TOMsTableNames
+#from TOMsTableNames import TOMsTableNames
 
-#from TOMs.restrictionTypeUtils import RestrictionTypeUtils
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
+#from restrictionTypeUtils import RestrictionTypeUtils
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 
-#from TOMs.core.proposalsManager import *
+#from core.proposalsManager import *
 import time
 
 import uuid
@@ -68,12 +71,12 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
 
         # set up field indexes
-        idxProposalID = proposalsLayer.fieldNameIndex("ProposalID")
-        idxProposalTitle = proposalsLayer.fieldNameIndex("ProposalTitle")
-        idxProposalStatusID = proposalsLayer.fieldNameIndex("ProposalStatusID")
-        idxProposalNotes = proposalsLayer.fieldNameIndex("ProposalNotes")
-        idxProposalCreateDate = proposalsLayer.fieldNameIndex("ProposalCreateDate")
-        idxProposalOpenDate = proposalsLayer.fieldNameIndex("ProposalOpenDate")
+        idxProposalID = proposalsLayer.fields().indexFromName("ProposalID")
+        idxProposalTitle = proposalsLayer.fields().indexFromName("ProposalTitle")
+        idxProposalStatusID = proposalsLayer.fields().indexFromName("ProposalStatusID")
+        idxProposalNotes = proposalsLayer.fields().indexFromName("ProposalNotes")
+        idxProposalCreateDate = proposalsLayer.fields().indexFromName("ProposalCreateDate")
+        idxProposalOpenDate = proposalsLayer.fields().indexFromName("ProposalOpenDate")
 
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposal[idxProposalStatusID]), tag="TOMs panel")
 
@@ -186,7 +189,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         res = proposalsLayer.commitChanges()
         QgsMessageLog.logMessage("In onSaveProposalFormDetails. Saving: Proposals. res: " + str(res), tag="TOMs panel")
 
-        if res <> True:
+        if res != True:
             # save the active layer
 
             reply = QMessageBox.information(None, "Error",
@@ -228,10 +231,10 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex("ActionOnProposalAcceptance")
+        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
 
         # restrictionFound = False
 
@@ -275,10 +278,10 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
         # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
 
         RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fieldNameIndex("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fieldNameIndex("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fieldNameIndex("ActionOnProposalAcceptance")
+        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
 
         # restrictionFound = False
 
@@ -304,10 +307,10 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
         # save changes to all layers
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
-        #idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
+        #idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
 
         status = False
 
@@ -322,7 +325,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
                 currRestrictionLayerName = layer[idxRestrictionsLayerName]
 
-                restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+                restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
                 if restrictionLayer.isEditable():
                     QgsMessageLog.logMessage("In commitProposalChanges. Saving: " + str(restrictionLayer.name()), tag="TOMs panel")
@@ -364,16 +367,16 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
         # save changes to all layers
 
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        if QgsMapLayerRegistry.instance().mapLayersByName("MapGrid"):
-            self.tileLayer = QgsMapLayerRegistry.instance().mapLayersByName("MapGrid")[0]
+        if QgsProject.instance().mapLayersByName("MapGrid"):
+            self.tileLayer = QgsProject.instance().mapLayersByName("MapGrid")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
             return
 
-        idxRestrictionsLayerName = RestrictionsLayers.fieldNameIndex("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fieldNameIndex("id")
+        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
+        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
 
         # create transaction
         newTransaction = QgsTransaction()
@@ -385,7 +388,7 @@ class ProposalTypeUtilsMixin(RestrictionTypeUtilsMixin):
 
             currRestrictionLayerName = layer[idxRestrictionsLayerName]
 
-            restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
+            restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             newTransaction.addLayer(restrictionLayer)
             QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding " + str(restrictionLayer.name()), tag="TOMs panel")

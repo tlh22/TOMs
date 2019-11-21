@@ -24,8 +24,8 @@ __copyright__ = (
 )
 
 import logging
-from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
-from qgis.core import QgsMapLayerRegistry
+from qgis.PyQt.QtCore import QObject, pyqtSlot, pyqtSignal
+# from qgis.core import QgsMapLayerRegistry
 from qgis.gui import QgsMapCanvasLayer
 LOGGER = logging.getLogger('QGIS')
 
@@ -51,9 +51,9 @@ class QgisInterface(QObject):
         # noinspection PyArgumentList
         QgsMapLayerRegistry.instance().layersAdded.connect(self.addLayers)
         # noinspection PyArgumentList
-        QgsMapLayerRegistry.instance().layerWasAdded.connect(self.addLayer)
+        QgsProject.instance().layerWasAdded.connect(self.addLayer)
         # noinspection PyArgumentList
-        QgsMapLayerRegistry.instance().removeAll.connect(self.removeAllLayers)
+        QgsProject.instance().removeAll.connect(self.removeAllLayers)
 
         # For processing module
         self.destCrs = None
@@ -102,7 +102,7 @@ class QgisInterface(QObject):
     def newProject(self):
         """Create new project."""
         # noinspection PyArgumentList
-        QgsMapLayerRegistry.instance().removeAllMapLayers()
+        QgsProject.instance().removeAllMapLayers()
 
     # ---------------- API Mock for QgsInterface follows -------------------
 
@@ -150,7 +150,7 @@ class QgisInterface(QObject):
     def activeLayer(self):
         """Get pointer to the active layer (layer selected in the legend)."""
         # noinspection PyArgumentList
-        layers = QgsMapLayerRegistry.instance().mapLayers()
+        layers = QgsProject.instance().mapLayers()
         for item in layers:
             return layers[item]
 

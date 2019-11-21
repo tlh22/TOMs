@@ -20,19 +20,49 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+    QAction,
+    QDialogButtonBox,
+    QLabel,
+    QDockWidget
+)
+
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtCore import (
+    QObject, QTimer, pyqtSignal,
+    QTranslator,
+    QSettings,
+    QCoreApplication,
+    qVersion
+)
+
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsExpression,
+    QgsFeatureRequest,
+    # QgsMapLayerRegistry,
+    QgsMessageLog, QgsFeature, QgsGeometry,
+    QgsTransaction, QgsTransactionGroup,
+    QgsProject,
+    QgsApplication
+)
+
+#from qgis.core import *
 from qgis.gui import *
 
 # Initialize Qt resources from file resources.py
-import resources
+from .resources import *
 
 # Import the code for the dialog
-from TOMs.core.proposalsManager import TOMsProposalsManager
+from .core.proposalsManager import TOMsProposalsManager
 
 from .expressions import registerFunctions, unregisterFunctions
-#from TOMs.test5_module_dialog import Test5ClassDialog
+#from test5_module_dialog import Test5ClassDialog
 
 from .proposals_panel import proposalsPanel
 from .search_bar import searchBar
@@ -91,7 +121,7 @@ class TOMs:
             logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
             self.filename = os.path.join(logFilePath, logfile)
             QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
-            QgsMessageLog.instance().messageReceived.connect(self.write_log_message)
+            QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)
 
 
         QgsMessageLog.logMessage("Finished init", tag="TOMs panel")
@@ -100,7 +130,7 @@ class TOMs:
 
 
     def write_log_message(self, message, tag, level):
-        filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
+        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
         with open(self.filename, 'a') as logfile:
             logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 
@@ -202,6 +232,8 @@ class TOMs:
             self.iface.removeToolBarIcon(action)
         '''
 
+        # Check whether or not there are any current map tools
+
         # remove the toolbar
         QgsMessageLog.logMessage("Clearing toolbar ... ", tag="TOMs panel")
         self.TOMsToolbar.clear()
@@ -266,8 +298,8 @@ class TOMs:
         digitizeToolBar = self.iface.digitizeToolBar()
         digitizeToolBar.setVisible( True )
 
-        advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
-        advancedDigitizeToolBar.setVisible( True )
+        # advancedDigitizeToolBar = self.iface.advancedDigitizeToolBar()
+        # advancedDigitizeToolBar.setVisible( True )
 
         # Panels not required are Browser, Layer Order
 		

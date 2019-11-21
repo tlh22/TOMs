@@ -23,14 +23,16 @@
 
 import os
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import pyqtSignal
-
+from PyQt5 import QtGui, uic
+from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtWidgets import (
+    QDockWidget
+)
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ProposalPanel_dockwidget_base.ui'))
 
 
-class ProposalPanelDockWidget(QtGui.QDockWidget, FORM_CLASS):
+class ProposalPanelDockWidget(QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
 

@@ -23,11 +23,15 @@ register=False in order to delay registring of functions before we load the plug
 
 import qgis
 
-from qgis.core import *
+#from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
+from qgis.core import (
+    QgsMessageLog,
+    QgsExpression
+)
 import math
-from generateGeometryUtils import generateGeometryUtils
+from .generateGeometryUtils import generateGeometryUtils
 import sys, traceback
 
 
@@ -241,7 +245,7 @@ def getLoadingRestrictionLabelText(feature, parent):
 
         """QgsMessageLog.logMessage(
         "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
-        tag="TOMs panel")"""
+        tag="TOMs panel")
 
     if loadingText:
         #labelText = "No Loading: " + loadingText

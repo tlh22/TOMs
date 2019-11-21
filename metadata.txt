@@ -8,7 +8,7 @@
 
 [general]
 name=TOMs
-qgisMinimumVersion=2.18
+qgisMinimumVersion=3.0
 description=A plugin is used to manage and display parking restrictions
 version=0.1
 author=Tim Hancock for MHTC Ltd

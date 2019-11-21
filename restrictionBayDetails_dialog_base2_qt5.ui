@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>600</height>
+    <width>636</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>750</width>
-    <height>600</height>
+    <height>550</height>
    </size>
   </property>
   <property name="font">
@@ -228,6 +228,23 @@
            </property>
           </widget>
          </item>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="ParkingTariffArea">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="BaysWordingID">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
          <item row="5" column="0">
           <widget class="QLabel" name="lbl_PaymentType_2">
            <property name="minimumSize">
@@ -246,10 +263,41 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QComboBox" name="BaysWordingID">
-           <property name="currentIndex">
-            <number>-1</number>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>PTA:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="lbl_OpenDate">
+           <property name="text">
+            <string>Effective Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QDateEdit" name="OpenDate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lbl_CPZ">
+           <property name="text">
+            <string>CPZ</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="CPZ">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -260,20 +308,6 @@
          <string>Geometry</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Survey Date:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="NrBays">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_5">
            <property name="font">
@@ -286,10 +320,38 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="NrBays">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Survey Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1" colspan="3">
+          <widget class="QDateTimeEdit" name="Bays_DateTime">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Surveyor:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1" colspan="2">
+          <widget class="QLineEdit" name="Surveyor">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -302,44 +364,6 @@
            </property>
            <property name="readOnly">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1" colspan="2">
-          <widget class="QLineEdit" name="Surveyor">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1" colspan="3">
-          <widget class="QDateTimeEdit" name="Bays_DateTime">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="4">
-          <widget class="QLineEdit" name="RoadName"/>
-         </item>
-         <item row="2" column="1" colspan="4">
-          <widget class="QLineEdit" name="USRN"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lbl_USRN">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>USRN:</string>
            </property>
           </widget>
          </item>
@@ -361,6 +385,30 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="1" colspan="4">
+          <widget class="QLineEdit" name="RoadName"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lbl_USRN">
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>USRN:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" colspan="4">
+          <widget class="QLineEdit" name="USRN"/>
+         </item>
          <item row="3" column="0">
           <widget class="QLabel" name="lbl_GeometryType">
            <property name="minimumSize">
@@ -375,11 +423,21 @@
             </font>
            </property>
            <property name="text">
-            <string>Drawn Geometry:</string>
+            <string>Geometry Type</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="3" column="1" colspan="4">
+          <widget class="QComboBox" name="GeomShapeID">
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
           <widget class="QLabel" name="lbl_Orientation">
            <property name="minimumSize">
             <size>
@@ -397,42 +455,17 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="2">
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="BayOrientation"/>
+         </item>
+         <item row="4" column="2">
           <widget class="QToolButton" name="toolButton">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="BayOrientation"/>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="lbl_NrBays">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Number of Bays:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="4">
-          <widget class="QLineEdit" name="AzimuthToRoadCentreLine">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
+         <item row="4" column="3">
           <widget class="QLabel" name="lbl_AzToRoadCL">
            <property name="minimumSize">
             <size>
@@ -453,17 +486,39 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="5">
+         <item row="4" column="4">
+          <widget class="QLineEdit" name="AzimuthToRoadCentreLine">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="5">
           <widget class="QToolButton" name="toolButton_2">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="1" colspan="2">
-          <widget class="QLineEdit" name="GeometryID_171121"/>
+         <item row="5" column="0">
+          <widget class="QLabel" name="lbl_NrBays">
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Number of Bays:</string>
+           </property>
+          </widget>
          </item>
-         <item row="10" column="0">
+         <item row="9" column="0">
           <widget class="QLabel" name="lbl_RoadName_2">
            <property name="minimumSize">
             <size>
@@ -477,29 +532,75 @@
             </font>
            </property>
            <property name="text">
-            <string>OrigGeometryID:</string>
+            <string>RestrictionID</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1" colspan="2">
-          <widget class="QComboBox" name="GeomShapeID">
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-           <property name="currentIndex">
-            <number>-1</number>
-           </property>
-          </widget>
+         <item row="9" column="1" colspan="2">
+          <widget class="QLineEdit" name="RestrictionID"/>
          </item>
-         <item row="3" column="3">
-          <widget class="QLabel" name="label_7">
+        </layout>
+       </widget>
+       <widget class="QWidget" name="Photos_01">
+        <attribute name="title">
+         <string>Photo1</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Photo_Widget_01">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>640</width>
+             <height>480</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
            <property name="text">
-            <string>Original Geometry:</string>
+            <string>Photo not found</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="4">
-          <widget class="QComboBox" name="OriginalGeomShapeID"/>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="Photos_2">
+        <attribute name="title">
+         <string>Photo2</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Photo_Widget_02">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>640</width>
+             <height>480</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Sans Serif</family>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Photo not found</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -576,153 +677,10 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="Photos_01">
-        <attribute name="title">
-         <string>Photo1</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Photo_Widget_01">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>640</width>
-             <height>480</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Photo not found</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="Photos_2">
-        <attribute name="title">
-         <string>Photo2</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Photo_Widget_02">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>640</width>
-             <height>480</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Sans Serif</family>
-            </font>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Photo not found</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab">
-        <attribute name="title">
-         <string>Checking</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="13" column="0" colspan="3">
-          <widget class="QCheckBox" name="MHTC_CheckFieldVisitRequired">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Field Visit Required</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="0">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Notes:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Date Checked:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Checked By: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>Issue identified:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" colspan="2">
-          <widget class="QComboBox" name="MHTC_PersonChecking"/>
-         </item>
-         <item row="6" column="1" colspan="2">
-          <widget class="QgsDateTimeEdit" name="MHTC_CheckDate"/>
-         </item>
-         <item row="10" column="1" colspan="2">
-          <widget class="QComboBox" name="MHTC_CheckIssueTypeID"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="MHTC_Checked">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Checked</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="1" colspan="2">
-          <widget class="QTextEdit" name="MHTC_CheckNotes"/>
-         </item>
-         <item row="14" column="0">
-          <widget class="QCheckBox" name="MHTC_CheckStatus">
-           <property name="text">
-            <string>Action Completed</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
       </widget>
      </item>
      <item row="1" column="0">
       <widget class="QDialogButtonBox" name="button_box">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
        <property name="standardButtons">
         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
@@ -732,13 +690,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsDateTimeEdit</class>
-   <extends>QDateTimeEdit</extends>
-   <header>qgsdatetimeedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -748,12 +699,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>465</y>
+     <x>317</x>
+     <y>481</y>
     </hint>
     <hint type="destinationlabel">
-     <x>249</x>
-     <y>239</y>
+     <x>317</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>
@@ -764,12 +715,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>465</y>
+     <x>317</x>
+     <y>481</y>
     </hint>
     <hint type="destinationlabel">
-     <x>249</x>
-     <y>239</y>
+     <x>317</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>

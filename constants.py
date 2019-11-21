@@ -11,12 +11,13 @@
 Constants for TOMs. Taken from Eric Westra ... and amended as appropriate
 '''
 
-from PyQt4.QtGui import (
+from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
 
 from qgis.core import (
-    QgsMapLayerRegistry, QgsMessageLog
+    QgsMessageLog,
+    QgsProject
 )
 
 
