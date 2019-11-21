@@ -1027,7 +1027,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             if not geom_tmp.insertVertex(vid, QgsPoint(layer_point)):
                 print ("append vertex failed!")
                 return
-            geom.setGeometry(geom_tmp)
+            geom.set(geom_tmp)
         else:
             if not geom.moveVertex(layer_point.x(), layer_point.y(), drag_vertex_id):
                 print ("move vertex failed!")
@@ -1098,7 +1098,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 res = QgsVectorLayer.Success
                 for vertex_id in sorted(vertex_ids, reverse=True):
                     if res != QgsVectorLayer.EmptyGeometry:
-                        res = layer.deleteVertexV2(fid, vertex_id)
+                        res = layer.deleteVertex(fid, vertex_id)
                     if res != QgsVectorLayer.EmptyGeometry and res != QgsVectorLayer.Success:
                         print ("failed to delete vertex!", layer.name(), fid, vertex_id, vertex_ids)
                         success = False

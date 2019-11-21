@@ -422,7 +422,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
         self.button_box.accepted.disconnect()
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.proposalDialog, self.proposalTransaction))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
         self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)

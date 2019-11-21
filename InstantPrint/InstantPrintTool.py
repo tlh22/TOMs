@@ -445,6 +445,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.proposalPrintTypeDetails = "Print Date"
         self.openDateForPrintProposal = self.proposalsManager.date()
 
+        # TODO: Move to plugin wide variable for datasource
+        if QgsProject.instance().mapLayersByName("Proposals"):
+            self.Proposals = \
+                QgsProject.instance().mapLayersByName("Proposals")[0]
+        else:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR",
+                                    ("Table Proposals is not present"))
+
         if currPrintLayout.atlas():
 
             if self.proposalsManager.currentProposal() == 0:
@@ -487,13 +495,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
-
-        if QgsProject.instance().mapLayersByName("Proposals"):
-            self.Proposals = \
-                QgsProject.instance().mapLayersByName("Proposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                    ("Table Proposals is not present"))
 
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
 
