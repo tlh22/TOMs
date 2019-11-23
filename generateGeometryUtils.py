@@ -515,7 +515,41 @@ class generateGeometryUtils:
             # now convert the geometry to a polygon
             # https://gis.stackexchange.com/questions/64247/where-to-find-the-variables-of-qgspolygon-and-qgspolyline (see answer 2)
 
-            if restGeomType != 22:
+            ptsList = []
+
+            if newGeometry.wkbType() == QgsWkbTypes.MultiLineString:
+
+                linesList = newGeometry.asMultiPolyline()
+                # QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+                #    tag="TOMs panel")
+
+                for verticesList in linesList:
+                    for v in verticesList:
+                        ptsList.append(v)
+                # QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - have points ",
+                #    tag="TOMs panel")
+                # outputGeometry = QgsGeometry.fromMultiPolygonXY([ptsList])
+                outputGeometry = QgsGeometry.fromPolygonXY([ptsList])
+
+            else:
+
+                vertices = newGeometry.asPolyline()
+                # QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - nrPts:  " + str(len(vertices)),
+                #    tag="TOMs panel")
+
+                for v in vertices:
+                    ptsList.append(v)
+                # QgsMessageLog.logMessage(
+                #    "In getRestrictionGeometry - have points ",
+                #    tag="TOMs panel")
+                outputGeometry = QgsGeometry.fromPolygonXY([ptsList])
+
+                # outputGeometry = newGeometry
+
+            """if restGeomType != 22:
 
                 ptsList = []
 
@@ -529,7 +563,7 @@ class generateGeometryUtils:
 
         if restGeomType in [2, 22]:  # 2 = half on/half off
 
-            # Need to rethink this. Currently trying to add two distinct sets of lines together. May need to combine polygons to form multi-polygon ...
+            # TODO: Need to rethink this. Currently trying to add two distinct sets of lines together. May need to combine polygons to form multi-polygon ...
 
             outputGeometry1 = outputGeometry
             # Now generate a line along the kerb. NB: May want to consider the situation of Central Bays.
@@ -570,7 +604,7 @@ class generateGeometryUtils:
 
             else:
 
-                outputGeometry = newGeometry
+                outputGeometry = newGeometry"""
 
         if nrBays > 1:
             # divide parallelLine by the number of bays
