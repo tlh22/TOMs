@@ -112,7 +112,7 @@ class searchBar():
         # set up string list for completer
 
         QgsMessageLog.logMessage("In setupCompleter:", tag="TOMs panel")
-
+        lookupStringSet = set()
         # https://gis.stackexchange.com/questions/155805/qstringlist-error-in-plugin-of-qgis-2-10
 
         self.GazetteerLayer = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
@@ -126,14 +126,17 @@ class searchBar():
 
             if nameString:
                 QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel")
-                self.gazetteerStringList.append((nameString))
+                lookupStringSet.add(nameString)
+                # self.gazetteerStringList.append((nameString))
 
         completer = QCompleter()
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
         self.textbox.setCompleter(completer)
         model = QStringListModel()
         completer.setModel(model)
         model.setStringList(self.gazetteerStringList)
-        # model.setStringList(my_lst)
+        model.setStringList(sorted(lookupStringSet))
 
     def doGoToItem(self):
 
@@ -157,14 +160,8 @@ class searchBar():
 
         QgsMessageLog.logMessage("In doGoToItem: queryString: " + str(queryString), tag="TOMs panel")
 
-        expr = QgsExpression(queryString)
+        it = self.GazetteerLayer.selectByExpression(queryString, QgsVectorLayer.SetSelection)
 
-        it = self.GazetteerLayer.getFeatures(QgsFeatureRequest(expr))
-        ids = [i.id() for i in it]  # select only the features for which the expression is true
-        self.GazetteerLayer.selectByIds(ids)
-
-        # And zoom to the location
-        #canvas = self.iface.mapCanvas()
         self.canvas.zoomToSelected(self.GazetteerLayer)
 
         """box = layer.boundingBoxOfSelected()

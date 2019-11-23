@@ -527,15 +527,6 @@ class generateGeometryUtils:
             #    tag="TOMs panel")
             outputGeometry = QgsGeometry.fromPolygonXY([ptsList])
 
-                for v in vertices:
-                    ptsList.append(v)
-                #QgsMessageLog.logMessage(
-                #    "In getRestrictionGeometry - have points ",
-                #    tag="TOMs panel")
-                outputGeometry = QgsGeometry.fromPolygon([ptsList])
-
-                #outputGeometry = newGeometry
-
         if restGeomType in [2, 22]:  # 2 = half on/half off
 
             # Need to rethink this. Currently trying to add two distinct sets of lines together. May need to combine polygons to form multi-polygon ...
