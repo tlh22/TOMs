@@ -45,14 +45,14 @@ class searchBar():
         self.gazetteerStringList = []
 
         # Create & add a textbox
-        self.textbox = QLineEdit(self.iface.mainWindow())
+        self.searchTextbox = QLineEdit(self.iface.mainWindow())
         # Set width
-        self.textbox.setFixedWidth(200)
+        self.searchTextbox.setFixedWidth(250)
         # Add textbox to toolbar
-        self.txtEntry = self.TOMsSearchBar.addWidget(self.textbox)
+        self.txtEntry = self.TOMsSearchBar.addWidget(self.searchTextbox)
         #self.txtEntry.setToolTip(self.tr(u'Enter Street Name'))
 
-        self.textbox.textChanged.connect(self.doLookupItem)
+        self.searchTextbox.textChanged.connect(self.doLookupItem)
 
         self.actionGoToItem = QAction(QIcon(":/plugins/TOMs/resources/magnifyingGlass.png"),
                                             QCoreApplication.translate("MyPlugin", "Start TOMs"), self.iface.mainWindow())
@@ -78,14 +78,15 @@ class searchBar():
 
         self.actionGoToItem.setEnabled(True)
         self.toolButton.setEnabled(True)
-        self.textbox.textChanged.connect(self.doLookupItem)
+        self.searchTextbox.textChanged.connect(self.doLookupItem)
 
     def disableSearchBar(self):
         QgsMessageLog.logMessage("In disableSearchBar", tag="TOMs panel")
 
+        self.initialPass = True
         self.actionGoToItem.setEnabled(False)
         self.toolButton.setEnabled(False)
-        self.textbox.textChanged.disconnect(self.doLookupItem)
+        self.searchTextbox.textChanged.disconnect(self.doLookupItem)
 
     def doLookupItem(self):
 
@@ -99,7 +100,7 @@ class searchBar():
             self.setupCompleter()
             self.initialPass = False
 
-        searchText = self.textbox.text()
+        searchText = self.searchTextbox.text()
         QgsMessageLog.logMessage("In doLookupItem: searchText " + str(searchText), tag="TOMs panel")
 
         #search_in = txt
@@ -112,7 +113,7 @@ class searchBar():
         # set up string list for completer
 
         QgsMessageLog.logMessage("In setupCompleter:", tag="TOMs panel")
-
+        lookupStringSet = set()
         # https://gis.stackexchange.com/questions/155805/qstringlist-error-in-plugin-of-qgis-2-10
 
         self.GazetteerLayer = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
@@ -126,20 +127,23 @@ class searchBar():
 
             if nameString:
                 QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel")
-                self.gazetteerStringList.append((nameString))
+                lookupStringSet.add(nameString)
+                # self.gazetteerStringList.append((nameString))
 
         completer = QCompleter()
-        self.textbox.setCompleter(completer)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        self.searchTextbox.setCompleter(completer)
         model = QStringListModel()
         completer.setModel(model)
         model.setStringList(self.gazetteerStringList)
-        # model.setStringList(my_lst)
+        model.setStringList(sorted(lookupStringSet))
 
     def doGoToItem(self):
 
         QgsMessageLog.logMessage("In doGoToItem:", tag="TOMs panel")
 
-        searchText = self.textbox.text()
+        searchText = self.searchTextbox.text()
         QgsMessageLog.logMessage("In doGoToItem: searchText " + str(searchText), tag="TOMs panel")
 
         # Split out the components of the text
@@ -157,14 +161,8 @@ class searchBar():
 
         QgsMessageLog.logMessage("In doGoToItem: queryString: " + str(queryString), tag="TOMs panel")
 
-        expr = QgsExpression(queryString)
+        it = self.GazetteerLayer.selectByExpression(queryString, QgsVectorLayer.SetSelection)
 
-        it = self.GazetteerLayer.getFeatures(QgsFeatureRequest(expr))
-        ids = [i.id() for i in it]  # select only the features for which the expression is true
-        self.GazetteerLayer.selectByIds(ids)
-
-        # And zoom to the location
-        #canvas = self.iface.mapCanvas()
         self.canvas.zoomToSelected(self.GazetteerLayer)
 
         """box = layer.boundingBoxOfSelected()
@@ -175,6 +173,7 @@ class searchBar():
         self.tool.setEnabled(False)
         self.tool = None
         self.iface.TOMsSearchBar().removeAction(self.printButtonAction)
+        self.iface.TOMsSearchBar().removeAction(self.actionGoToItem)
 
     def __enablePrintTool(self, active):
         self.tool.setEnabled(active)
