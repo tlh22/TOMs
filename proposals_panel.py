@@ -238,6 +238,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         else:
             self.proposalsManager.TOMsActivated.emit()
 
+            #self.TOMsProject = QgsProject.instance()
+            #self.TOMsProject.cleared.connect(self.closeTOMsTools)  # TODO: More work required on this
 
     def setCloseTOMsFlag(self):
         self.closeTOMs = True
