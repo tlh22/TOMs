@@ -30,8 +30,8 @@ from qgis.core import (
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
 
 from ..constants import (
-    ACTION_CLOSE_RESTRICTION,
-    ACTION_OPEN_RESTRICTION
+    ProposalStatus,
+    RestrictionAction
 )
 
 class TOMsProposalsManager(RestrictionTypeUtilsMixin, QObject):
@@ -191,7 +191,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, QObject):
             if currProposalID > 0:   # need to consider a proposal
                 # get list of restrictions to open within proposal
 
-                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_CLOSE_RESTRICTION())   # Close is 2  ... need to get better looping ...
+                restrictionsToClose = self.getRestrictionsInProposal(currLayerID, currProposalID, RestrictionAction.OPEN)   # Close is 2  ... need to get better looping ...
                 QgsMessageLog.logMessage("In updateMapCanvas. restrictionsToClose: " + str(restrictionsToClose), tag="TOMs panel")
 
                 # **** Assumption that there are some details in proposal ??
@@ -199,7 +199,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, QObject):
                     layerFilterString = layerFilterString + ' AND "RestrictionID" NOT IN ( ' + restrictionsToClose + " ))"
 
                 # get list of restrictions to close within proposal
-                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, ACTION_OPEN_RESTRICTION())   # Open is 1
+                restrictionsToOpen = self.getRestrictionsInProposal(currLayerID, currProposalID, RestrictionAction.OPEN)   # Open is 1
 
                 if len(restrictionsToOpen) > 0:
                     layerFilterString = ' "RestrictionID"  IN ( ' + restrictionsToOpen + " ) OR ( " + layerFilterString + ")"

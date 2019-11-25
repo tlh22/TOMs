@@ -58,10 +58,10 @@ from .search_bar import searchBar
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
 
 from .constants import (
-    PROPOSAL_STATUS_IN_PREPARATION,
-    PROPOSAL_STATUS_ACCEPTED,
-    PROPOSAL_STATUS_REJECTED
+    ProposalStatus,
+    RestrictionAction
 )
+
 class proposalsPanel(RestrictionTypeUtilsMixin):
     
     def __init__(self, iface, TOMsToolBar, proposalsManager):
@@ -288,7 +288,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-        queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
+        queryString = "\"ProposalStatusID\" = " + str(ProposalStatus.IN_PREPARATION)
 
         QgsMessageLog.logMessage("In createProposalcb: queryString: " + str(queryString), tag="TOMs panel")
 
@@ -335,7 +335,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
         self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
-        self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
+        self.newProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
         self.newProposal.setGeometry(QgsGeometry())
 
         self.Proposals.addFeature(self.newProposal)  # TH (added for v3)

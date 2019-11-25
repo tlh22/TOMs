@@ -52,22 +52,12 @@ from qgis.core import (
     QgsApplication
 )
 
-#from qgis.core import *
-from qgis.gui import *
-
-# Initialize Qt resources from file resources.py
-from .resources import *
-
 # Import the code for the dialog
 from .core.proposalsManager import TOMsProposalsManager
 
 from .expressions import registerFunctions, unregisterFunctions
-#from test5_module_dialog import Test5ClassDialog
 
 from .proposals_panel import proposalsPanel
-from .search_bar import searchBar
-
-from .manage_restriction_details import manageRestrictionDetails
 
 import os.path
 import time

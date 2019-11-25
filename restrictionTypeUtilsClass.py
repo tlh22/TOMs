@@ -49,11 +49,8 @@ import time
 import os
 
 from .constants import (
-    ACTION_CLOSE_RESTRICTION,
-    ACTION_OPEN_RESTRICTION,
-    PROPOSAL_STATUS_IN_PREPARATION,
-    PROPOSAL_STATUS_ACCEPTED,
-    PROPOSAL_STATUS_REJECTED
+    ProposalStatus,
+    RestrictionAction
 )
 
 from .generateGeometryUtils import generateGeometryUtils
@@ -337,6 +334,7 @@ class setupTableNames(QObject):
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
         self.TOMsLayerList = ["Proposals",
                          "ProposalStatusTypes",
+                         "ActionOnProposalAcceptanceTypes",
                          "RestrictionLayers",
                          "RestrictionsInProposals",
                          "Bays",
@@ -348,6 +346,7 @@ class setupTableNames(QObject):
                          "CPZs",
                          "ParkingTariffAreas",
                          "StreetGazetteerRecords",
+                         "RoadCentreLine",
                          "RoadCasement",
                          "TilesInAcceptedProposals"
                          ]
@@ -733,7 +732,7 @@ class RestrictionTypeUtilsMixin():
                         tag="TOMs panel")
 
                     status = self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
-                                             currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1
+                                             currProposalID, RestrictionAction.OPEN)  # Open = 1
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Transaction Status 1: " + str(
@@ -766,7 +765,7 @@ class RestrictionTypeUtilsMixin():
                         tag="TOMs panel")
 
                     status = self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
-                                             currProposalID, ACTION_CLOSE_RESTRICTION())  # Open = 1; Close = 2
+                                             currProposalID, RestrictionAction.OPEN)  # Open = 1; Close = 2
 
                     newRestriction = QgsFeature(currRestriction)
 
@@ -790,7 +789,7 @@ class RestrictionTypeUtilsMixin():
                                              tag="TOMs panel")
 
                     status = self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
-                                             currProposalID, ACTION_OPEN_RESTRICTION())  # Open = 1; Close = 2
+                                             currProposalID, RestrictionAction.OPEN)  # Open = 1; Close = 2
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Opening clone. ID: " + str(
@@ -981,7 +980,7 @@ class RestrictionTypeUtilsMixin():
                 QgsMessageLog.logMessage(
                     "In updateRestriction. Action on: " + currRestrictionID + " Action: " + str(currAction),
                     tag="TOMs panel")
-                if currAction == ACTION_OPEN_RESTRICTION():  # Open
+                if currAction == RestrictionAction.OPEN:  # Open
                     statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                               currRestrictionLayer.fields().indexFromName("OpenDate"),
                                                               currProposalOpenDate)
@@ -1199,7 +1198,7 @@ class RestrictionTypeUtilsMixin():
         newProposal = False
         proposalAcceptedRejected = False
 
-        if currProposal[idxProposalStatusID] == PROPOSAL_STATUS_ACCEPTED():  # 2 = accepted
+        if currProposal[idxProposalStatusID] == ProposalStatus.ACCEPTED:  # 2 = accepted
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
@@ -1236,7 +1235,7 @@ class RestrictionTypeUtilsMixin():
             else:
                 proposalsDialog.reject()
 
-        elif currProposal[idxProposalStatusID] == PROPOSAL_STATUS_REJECTED():  # 3 = rejected
+        elif currProposal[idxProposalStatusID] == ProposalStatus.REJECTED:  # 3 = rejected
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
@@ -2008,12 +2007,12 @@ class RestrictionTypeUtilsMixin():
             self.addRestrictionToProposal(currRestriction[idxRestrictionID],
                                           self.getRestrictionLayerTableID(currRestrictionLayer),
                                           self.proposalsManager.currentProposal(),
-                                          ACTION_CLOSE_RESTRICTION())  # close the original feature
+                                          RestrictionAction.OPEN)  # close the original feature
             QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature closed.", tag="TOMs panel")
 
             self.addRestrictionToProposal(newFeature[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer),
                                           self.proposalsManager.currentProposal(),
-                                          ACTION_OPEN_RESTRICTION())  # open the new one
+                                          RestrictionAction.OPEN)  # open the new one
             QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature opened.", tag="TOMs panel")
 
 

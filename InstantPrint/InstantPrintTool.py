@@ -35,9 +35,8 @@ from .ui.accepted_Proposals_dialog import acceptedProposalsDialog
 from .ui.printList_dialog import printListDialog
 
 from ..constants import (
-    PROPOSAL_STATUS_IN_PREPARATION,
-    PROPOSAL_STATUS_ACCEPTED,
-    PROPOSAL_STATUS_REJECTED
+    ProposalStatus,
+    RestrictionAction
 )
 
 class InstantPrintDialog(QDialog):
@@ -499,7 +498,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
 
         # for proposal in proposalsList:
-        queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_ACCEPTED())
+        queryString = "\"ProposalStatusID\" = " + str(ProposalStatus.ACCEPTED)
 
         QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
 
