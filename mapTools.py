@@ -20,13 +20,51 @@
 import math
 import time
 
-from qgis.core import *
-from qgis.gui import *
+#from qgis.core import *
+#from qgis.gui import *
 
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import QMenu, QAction, QDockWidget, QMessageBox
+from qgis.PyQt.QtGui import (
+    QColor,
+QMouseEvent
+)
+from qgis.PyQt.QtCore import (
+    QSettings,
+    QEvent,
+    QPoint,
+    Qt,
+    QRect, QTimer, pyqtSignal, pyqtSlot
+)
+#from qgis.PyQt.QtCore import *
+#from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import QMenu, QAction, QDockWidget, QMessageBox, QToolTip
 
+from qgis.core import (
+    QgsGeometry,
+    QgsGeometryCollection,
+    QgsCurve,
+    QgsCurvePolygon,
+    QgsMessageLog,
+    QgsMultiCurve,
+    QgsPoint,
+    QgsPointXY,
+    QgsPointLocator,
+    QgsVertexId,
+    QgsVectorLayer,
+    QgsRectangle,
+    QgsProject,
+    QgsFeatureRequest,
+    QgsTolerance,
+    QgsSnappingUtils,
+    QgsSnappingConfig,
+    QgsWkbTypes, QgsMapLayer, QgsExpression, QgsExpressionContext, QgsExpressionContextUtils, QgsFeature, QgsTracer
+)
+from qgis.gui import (
+    QgsVertexMarker,
+    QgsMapToolAdvancedDigitizing,
+    QgsRubberBand,
+    QgsMapMouseEvent,
+    QgsMapToolIdentify, QgsMapToolCapture, QgsMapTool
+)
 from .core.proposalsManager import TOMsProposalsManager
 #from restrictionTypeUtils import RestrictionTypeUtils
 from .generateGeometryUtils import generateGeometryUtils
@@ -217,70 +255,79 @@ class MapToolMixin:
 
 class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIdentify):
 
-    # Modified from Erik Westra's book to deal specifically with restrictions
-
     def __init__(self, iface):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
+
         self.iface = iface
+        self.canvas = self.iface.mapCanvas()
 
-        #self.featureContextMenu = FeatureContextMenu(self.iface)
+        self.timerMapTips = QTimer(self.canvas)
+        self.timerMapTips.timeout.connect(self.showMapTip)
 
-        #self.proposalsManager = proposalsManager  ??? how to include ???
-        #self.closestLayer = layer
-        #self.onDisplayRestrictionDetails = onDisplayRestrictionDetails
-        #self.setCursor(Qt.WhatsThisCursor)
-        # self.setCursor(Qt.ArrowCursor)
-
-        ### Should we pick up the change active layer signal here? and deselect from previous layer
-        # Currently, it is possible to select features from more than one layer
+        self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("BayLineTypes")[0]
+        self.SIGN_TYPES = QgsProject.instance().mapLayersByName("SignTypes")[0]
+        self.RESTRICTION_POLYGON_TYPES = QgsProject.instance().mapLayersByName("RestrictionPolygonTypes")[0]
 
     def canvasReleaseEvent(self, event):
         # Return point under cursor
 
-        self.event = event
-
-        closestFeature, closestLayer = self.findNearestFeatureAtC(event.pos())
-
         QgsMessageLog.logMessage(("In Info - canvasReleaseEvent."), tag="TOMs panel")
 
-        # Remove any current selection and add the new ones (if appropriate)
+        self.restrictionList = self.getRestrictionsUnderPoint(self.canvas.mouseLastXY())
+        featureList = self.getFeatureList(self.restrictionList)
+        self.setupFeatureMenu(featureList)
 
-        if closestLayer == None:
+    def canvasMoveEvent(self, event):
 
-            if self.iface.activeLayer():
-                self.iface.activeLayer().removeSelection()
+        QgsMessageLog.logMessage(("In Info - canvasMoveEvent."), tag="TOMs panel")
 
-        else:
+        # https://gis.stackexchange.com/questions/245280/display-raster-value-as-a-tooltip
 
-            QgsMessageLog.logMessage(
-                ("In Info - canvasReleaseEvent. Feature selected from layer: " + closestLayer.name() + " id: " + str(closestFeature.id())),
-                tag="TOMs panel")
+        if self.canvas.underMouse():  # Only if mouse is over the map
+            QToolTip.hideText()
+            self.timerMapTips.start(700)  # time in milliseconds
 
-            if closestLayer != self.iface.activeLayer():
-                if self.iface.activeLayer():
+    def showMapTip(self):
+        self.timerMapTips.stop()
+        if self.canvas.underMouse():
+
+            restrictionList = self.getRestrictionsUnderPoint(self.canvas.mouseLastXY())
+            featureList = self.getFeatureList(restrictionList)
+
+            text = '\n'.join(featureList)
+
+            QToolTip.showText(self.canvas.mapToGlobal(self.canvas.mouseLastXY()), text, self.canvas)
+
+    @pyqtSlot(QAction)
+    def onRestrictionSelectMenuClicked(self, action):
+        QgsMessageLog.logMessage("In onRestrictionSelectMenuClicked. Action: " + action.text(), tag="TOMs panel")
+
+        selectedGeometryID = action.text()[action.text().find('[')+1:action.text().find(']')]
+
+        QgsMessageLog.logMessage("In onRestrictionSelectMenuClicked. geomID: " + selectedGeometryID, tag="TOMs panel")
+
+        self.doSelectFeature(selectedGeometryID)
+
+    def doSelectFeature(self, selectedGeometryID):
+
+        QgsMessageLog.logMessage("In doSelectFeature ... ", tag="TOMs panel")
+
+        for (feature, layerType, layer) in self.restrictionList:
+
+                currGeometryID = str(feature.attribute('GeometryID'))
+                if currGeometryID == selectedGeometryID:
+                    # select the feature ...
                     self.iface.activeLayer().removeSelection()
-                #closestLayer.startEditing()
-                self.iface.setActiveLayer(closestLayer)
-
-            if closestLayer.type() == QgsMapLayer.VectorLayer:
-                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. layer type " + str(closestLayer.type()) ), tag="TOMs panel")
-
-            if closestLayer.geometryType() == QgsWkbTypes.PointGeometry:
-                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. point layer type " ), tag="TOMs panel")
-
-            if closestLayer.geometryType() == QgsWkbTypes.LineGeometry:
-                QgsMessageLog.logMessage(("In Info - canvasReleaseEvent. line layer type " ), tag="TOMs panel")
+                    self.iface.setActiveLayer(layer)
+                    layer.selectByIds([feature.id()])
+                    QgsMessageLog.logMessage(
+                        "In Info - canvasReleaseEvent. Feature selected from layer: " + layer.name() + " id: " + str(
+                            currGeometryID),
+                        tag="TOMs panel")
+                    break
 
 
-            # highlight the feature ...
-            closestLayer.selectByIds([closestFeature.id()])
-
-            # self.iface.openFeatureForm(self.closestLayer, self.closestFeature)
-            # self.onDisplayRestrictionDetails(feature, self.layer)
-
-        pass
-
-    def findNearestFeatureAtC(self, pos):
+    def getRestrictionsUnderPoint(self, pos):
         #  def findFeatureAt(self, pos, excludeFeature=None):
         # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
@@ -294,6 +341,8 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             If no feature is close to the given coordinate, we return None.
         """
         mapPt = self.transformCoordinates(pos)
+        QgsMessageLog.logMessage("In findNearestFeatureAtC:  mapPt ********: " + mapPt.asWkt(),
+                                 tag="TOMs panel")
         #tolerance = self.calcTolerance(pos)
         tolerance = 0.5
         searchRectA = QgsRectangle(mapPt.x() - tolerance,
@@ -303,13 +352,9 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         self.RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
-        #currLayer = self.TOMslayer  # need to loop through the layers and choose closest to click point
-        #iface.setActiveLayer(currLayer)
+        # need to loop through the layers and choose closest to click point
 
-        #shortestDistance = float("inf")
-
-        featureList = []
-        layerList = []
+        restrictionList = []
 
         context = QgsExpressionContext()
 
@@ -349,113 +394,76 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                                              tag="TOMs panel")
                     if shapeGeom.intersects(searchRectA):
                         # Add any features that are found should be added to a list
-                        featureList.append((f,layerDetails.attribute("id"), self.currLayer))
+                        restrictionList.append((f,layerDetails.attribute("id"), self.currLayer))
                     # layerList.append(self.currLayer)
                 else:
-                    featureList.append((f, layerDetails.attribute("id"), self.currLayer))
+                    restrictionList.append((f, layerDetails.attribute("id"), self.currLayer))
 
-        QgsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(featureList)), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(restrictionList)), tag="TOMs panel")
 
-        if len(featureList) == 0:
-            return None, None
-        elif len(featureList) == 1:
-            return featureList[0][0], featureList[0][2]
-        else:
-            # set up a context menu
-            QgsMessageLog.logMessage("In findNearestFeatureAt: multiple features: " + str(len(featureList)), tag="TOMs panel")
+        return restrictionList
 
-            feature, layer = self.getFeatureDetails(featureList)
+    def getFeatureList(self, restrictionList):
+        # Creates a formatted list of the restrictions
+        QgsMessageLog.logMessage("In getFeatureList: nrFeatures: " + str(len(restrictionList)), tag="TOMs panel")
+        featureList = []
 
-            if feature is None:
-                return None, None
+        for (feature, layerType, layer) in restrictionList:
 
-            QgsMessageLog.logMessage("In findNearestFeatureAt: feature: " + feature.attribute('GeometryID'), tag="TOMs panel")
+                currGeometryID = str(feature.attribute('GeometryID'))
+                if layerType == RestrictionLayers.BAYS:
+                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+100)), GeometryID=currGeometryID)
+                    featureList.append(title)
+                elif layerType == RestrictionLayers.LINES:
+                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+200)), GeometryID=currGeometryID)
+                    featureList.append(title)
+                elif layerType == RestrictionLayers.RESTRICTION_POLYGONS:
+                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(
+                        self.getLookupDescription(self.RESTRICTION_POLYGON_TYPES,
+                                                  feature.attribute('RestrictionTypeID'))),
+                                                                            GeometryID=currGeometryID)
+                    featureList.append(title)
+                elif layerType == RestrictionLayers.SIGNS:
+                    # Need to get each of the signs ...
+                    for i in range (1,10):
+                        field_index = layer.fields().indexFromName("SignType_{counter}".format(counter=i))
+                        if field_index == -1:
+                            break
+                        if feature[field_index]:
+                            title = "Sign: {RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(
+                                self.getLookupDescription(self.SIGN_TYPES, feature[field_index])),
+                                                                                    GeometryID=currGeometryID)
+                            featureList.append(title)
 
-            return feature, layer
-            # return self.getFeatureDetails(featureList, layerList)
+        return featureList
 
-        pass
-
-    def getFeatureDetails(self, featureList):
+    def setupFeatureMenu(self, featureTitleList):
         QgsMessageLog.logMessage("In getFeatureDetails", tag="TOMs panel")
 
-        self.featureList = featureList
+        # self.featureList = restrictionList
         # self.layerList = layerList
 
         # Creates the context menu and returns the selected feature and layer
-        QgsMessageLog.logMessage("In getFeatureDetails: nrFeatures: " + str(len(featureList)), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getFeatureDetails: nrFeatures: " + str(len(featureTitleList)), tag="TOMs panel")
 
         #actions = dict()
         self.actions = []
-        self.menu = QMenu(self.iface.mapCanvas())
-        # self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("RestrictionTypes")[0]
-        self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("BayLineTypes")[0]
-        self.SIGN_TYPES = QgsProject.instance().mapLayersByName("SignTypes")[0]
+        self.restrictionSelectMenu = QMenu(self.iface.mapCanvas())
 
         # for _, feature in filtered_features.iteritems():
-        for items in featureList:
+        for (title) in featureTitleList:
 
-            feature = items[0]
-            layerType = items[1]
-            try:
-                title = str(feature.attribute('GeometryID'))
-                if layerType == RestrictionLayers.BAYS:
-                    title = title + "[" + str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+100)) + "]"
-                elif layerType == RestrictionLayers.LINES:
-                    title = title + "[" + str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+200)) + "]"
-                else:
-                    title = title + "[]"
-                QgsMessageLog.logMessage("In featureContextMenu: adding: " + str(title), tag="TOMs panel")
-
-            except TypeError:
-
-                title = " (" + feature.attribute('RestrictionID') + ")"
-
-            action = QAction(title, self.menu)
-            #self.action.triggered.connect(self.onInitProposalsPanel)
+            QgsMessageLog.logMessage("In featureContextMenu: adding: " + str(title), tag="TOMs panel")
+            action = QAction(title, self.restrictionSelectMenu)
             self.actions.append(action)
 
-            #actions[action] = point
-
-            self.menu.addAction(action)
+            self.restrictionSelectMenu.addAction(action)
+            self.restrictionSelectMenu.triggered.connect(self.onRestrictionSelectMenuClicked)
 
         QgsMessageLog.logMessage("In getFeatureDetails: showing menu?", tag="TOMs panel")
 
-        # QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
-
-        clicked_action = self.menu.exec_(self.iface.mapCanvas().mapToGlobal(self.event.pos()))
+        clicked_action = self.restrictionSelectMenu.exec_(self.canvas.mapToGlobal(self.canvas.mouseLastXY()))
         QgsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action)), tag="TOMs panel")
-
-        if clicked_action is not None:
-
-            QgsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action.text())),
-                                     tag="TOMs panel")
-            #return self.actions[clicked_action]
-            idxList = self.getIdxFromGeometryID (clicked_action.text(), featureList)
-
-            QgsMessageLog.logMessage("In getFeatureDetails: idx = " + str(idxList), tag="TOMs panel")
-
-            if idxList >= 0:
-                QgsMessageLog.logMessage("In getFeatureDetails: feat = " + str(featureList[idxList][0].attribute('GeometryID')), tag="TOMs panel")
-                return featureList[idxList][0], featureList[idxList][2]
-
-        QgsMessageLog.logMessage(("In getFeatureDetails. No action found."), tag="TOMs panel")
-
-        return None, None
-
-    def getIdxFromGeometryID(self, selectedGeometryID, featureList):
-        #
-        QgsMessageLog.logMessage("In getIdxFromGeometryID", tag="TOMs panel")
-
-        idx = -1
-        for items in featureList:
-            idx = idx + 1
-            if items[0].attribute("GeometryID") == selectedGeometryID.partition('[')[0]:
-                return idx
-
-        pass
-
-        return idx
 
 #############################################################################
 
