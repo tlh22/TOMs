@@ -17,7 +17,7 @@ from qgis.core import *
 from qgis.gui import *
 
 from .InstantPrintTool import InstantPrintTool
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
 
 class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
 
@@ -26,10 +26,11 @@ class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
         self.iface = iface
         InstantPrintTool.__init__(self, iface)
         self.proposalsManager = proposalsManager
+        self.tableNames = self.proposalsManager.tableNames
 
-        self.proposalsManager.TOMsActivated.connect(self.setupTables)
+        #self.proposalsManager.TOMsActivated.connect(self.setupTables)
 
-    def setupTables(self):
-        self.tableNames = setupTableNames(self.iface)
-        self.tableNames.getLayers()
+        """def setupTables(self):
+        self.tableNames = TOMSLayers(self.iface)
+        self.tableNames.getLayers()"""
 

@@ -56,7 +56,7 @@ from qgis.core import (
 from .core.proposalsManager import TOMsProposalsManager
 
 from .expressions import registerFunctions, unregisterFunctions
-
+from .restrictionTypeUtilsClass import TOMSLayers
 from .proposals_panel import proposalsPanel
 
 import os.path
@@ -144,7 +144,8 @@ class TOMs:
         QgsMessageLog.logMessage("Registering expression functions ... ", tag="TOMs panel")
         registerFunctions()   # Register the Expression functions that we need
 
-        self.proposalsManager = TOMsProposalsManager(self.iface)
+        #layerNames = TOMSLayers(self.iface)
+        #self.proposalsManager = TOMsProposalsManager(self.iface, layerNames)
 
         #self.editing    = False
         #self.curStartPt = None
@@ -200,7 +201,7 @@ class TOMs:
         #self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
 
         #self.doSearchBar = searchBar(self.iface, self.TOMsToolbar, self.proposalsManager)
-        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar, self.proposalsManager)
+        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar)
 
         pass
 

@@ -55,280 +55,23 @@ from .constants import (
 
 from .generateGeometryUtils import generateGeometryUtils
 #from core.proposalsManager import *
-from .core.proposalsManager import *
+from .core.TOMsProposal import (TOMsProposal)
+from .core.TOMsTransaction import (TOMsTransaction)
 
 from abc import ABCMeta
 
 import uuid
 
-class TOMsTransaction (QObject):
-
-    transactionCompleted = pyqtSignal()
-    """Signal will be emitted, when the transaction is finished - either committed or rollback"""
-
-    def __init__(self, iface, proposalsManager):
-
-        QObject.__init__(self)
-
-        self.iface = iface
-
-        self.proposalsManager = proposalsManager  # included to allow call to updateMapCanvas
-
-        #self.currTransactionGroup = None
-        self.currTransactionGroup = QgsTransactionGroup()
-        self.prepareLayerSet()
-
-        self.errorOccurred = False
-
-    def prepareLayerSet(self):
-
-        # Function to create group of layers to be in Transaction for changing proposal
-
-        self.tableNames = setupTableNames(self.iface)
-        self.tableNames.getLayers()
-
-        QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
-
-        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("RestrictionLayerName")
-
-        self.setTransactionGroup = [self.tableNames.PROPOSALS]
-        self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS)
-        self.setTransactionGroup.append(self.tableNames.MAP_GRID)
-        self.setTransactionGroup.append(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS)
-
-        for layer in self.tableNames.RESTRICTIONLAYERS.getFeatures():
-
-            currRestrictionLayerName = layer[idxRestrictionsLayerName]
-
-            restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
-
-            self.setTransactionGroup.append(restrictionLayer)
-            QgsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + str(restrictionLayer.name()), tag="TOMs panel")
-
-
-    def createTransactionGroup(self):
-
-        QgsMessageLog.logMessage("In TOMsTransaction.createTransactionGroup",
-                                 tag="TOMs panel")
-
-        """if self.currTransactionGroup:
-            QgsMessageLog.logMessage("In createTransactionGroup. Transaction ALREADY exists",
-                                    tag="TOMs panel")
-            return"""
-
-        if self.currTransactionGroup:
-
-            for layer in self.setTransactionGroup:
-                self.currTransactionGroup.addLayer(layer)
-                QgsMessageLog.logMessage("In createTransactionGroup. Adding " + str(layer.name()), tag="TOMs panel")
-
-                layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
-                layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
-                layer.editingStopped.connect(functools.partial(self.printMessage, layer, "editingStopped"))
-                layer.attributeValueChanged.connect(self.printAttribChanged)
-                layer.raiseError.connect(functools.partial(self.printRaiseError, layer))
-
-                #layer.editCommandEnded.connect(functools.partial(self.printMessage, layer, "editCommandEnded"))
-
-                #layer.editBuffer().committedAttributeValuesChanges.connect(functools.partial(self.layerCommittedAttributeValuesChanges, layer))
-
-            #layer.startEditing() # edit layer is now active ...
-            self.modified = False
-            self.errorOccurred = False
-
-            self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
-
-            return
-
-    def startTransactionGroup(self):
-
-        QgsMessageLog.logMessage("In startTransactionGroup.", tag="TOMs panel")
-
-        if self.currTransactionGroup.isEmpty():
-            QgsMessageLog.logMessage("In startTransactionGroup. Currently empty adding layers", tag="TOMs panel")
-            self.createTransactionGroup()
-        """else:
-            # transaction is currently open. So, close it and start another
-            self.commitTransactionGroup(self.tableNames.PROPOSALS)"""
-
-        status = self.tableNames.PROPOSALS.startEditing()  # could be any table ...
-        if status == False:
-            QgsMessageLog.logMessage("In startTransactionGroup. *** Error starting transaction ...", tag="TOMs panel")
-        else:
-            QgsMessageLog.logMessage("In startTransactionGroup. Transaction started correctly!!! ...", tag="TOMs panel")
-        return status
-
-    def layerModified(self):
-        self.modified = True
-
-    def isTransactionGroupModified(self):
-        # indicates whether or not there has been any change within the transaction
-        return self.modified
-
-    def printMessage(self, layer, message):
-        QgsMessageLog.logMessage("In printMessage. " + str(message) + " ... " + str(layer.name()),
-                                 tag="TOMs panel")
-
-    def printAttribChanged(self, fid, idx, v):
-        QgsMessageLog.logMessage("Attributes changed for feature " + str(fid),
-                                 tag="TOMs panel")
-
-    def printRaiseError(self, layer, message):
-        QgsMessageLog.logMessage("Error from " + str(layer.name()) + ": " + str(message),
-                                 tag="TOMs panel")
-        self.errorOccurred = True
-        self.errorMessage = message
-
-    def commitTransactionGroup(self, currRestrictionLayer):
-
-        QgsMessageLog.logMessage("In commitTransactionGroup",
-                                 tag="TOMs panel")
-
-        # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        currMapTool = self.iface.mapCanvas().mapTool()
-        #currMapTool.deactivate()
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-
-        if not self.currTransactionGroup:
-            QgsMessageLog.logMessage("In commitTransactionGroup. Transaction DOES NOT exist",
-                                    tag="TOMs panel")
-            return
-
-        if self.errorOccurred == True:
-            reply = QMessageBox.information(None, "Error",
-                                            str(self.errorMessage), QMessageBox.Ok)
-            self.rollBackTransactionGroup()
-            return False
-
-        # Now check to see that there has been a change in the "main" restriction layer
-        """if self.currTransactionGroup.modified() == False:
-            reply = QMessageBox.information(None, "Error",
-                                            "Transactin group not modified", QMessageBox.Ok)
-            return True"""
-
-        """if currRestrictionLayer.editBuffer():
-    
-            if currRestrictionLayer.editBuffer().isModified() == False:
-                    reply = QMessageBox.information(None, "Error",
-                                                    "Problem with saving " + str(currRestrictionLayer.name()),
-                                                    QMessageBox.Ok)
-                    self.rollBackTransactionGroup()
-                    return False"""
-
-        """QgsMessageLog.logMessage("In commitTransactionGroup. Committing transaction",
-                                     tag="TOMs panel")"""
-
-        #modifiedTransaction = self.currTransactionGroup.modified()
-
-        """if self.modified == True:
-            QgsMessageLog.logMessage("In commitTransactionGroup. Transaction has been changed ...",
-                                     tag="TOMs panel")
-        else:
-            QgsMessageLog.logMessage("In commitTransactionGroup. Transaction has NOT been changed ...",
-                                     tag="TOMs panel")"""
-
-        #self.currTransactionGroup.commitError.connect(self.errorInTransaction)
-
-        for layer in self.setTransactionGroup:
-
-            QgsMessageLog.logMessage("In commitTransactionGroup. Considering: " + layer.name(),
-                                     tag="TOMs panel")
-
-            commitStatus = layer.commitChanges()
-            #commitStatus = True  # for testing ...
-
-            """try:
-                #layer.commitChanges()
-                QTimer.singleShot(0, layer.commitChanges())
-                commitStatus = True
-            except:
-                #commitErrors = layer.commitErrors()
-                commitStatus = False
-
-                QgsMessageLog.logMessage("In commitTransactionGroup. error: " + str(layer.commitErrors()),
-                                     tag="TOMs panel")"""
-
-            if commitStatus == False:
-                reply = QMessageBox.information(None, "Error",
-                                                "Changes to " + layer.name() + " failed: " + str(
-                                                    layer.commitErrors()), QMessageBox.Ok)
-                commitErrors = layer.rollBack()
-
-            break
-
-        self.modified = False
-        self.errorOccurred = False
-
-        #currMapTool.activate()
-        #self.iface.mapCanvas().setMapTool(currMapTool)
-
-        # signal for redraw ...
-        self.transactionCompleted.emit()
-
-        return commitStatus
-
-    def layersInTransaction(self):
-        return self.setTransactionGroup
-
-    def errorInTransaction(self, errorMsg):
-        reply = QMessageBox.information(None, "Error",
-                                        "Proposal changes failed: " + errorMsg, QMessageBox.Ok)
-        QgsMessageLog.logMessage("In errorInTransaction: " + errorMsg,
-                                 tag="TOMs panel")
-
-        #def __del__(self):
-        #pass
-      
-    def deleteTransactionGroup(self):
-
-        if self.currTransactionGroup:
-
-            if self.currTransactionGroup.modified():
-                QgsMessageLog.logMessage("In deleteTransactionGroup. Transaction contains edits ... NOT deleting",
-                                        tag="TOMs panel")
-                return
-
-            self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
-            self.currTransactionGroup = None
-
-        pass
-
-        return
-      
-    def rollBackTransactionGroup(self):
-
-        QgsMessageLog.logMessage("In rollBackTransactionGroup",
-                                 tag="TOMs panel")
-
-        # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-
-        try:
-            self.tableNames.PROPOSALS.rollBack()  # could be any table ...
-            QgsMessageLog.logMessage("In rollBackTransactionGroup. Transaction rolled back correctly ...",
-                                     tag="TOMs panel")
-        except:
-            QgsMessageLog.logMessage("In rollBackTransactionGroup. error: ...",
-                                     tag="TOMs panel")
-
-        #self.iface.activeLayer().stopEditing()
-
-        self.modified = False
-        self.errorOccurred = False
-        self.errorMessage = None
-
-        return
-
-class setupTableNames(QObject):
+class TOMSLayers(QObject):
 
     TOMsLayersNotFound = pyqtSignal()
-    """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
+    """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
 
     def __init__(self, iface):
         QObject.__init__(self)
         self.iface = iface
 
-        QgsMessageLog.logMessage("In setupTableNames.init ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.init ...", tag="TOMs panel")
         #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
@@ -348,13 +91,17 @@ class setupTableNames(QObject):
                          "StreetGazetteerRecords",
                          "RoadCentreLine",
                          "RoadCasement",
-                         "TilesInAcceptedProposals"
+                         "TilesInAcceptedProposals",
+                         "RestrictionTypes",
+                         "BayLineTypes",
+                         "SignTypes",
+                         "RestrictionPolygonTypes"
                          ]
         self.TOMsLayerDict = {}
 
     def getLayers(self):
 
-        QgsMessageLog.logMessage("In setupTableNames.getLayers ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.getLayers ...", tag="TOMs panel")
         found = True
 
         # Check for project being open
@@ -374,7 +121,7 @@ class setupTableNames(QObject):
                     found = False
                     break
 
-            if QgsProject.instance().mapLayersByName("Proposals"):
+            """if QgsProject.instance().mapLayersByName("Proposals"):
                 self.PROPOSALS = QgsProject.instance().mapLayersByName("Proposals")[0]
             else:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
@@ -468,7 +215,7 @@ class setupTableNames(QObject):
                 self.TILES_IN_ACCEPTED_PROPOSALS = QgsProject.instance().mapLayersByName("TilesInAcceptedProposals")[0]
             else:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
-                found = False
+                found = False"""
 
 
         # TODO: need to deal with any errors arising ...
@@ -477,6 +224,9 @@ class setupTableNames(QObject):
             self.TOMsLayersNotFound.emit()
 
         return
+
+    def setLayer(self, layerName):
+        return self.TOMsLayerDict.get(layerName)
 
 class originalFeature(object):
     def __init__(self, feature=None):
@@ -506,7 +256,7 @@ class RestrictionTypeUtilsMixin():
         #self.constants = TOMsConstants()
         #self.proposalsManager = proposalsManager
         self.iface = iface
-        #self.tableNames = setupTableNames(self.iface)
+        #self.tableNames = TOMSLayers(self.iface)
 
         #self.tableNames.getLayers()
         #super().__init__()
@@ -1390,8 +1140,13 @@ class RestrictionTypeUtilsMixin():
     def updateTileRevisionNrs(self, currProposalID):
         QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
         # Increment the relevant tile numbers
+        tileProposal = TOMsProposal(self.proposalsManager, currProposalID)
 
-        currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
+        # currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
+        currRevisionDate = tileProposal.getProposalOpenDate()
+
+        MapGridLayer = self.tableNames.setLayer("MapGrid")
+        TilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
 
         self.getProposalTileList(currProposalID, currRevisionDate)
 
@@ -1399,25 +1154,25 @@ class RestrictionTypeUtilsMixin():
             currRevisionNr = tile["RevisionNr"]
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             if currRevisionNr is None:
-                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(),self.tableNames.MAP_GRID.fields().indexFromName("RevisionNr"), 1)
+                MapGridLayer.changeAttributeValue(tile.id(),MapGridLayer.fields().indexFromName("RevisionNr"), 1)
             else:
-                self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fields().indexFromName("RevisionNr"), currRevisionNr + 1)
-            self.tableNames.MAP_GRID.changeAttributeValue(tile.id(), self.tableNames.MAP_GRID.fields().indexFromName("LastRevisionDate"), currRevisionDate)
+                MapGridLayer.changeAttributeValue(tile.id(), MapGridLayer.fields().indexFromName("RevisionNr"), currRevisionNr + 1)
+                MapGridLayer.changeAttributeValue(tile.id(), MapGridLayer.fields().indexFromName("LastRevisionDate"), currRevisionDate)
 
             # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
 
-            newRecord = QgsFeature(self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields())
+            newRecord = QgsFeature(TilesInAcceptedProposalsLayer.fields())
 
-            idxProposalID = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("ProposalID")
-            idxTileNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("TileNr")
-            idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("RevisionNr")
+            idxProposalID = TilesInAcceptedProposalsLayer.fields().indexFromName("ProposalID")
+            idxTileNr = TilesInAcceptedProposalsLayer.fields().indexFromName("TileNr")
+            idxRevisionNr = TilesInAcceptedProposalsLayer.fields().indexFromName("RevisionNr")
 
             newRecord[idxProposalID]= currProposalID
             newRecord[idxTileNr]= tile["id"]
             newRecord[idxRevisionNr]= currRevisionNr + 1
             newRecord.setGeometry(QgsGeometry())
 
-            status = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.addFeature(newRecord)
+            status = TilesInAcceptedProposalsLayer.addFeature(newRecord)
 
             # TODO: Check return status from add
 
@@ -1431,7 +1186,11 @@ class RestrictionTypeUtilsMixin():
         #Loop through each map tile
         #    Check whether or not there are any currently open restrictions within it
 
-        if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
+        self.RestrictionsInProposals = self.tableNames.setLayer("RestrictionsInProposals")
+        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.tileLayer = self.tableNames.setLayer("MapGrid")
+
+        """if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
             self.RestrictionsInProposals = \
                 QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
         else:
@@ -1449,7 +1208,7 @@ class RestrictionTypeUtilsMixin():
             self.tileLayer = QgsProject.instance().mapLayersByName("MapGrid")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-            return
+            return"""
 
         currProposalID = self.proposalsManager.currentProposal()
 
@@ -1581,7 +1340,7 @@ class RestrictionTypeUtilsMixin():
         #sorted(list(set(output)))
         #return self.tileList
 
-    def getProposalTitle(self, proposalID):
+    """def getProposalTitle(self, proposalID):
         # return the layer given the row in "RestrictionLayers"
         QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel")
 
@@ -1598,7 +1357,7 @@ class RestrictionTypeUtilsMixin():
             return feature[idxProposalTitle], feature[idxProposalOpenDate]
 
         QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel")
-        return None, None
+        return None, None"""
 
     def getTilesForRestriction(self, currRestriction, filterDate):
 
@@ -1609,7 +1368,7 @@ class RestrictionTypeUtilsMixin():
         #a.geometry().intersects(f.geometry()):
 
         #queryString2 = # bounding box of restriction
-        idxTileID = self.tableNames.MAP_GRID.fields().indexFromName("id")
+        idxTileID = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
 
         for tile in self.tileLayer.getFeatures(QgsFeatureRequest().setFilterRect(currRestriction.geometry().boundingBox())):
 
@@ -1649,7 +1408,7 @@ class RestrictionTypeUtilsMixin():
                 #self.tileSet.add((tile))
                 #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id"))
 
-                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id")) == False:
+                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.setLayer("MapGrid").fields().indexFromName("id")) == False:
                     QgsMessageLog.logMessage(
                         "In addFeatureToSet. Adding: " + str(currTileNr) + " ; " + str(len(self.tileSet)),
                         tag="TOMs panel")
@@ -1718,15 +1477,18 @@ class RestrictionTypeUtilsMixin():
                 u"\"TileNr\" = {1}".format(str(currTile.attribute("id"))))"""
 
         # Grab the results from the layer
-        features = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.getFeatures(QgsFeatureRequest(expr))
+        features = self.tableNames.setLayer("TilesInAcceptedProposals").getFeatures(QgsFeatureRequest(expr))
+        tileProposal = TOMsProposal(self.proposalsManager)
 
         for feature in sorted(features, key=lambda f: f[2], reverse=True):
             lastProposalID = feature["ProposalID"]
             lastRevisionNr = feature["RevisionNr"]
             #return currRevisionNr
             #lastProposalTitle, lastProposalOpendate = self.getProposalTitle(lastProposalID)
+            tileProposal.setProposal(lastProposalID)
 
-            lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
+            #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
+            lastProposalOpendate = tileProposal.getProposalOpenDate()
 
             QgsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
@@ -1777,144 +1539,15 @@ class RestrictionTypeUtilsMixin():
 
         pass
 
-        #def commitProposalChanges(self):
-        # Function to save changes to current layer and to RestrictionsInProposal
-        #pass
+    """def showTransactionErrorMessage(self):
 
-        """QgsMessageLog.logMessage("In commitProposalChanges: ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In showTransactionErrorMessage: ", tag="TOMs panel")"""
 
-        # save changes to all layers
-
-        localTrans = TOMsTransaction(self.iface)
-
-        localTrans.prepareLayerSet()
-        setLayers = localTrans.layersInTransaction()
-
-        modifiedTransaction = self.currTransaction.modified()
-
-        for layerID in setLayers:
-
-            transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
-            QgsMessageLog.logMessage("In commitProposalChanges. Considering: " + transLayer.name(), tag="TOMs panel")
-
-            commitStatus = transLayer.commitChanges()
-            commitErrors = transLayer.commitErrors()
-
-            if commitErrors:
-                reply = QMessageBox.information(None, "Error",
-                                            "Changes to " + transLayer.name() + " failed: " + str(
-                                                transLayer.commitErrors()), QMessageBox.Ok)
-            break
-
-        statusTrans = False
-        errMessage = str()
-
-        # setup signal catch
-        #currTransaction.commitError.disconnect()
-        self.currTransaction.commitError.connect(self.showTransactionErrorMessage)
-
-        #try:
-
-        #statusTrans = proposalsLayer.commitChanges()
-        #commitErrors = proposalsLayer.commitErrors()
-
-
-        self.currTransaction.commitError.disconnect()
-        self.currTransaction = None
-        self.rollbackCurrentEdits()
-
-        # TODO: deal with errors in Transaction
-
-        return"""
-
-        """except:
-
-            reply = QMessageBox.information(None, "Error",
-                                                "Proposal changes failed: " + str(errMessage),
-                                                QMessageBox.Ok)  # rollback all changes
-
-            if currTransaction.rollback(errMessage) == False:
-                reply = QMessageBox.information(None, "Error",
-                                                "Proposal rollback failed: " + str(errMessage),
-                                                QMessageBox.Ok)  # rollback all changes"""
-
-        """def createProposalTransactionGroup(self, tableNames):
-
-        self.tableNames = tableNames
-        # Function to create group of layers to be in Transaction for changing proposal
-
-        QgsMessageLog.logMessage("In createProposalTransactionGroup: ", tag="TOMs panel")
-        #QMessageBox.information(None, "Information", ("Entering commitRestrictionChanges"))
-
-        # save changes to all layers
-
-        #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-
-        idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("RestrictionLayerName")
-        idxRestrictionsLayerID = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("id")
-
-        # create transaction
-        #newTransaction = QgsTransaction("Test1")
-
-        #QgsMessageLog.logMessage("In createProposalTransactionGroup. Adding ProposalsLayer ", tag="TOMs panel")
-        self.setTransactionGroup = [self.Proposals.id()]
-
-        self.setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS.id())
-        self.setTransactionGroup.append(self.tableNames.BAYS.id())
-        QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding RestrictionsInProposals Layer ",
-                                 tag="TOMs panel")
-
-        for layer in self.tableNames.RESTRICTIONLAYERS.getFeatures():
-
-            currRestrictionLayerName = layer[idxRestrictionsLayerName]
-
-            restrictionLayer = QgsMapLayerRegistry.instance().mapLayersByName(currRestrictionLayerName)[0]
-
-            self.setTransactionGroup.append(restrictionLayer.id())
-            QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding " + str(restrictionLayer.name()), tag="TOMs panel")
-
-
-        newTransaction = QgsTransaction.create(self.setTransactionGroup)
-
-
-        if not newTransaction.supportsTransaction(self.tableNames.RESTRICTIONS_IN_PROPOSALS):
-            QgsMessageLog.logMessage("In createProposalTransactionGroup. ERROR Adding RestrictionsInProposals Layer ",
-                                     tag="TOMs panel")
-        else:
-            setTransactionGroup.append(self.tableNames.RESTRICTIONS_IN_PROPOSALS.id())
-            QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding RestrictionsInProposals Layer ",
-                                     tag="TOMs panel")
-
-        for layerID in self.setTransactionGroup:
-
-            #currRestrictionLayerName = layer[idxRestrictionsLayerName]
-
-            transLayer = QgsMapLayerRegistry.instance().mapLayer(layerID)
-
-
-            caps_string = transLayer.capabilitiesString()
-            QgsMessageLog.logMessage("In createProposalTransactionGroup: " + str(transLayer.name()) + ": capabilities: " + caps_string,
-                                     tag="TOMs panel")
-
-            statusSupp = newTransaction.supportsTransaction(transLayer)
-            if not newTransaction.supportsTransaction(transLayer):
-                QgsMessageLog.logMessage("In createProposalTransactionGroup. ERROR Adding " + str(transLayer.name()),
-                                         tag="TOMs panel")
-            else:
-                QgsMessageLog.logMessage("In createProposalTransactionGroup. SUCCESS Adding " + str(transLayer.name()), tag="TOMs panel")
-
-
-        return newTransaction"""
-
-    def showTransactionErrorMessage(self):
-
-        QgsMessageLog.logMessage("In showTransactionErrorMessage: ", tag="TOMs panel")
-
-        """reply = QMessageBox.information(None, "Error",
+    """reply = QMessageBox.information(None, "Error",
                                         "Proposal changes failed: " + str(errMsg),
                                         QMessageBox.Ok)  # rollback all changes"""
 
-    def rollbackCurrentEdits(self):
+    """def rollbackCurrentEdits(self):
         # Function to rollback any changes to the tables that might have changes
 
         QgsMessageLog.logMessage("In rollbackCurrentEdits: ", tag="TOMs panel")
@@ -1949,7 +1582,7 @@ class RestrictionTypeUtilsMixin():
             if restrictionLayer.editBuffer():
                 statusRollback = restrictionLayer.rollBack()
 
-        return
+        return"""
 
     def getLookupDescription(self, lookupLayer, code):
 
@@ -2066,7 +1699,6 @@ class RestrictionTypeUtilsMixin():
         restrictionLayer.featureAdded.connect(self.onFeatureAdded)
 
         addStatus = restrictionLayer.addFeature(newFeature, True)
-        #addStatus = restrictionLayer.addFeatures([newFeature], True)
 
         restrictionLayer.featureAdded.disconnect(self.onFeatureAdded)
 
@@ -2083,17 +1715,8 @@ class RestrictionTypeUtilsMixin():
                                  tag="TOMs panel")
 
         # test to see that feature has been added ...
-        #feat = restrictionLayer.getFeatures(QgsFeatureRequest(newFeature.id())).next()
         feat = restrictionLayer.getFeatures(
             QgsFeatureRequest().setFilterExpression('GeometryID = \'{}\''.format(newFeature['GeometryID']))).next()
-
-        """originalGeomBuffer = QgsGeometry(originalfeature.geometry())
-        QgsMessageLog.logMessage(
-            "In TOMsNodeTool:cloneRestriction - originalGeom: " + originalGeomBuffer.asWkt(),
-            tag="TOMs panel")
-        self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
-
-        QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - geometries switched.", tag="TOMs panel")"""
 
         return newFeature
 

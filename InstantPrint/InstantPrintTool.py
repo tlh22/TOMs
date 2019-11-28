@@ -39,6 +39,8 @@ from ..constants import (
     RestrictionAction
 )
 
+from ..core.TOMsProposal import (TOMsProposal)
+
 class InstantPrintDialog(QDialog):
 
     hidden = pyqtSignal()
@@ -445,12 +447,13 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.openDateForPrintProposal = self.proposalsManager.date()
 
         # TODO: Move to plugin wide variable for datasource
-        if QgsProject.instance().mapLayersByName("Proposals"):
+        self.Proposals = self.tableNames.setLayer("Proposals")
+        """if QgsProject.instance().mapLayersByName("Proposals"):
             self.Proposals = \
                 QgsProject.instance().mapLayersByName("Proposals")[0]
         else:
             QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                    ("Table Proposals is not present"))
+                                    ("Table Proposals is not present"))"""
 
         if currPrintLayout.atlas():
 
@@ -475,8 +478,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                     # Take the output from the form and set the current Proposal
                     indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
-                    self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
-
+                    printProposal = TOMsProposal(self.proposalsManager, proposalNrForPrinting)
+                    # self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
+                    self.openDateForPrintProposal = printProposal.getProposalOpenDate()
                 else:
                     return
 
@@ -586,7 +590,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Missing label in Layout"),
                                 self.tr("Missing label 'printTypeDetails'"))
 
-        currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
+            # currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
+        printProposal = TOMsProposal(self.proposalsManager, currProposalID)
+        currProposalTitle = printProposal.getProposalTitle()
+        currProposalOpenDate = printProposal.getProposalOpenDate()
+
         if currProposalID == 0:
             currProposalTitle = "CurrentRestrictions_({date})".format(date=self.proposalsManager.date().toString('yyyyMMMdd'))
 
@@ -712,7 +720,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # set the dialog (somehow)
 
         self.tilesToPrint = []
-        idxMapTileId = self.tableNames.MAP_GRID.fields().indexFromName("id")
+        idxMapTileId = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
 
         self.tileListDialog = printListDialog(self.tileSet, idxMapTileId)
 

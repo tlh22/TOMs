@@ -53,7 +53,9 @@ from .constants import (
     RestrictionAction
 )
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransaction, setupTableNames
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from .core.TOMsTransaction import (TOMsTransaction)
+
 #from BayRestrictionForm import BayRestrictionForm
 
 import functools
@@ -169,7 +171,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
-        # self.tableNames = setupTableNames(self.iface)
+        # self.tableNames = TOMSLayers(self.iface)
         # self.tableNames.getLayers()
         self.restrictionTransaction = restrictionTransaction
         """self.proposalsManager.TOMsToolChanged.connect(
