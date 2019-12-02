@@ -26,6 +26,9 @@ from qgis.core import (
 )
 
 from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
+
+from .TOMsProposalElement import *
+
 from ..constants import (
     ProposalStatus,
     RestrictionAction
@@ -79,6 +82,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
     def getProposalOpenDate(self):
         return self.thisProposal.attribute("ProposalOpenDate")
+
+    def acceptProposal(self):
+        pass
+
+    def rejectProposal(self):
+        pass
 
     def getRestrictionsToOpenForLayer(self, layer):
         return self.__getRestrictionsListForLayerForAction(layer, RestrictionAction.OPEN)
@@ -140,3 +149,51 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 QgsMessageLog.logMessage("In getProposalBoundingBox. (" + currLayer.name() + ") filter 1:" + currLayer.subsetString(), tag="TOMs panel")
 
         return geometryBoundingBox
+
+    def getProposalTileListForDate(self, revisionDate=None):
+
+        if not revisionDate:
+            revisionDate = self.proposalsManager.date()
+
+        # returns list of tiles in the proposal and their current revision numbers
+        QgsMessageLog.logMessage("In getProposalTileList. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel")
+        setTilesInProposal = set()
+
+        # Logic is:
+        #Loop through each map tile
+        #    Check whether or not there are any currently open restrictions within it
+
+        if self.getProposalNr() > 0:  # need to consider a proposal
+
+            # loop through all the layers that might have restrictions
+            for (layerID, layerName) in self.getRestrictionLayersList():
+
+                # clear filter
+                currFilter = self.tableNames.setLayer(layerName).subsetString()
+                self.tableNames.setLayer(layerName).setSubsetString('')
+
+                for (currRestrictionID, restrictionInProposalObject) in self.__getRestrictionsInProposalForLayerForAction(layerID):
+
+                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, restrictionInProposalObject, currRestrictionID)
+                    for (TileID, RevisionNr, LastRevisionDate, tileDetails) in currRestriction.getTilesForRestriction(revisionDate):
+                        setTilesInProposal.add(TileID)
+
+                # reset filter
+                self.tableNames.setLayer(layerName).setSubsetString(currFilter)
+
+        else:
+
+            # loop through all the layers that might have restrictions
+            for (layerID, layerName) in self.getRestrictionLayersList():
+
+                for (currRestrictionID, restrictionInProposalDetails) in self.__getCurrentRestrictionsForLayer(layerID, revisionDate):
+
+                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, self.tableNames.setLayer(layerName), currRestrictionID)
+                    for (TileID, RevisionNr, LastRevisionDate, tileDetails) in currRestriction.getTilesForRestriction(revisionDate):
+                        setTilesInProposal.add(TileID)
+
+        for tile in setTilesInProposal:
+            QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+
+        return sorted(list(setTilesInProposal))
+

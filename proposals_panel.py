@@ -244,19 +244,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-        queryString = "\"ProposalStatusID\" = " + str(ProposalStatus.IN_PREPARATION)
-
-        QgsMessageLog.logMessage("In createProposalcb: queryString: " + str(queryString), tag="TOMs panel")
-
-        expr = QgsExpression(queryString)
-
-        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
-
-        for proposal in sorted(proposals, key=lambda f: f[4]):
-
-            currProposalID = proposal.attribute("ProposalID")
-            currProposalTitle = proposal.attribute("ProposalTitle")
-
+        for (currProposalID, currProposalTitle, currProposalStatusID, currProposalOpenDate, currProposal) in sorted(self.proposalsManager.getProposalsListWithStatus(ProposalStatus.IN_PREPARATION), key=lambda f: f[1]):
+            QgsMessageLog.logMessage("In createProposalcb: proposalID: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel")
             self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
         # set up action for when the proposal is changed

@@ -494,32 +494,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
             self.__export()
 
-    def createAcceptedProposalcb(self):
-
-        QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
-        # set up a "NULL" field for "No proposals to be shown"
-
-        self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
-
-        # for proposal in proposalsList:
-        queryString = "\"ProposalStatusID\" = " + str(ProposalStatus.ACCEPTED)
-
-        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
-
-        expr = QgsExpression(queryString)
-
-        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
-
-        for proposal in sorted(proposals, key=lambda f: f[4]):
-
-            """QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
-                                     tag="TOMs panel")"""
-            currProposalID = proposal.attribute("ProposalID")
-            currProposalTitle = proposal.attribute("ProposalTitle")
-
-            self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
-
-        pass
 
     def TOMsExportAtlas(self, currProposalID):
 
@@ -541,7 +515,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         currRevisionDate = self.proposalsManager.date()
 
         # get the map tiles that are affected by the Proposal
-        self.getProposalTileList(currProposalID, currRevisionDate)
+        # self.getProposalTileList(currProposalID, currRevisionDate)
+        proposalTileListForDate = TOMsProposal(self.proposalsManager, self.proposalsManager.currentProposal()).getProposalTileListForDate(currRevisionDate)
+        self.tileSet = set(proposalTileListForDate)  # TODO: Change around use of tileSet - also might be good to have a current proposal as an object in proposalManager...
 
         # Now check which tiles to use
         self.TOMsChooseTiles()

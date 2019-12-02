@@ -26,7 +26,7 @@ from qgis.core import (
     QgsFeature,
     QgsGeometry,
     QgsTransaction,
-    QgsProject
+    QgsProject, QgsFeatureRequest
 )
 
 from qgis.gui import *
@@ -43,11 +43,14 @@ import uuid
 
 class ProposalTypeUtilsMixin():
 
-    def __init__(self, iface):
-        self.iface = iface
+    def __init__(self):
+        #self.iface = iface
+        pass
 
     def getRestrictionLayersList(self):
+
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+
         layerTypeList= []
         for layerType in self.RestrictionLayers.getFeatures():
 
@@ -57,3 +60,29 @@ class ProposalTypeUtilsMixin():
             layerTypeList.append([layerID, layerName])
 
         return layerTypeList
+
+    def getRestrictionLayerFromID(self, layerID):
+        # return the layer given the row in "RestrictionLayers"
+        # QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
+
+        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+
+        request = QgsFeatureRequest().setFilterExpression('"id"={layerID}'.format(layerID=layerID))
+
+        for layer in self.RestrictionLayers.getFeatures(request):
+            return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
+
+        return None
+
+    def getRestrictionLayerIDfromLayer(self, currLayer):
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        # find the ID for the layer within the table "
+
+        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+
+        request = QgsFeatureRequest().setFilterExpression('"RestrictionLayerName"={layerName}'.format(layerName=currLayer.name()))
+
+        for layer in self.RestrictionLayers.getFeatures(request):
+            return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
+
+        return None

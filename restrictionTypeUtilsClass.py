@@ -66,6 +66,8 @@ class TOMSLayers(QObject):
 
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
+    TOMsLayersSet = pyqtSignal()
+    """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
 
     def __init__(self, iface):
         QObject.__init__(self)
@@ -222,6 +224,8 @@ class TOMSLayers(QObject):
 
         if found == False:
             self.TOMsLayersNotFound.emit()
+        else:
+            self.TOMsLayersSet.emit()
 
         return
 
@@ -1148,9 +1152,14 @@ class RestrictionTypeUtilsMixin():
         MapGridLayer = self.tableNames.setLayer("MapGrid")
         TilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
 
-        self.getProposalTileList(currProposalID, currRevisionDate)
+        # self.getProposalTileList(currProposalID, currRevisionDate)
 
-        for tile in self.tileSet:
+        proposalTileListForDate = self.getProposalTileListForDate(currRevisionDate)
+
+        for tile in proposalTileListForDate:
+
+            #  TODO: Create a tile object and have increment method ...
+
             currRevisionNr = tile["RevisionNr"]
             QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             if currRevisionNr is None:
@@ -1538,51 +1547,6 @@ class RestrictionTypeUtilsMixin():
             pass
 
         pass
-
-    """def showTransactionErrorMessage(self):
-
-        QgsMessageLog.logMessage("In showTransactionErrorMessage: ", tag="TOMs panel")"""
-
-    """reply = QMessageBox.information(None, "Error",
-                                        "Proposal changes failed: " + str(errMsg),
-                                        QMessageBox.Ok)  # rollback all changes"""
-
-    """def rollbackCurrentEdits(self):
-        # Function to rollback any changes to the tables that might have changes
-
-        QgsMessageLog.logMessage("In rollbackCurrentEdits: ", tag="TOMs panel")
-
-        # rollback changes to all layers
-
-        proposalsLayer = QgsProject.instance().mapLayersByName("Proposals")[0]
-        RestrictionsInProposalLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
-
-        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
-
-        # create transaction
-        #newTransaction = QgsTransaction("Test1")
-
-        QgsMessageLog.logMessage("In rollbackCurrentEdits. ProposalsLayer ", tag="TOMs panel")
-
-        if proposalsLayer.editBuffer():
-            statusRollback = proposalsLayer.rollBack()
-
-        if RestrictionsInProposalLayer.editBuffer():
-            statusRollback = RestrictionsInProposalLayer.rollBack()
-
-        for layer in RestrictionsLayers.getFeatures():
-
-            currRestrictionLayerName = layer[idxRestrictionsLayerName]
-
-            restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
-
-            QgsMessageLog.logMessage("In rollbackCurrentEdits. " + str(restrictionLayer.name()), tag="TOMs panel")
-            if restrictionLayer.editBuffer():
-                statusRollback = restrictionLayer.rollBack()
-
-        return"""
 
     def getLookupDescription(self, lookupLayer, code):
 

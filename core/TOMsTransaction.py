@@ -50,9 +50,11 @@ import os
 
 from ..constants import (
     ProposalStatus,
-    RestrictionAction
+    RestrictionAction,
+    singleton
 )
 
+@singleton
 class TOMsTransaction(QObject):
     transactionCompleted = pyqtSignal()
     """Signal will be emitted, when the transaction is finished - either committed or rollback"""

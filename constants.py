@@ -24,5 +24,14 @@ class RestrictionLayers(object):
     LINES = 3
     RESTRICTION_POLYGONS = 4
     SIGNS = 5
+    CPZS = 6
+    PTAS = 7
 
-
+def singleton(myClass):
+    # From https://www.youtube.com/watch?v=6IV_FYx6MQA
+    instances = {}
+    def getInstance(*args, **kwargs):
+        if myClass not in instances:
+            instances[myClass] = myClass(*args, **kwargs)
+            return instances[myClass]
+    return getInstance

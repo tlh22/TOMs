@@ -19,6 +19,11 @@ from qgis.gui import *
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
 
+from ..constants import (
+    ProposalStatus,
+    RestrictionAction
+)
+
 class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
 
     def __init__(self, iface, proposalsManager):
@@ -28,9 +33,35 @@ class TOMsInstantPrintTool(RestrictionTypeUtilsMixin, InstantPrintTool):
         self.proposalsManager = proposalsManager
         self.tableNames = self.proposalsManager.tableNames
 
-        #self.proposalsManager.TOMsActivated.connect(self.setupTables)
+    def createAcceptedProposalcb(self):
+        QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
+        # set up a "NULL" field for "No proposals to be shown"
 
-        """def setupTables(self):
-        self.tableNames = TOMSLayers(self.iface)
-        self.tableNames.getLayers()"""
+        self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
 
+        for (currProposalID, currProposalTitle, currProposalStatusID, currProposalOpenDate, currProposal) in sorted(
+                self.proposalsManager.getProposalsListWithStatus(ProposalStatus.ACCEPTED), key=lambda f: f[1]):
+            QgsMessageLog.logMessage(
+                "In createProposalcb: queryString: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel")
+            self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+
+        """"# for proposal in proposalsList:
+        queryString = "\"ProposalStatusID\" = " + str(ProposalStatus.ACCEPTED)
+
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
+
+        expr = QgsExpression(queryString)
+
+        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
+
+
+        for proposal in sorted(proposals, key=lambda f: f[4]):
+
+            # QgsMessageLog.logMessage("In createProposalcb. ID: " + str(proposal.attribute("ProposalID")) + " currProposalStatus: " + str(currProposalStatusID),
+            #                          tag="TOMs panel")
+            currProposalID = proposal.attribute("ProposalID")
+            currProposalTitle = proposal.attribute("ProposalTitle")
+
+            self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
+
+        pass"""
