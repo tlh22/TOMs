@@ -150,14 +150,14 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         return geometryBoundingBox
 
-    def getProposalTileListForDate(self, revisionDate=None):
+    def getProposalTileDictionaryForDate(self, revisionDate=None):
 
         if not revisionDate:
             revisionDate = self.proposalsManager.date()
 
         # returns list of tiles in the proposal and their current revision numbers
         QgsMessageLog.logMessage("In getProposalTileList. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel")
-        setTilesInProposal = set()
+        dictTilesInProposal = dict()
 
         # Logic is:
         #Loop through each map tile
@@ -174,9 +174,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
                 for (currRestrictionID, restrictionInProposalObject) in self.__getRestrictionsInProposalForLayerForAction(layerID):
 
-                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, restrictionInProposalObject, currRestrictionID)
-                    for (TileID, RevisionNr, LastRevisionDate, tileDetails) in currRestriction.getTilesForRestriction(revisionDate):
-                        setTilesInProposal.add(TileID)
+                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, None, currRestrictionID)
+                    dictTilesInProposal.update(currRestriction.getTilesForRestriction(revisionDate))
 
                 # reset filter
                 self.tableNames.setLayer(layerName).setSubsetString(currFilter)
@@ -189,11 +188,10 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 for (currRestrictionID, restrictionInProposalDetails) in self.__getCurrentRestrictionsForLayer(layerID, revisionDate):
 
                     currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, self.tableNames.setLayer(layerName), currRestrictionID)
-                    for (TileID, RevisionNr, LastRevisionDate, tileDetails) in currRestriction.getTilesForRestriction(revisionDate):
-                        setTilesInProposal.add(TileID)
+                    dictTilesInProposal.update(currRestriction.getTilesForRestriction(revisionDate))
 
-        for tile in setTilesInProposal:
+        for tileNr, tile in dictTilesInProposal.items():
             QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
 
-        return sorted(list(setTilesInProposal))
+        return dictTilesInProposal
 

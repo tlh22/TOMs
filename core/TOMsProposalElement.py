@@ -41,18 +41,19 @@ class TOMsProposalElement(QObject):
         self.proposalsManager = proposalsManager
         self.tableNames = self.proposalsManager.tableNames
         self.layerID = layerID
-        self.thisRestriction = restriction
-        self.thisRestrictionID = restrictionID
 
         self.setThisLayer()
 
         if restriction is not None:
             self.thisElement = restriction
+            self.thisRestrictionID = restrictionID
             QgsMessageLog.logMessage(
                 "In factory. Creating Proposal Element ... " + str(self.thisElement), tag="TOMs panel")
+        elif restrictionID is not None:
+            self.setElement(restrictionID)
 
     def getGeometryID(self):
-        pass
+        return self.thisElement["GeometryID"]
 
     def setThisLayer(self):
         self.thisLayer = self.proposalsManager.getRestrictionLayerFromID(self.layerID)
@@ -65,12 +66,14 @@ class TOMsProposalElement(QObject):
         self.setThisLayer()
 
         if (restrictionID is not None):
-            query = '\"RestrictionID\" = {restrictionID}'.format(proposalID=restrictionID)
+            query = '\"RestrictionID\" = \'{restrictionID}\''.format(restrictionID=restrictionID)
             request = QgsFeatureRequest().setFilterExpression(query)
             for element in self.thisLayer.getFeatures(request):
                 self.thisElement = element  # make assumption that only one row
+                QgsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), tag="TOMs panel")
                 return True
 
+        QMessageBox.information(self.iface.mainWindow(), "ERROR", ("RestrictionID: \'{restrictionID}\' not found within layer {layerName}".format(restrictionID=restrictionID, layerName=self.thisLayer.name())))
         return False # either not found or 0
 
     def getElement(self):
@@ -84,7 +87,7 @@ class TOMsProposalElement(QObject):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         idxTileID = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
 
-        setTilesInRestriction = set()
+        dictTilesInRestriction = dict()
 
         QgsMessageLog.logMessage(
             "In factory. Creating Proposal Element ... " + str(self.thisRestrictionID) + ";" + str(self.thisElement.geometry().asWkt()), tag="TOMs panel")
@@ -128,15 +131,15 @@ class TOMsProposalElement(QObject):
                         idxTileID),
                     tag="TOMs panel")
 
-                setTilesInRestriction.add(tile)
+                dictTilesInRestriction[currTileNr] = tile
 
                 QgsMessageLog.logMessage(
-                    "In getTileForRestriction. len tileSet: " + str(len(self.setTilesInRestriction)),
+                    "In getTileForRestriction. len tileSet: " + str(len(dictTilesInRestriction)),
                     tag="TOMs panel")
 
                 pass
 
-        return sorted(list(setTilesInRestriction))
+        return dictTilesInRestriction
 
     def clone(self):
         pass

@@ -1487,7 +1487,7 @@ class RestrictionTypeUtilsMixin():
 
         # Grab the results from the layer
         features = self.tableNames.setLayer("TilesInAcceptedProposals").getFeatures(QgsFeatureRequest(expr))
-        tileProposal = TOMsProposal(self.proposalsManager)
+        tileProposal = TOMsProposal(self)
 
         for feature in sorted(features, key=lambda f: f[2], reverse=True):
             lastProposalID = feature["ProposalID"]
