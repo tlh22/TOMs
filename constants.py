@@ -27,6 +27,25 @@ class RestrictionLayers(object):
     CPZS = 6
     PTAS = 7
 
+class RestrictionGeometryTypes(object):
+    PARALLEL_BAY = 1
+    HALF_ON_HALF_OFF = 2
+    ON_PAVEMENT = 3
+    PERPENDICULAR = 4
+    ECHELON = 5
+    PERPENDICULAR_ON_PAVEMENT = 6
+    OTHER = 7
+    CENTRAL_PARKING = 8
+    PARALLEL_LINE = 10
+    ZIG_ZAG = 12
+    PARALLEL_BAY_POLYGON = 21
+    HALF_ON_HALF_OFF_POLYGON = 22
+    ON_PAVEMENT_POLYGON = 23
+    PERPENDICULAR_POLYGON = 24
+    ECHELON_POLYGON = 25
+    PERPENDICULAR_ON_PAVEMENT_POLYGON = 26
+    CROSSOVER = 35
+
 def singleton(myClass):
     # From https://www.youtube.com/watch?v=6IV_FYx6MQA
     instances = {}

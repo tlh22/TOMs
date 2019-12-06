@@ -613,6 +613,14 @@ class generateGeometryUtils:
         return outputGeometry
 
     @staticmethod
+    def getReverseAzimuth(Az):
+        if (Az + 180) > 360:
+            AzimuthToCentreLine = Az - 180
+        else:
+            AzimuthToCentreLine = Az + 180
+        return AzimuthToCentreLine
+
+    @staticmethod
     def checkFeatureIsBay(restGeomType):
         QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
         if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):

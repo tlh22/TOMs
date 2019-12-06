@@ -62,6 +62,60 @@ from abc import ABCMeta
 
 import uuid
 
+class TOMsParams(QObject):
+
+    TOMsParamsNotFound = pyqtSignal()
+    """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
+    TOMsParamsSet = pyqtSignal()
+    """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
+
+    def __init__(self):
+        QObject.__init__(self)
+        # self.iface = iface
+
+        QgsMessageLog.logMessage("In TOMSParams.init ...", tag="TOMs panel")
+        self.TOMsParamsList = ["BayWidth",
+                          "BayLength",
+                          "BayOffsetFromKerb",
+                          "LineOffsetFromKerb",
+                          "CrossoverShapeWidth"
+                        ]
+
+        self.TOMsParamsDict = {}
+
+    def getParams(self):
+
+        QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
+        found = True
+
+        # Check for project being open
+        project = QgsProject.instance()
+
+        if len(project.fileName()) == 0:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
+            found = False
+
+        else:
+
+            for param in self.TOMsParamsList:
+                currParam = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param))
+                if currParam:
+                    self.TOMsParamsDict[param] = currParam
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
+                    found = False
+                    break
+
+        if found == False:
+            self.TOMsParamsNotFound.emit()
+        else:
+            self.TOMsParamsSet.emit()
+
+        return
+
+    def setParam(self, param):
+        return self.TOMsParamsDict.get(param)
+
 class TOMSLayers(QObject):
 
     TOMsLayersNotFound = pyqtSignal()
@@ -123,103 +177,6 @@ class TOMSLayers(QObject):
                     found = False
                     break
 
-            """if QgsProject.instance().mapLayersByName("Proposals"):
-                self.PROPOSALS = QgsProject.instance().mapLayersByName("Proposals")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("ProposalStatusTypes"):
-                self.PROPOSAL_STATUS_TYPES = QgsProject.instance().mapLayersByName("ProposalStatusTypes")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ProposalStatusTypes is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("RestrictionLayers"):
-                self.RESTRICTIONLAYERS = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
-                self.RESTRICTIONS_IN_PROPOSALS = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("Bays"):
-                self.BAYS = QgsProject.instance().mapLayersByName("Bays")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Bays is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("Lines"):
-                self.LINES = QgsProject.instance().mapLayersByName("Lines")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Lines is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("Signs"):
-                self.SIGNS = QgsProject.instance().mapLayersByName("Signs")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Signs is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("RestrictionPolygons"):
-                self.RESTRICTION_POLYGONS = QgsProject.instance().mapLayersByName("RestrictionPolygons")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionPolygons is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("ConstructionLines"):
-                self.CONSTRUCTION_LINES = QgsProject.instance().mapLayersByName("ConstructionLines")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ConstructionLines is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("MapGrid"):
-                self.MAP_GRID = QgsProject.instance().mapLayersByName("MapGrid")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("CPZs"):
-                self.CPZs = QgsProject.instance().mapLayersByName("CPZs")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table CPZs is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("ParkingTariffAreas"):
-                self.PARKING_TARIFF_AREAS = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table ParkingTariffAreas is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("StreetGazetteerRecords"):
-                self.GAZETTEER = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table StreetGazetteerRecords is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("RoadCentreLine"):
-                self.GAZETTEER = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCentreLine is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("RoadCasement"):
-                self.ROAD_CASEMENT = QgsProject.instance().mapLayersByName("RoadCasement")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RoadCasement is not present"))
-                found = False
-
-            if QgsProject.instance().mapLayersByName("TilesInAcceptedProposals"):
-                self.TILES_IN_ACCEPTED_PROPOSALS = QgsProject.instance().mapLayersByName("TilesInAcceptedProposals")[0]
-            else:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table TilesInAcceptedProposals is not present"))
-                found = False"""
-
-
         # TODO: need to deal with any errors arising ...
 
         if found == False:
@@ -229,8 +186,8 @@ class TOMSLayers(QObject):
 
         return
 
-    def setLayer(self, layerName):
-        return self.TOMsLayerDict.get(layerName)
+    def setLayer(self, layer):
+        return self.TOMsLayerDict.get(layer)
 
 class originalFeature(object):
     def __init__(self, feature=None):
