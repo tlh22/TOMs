@@ -85,7 +85,7 @@ class TOMsParams(QObject):
 
     def getParams(self):
 
-        QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
+        # QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
         found = True
 
         # Check for project being open

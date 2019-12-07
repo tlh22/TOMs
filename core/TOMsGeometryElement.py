@@ -22,7 +22,7 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import (
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsFeatureRequest,
-    QgsRectangle, QgsPoint, QgsWkbTypes
+    QgsRectangle, QgsPointXY, QgsWkbTypes
 )
 
 from ..constants import (
@@ -83,27 +83,29 @@ class TOMsGeometryElement(QObject):
                 linesList = newGeometry.asMultiPolyline()
 
                 for verticesList in linesList:
-                    for v in verticesList:
-                        ptsList.append(v)
+                    """for v in verticesList:
+                        ptsList.append(v)"""
 
-                    res = outputGeometry.addPartGeometry(QgsGeometry.fromPolygonXY([ptsList]))
+                    res = outputGeometry.addPointsXY(verticesList.asPolyline(), QgsWkbTypes.PolygonGeometry)
+                    #res = outputGeometry.addPartGeometry(QgsGeometry.fromPolygonXY([ptsList]))
                     if res != QgsGeometry.OperationResult.Success:
                         QgsMessageLog.logMessage(
                             "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")
 
             else:
 
-                vertices = newGeometry.asPolyline()
+                """vertices = newGeometry.asPolylineXY()
 
                 for v in vertices:
-                    ptsList.append(v)
+                    ptsList.append(v)"""
 
-                outputGeometry = QgsGeometry.fromPolygonXY([ptsList])
-                """res = outputGeometry.addPointsXY(ptsList)
+                #outputGeometry = QgsGeometry.fromPolygonXY([ptsList])
+                res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.PolygonGeometry)
+                #res = outputGeometry.addPointsXY(ptsList)
 
                 if res != QgsGeometry.OperationResult.Success:
                     QgsMessageLog.logMessage(
-                        "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")"""
+                        "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")
 
         return outputGeometry
 
@@ -186,7 +188,7 @@ class TOMsGeometryElement(QObject):
                 # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
 
                 ptsList.append(
-                    QgsPoint(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
+                    QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
                 # QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
 
                 # Now add the point at the extent. If it is an echelon bay:
@@ -205,7 +207,7 @@ class TOMsGeometryElement(QObject):
                     pass
 
                 ptsList.append(
-                    QgsPoint(line[i].x() + (float(shpExtent) * cosa),
+                    QgsPointXY(line[i].x() + (float(shpExtent) * cosa),
                              line[i].y() + (float(shpExtent) * cosb)))
                 # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
 
@@ -228,10 +230,10 @@ class TOMsGeometryElement(QObject):
 
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
                 ptsList.append(
-                    QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
+                    QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
                 parallelPtsList.append(
-                    QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
+                    QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
             # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
 
@@ -249,7 +251,7 @@ class TOMsGeometryElement(QObject):
         # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-        ptsList.append(QgsPoint(line[len(line) - 1].x() + (float(shpExtent) * cosa),
+        ptsList.append(QgsPointXY(line[len(line) - 1].x() + (float(shpExtent) * cosa),
                                 line[len(line) - 1].y() + (float(shpExtent) * cosb)))
 
         # add end point (without any consideration of Echelon)
@@ -257,15 +259,91 @@ class TOMsGeometryElement(QObject):
         newAz = Az + Turn
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-        ptsList.append(QgsPoint(line[len(line) - 1].x() + (float(offset) * cosa),
+        ptsList.append(QgsPointXY(line[len(line) - 1].x() + (float(offset) * cosa),
                                 line[len(line) - 1].y() + (float(offset) * cosb)))
 
-        newLine = QgsGeometry.fromPolyline(ptsList)
-        parallelLine = QgsGeometry.fromPolyline(parallelPtsList)
+        newLine = QgsGeometry.fromPolylineXY(ptsList)
+        parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
 
         # QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.asWkt(), tag="TOMs panel")
 
         return newLine, parallelPtsList
+
+    def getZigZag(self, wavelength=None, shpExtent=None):
+
+        QgsMessageLog.logMessage("In getZigZag ... ", tag="TOMs panel")
+
+        if not wavelength:
+            wavelength = 3.0
+        if not shpExtent:
+            shpExtent = self.BayWidth / 2
+        offset = self.BayOffsetFromKerb
+
+        line = generateGeometryUtils.getLineForAz(self.currFeature)
+        if len(line) == 0:
+            return 0
+
+        ptsList = []
+
+        length = self.currFeature.geometry().length()
+
+        NrSegments = int(length / wavelength)    # e.g., length = 33, wavelength = 4
+        interval = length/float(NrSegments)
+
+        QgsMessageLog.logMessage("In getZigZag. NrSegments = " + str(NrSegments) + "; interval: " + str(interval), tag="TOMs panel")
+
+        Az = line[0].azimuth(line[1])
+
+        QgsMessageLog.logMessage("In getZigZag. Az = " + str(Az) + "; AzCL = " + str(self.currAzimuthToCentreLine) + "; line[0]: " + line[0].asWkt() + "; line[1]: " + line[1].asWkt(), tag="TOMs panel")
+
+        Turn = generateGeometryUtils.turnToCL(Az, self.currAzimuthToCentreLine)
+
+        newAz = Az + Turn
+        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+        cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
+
+        # deal with two points
+        ptsList.append(
+            QgsPointXY(line[0].x() + (float(offset) * cosa), line[0].y() + (float(offset) * cosb)))
+
+        ptsList.append(
+            QgsPointXY(line[0].x() + (float(shpExtent) * cosa),
+                     line[0].y() + (float(shpExtent) * cosb)))
+
+        distanceAlongLine = 0.0
+        countSegments = 0
+        while countSegments < (NrSegments):
+
+            countSegments = countSegments + 1
+
+            distanceAlongLine = distanceAlongLine + interval / 2
+
+            interpolatedPointC = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
+
+            QgsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), tag="TOMs panel")
+
+            QgsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), tag="TOMs panel")
+
+            ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
+
+            distanceAlongLine = distanceAlongLine+interval/2
+
+            interpolatedPointD = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
+
+            QgsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
+
+            ptsList.append(QgsPointXY(interpolatedPointD.x() + (float(shpExtent) * cosa),
+                     interpolatedPointD.y() + (float(shpExtent) * cosb)))
+
+        # deal with last point
+        ptsList.append(
+            QgsPointXY(line[len(line) - 1].x() + (float(offset) * cosa),
+                     line[len(line) - 1].y() + (float(offset) * cosb)))
+
+        newLine = QgsGeometry.fromPolylineXY(ptsList)
+
+        return newLine
 
 
 """ ***** """
@@ -356,14 +434,14 @@ class generatedGeometryLineType(TOMsGeometryElement):
         return outputGeometry
 
 
-class generatedGeometryZigZagType():
+class generatedGeometryZigZagType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
         QgsMessageLog.logMessage("In factory. generatedGeometryZigZagType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
 
-        outputGeometry, parallelLine = self.getLine()
+        outputGeometry = self.getZigZag()
 
         return outputGeometry
 
@@ -387,12 +465,12 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         QgsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
-
-        outputGeometry1, parallelLine1 = self.getShape(self.BayWidth/2)
+        # QgsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... BayWidth/2 = " + str((self.BayWidth)/2), tag="TOMs panel")
+        outputGeometry1, parallelLine1 = self.getShape((self.BayWidth)/2)
         outputGeometry1A, paralletLine1A = self.getLine()
 
-        outputGeometry2, parallelLine2 = self.getShape(self.BayWidth/2,self.getReverseAzimuth(self.currAzimuthToCentreLine))
-        outputGeometry2A, paralletLine2A = self.getLine(self.getReverseAzimuth(self.currAzimuthToCentreLine))
+        outputGeometry2, parallelLine2 = self.getShape((self.BayWidth)/2, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        outputGeometry2A, paralletLine2A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
         return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
 

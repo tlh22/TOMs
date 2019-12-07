@@ -54,7 +54,7 @@ class generateGeometryUtils:
     def turnToCL(Az1, Az2):
         # function to determine direction of turn to road centre    *** needs to be checked carefully ***
         # Az1 = Az of current line; Az2 = Az to roadCentreline
-        # QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
+        QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
 
         AzCL = Az1 - 90.0
         if AzCL < 0:
