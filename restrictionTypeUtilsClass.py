@@ -121,7 +121,7 @@ class TOMSLayers(QObject):
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
     TOMsLayersSet = pyqtSignal()
-    """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
+    """ signal will be emitted if everything is OK with opening TOMs """
 
     def __init__(self, iface):
         QObject.__init__(self)

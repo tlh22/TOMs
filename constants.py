@@ -44,6 +44,7 @@ class RestrictionGeometryTypes(object):
     PERPENDICULAR_POLYGON = 24
     ECHELON_POLYGON = 25
     PERPENDICULAR_ON_PAVEMENT_POLYGON = 26
+    OUTLINE_BAY_POLYGON = 28
     CROSSOVER = 35
 
 def singleton(myClass):

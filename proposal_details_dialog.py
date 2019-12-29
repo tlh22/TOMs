@@ -39,3 +39,25 @@ class proposalDetailsDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+    """class Example(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(Example, self).__init__(parent)
+        self.setupUi(self)
+        self.shortcut.activated.connect(self.addTabs)
+
+
+    def Resolution(self):
+        app = QtWidgets.QApplication([])
+        resolution = app.desktop().screenGeometry()
+        width, height = resolution.width(), resolution.height()
+        self.setMaximumSize(QtCore.QSize(width, height))
+
+    def addTabs(self):
+        self.DataSets.setUpdatesEnabled(True)
+
+        self.tab = QtWidgets.QWidget()
+        self.tab.setAutoFillBackground(False)
+        self.tab.setObjectName("userAdded")
+
+        pages = self.count()"""

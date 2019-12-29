@@ -43,9 +43,9 @@ import sys, traceback
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
-        QgsMessageLog.logMessage(
+        """QgsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel")
+                geometryID), tag="TOMs panel")"""
 
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
@@ -59,7 +59,9 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
     return res
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+#def generateDisplayGeometry(feature, parent):
 def generateDisplayGeometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
+
     try:
         """QgsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(

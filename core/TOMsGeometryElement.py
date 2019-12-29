@@ -92,7 +92,7 @@ class TOMsGeometryElement(QObject):
 
             else:
 
-                res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.LineGeometry)
+                res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.PolygonGeometry)
 
                 if res != QgsGeometry.OperationResult.Success:
                     QgsMessageLog.logMessage(
@@ -120,18 +120,18 @@ class TOMsGeometryElement(QObject):
             AzimuthToCentreLine = self.currAzimuthToCentreLine
         return self.getShape(self.BayOffsetFromKerb, AzimuthToCentreLine)
 
-    def getShape(self, shpExtent=None, AzimuthToCentreLine=None):
+    def getShape(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
         feature = self.currFeature
         restGeomType = self.currRestGeomType
-        offset = self.BayOffsetFromKerb
         orientation = self.currBayOrientation
 
         if shpExtent is None:
             shpExtent = self.BayWidth
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
-
+        if offset is None:
+            offset = self.BayOffsetFromKerb
         """
         Logic is :
 
@@ -273,7 +273,7 @@ class TOMsGeometryElement(QObject):
                                 line[len(line) - 1].y() + (float(offset) * cosb)))
 
         newLine = QgsGeometry.fromPolylineXY(ptsList)
-        parallelPtsList.reverse()
+        #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
 
         QgsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), tag="TOMs panel")
@@ -283,7 +283,7 @@ class TOMsGeometryElement(QObject):
 
     def getZigZag(self, wavelength=None, shpExtent=None):
 
-        # QgsMessageLog.logMessage("In getZigZag ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getZigZag ... ", tag="TOMs panel")
 
         if not wavelength:
             wavelength = 3.0
@@ -300,9 +300,9 @@ class TOMsGeometryElement(QObject):
         length = self.currFeature.geometry().length()
 
         NrSegments = int(length / wavelength)    # e.g., length = 33, wavelength = 4
-        interval = length/float(NrSegments)
+        interval = int(length/float(NrSegments) * 10000) / 10000
 
-        # QgsMessageLog.logMessage("In getZigZag. NrSegments = " + str(NrSegments) + "; interval: " + str(interval), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), tag="TOMs panel")
 
         Az = line[0].azimuth(line[1])
 
@@ -332,10 +332,10 @@ class TOMsGeometryElement(QObject):
 
             interpolatedPointC = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
 
-            # QgsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
             # QgsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), tag="TOMs panel")
 
-            #  QgsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), tag="TOMs panel")
 
             ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
 
@@ -409,7 +409,7 @@ class generatedGeometryEchelonLineType(TOMsGeometryElement):
         QgsMessageLog.logMessage("In factory. generatedGeometryEchelonLineType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
-        outputGeometry, parallelLine = self.getShape(self.BayLengt)
+        outputGeometry, parallelLine = self.getShape(self.BayLength)
         return outputGeometry
 
 
@@ -464,8 +464,8 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
         outputGeometry1, parallelLine1 = self.getShape()
         outputGeometry1A, paralletLine1A = self.getLine()
 
-        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
 
 
 class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
@@ -534,6 +534,16 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
         outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
         return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+
+
+class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
+    def __init__(self, currFeature):
+        super().__init__(currFeature)
+        QgsMessageLog.logMessage("In factory. generatedGeometryOutlineBayPolygonType ... ", tag="TOMs panel")
+
+    def getElementGeometry(self):
+
+        return QgsGeometry.fromPolygonXY([self.currFeature.geometry().asPolyline()])
 
 
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
@@ -607,6 +617,9 @@ class ElementGeometryFactory():
 
             elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT_POLYGON:
                 return generatedGeometryBayLineType(currFeature).getElementGeometry()
+
+            elif currRestGeomType == RestrictionGeometryTypes.OUTLINE_BAY_POLYGON:
+                return generatedGeometryOutlineBayPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
                 return generatedGeometryBayLineType(currFeature).getElementGeometry()
