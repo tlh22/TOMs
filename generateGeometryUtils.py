@@ -54,7 +54,7 @@ class generateGeometryUtils:
     def turnToCL(Az1, Az2):
         # function to determine direction of turn to road centre    *** needs to be checked carefully ***
         # Az1 = Az of current line; Az2 = Az to roadCentreline
-        QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
 
         AzCL = Az1 - 90.0
         if AzCL < 0:
@@ -94,7 +94,7 @@ class generateGeometryUtils:
         prevAzA = generateGeometryUtils.checkDegrees(prevAz + float(Turn))
         currAzA = generateGeometryUtils.checkDegrees(currAz + float(Turn))
 
-        # QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAz: " + str(currAzA), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAzA: " + str(currAzA), tag="TOMs panel")
 
         """
         if prevAz > 180:
@@ -105,7 +105,7 @@ class generateGeometryUtils:
 
         # QgsMessageLog.logMessage("In calcBisector: revPrevAz: " + str(revPrevAz), tag="TOMs panel")
 
-        diffAz = generateGeometryUtils.checkDegrees(prevAzA - currAzA)
+        diffAz = prevAzA - currAzA
 
         # QgsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), tag="TOMs panel")
 
@@ -113,7 +113,7 @@ class generateGeometryUtils:
         bisectAz = prevAzA - diffAngle
 
         diffAngle_rad = math.radians(diffAngle)
-        # QgsMessageLog.logMessage("In calcBisector: diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel")
         distToPt = float(WidthRest) / math.cos(diffAngle_rad)
 
         # QgsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), tag="TOMs panel")

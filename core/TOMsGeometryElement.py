@@ -20,7 +20,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
-    QgsMessageLog, QgsFeature, QgsGeometry,
+    QgsMessageLog, QgsFeature, QgsGeometry, QgsGeometryUtils,
     QgsFeatureRequest,
     QgsRectangle, QgsPointXY, QgsWkbTypes
 )
@@ -170,7 +170,7 @@ class TOMsGeometryElement(QObject):
 
             # QgsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), tag="TOMs panel")
 
-            Az = line[i].azimuth(line[i + 1])
+            Az = generateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
 
             # QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
 
@@ -182,7 +182,7 @@ class TOMsGeometryElement(QObject):
 
                 Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
 
-                newAz = Az + Turn
+                newAz = generateGeometryUtils.checkDegrees(Az + Turn)
                 # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
@@ -237,6 +237,8 @@ class TOMsGeometryElement(QObject):
 
                 newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
 
+                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
@@ -276,8 +278,8 @@ class TOMsGeometryElement(QObject):
         #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
 
-        QgsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), tag="TOMs panel")
-        QgsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), tag="TOMs panel")
 
         return newLine, parallelLine
 
