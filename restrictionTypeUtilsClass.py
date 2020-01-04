@@ -476,7 +476,7 @@ class RestrictionTypeUtilsMixin():
                         tag="TOMs panel")
 
                     status = self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
-                                             currProposalID, RestrictionAction.OPEN)  # Open = 1; Close = 2
+                                             currProposalID, RestrictionAction.CLOSE)  # Open = 1; Close = 2
 
                     newRestriction = QgsFeature(currRestriction)
 
@@ -590,14 +590,14 @@ class RestrictionTypeUtilsMixin():
         #currDate = self.proposalsManager.date()
 
         if currRestrictionLayer.name() == "Lines":
-            currRestriction.setAttribute("RestrictionTypeID", 10)  # 10 = SYL (Lines)
+            currRestriction.setAttribute("RestrictionTypeID", 201)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
 
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
             currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
-            currRestriction.setAttribute("RestrictionTypeID", 28)  # 28 = Permit Holders Bays (Bays)
+            currRestriction.setAttribute("RestrictionTypeID", 101)  # 28 = Permit Holders Bays (Bays)
             currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
             currRestriction.setAttribute("NrBays", -1)
 

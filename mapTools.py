@@ -412,13 +412,13 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
                 currGeometryID = str(feature.attribute('GeometryID'))
                 if layerType == RestrictionLayers.BAYS:
-                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+100)), GeometryID=currGeometryID)
+                    title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))), GeometryID=currGeometryID)
                     featureList.append(title)
                 elif layerType == RestrictionLayers.LINES:
-                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID')+200)), GeometryID=currGeometryID)
+                    title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))), GeometryID=currGeometryID)
                     featureList.append(title)
                 elif layerType == RestrictionLayers.RESTRICTION_POLYGONS:
-                    title = "{RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(
+                    title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(
                         self.getLookupDescription(self.RESTRICTION_POLYGON_TYPES,
                                                   feature.attribute('RestrictionTypeID'))),
                                                                             GeometryID=currGeometryID)
@@ -430,7 +430,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                         if field_index == -1:
                             break
                         if feature[field_index]:
-                            title = "Sign: {RestrictionDescription}[{GeometryID}]".format(RestrictionDescription=str(
+                            title = "Sign: {RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(
                                 self.getLookupDescription(self.SIGN_TYPES, feature[field_index])),
                                                                                     GeometryID=currGeometryID)
                             featureList.append(title)
@@ -981,19 +981,6 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
             #  - add the details to RestrictionsInProposal
 
-            """newFeature = QgsFeature(self.origLayer.fields())
-
-            newFeature.setAttributes(currRestriction.attributes())
-            newRestrictionID = str(uuid.uuid4())
-
-            newFeature[idxRestrictionID] = newRestrictionID
-
-            idxOpenDate = self.origLayer.fields().indexFromName("OpenDate")
-            idxGeometryID = self.origLayer.fields().indexFromName("GeometryID")
-
-            newFeature[idxOpenDate] = None
-            newFeature[idxGeometryID] = None"""
-
             while self.splitRestrictionChanged == False:
                 QgsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - waiting for change.", tag="TOMs panel")
                 time.sleep(0.1)
@@ -1004,34 +991,12 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             # Now reset some of the attributes
             self.updateDefaultRestrictionDetails(updatedRestriction, currLayer, self.proposalsManager.date())
 
-            """newFeature.setGeometry(self.changedGeometry)
-
-            QgsMessageLog.logMessage(
-                "In SplitRestrictionTool:onGeometryChanged - newGeom incoming: " + self.changedGeometry.asWkt(),
-                tag="TOMs panel")
-
-            # currLayer.addFeature(newFeature)
-            self.layer.addFeatures([newFeature])
-
-            QgsMessageLog.logMessage(
-                "In SplitRestrictionTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), tag="TOMs panel")
-
-            QgsMessageLog.logMessage(
-                "In SplitRestrictionTool:onGeometryChanged - newGeom: " + newFeature.geometry().asWkt(),
-                tag="TOMs panel")
-
-            originalGeomBuffer = QgsGeometry(currRestriction.geometry())
-            QgsMessageLog.logMessage(
-                "In SplitRestrictionTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.asWkt(),
-                tag="TOMs panel")
-            self.layer.changeGeometry(currRestriction.id(), originalGeomBuffer)"""
-
             QgsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - geometries switched.", tag="TOMs panel")
 
             self.addRestrictionToProposal(currRestriction[idxRestrictionID],
                                           self.getRestrictionLayerTableID(currLayer),
                                           self.proposalsManager.currentProposal(),
-                                          RestrictionAction.OPEN)  # close the original feature
+                                          RestrictionAction.CLOSE)  # close the original feature
             QgsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - feature closed.", tag="TOMs panel")
 
             self.addRestrictionToProposal(updatedRestriction[idxRestrictionID], self.getRestrictionLayerTableID(currLayer),
