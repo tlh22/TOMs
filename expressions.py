@@ -32,6 +32,8 @@ from qgis.core import (
 )
 import math
 from .generateGeometryUtils import generateGeometryUtils
+from .core.TOMsGeometryElement import ElementGeometryFactory
+
 import sys, traceback
 
 
@@ -41,11 +43,13 @@ import sys, traceback
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
-        QgsMessageLog.logMessage(
+        """QgsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel")
+                geometryID), tag="TOMs panel")"""
 
-        res = generateGeometryUtils.getRestrictionGeometry(feature)
+        # res = generateGeometryUtils.getRestrictionGeometry(feature)
+        res = ElementGeometryFactory.getElementGeometry(feature)
+
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
@@ -55,13 +59,16 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
     return res
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+#def generateDisplayGeometry(feature, parent):
 def generateDisplayGeometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
+
     try:
         """QgsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
                 geometryID), tag="TOMs panel")"""
 
-        res = generateGeometryUtils.getRestrictionGeometry(feature)
+        # res = generateGeometryUtils.getRestrictionGeometry(feature)
+        res = ElementGeometryFactory.getElementGeometry(feature)
 
     except:
         QgsMessageLog.logMessage('generate_display_geometry', tag="TOMs panel")

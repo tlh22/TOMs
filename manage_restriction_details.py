@@ -49,11 +49,13 @@ from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 from .mapTools import *
 #from TOMsUtils import *
 from .constants import (
-    ACTION_CLOSE_RESTRICTION,
-    ACTION_OPEN_RESTRICTION
+    ProposalStatus,
+    RestrictionAction
 )
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsTransaction, setupTableNames
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from .core.TOMsTransaction import (TOMsTransaction)
+
 #from BayRestrictionForm import BayRestrictionForm
 
 import functools
@@ -169,7 +171,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
 
         # set up a Transaction object
-        # self.tableNames = setupTableNames(self.iface)
+        # self.tableNames = TOMSLayers(self.iface)
         # self.tableNames.getLayers()
         self.restrictionTransaction = restrictionTransaction
         """self.proposalsManager.TOMsToolChanged.connect(
@@ -687,7 +689,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                      tag="TOMs panel")
 
             self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID,
-                                                          ACTION_CLOSE_RESTRICTION())  # 2 = Close
+                                                          RestrictionAction.OPEN)  # 2 = Close
 
         # Now save all changes
 

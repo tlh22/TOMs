@@ -13,10 +13,35 @@
 # -*- coding: latin1 -*-
 # Import the PyQt and QGIS libraries
 
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QListWidgetItem, QListWidget, QCheckBox, QLineEdit, QToolButton, QAction, QCompleter
-from qgis.core import *
+from qgis.PyQt.QtCore import (
+    QObject,
+    QDate,
+    pyqtSignal,
+    QCoreApplication, Qt, QStringListModel
+)
+
+from qgis.PyQt.QtGui import (
+    QIcon,
+    QPixmap
+)
+
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+    QAction,
+    QDialogButtonBox,
+    QLabel,
+    QDockWidget, QLineEdit, QToolButton, QAction, QCompleter
+)
+
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsProject,
+    QgsMessageLog,
+    QgsFeature,
+    QgsGeometry,
+    QgsVectorLayer
+)
+
 
 from .InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
 

@@ -7,45 +7,51 @@
 # (at your option) any later version.
 #---------------------------------------------------------------------
 # Tim Hancock 2017
-'''
-Constants for TOMs. Taken from Eric Westra ... and amended as appropriate
-'''
 
-from qgis.PyQt.QtWidgets import (
-    QMessageBox
-)
+from enum import Enum
 
-from qgis.core import (
-    QgsMessageLog,
-    QgsProject
-)
+class ProposalStatus(object):
+    IN_PREPARATION = 1
+    ACCEPTED = 2
+    REJECTED = 3
 
+class RestrictionAction(object):
+    OPEN = 1
+    CLOSE = 2
 
-def ACTION_CLOSE_RESTRICTION(): return 2
-def ACTION_OPEN_RESTRICTION(): return 1
+class RestrictionLayers(object):
+    BAYS = 2
+    LINES = 3
+    RESTRICTION_POLYGONS = 4
+    SIGNS = 5
+    CPZS = 6
+    PTAS = 7
 
-def PROPOSAL_STATUS_IN_PREPARATION(): return 1
-def PROPOSAL_STATUS_ACCEPTED(): return 2
-def PROPOSAL_STATUS_REJECTED(): return 3
+class RestrictionGeometryTypes(object):
+    PARALLEL_BAY = 1
+    HALF_ON_HALF_OFF = 2
+    ON_PAVEMENT = 3
+    PERPENDICULAR = 4
+    ECHELON = 5
+    PERPENDICULAR_ON_PAVEMENT = 6
+    OTHER = 7
+    CENTRAL_PARKING = 8
+    PARALLEL_LINE = 10
+    ZIG_ZAG = 12
+    PARALLEL_BAY_POLYGON = 21
+    HALF_ON_HALF_OFF_POLYGON = 22
+    ON_PAVEMENT_POLYGON = 23
+    PERPENDICULAR_POLYGON = 24
+    ECHELON_POLYGON = 25
+    PERPENDICULAR_ON_PAVEMENT_POLYGON = 26
+    OUTLINE_BAY_POLYGON = 28
+    CROSSOVER = 35
 
-class TOMsConstants(object):
-
-    def __init__(self):
-
-        """QgsMessageLog.logMessage("In TOMsConstants. RESTRICTIONS_IN_PROPOSALS_LAYER", tag="TOMs panel")
-        if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals"):
-            QgsMessageLog.logMessage("In TOMsConstants. layer: " + str(QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0].name()), tag="TOMs panel")
-            self.RestrictionsInProposals = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionsInProposals is not present"))
-            raise LayerNotPresent"""
-        pass
-
-    #def ACTION_CLOSE_RESTRICTION(self): return 2
-    #def ACTION_OPEN_RESTRICTION(self): return 1
-
-    #def RESTRICTIONS_IN_PROPOSALS_LAYER(self): return self.RestrictionsInProposals
-
-
-
-
+def singleton(myClass):
+    # From https://www.youtube.com/watch?v=6IV_FYx6MQA
+    instances = {}
+    def getInstance(*args, **kwargs):
+        if myClass not in instances:
+            instances[myClass] = myClass(*args, **kwargs)
+            return instances[myClass]
+    return getInstance

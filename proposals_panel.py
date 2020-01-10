@@ -55,23 +55,23 @@ from .core.proposalsManager import *
 from .manage_restriction_details import manageRestrictionDetails
 from .search_bar import searchBar
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, setupTableNames, TOMsTransaction
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from .core.TOMsTransaction import (TOMsTransaction)
 
 from .constants import (
-    PROPOSAL_STATUS_IN_PREPARATION,
-    PROPOSAL_STATUS_ACCEPTED,
-    PROPOSAL_STATUS_REJECTED
+    ProposalStatus,
+    RestrictionAction
 )
+
 class proposalsPanel(RestrictionTypeUtilsMixin):
     
-    def __init__(self, iface, TOMsToolBar, proposalsManager):
+    def __init__(self, iface, TOMsToolBar):
         #def __init__(self, iface, TOMsMenu, proposalsManager):
 
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.TOMsToolBar = TOMsToolBar
-        self.proposalsManager = proposalsManager
 
         self.actionProposalsPanel = QAction(QIcon(":/plugins/TOMs/resources/TOMsStart.png"),
                                QCoreApplication.translate("MyPlugin", "Start TOMs"), self.iface.mainWindow())
@@ -82,6 +82,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.actionProposalsPanel.triggered.connect(self.onInitProposalsPanel)
 
         self.newProposalRequired = False
+
+        self.proposalsManager = TOMsProposalsManager(self.iface)
+        self.tableNames = self.proposalsManager.tableNames
 
         # Now set up the toolbar
 
@@ -103,7 +106,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #    first run of plugin
         #    removed on close (see self.onClosePlugin method)
 
-        # self.setupTableNames.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
+        # self.TOMSLayers.TOMsStartupFailure.connect(self.setCloseTOMsFlag)
         #self.RestrictionTypeUtilsMixin.tableNames.TOMsStartupFailure.connect(self.closeTOMsTools)
 
         if self.actionProposalsPanel.isChecked():
@@ -126,42 +129,19 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
         self.closeTOMs = False
 
-        # self.tableNames = setupTableNames(self.iface)
-
         # Check that tables are present
         QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
-        self.proposalsManager.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
+        self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
 
-        self.proposalsManager.tableNames.getLayers()
+        self.tableNames.getLayers()
 
         if self.closeTOMs:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start TOMs ..."))
             self.actionProposalsPanel.setChecked(False)
             return
 
-        """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
-            self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
-            raise LayerNotPresent"""
-
-        # Set up transaction group
-        #self.currTransactionGroup = self.createProposalTransactionGroup(self.tableNames)
-
-        """try:
-            currProposalTrans
-        except NameError:
-
-            # the Transaction doesn't exist so create it
-            currProposalTrans = self.createProposalTransactionGroup(self.Proposals)
-            self.currProposalTrans = currProposalTrans
-
-            errMessage = str()
-
-            # Start transaction
-
-            if self.currProposalTrans.begin() == False:
-                QgsMessageLog.logMessage("In onProposalDetails. Begin transaction failed: " + self.errMessage, tag="TOMs panel")"""
+            # QMessageBox.information(self.iface.mainWindow(), "ERROR", ("TOMsActivated about to emit"))
+        self.proposalsManager.TOMsActivated.emit()
 
         self.dock = ProposalPanelDockWidget()
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
@@ -169,22 +149,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # set up tabbing for Panels
         self.setupPanelTabs(self.iface, self.dock)
 
-        #self.dock.closingPlugin.connect(self.closeTOMsTools)
-
-        #self.proposalsManager.proposalChanged.connect(self.onProposalChanged)
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
-
-        # self.dock.filterDate.setDisplayFormat("yyyy-MM-dd")
         self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
-        self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
-
-        """if QgsMapLayerRegistry.instance().mapLayersByName("Proposals"):
-            self.Proposals = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table Proposals is not present"))
-            raise LayerNotPresent"""
+        self.Proposals = self.tableNames.setLayer("Proposals")
 
         # Set up field details for table  ** what about errors here **
         idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
@@ -208,15 +177,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # set up action for "View Proposal"
         self.dock.btn_ViewProposal.clicked.connect(self.onProposalDetails)
 
-        # self.dock.setUserVisible(True)
-
-        # set up a canvas refresh if there are any changes to the restrictions
-        #self.RestrictionsInProposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionsInProposals")[0]
-        #self.RestrictionsInProposalsLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
-        #self.RestrictionsInProposalsLayer.committedFeaturesAdded.connect(self.proposalsManager.updateMapCanvas)
-        #self.RestrictionsInProposalsLayer.committedFeaturesRemoved.connect(self.proposalsManager.updateMapCanvas)
-
-        #self.Proposals.committedFeaturesAdded.connect(self.onNewProposalSaved)
         self.proposalsManager.newProposalCreated.connect(self.onNewProposalCreated)
 
         # Create a transaction object for the Proposals
@@ -233,13 +193,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
 
-        if self.closeTOMs == True:
-            self.closeTOMsTools()
-        else:
-            self.proposalsManager.TOMsActivated.emit()
-
-            #self.TOMsProject = QgsProject.instance()
-            #self.TOMsProject.cleared.connect(self.closeTOMsTools)  # TODO: More work required on this
+        # TODO: Deal with the change of project ... More work required on this
+        # self.TOMsProject = QgsProject.instance()
+        # self.TOMsProject.cleared.connect(self.closeTOMsTools)
 
     def setCloseTOMsFlag(self):
         self.closeTOMs = True
@@ -288,19 +244,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-        queryString = "\"ProposalStatusID\" = " + str(PROPOSAL_STATUS_IN_PREPARATION())
-
-        QgsMessageLog.logMessage("In createProposalcb: queryString: " + str(queryString), tag="TOMs panel")
-
-        expr = QgsExpression(queryString)
-
-        proposals = self.Proposals.getFeatures(QgsFeatureRequest(expr))
-
-        for proposal in sorted(proposals, key=lambda f: f[4]):
-
-            currProposalID = proposal.attribute("ProposalID")
-            currProposalTitle = proposal.attribute("ProposalTitle")
-
+        for (currProposalID, currProposalTitle, currProposalStatusID, currProposalOpenDate, currProposal) in sorted(self.proposalsManager.getProposalsListWithStatus(ProposalStatus.IN_PREPARATION), key=lambda f: f[1]):
+            QgsMessageLog.logMessage("In createProposalcb: proposalID: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel")
             self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
         # set up action for when the proposal is changed
@@ -335,7 +280,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
         self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
-        self.newProposal[self.idxProposalStatusID] = PROPOSAL_STATUS_IN_PREPARATION()
+        self.newProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
         self.newProposal.setGeometry(QgsGeometry())
 
         self.Proposals.addFeature(self.newProposal)  # TH (added for v3)

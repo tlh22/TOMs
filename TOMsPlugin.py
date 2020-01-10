@@ -52,22 +52,12 @@ from qgis.core import (
     QgsApplication
 )
 
-#from qgis.core import *
-from qgis.gui import *
-
-# Initialize Qt resources from file resources.py
-from .resources import *
-
 # Import the code for the dialog
 from .core.proposalsManager import TOMsProposalsManager
 
 from .expressions import registerFunctions, unregisterFunctions
-#from test5_module_dialog import Test5ClassDialog
-
+from .restrictionTypeUtilsClass import TOMSLayers
 from .proposals_panel import proposalsPanel
-from .search_bar import searchBar
-
-from .manage_restriction_details import manageRestrictionDetails
 
 import os.path
 import time
@@ -154,7 +144,8 @@ class TOMs:
         QgsMessageLog.logMessage("Registering expression functions ... ", tag="TOMs panel")
         registerFunctions()   # Register the Expression functions that we need
 
-        self.proposalsManager = TOMsProposalsManager(self.iface)
+        #layerNames = TOMSLayers(self.iface)
+        #self.proposalsManager = TOMsProposalsManager(self.iface, layerNames)
 
         #self.editing    = False
         #self.curStartPt = None
@@ -210,7 +201,7 @@ class TOMs:
         #self.doRestrictionDetails = manageRestrictionDetails(self.iface, self.TOMsToolbar, self.proposalsManager)
 
         #self.doSearchBar = searchBar(self.iface, self.TOMsToolbar, self.proposalsManager)
-        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar, self.proposalsManager)
+        self.doProposalsPanel = proposalsPanel(self.iface, self.TOMsToolbar)
 
         pass
 
