@@ -438,6 +438,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.dialogui.comboBox_scale.setScale(1 / 500)  # composer may not have a "scale" item
             self.__createRubberBand()
 
+    @staticmethod
+    def getCompositionItem(composition, itemId, itemClass):
+        # gis.stackexchange.com/questions/241213/how-to-get-a-composer-label-by-id-with-python-in-qgis
+        item = None
+        for item in composition.items():
+            if isinstance(item, itemClass):
+                if item.id() == itemId:
+                    return item
+
     def TOMsExport(self):
 
         # TH (180608): Export function to deal with atlases
@@ -616,11 +625,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         currAtlas.beginRender()
         currComposition.setAtlasMode(QgsComposition.ExportAtlas)
-
-        composerRevisionNr = currComposition.getComposerItemById('revisionNr')
-        composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
-        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
-        composerPrintTypeDetails = currComposition.getComposerItemById('printTypeDetails')
+        
+        #composerRevisionNr = currComposition.getComposerItemById('revisionNr')
+        composerRevisionNr = InstantPrintTool.getCompositionItem(currComposition, 'revisionNr', QgsComposerLabel)
+        #composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
+        composerEffectiveDate = InstantPrintTool.getCompositionItem(currComposition, 'effectiveDate', QgsComposerLabel)
+        #composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        composerProposalStatus = InstantPrintTool.getCompositionItem(currComposition, 'proposalStatus', QgsComposerLabel)
+        #composerPrintTypeDetails = currComposition.getComposerItemById('printTypeDetails')
+        composerPrintTypeDetails = InstantPrintTool.getCompositionItem(currComposition, 'printTypeDetails', QgsComposerLabel)
 
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
         composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
@@ -732,8 +745,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         composerEffectiveDate = currComposition.getComposerItemById('effectiveDate')
         #composerEffectiveDate.setText('{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
-
-        composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        
+        #composerProposalStatus = currComposition.getComposerItemById('proposalStatus')
+        composerProposalStatus = InstantPrintTool.getCompositionItem(currComposition, 'proposalStatus', QgsComposerLabel)
         composerProposalStatus.setText(self.proposalForPrintingStatusText)
 
     def TOMsChooseTiles(self):
