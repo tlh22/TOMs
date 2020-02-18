@@ -78,7 +78,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         self.canvas = self.iface.mapCanvas()
 
-        self.currProposalO = TOMsProposal(self)
+        self.currProposalObject = TOMsProposal(self)
+
         self.setTOMsActivated = False
 
     def date(self):
@@ -105,6 +106,13 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             currProposal = 0
         return int(currProposal)
 
+    def currentProposalObject(self):
+        """
+        Returns the current proposal object
+        """
+
+        return self.currProposalObject
+
     def setCurrentProposal(self, value):
         """
         Set the current proposal
@@ -112,25 +120,30 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         QgsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), tag="TOMs panel")
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentProposal', value)
 
-        self.currProposalO.setProposal(self.currentProposal())
+        self.currProposalObject.setProposal(self.currentProposal())
 
         self.proposalChanged.emit()
         self.updateMapCanvas()
 
-        box = self.currProposalO.getProposalBoundingBox()
+        box = self.currProposalObject.getProposalBoundingBox()
         if box.isNull() == False:
             self.canvas.setExtent(box)
 
-    def __queryStringForCurrentRestrictions(self):
+    def __queryStringForCurrentRestrictions(self, filterDate=None):
 
-        dateString = self.__date.toString('dd-MM-yyyy')
-        currProposalID = self.currentProposal()
+        if filterDate is None:
+            filterDate = self.__date()
+
+        dateString = filterDate.toString('dd-MM-yyyy')
+        #currProposalID = self.currentProposal()
 
         dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
 
         #filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
         filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(dateChoosenFormatted=dateChoosenFormatted)
+
+        return filterString
 
     def updateMapCanvas(self):
         """
@@ -158,11 +171,11 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
             if currProposalID > 0:   # need to consider a proposal
 
-                restrictionsToClose = self.currProposalO.getRestrictionsToCloseForLayer(layerID)
+                restrictionsToClose = self.currProposalObject.getRestrictionsToCloseForLayer(layerID)
                 if len(restrictionsToClose) > 0:
                     layerFilterString = ('{layerString} AND "RestrictionID" NOT IN ({restrictionsToClose}))').format(layerString=layerFilterString, restrictionsToClose=restrictionsToClose)
 
-                restrictionsToOpen = self.currProposalO.getRestrictionsToOpenForLayer(layerID)
+                restrictionsToOpen = self.currProposalObject.getRestrictionsToOpenForLayer(layerID)
                 if len(restrictionsToOpen) > 0:
                     layerFilterString = (' "RestrictionID"  IN ({restrictionsToOpen}) OR ({layerString})').format(layerString=layerFilterString, restrictionsToOpen=restrictionsToOpen)
 
@@ -190,7 +203,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         pass
 
-    def __getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):
+    def getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):
 
         if not dateString:
             dateString = self.date()
@@ -205,14 +218,14 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
 
-        QgsMessageLog.logMessage("In __getCurrentRestrictionsForLayer. Layer: " + thisLayer.name() + " Filter: " + filterString,
+        QgsMessageLog.logMessage("In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " Filter: " + filterString,
                                  tag="TOMs panel")
         restrictionList = []
         for currentRestrictionDetails in thisLayer.getFeatures(request):
             QgsMessageLog.logMessage(
-                "In __getCurrentRestrictionsForLayer. Layer: " + thisLayer.name() + " restrictionID: " + str(currentRestrictionDetails["RestrictionID"]),
+                "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " restrictionID: " + str(currentRestrictionDetails["RestrictionID"]),
                 tag="TOMs panel")
-            currRestriction = ProposalElementFactory.getProposalElement(layerID,
+            currRestriction = ProposalElementFactory.getProposalElement(self, layerID,
                                                                         currentRestrictionDetails,
                                                                         currentRestrictionDetails["RestrictionID"])
             restrictionList.append([currentRestrictionDetails["RestrictionID"], currRestriction])
@@ -224,7 +237,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     """ Needed because Proposal object can be created before layers details are set ... perhaps a sequencing issue here ... """
     """QgsMessageLog.logMessage("In proposalsManager. SetProposalDetails ... ", tag="TOMs panel")
         self.setTOMsActivated = True
-        self.currProposalO.setProposalsLayer()"""
+        self.currProposalObject.setProposalsLayer()"""
 
     def getProposalsListWithStatus(self, proposalStatus=None):
 

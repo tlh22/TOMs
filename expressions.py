@@ -59,21 +59,21 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
     return res
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
-#def generateDisplayGeometry(feature, parent):
-def generateDisplayGeometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
+def generateDisplayGeometry(feature, parent):
+    #def generateDisplayGeometry(restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
 
     try:
         """QgsMessageLog.logMessage(
-            "In generate_display_geometry: New restriction .................................................................... ID: " + str(
+            "In generateDisplayGeometry: New restriction .................................................................... ID: " + str(
                 geometryID), tag="TOMs panel")"""
 
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
 
     except:
-        QgsMessageLog.logMessage('generate_display_geometry', tag="TOMs panel")
+        QgsMessageLog.logMessage('generateDisplayGeometry', tag="TOMs panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage('generate_display_geometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), tag="TOMs panel")
+        QgsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), tag="TOMs panel")
 
     return res
 

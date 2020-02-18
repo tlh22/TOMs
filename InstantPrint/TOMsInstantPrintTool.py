@@ -182,9 +182,8 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         # get the map tiles that are affected by the Proposal
         # self.getProposalTileList(currProposalID, currRevisionDate)
-        proposalTileDictionaryForDate = TOMsProposal(self.proposalsManager,
-                                                     self.proposalsManager.currentProposal()).getProposalTileDictionaryForDate(
-            currRevisionDate)
+
+        proposalTileDictionaryForDate = self.proposalsManager.currentProposalObject().getProposalTileDictionaryForDate(currRevisionDate)
         """self.tileSet = set(
             proposalTileDictionaryForDate)"""  # TODO: Change around use of tileSet - also might be good to have a current proposal as an object in proposalManager...
 
