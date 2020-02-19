@@ -232,8 +232,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
-        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-        self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
+        #self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
+        #self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
 
         self.dock.cb_ProposalsList.clear()
 
@@ -313,7 +313,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         pass
 
     def onNewProposalCreated(self, proposal):
-        QgsMessageLog.logMessage("In onNewProposalSaved. New proposal = " + str(proposal), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onNewProposalCreated. New proposal = " + str(proposal), tag="TOMs panel")
 
         self.createProposalcb()
 
@@ -323,7 +323,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
             currProposalID = self.dock.cb_ProposalsList.itemData(currIndex)
             #QgsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), tag="TOMs panel")
             if currProposalID == proposal:
-                QgsMessageLog.logMessage("In onNewProposalSaved. index found as " + str(currIndex), tag="TOMs panel")
+                QgsMessageLog.logMessage("In onNewProposalCreated. index found as " + str(currIndex), tag="TOMs panel")
                 self.dock.cb_ProposalsList.setCurrentIndex(currIndex)
                 return
 

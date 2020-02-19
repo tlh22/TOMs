@@ -138,6 +138,9 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     def setProposalCreateDate(self, value):
         return self.thisProposal.setAttribute("ProposalCreateDate", value)
 
+    def createNewProposal(self):  # TODO:
+        pass
+
     def acceptProposal(self):
 
         currProposalID = self.thisProposalNr
@@ -157,6 +160,10 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 restrictionList = []
                 restrictionList = self.__getRestrictionsInProposalForLayerForAction(currlayerID)
 
+                # clear filter
+                currFilter = self.tableNames.setLayer(currlayerName).subsetString()
+                self.tableNames.setLayer(currlayerName).setSubsetString('')
+
                 for currRestrictionID, currRestrictionInProposalDetails in restrictionList:
                     currRestrictionInProposal = TOMsProposalElement(self.proposalsManager, currlayerID, None, currRestrictionID)
                     status = currRestrictionInProposal.acceptActionOnProposalElement(currRestrictionInProposalDetails.attribute("ActionOnProposalAcceptance")) # Finding the correct action could go to ProposalElement
@@ -171,9 +178,9 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             proposalTileDictionary = self.getProposalTileDictionaryForDate()
 
             for tileNr, tile in proposalTileDictionary.items():
-                QgsMessageLog.logMessage("In TOMsProposal.acceptProposal: " + str(tile["id"]) + " RevisionNr: " + str(
+                QgsMessageLog.logMessage("In TOMsProposal.acceptProposal: " + str(tile["id"]) + " current evisionNr: " + str(
                     tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
-                currTile = TOMsTile(tileNr)
+                currTile = TOMsTile(self.proposalsManager, tileNr)
                 status = currTile.updateTileRevisionNr(currProposalID)
                 if status == False:
                     QgsMessageLog.logMessage(
@@ -183,14 +190,22 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     return status
 
             # Now update Proposal
-            return self.setProposalStatusID(ProposalStatus.ACCEPTED)
+            status = self.setProposalStatusID(ProposalStatus.ACCEPTED)
+
+            #self.proposalsManager.newProposalCreated.emit(0)
 
         pass
 
     def rejectProposal(self):
 
         QgsMessageLog.logMessage("In TOMsProposal.rejectProposal - " + str(self.thisProposalNr), tag="TOMs panel")
-        return self.setProposalStatusID(ProposalStatus.REJECTED)
+        status = self.setProposalStatusID(ProposalStatus.REJECTED)
+
+        if status:
+            QgsMessageLog.logMessage("In TOMsProposal.rejectProposal.  Proposal Rejected ... ", tag="TOMs panel")
+            #self.proposalsManager.newProposalCreated.emit(0)
+
+        return status
 
     def getRestrictionsToOpenForLayer(self, layer):
         return self.__getRestrictionsListForLayerForAction(layer, RestrictionAction.OPEN)
@@ -401,6 +416,7 @@ class TOMsTile(QObject):
         return self.thisTile.attribute("RevisionNr")
 
     def setRevisionNr(self, value):
+        QgsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), tag="TOMs panel")
         return self.thisTile.setAttribute("RevisionNr", value)
 
     def lastRevisionDate(self):
@@ -453,30 +469,37 @@ class TOMsTile(QObject):
 
         return None, None
 
-    def updateTileRevisionNr(self):
-
-        QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile" + str(self.thisTileNr) + " currRevNr: ", tag="TOMs panel")
+    def updateTileRevisionNr(self, currProposalID = None):
 
         # This will update the revision numberwithin "Tiles" and add a record to "TilesWithinAcceptedProposals"
 
-        currProposal = self.proposalsManager.currentProposalObject()
+        if currProposalID is None:
+            currProposal = self.proposalsManager.currentProposalObject()
+        else:
+            currProposal = TOMsProposal(self.proposalsManager, currProposalID)
+
+        QgsMessageLog.logMessage(
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()), tag="TOMs panel")
 
         # check that there are no revisions beyond this date
-        if self.lastRevisionDate < currProposal.getProposalOpenDate():
+        if self.lastRevisionDate() > currProposal.getProposalOpenDate():
             QgsMessageLog.logMessage(
                 "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync",
                 tag="TOMs panel")
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
+            QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
 
-        if self.revisionNr() is None:
+        if self.revisionNr() is None or self.revisionNr() == 0:
             newRevisionNr = 1
         else:
             newRevisionNr = self.revisionNr() + 1
 
-        self.setRevisionNr(newRevisionNr)
+        QgsMessageLog.logMessage(
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: ", tag="TOMs panel")
+
+        updateStatus = self.setRevisionNr(newRevisionNr)
         self.setLastRevisionDate(currProposal.getProposalOpenDate())
+
 
         # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
 
@@ -538,7 +561,7 @@ class TOMsProposalElement(QObject):
                 QgsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), tag="TOMs panel")
                 return True
 
-        QMessageBox.information(self.iface.mainWindow(), "ERROR", ("RestrictionID: \'{restrictionID}\' not found within layer {layerName}".format(restrictionID=restrictionID, layerName=self.thisLayer.name())))
+        QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("RestrictionID: \'{restrictionID}\' not found within layer {layerName}".format(restrictionID=restrictionID, layerName=self.thisLayer.name())))
         return False # either not found or 0
 
     def getElement(self):
@@ -625,14 +648,14 @@ class TOMsProposalElement(QObject):
         # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
 
         if actionOnAcceptance == RestrictionAction.OPEN:  # Open
-            statusUpd = self.thisLayer.changeAttributeValue(self.thisRestrictionID,
+            statusUpd = self.thisLayer.changeAttributeValue(self.thisElement.id(),
                                                             self.thisLayer.fields().indexFromName(
                                                                       "OpenDate"),
                                                                   currProposalOpenDate)
             QgsMessageLog.logMessage(
                 "In updateRestriction. " + self.thisRestrictionID + " Opened", tag="TOMs panel")
         else:  # Close
-            statusUpd = self.thisLayer.changeAttributeValue(self.thisRestrictionID,
+            statusUpd = self.thisLayer.changeAttributeValue(self.thisElement.id(),
                                                             self.thisLayer.fields().indexFromName(
                                                                       "CloseDate"),
                                                                   currProposalOpenDate)

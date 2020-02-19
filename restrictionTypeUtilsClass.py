@@ -979,7 +979,7 @@ class RestrictionTypeUtilsMixin():
                 QgsMessageLog.logMessage(
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
-                if updateStatus == True:
+                if updateStatus == True or updateStatus is None:
                     status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
@@ -1008,7 +1008,7 @@ class RestrictionTypeUtilsMixin():
                 QgsMessageLog.logMessage(
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
-                if updateStatus == True:
+                if updateStatus == True or updateStatus is None:
                     status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
