@@ -40,7 +40,8 @@ from qgis.core import (
     QgsGeometry,
     QgsTransaction,
     QgsTransactionGroup,
-    QgsProject
+    QgsProject,
+    QgsApplication
 )
 
 from qgis.gui import *
@@ -55,11 +56,11 @@ from .constants import (
 
 from .generateGeometryUtils import generateGeometryUtils
 #from core.proposalsManager import *
-from .core.TOMsProposal import (TOMsProposal)
+from .core import (TOMsProposal, TOMsTile)
 from .core.TOMsTransaction import (TOMsTransaction)
 
 from abc import ABCMeta
-
+import datetime
 import uuid
 
 class TOMsParams(QObject):
@@ -78,14 +79,16 @@ class TOMsParams(QObject):
                           "BayLength",
                           "BayOffsetFromKerb",
                           "LineOffsetFromKerb",
-                          "CrossoverShapeWidth"
+                          "CrossoverShapeWidth",
+                          "PhotoPath",
+                          "MinimumTextDisplayScale"
                         ]
 
         self.TOMsParamsDict = {}
 
     def getParams(self):
 
-        # QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
         found = True
 
         # Check for project being open
@@ -97,10 +100,18 @@ class TOMsParams(QObject):
 
         else:
 
+            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", tag="TOMs panel")
+
             for param in self.TOMsParamsList:
-                currParam = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param))
+                # QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel")
+                try:
+                    currParam = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param)
+                except None:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
+
                 if currParam:
                     self.TOMsParamsDict[param] = currParam
+                    # QgsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param), tag="TOMs panel")
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False
@@ -111,7 +122,9 @@ class TOMsParams(QObject):
         else:
             self.TOMsParamsSet.emit()
 
-        return
+            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... finished ", tag="TOMs panel")
+
+        return found
 
     def setParam(self, param):
         return self.TOMsParamsDict.get(param)
@@ -205,10 +218,34 @@ class originalFeature(object):
         return self.savedFeature.attribute("GeometryID")
 
     def printFeature(self):
-        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
+        QgsMessageLog.logMessage("In originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
                                  tag="TOMs panel")
-        QgsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
+        QgsMessageLog.logMessage("In originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
                                  tag="TOMs panel")
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class Logger(metaclass=Singleton):
+    def __init__(self, iface):
+        # Set up log file and collect any relevant messages
+        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+
+        if logFilePath:
+            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
+
+            logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
+            self.filename = os.path.join(logFilePath, logfile)
+            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
+            QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)
+
+    def write_log_message(self, message, tag, level):
+        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
+        with open(self.filename, 'a') as logfile:
+            logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 
 class RestrictionTypeUtilsMixin():
     #def __init__(self):
@@ -672,7 +709,8 @@ class RestrictionTypeUtilsMixin():
 
         pass
 
-    def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
+        """
+        def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
         # update the Open/Close date for the restriction
         QgsMessageLog.logMessage("In updateRestriction. layer: " + str(
             currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
@@ -706,7 +744,8 @@ class RestrictionTypeUtilsMixin():
 
                 return statusUpd
 
-        pass
+        pass 
+        """
 
     def setupRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction, restrictionTransaction):
 
@@ -879,15 +918,8 @@ class RestrictionTypeUtilsMixin():
 
         pass
 
-    def onSaveProposalFormDetails(self, currProposal, proposalsLayer, proposalsDialog, proposalTransaction):
+    def onSaveProposalFormDetails(self, currProposalRecord, currProposalObject, proposalsLayer, proposalsDialog, proposalTransaction):
         QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
-
-        # proposalsLayer.startEditing()
-
-        """def onSaveProposalDetails(self):
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
-        self.Proposals.startEditing()
-        """
 
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
@@ -903,13 +935,20 @@ class RestrictionTypeUtilsMixin():
         idxProposalCreateDate = self.Proposals.fields().indexFromName("ProposalCreateDate")
         idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
 
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposal[idxProposalStatusID]), tag="TOMs panel")
+        currProposalID = currProposalObject.getProposalNr()
+        currProposalStatusID = currProposalObject.getProposalStatusID()
+        currProposalTitle = currProposalObject.getProposalTitle()
+
+        newProposalStatusID = currProposalRecord[idxProposalStatusID]
+        newProposalOpenDate = currProposalRecord[idxProposalOpenDate]
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposalStatusID), tag="TOMs panel")
 
         #updateStatus = False
         newProposal = False
         proposalAcceptedRejected = False
 
-        if currProposal[idxProposalStatusID] == ProposalStatus.ACCEPTED:  # 2 = accepted
+        if newProposalStatusID == ProposalStatus.ACCEPTED:  # 2 = accepted
+            #if currProposal[idxProposalStatusID] == ProposalStatus.ACCEPTED:  # 2 = accepted
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
@@ -928,15 +967,20 @@ class RestrictionTypeUtilsMixin():
                 #updateStatus = True
 
                 #if updateStatus == True:
-                currProposalID = currProposal[idxProposalID]
-                currOpenDate = currProposal[idxProposalOpenDate]
-                updateStatus = self.acceptProposal(currProposalID, currOpenDate)
+                #currProposalID = currProposalObject[idxProposalID]
+                #currOpenDate = currProposalObject[idxProposalOpenDate]
+                #updateStatus = self.acceptProposal(currProposalID, currOpenDate)
+
+                # just check that we have any updates
+                currProposalObject.setProposalOpenDate(newProposalOpenDate)
+
+                updateStatus = currProposalObject.acceptProposal()
 
                 QgsMessageLog.logMessage(
                     "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
 
-                if updateStatus == True:
-                    status = self.Proposals.updateFeature(currProposal)
+                if updateStatus == True or updateStatus is None:
+                    status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
 
@@ -946,7 +990,7 @@ class RestrictionTypeUtilsMixin():
             else:
                 proposalsDialog.reject()
 
-        elif currProposal[idxProposalStatusID] == ProposalStatus.REJECTED:  # 3 = rejected
+        elif currProposalStatusID == ProposalStatus.REJECTED:  # 3 = rejected
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
@@ -959,15 +1003,15 @@ class RestrictionTypeUtilsMixin():
 
                 # TODO: Need to check that this is an authorised user
 
-                updateStatus = self.Proposals.updateFeature(currProposal)
-                updateStatus = True
+                updateStatus = currProposalObject.rejectProposal()
 
-                if updateStatus == True:
+                QgsMessageLog.logMessage(
+                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
+
+                if updateStatus == True or updateStatus is None:
+                    status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
                     updateStatus = proposalsDialog.attributeForm().save()
                     proposalAcceptedRejected = True
-
-                else:
-                    proposalsDialog.reject()
 
             else:
                 # proposalsDialog.reject ((currProposal[idxProposalID]))
@@ -976,25 +1020,27 @@ class RestrictionTypeUtilsMixin():
         else:
 
             QgsMessageLog.logMessage(
-                "In onSaveProposalFormDetails. currProposalID = " + str(currProposal[idxProposalID]),
+                "In onSaveProposalFormDetails. currProposalID = " + str(currProposalID),
                 tag="TOMs panel")
 
+            # self.Proposals.updateFeature(currProposalObject.getProposalRecord())  # TH (added for v3)
             updateStatus = proposalsDialog.attributeForm().save()
-            self.Proposals.updateFeature(currProposal)  # TH (added for v3)
 
             # anything else can be saved.
-            if currProposal[idxProposalID] == None:
+            if currProposalID == 0:  # We should not be here if this is the current proposal ... 0 is place holder ...
 
                 # This is a new proposal ...
 
                 newProposal = True
+                QgsMessageLog.logMessage(
+                    "In onSaveProposalFormDetails. New Proposal ... ", tag="TOMs panel")
 
                 # add geometry
                 #currProposal.setGeometry(QgsGeometry())
 
             else:
-
-                self.Proposals.updateFeature(currProposal)  # TH (added for v3)
+                pass
+                # self.Proposals.updateFeature(currProposalObject.getProposalRecord())  # TH (added for v3)
 
             """updateStatus = proposalsLayer.updateFeature(currProposal)
 
@@ -1007,13 +1053,13 @@ class RestrictionTypeUtilsMixin():
             proposalsDialog.reject()
 
             #saveStatus = proposalsDialog.attributeForm().save()
-            QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposal.attributes()), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposalObject.attributes()), tag="TOMs panel")
 
             QgsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
                     proposalTransaction.currTransactionGroup.modified()),
             tag="TOMs panel")
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposalTitle) + " Status: " + str(currProposalStatusID), tag="TOMs panel")
 
 
         # Make sure that the saving will not be executed immediately, but
@@ -1034,12 +1080,12 @@ class RestrictionTypeUtilsMixin():
         # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
 
         if newProposal == True:
-            QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(currProposal.id()), tag="TOMs panel")
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(currProposalID), tag="TOMs panel")
             #self.proposalsManager.setCurrentProposal(currProposal[idxProposalID])
             #ProposalTypeUtils.iface.proposalChanged.emit()
 
             for proposal in self.Proposals.getFeatures():
-                if proposal[idxProposalTitle] == currProposal[idxProposalTitle]:
+                if proposal[idxProposalTitle] == currProposalTitle:
                     QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(proposal.id()),
                                              tag="TOMs panel")
                     newProposalID = proposal[idxProposalID]
@@ -1054,49 +1100,50 @@ class RestrictionTypeUtilsMixin():
 
         else:
 
-            self.proposalsManager.newProposalCreated.emit(currProposal[idxProposalID])
+            self.proposalsManager.newProposalCreated.emit(currProposalID)
 
-
-    def acceptProposal(self, currProposalID, currProposalOpenDate):
-        QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")
-
-        # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
-
-        RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
-
-        # restrictionFound = False
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        statusUpd = True
-
-        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
-            if restrictionInProposal.attribute("ProposalID") == currProposalID:
-                currRestrictionLayer = self.getRestrictionsLayerFromID(restrictionInProposal.attribute("RestrictionTableID"))
-                currRestrictionID = restrictionInProposal.attribute("RestrictionID")
-                currAction = restrictionInProposal.attribute("ActionOnProposalAcceptance")
-
-                #currRestrictionLayer.startEditing()
-
-                """if not currRestrictionLayer.isEditable():
-                    currRestrictionLayer.startEditing()"""
-
-                statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate)
-
-                if statusUpd == False:
-                    reply = QMessageBox.information(None, "Error",
-                                                    "Changes to " + currRestrictionLayer.name() + " failed: " + str(
-                                                        currRestrictionLayer.commitErrors()), QMessageBox.Ok)
-                    return statusUpd
-
-
-        self.updateTileRevisionNrs(currProposalID)
-
-        return statusUpd
+        """
+        def acceptProposal(self, currProposalID, currProposalOpenDate):
+            QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")
+    
+            # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
+    
+            RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
+            idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
+            idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
+            idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
+            idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
+    
+            # restrictionFound = False
+    
+            # not sure if there is better way to search for something, .e.g., using SQL ??
+    
+            statusUpd = True
+    
+            for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
+                if restrictionInProposal.attribute("ProposalID") == currProposalID:
+                    currRestrictionLayer = self.getRestrictionsLayerFromID(restrictionInProposal.attribute("RestrictionTableID"))
+                    currRestrictionID = restrictionInProposal.attribute("RestrictionID")
+                    currAction = restrictionInProposal.attribute("ActionOnProposalAcceptance")
+    
+                    #currRestrictionLayer.startEditing()
+    
+                    #if not currRestrictionLayer.isEditable():
+                    #    currRestrictionLayer.startEditing()
+    
+                    statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate)
+    
+                    if statusUpd == False:
+                        reply = QMessageBox.information(None, "Error",
+                                                        "Changes to " + currRestrictionLayer.name() + " failed: " + str(
+                                                            currRestrictionLayer.commitErrors()), QMessageBox.Ok)
+                        return statusUpd
+    
+    
+            self.updateTileRevisionNrs(currProposalID)
+    
+            return statusUpd
+        """
 
     def updateTileRevisionNrs(self, currProposalID):
         QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
@@ -1110,6 +1157,13 @@ class RestrictionTypeUtilsMixin():
         TilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
 
         # self.getProposalTileList(currProposalID, currRevisionDate)
+
+        dictTilesInProposal = tileProposal.getProposalTileDictionaryForDate(currRevisionDate)
+        currTile = TOMsTile(self.proposalsManager)
+        for tileNr, tile in dictTilesInProposal.items():
+            status = currTile.setTile(tileNr)
+            tileUpdateStatus = currTile.updateTileRevisionNr()
+
 
         proposalTileListForDate = self.getProposalTileListForDate(currRevisionDate)
 

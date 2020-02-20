@@ -232,8 +232,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel")
         # set up a "NULL" field for "No proposals to be shown"
 
-        self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-        self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
+        #self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
+        #self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
 
         self.dock.cb_ProposalsList.clear()
 
@@ -274,7 +274,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # create a new Proposal
 
-        self.newProposal = QgsFeature(self.Proposals.fields())
+        """self.newProposal = QgsFeature(self.Proposals.fields())
         #newProposal.setGeometry(QgsGeometry())
 
         self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
@@ -283,7 +283,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.newProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
         self.newProposal.setGeometry(QgsGeometry())
 
-        self.Proposals.addFeature(self.newProposal)  # TH (added for v3)
+        self.Proposals.addFeature(self.newProposal)  # TH (added for v3)"""
+        self.newProposalObject = self.proposalsManager.currentProposalObject().initialiseProposal()
+        self.newProposal = self.proposalsManager.currentProposalObject().getProposalRecord()
 
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.newProposal)
 
@@ -296,7 +298,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
             #self.button_box.accepted.disconnect()
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.newProposalObject, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
         #self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)
@@ -311,7 +313,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         pass
 
     def onNewProposalCreated(self, proposal):
-        QgsMessageLog.logMessage("In onNewProposalSaved. New proposal = " + str(proposal), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onNewProposalCreated. New proposal = " + str(proposal), tag="TOMs panel")
 
         self.createProposalcb()
 
@@ -321,7 +323,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
             currProposalID = self.dock.cb_ProposalsList.itemData(currIndex)
             #QgsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), tag="TOMs panel")
             if currProposalID == proposal:
-                QgsMessageLog.logMessage("In onNewProposalSaved. index found as " + str(currIndex), tag="TOMs panel")
+                QgsMessageLog.logMessage("In onNewProposalCreated. index found as " + str(currIndex), tag="TOMs panel")
                 self.dock.cb_ProposalsList.setCurrentIndex(currIndex)
                 return
 
@@ -356,8 +358,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
 
-        self.currProposal = self.getProposal(currProposalID)
-
+        # self.currProposal = self.getProposal(currProposalID)
+        self.currProposalObject = self.proposalsManager.currentProposalObject()
+        self.currProposal = self.proposalsManager.currentProposalObject().getProposalRecord()
         self.proposalDialog = self.iface.getFeatureForm(self.Proposals, self.currProposal)
 
         #self.proposalDialog.attributeForm().disconnectButtonBox()
@@ -369,7 +372,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
                 tag="TOMs panel")
 
         self.button_box.accepted.disconnect()
-        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.Proposals, self.proposalDialog, self.proposalTransaction))
+        self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.currProposalObject, self.Proposals, self.proposalDialog, self.proposalTransaction))
 
         self.button_box.rejected.disconnect()
         self.button_box.rejected.connect(self.onRejectProposalDetailsFromForm)

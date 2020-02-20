@@ -32,6 +32,7 @@ from ..constants import (
 )
 
 from abc import ABCMeta, abstractstaticmethod
+from ..core.TOMsProposal import (TOMsTile)
 
 class TOMsProposalElement(QObject):
     def __init__(self, proposalsManager, layerID, restriction, restrictionID):
@@ -39,6 +40,7 @@ class TOMsProposalElement(QObject):
         super().__init__()
         QgsMessageLog.logMessage("In factory. Creating Proposal Element ... " + str(layerID) + ";" + str(restriction), tag="TOMs panel")
         self.proposalsManager = proposalsManager
+        self.currProposal = self.proposalsManager.currentProposalObject()
         self.tableNames = self.proposalsManager.tableNames
         self.layerID = layerID
 
@@ -95,6 +97,8 @@ class TOMsProposalElement(QObject):
 
         request = QgsFeatureRequest().setFilterRect(self.thisElement.geometry().boundingBox()).setFlags(QgsFeatureRequest.ExactIntersect)
 
+        currTile = TOMsTile(self.proposalsManager)
+
         for tile in self.tilesLayer.getFeatures(request):
 
             currTileNr = tile.attribute("id")
@@ -107,12 +111,14 @@ class TOMsProposalElement(QObject):
                     tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel")
 
                 # check revision nr, etc
-                currTileNr = tile.attribute("id")
 
                 """ TODO: Tidy this up ... with Tile object ..."""
-                revisionNr, revisionDate = self.proposalsManager.getTileRevisionNrAtDate(currTileNr, filterDate)
+                currTile.setTile(currTileNr)
+                revisionNr, revisionDate = self.currTile.getTileRevisionNrAtDate(filterDate)
+                tile.setAttribute("RevisionNr", revisionNr)
+                tile.setAttribute("LastRevisionDate", revisionDate)
 
-                if revisionNr:
+                """if revisionNr:
 
                     if revisionNr != tile.attribute("RevisionNr"):
                         tile.setAttribute("RevisionNr", revisionNr)
@@ -129,7 +135,7 @@ class TOMsProposalElement(QObject):
                     "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
                         tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(
                         idxTileID),
-                    tag="TOMs panel")
+                    tag="TOMs panel")"""
 
                 dictTilesInRestriction[currTileNr] = tile
 
@@ -143,6 +149,37 @@ class TOMsProposalElement(QObject):
 
     def clone(self):
         pass
+
+    def acceptActionOnProposalElement(self, actionOnAcceptance):
+
+        currProposalOpenDate = self.currProposal.getProposalOpenDate()
+
+        # update the Open/Close date for the restriction
+        QgsMessageLog.logMessage("In updateProposalElement. layer: " + str(
+            self.thisLayer.name()) + " currRestId: " + self.thisRestrictionID + " Opendate: " + str(
+            currProposalOpenDate), tag="TOMs panel")
+
+        # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
+
+        if actionOnAcceptance == RestrictionAction.OPEN:  # Open
+            statusUpd = self.thisLayer.changeAttributeValue(self.thisRestrictionID,
+                                                            self.thisLayer.fields().indexFromName(
+                                                                      "OpenDate"),
+                                                                  currProposalOpenDate)
+            QgsMessageLog.logMessage(
+                "In updateRestriction. " + self.thisRestrictionID + " Opened", tag="TOMs panel")
+        else:  # Close
+            statusUpd = self.thisLayer.changeAttributeValue(self.thisRestrictionID,
+                                                            self.thisLayer.fields().indexFromName(
+                                                                      "CloseDate"),
+                                                                  currProposalOpenDate)
+            QgsMessageLog.logMessage(
+                "In updateRestriction. " + self.thisRestrictionID + " Closed", tag="TOMs panel")
+
+        return statusUpd
+
+        pass
+
 
 class TOMsRestriction(TOMsProposalElement):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):

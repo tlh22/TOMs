@@ -102,7 +102,7 @@ class TOMs:
         # TODO: We are going to let the user set this up in a future iteration
 
         # Set up log file and collect any relevant messages
-        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+        """logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
 
         if logFilePath:
 
@@ -117,13 +117,7 @@ class TOMs:
         QgsMessageLog.logMessage("Finished init", tag="TOMs panel")
         #self.toolbar = self.iface.addToolBar(u'Test5Class')
         #self.toolbar.setObjectName(u'Test5Class')
-
-
-    def write_log_message(self, message, tag, level):
-        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
-        with open(self.filename, 'a') as logfile:
-            logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
-
+        """
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.

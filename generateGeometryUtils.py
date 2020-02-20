@@ -389,13 +389,15 @@ class generateGeometryUtils:
             AzimuthToCentreLine = Az + 180
         return AzimuthToCentreLine
 
-    @staticmethod
-    def checkFeatureIsBay(restGeomType):
-        QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
-        if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
-            return True
-        else:
-            return False
+        """
+        @staticmethod
+        def checkFeatureIsBay(restGeomType):
+            QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
+            if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
+                return True
+            else:
+                return False
+        """
 
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation, AzimuthToCentreLine):

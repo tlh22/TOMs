@@ -76,7 +76,11 @@ class OneFeatureFilter(QgsPointLocator.MatchFilter):
         QgsPointLocator.MatchFilter.__init__(self)
         self.layer = layer
         self.fid = fid
+        QgsMessageLog.logMessage("In nodetool:OneFeatureFilter: Layer " + layer.name() + " | " + str(fid),
+                                 tag="TOMs panel")
     def acceptMatch(self, match):
+        QgsMessageLog.logMessage("In nodetool:OneFeatureFilter: matchLayer " + match.layer().name() + " | " + str(match.featureId()),
+                                 tag="TOMs panel")
         return match.layer() == self.layer and match.featureId() == self.fid
 
 
@@ -146,21 +150,21 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         color, width = _digitizing_color_width()
         self.feature_band = QgsRubberBand(self.canvas())
         self.feature_band.setColor(color)
-        self.feature_band.setWidth(5)
+        self.feature_band.setWidth(3)
         self.feature_band.setVisible(False)
         self.feature_band_source = None   # tuple (layer, fid) or None depending on what is being shown
 
         self.vertex_band = QgsRubberBand(self.canvas())
         self.vertex_band.setIcon(QgsRubberBand.ICON_CIRCLE)
         self.vertex_band.setColor(color)
-        self.vertex_band.setIconSize(15)
+        self.vertex_band.setIconSize(10)
         self.vertex_band.setVisible(False)
 
         self.edge_band = QgsRubberBand(self.canvas())
         color2 = QColor(color)
         color2.setAlpha(color2.alpha()/3)
         self.edge_band.setColor(color2)
-        self.edge_band.setWidth(10)
+        self.edge_band.setWidth(5)
         self.edge_band.setVisible(False)
 
         self.drag_bands = []        # list of QgsRubberBand instances used when dragging
@@ -220,6 +224,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
     def can_use_current_layer(self):
 
         layer = self.canvas().currentLayer()
+        # layer = self.iface.activeLayer()
 
         QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel")
 

@@ -32,7 +32,7 @@ from ..constants import (
     RestrictionGeometryTypes
 )
 
-from abc import ABCMeta, abstractstaticmethod
+from abc import ABCMeta, abstractstaticmethod, abstractmethod
 from ..restrictionTypeUtilsClass import TOMsParams
 from ..generateGeometryUtils import generateGeometryUtils
 
@@ -40,17 +40,17 @@ class TOMsGeometryElement(QObject):
     def __init__(self, currFeature):
         super().__init__()
 
-        QgsMessageLog.logMessage("In TOMsGeometryElement: " + str(currFeature.attribute("GeometryID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: " + str(currFeature.attribute("GeometryID")), tag="TOMs panel")
 
         params = TOMsParams()
         params.getParams()
 
         self.currFeature = currFeature
-        self.BayWidth = params.setParam("BayWidth")
-        self.BayLength = params.setParam("BayLength")
-        self.BayOffsetFromKerb = params.setParam("BayOffsetFromKerb")
-        self.LineOffsetFromKerb = params.setParam("LineOffsetFromKerb")
-        self.CrossoverShapeWidth = params.setParam("CrossoverShapeWidth")
+        self.BayWidth = float(params.setParam("BayWidth"))
+        self.BayLength = float(params.setParam("BayLength"))
+        self.BayOffsetFromKerb = float(params.setParam("BayOffsetFromKerb"))
+        self.LineOffsetFromKerb = float(params.setParam("LineOffsetFromKerb"))
+        self.CrossoverShapeWidth = float(params.setParam("CrossoverShapeWidth"))
 
         self.currRestGeomType = currFeature.attribute("GeomShapeID")
         self.currAzimuthToCentreLine = float(currFeature.attribute("AzimuthToRoadCentreLine"))
@@ -58,13 +58,24 @@ class TOMsGeometryElement(QObject):
         self.nrBays = 0
         self.currBayOrientation = 0
 
-        if generateGeometryUtils.checkFeatureIsBay(self.currRestGeomType) == True:
+        #QgsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", tag="TOMs panel")
+
+        if self.checkFeatureIsBay(self.currRestGeomType) == True:
             self.nrBays = float(currFeature.attribute("NrBays"))
             self.currBayOrientation = currFeature.attribute("BayOrientation")
 
+            #QgsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", tag="TOMs panel")
+
+    @abstractmethod
     def getElementGeometry(self):
         """ This is the final shape - uses functions below. It really is abstract """
-        pass
+
+    def checkFeatureIsBay(self, restGeomType):   # possibly put at Element level ...
+        #QgsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
+        if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
+            return True
+        else:
+            return False
 
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair

@@ -139,6 +139,8 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         self.origFeature = originalFeature()
         self.origFeature.setFeature(self.selectedRestriction)
         self.origLayer = self.iface.activeLayer()
+        QgsMessageLog.logMessage("In TOMsNodeTool:initialising ... original layer + " + self.origLayer.name(), tag="TOMs panel")
+
         #self.origLayer.startEditing()
         self.origFeature.printFeature()
 
@@ -412,8 +414,11 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
                 layer, snap_type, tol, QgsTolerance.ProjectUnits))"""
 
         snap_util = self.canvas().snappingUtils()
+        old_snap_util = snap_util
         snap_config = snap_util.config()
-        old_snap_config = snap_util.config()
+
+        #snap_util = QgsSnappingUtils()
+        #snap_config = snap_util.config()
         # old_layers = snap_util.layers()
         # old_mode = snap_util.mode()
         # old_intersections = old_snap_config.intersectionSnapping()
@@ -422,7 +427,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         for layer in snap_config.individualLayerSettings().keys():
             snap_config.removeLayers([layer])
         """
-        # snap_config.addLayers([self.origLayer])
+
         snap_util.setCurrentLayer(self.origLayer)
 
         snap_config.setMode(QgsSnappingConfig.ActiveLayer)
@@ -443,7 +448,6 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         snap_config.setIndividualLayerSettings(self.origLayer, currLayerSnapSettings)"""
 
-
         # try to stay snapped to previously used feature
         # so the highlight does not jump around at nodes where features are joined
 
@@ -453,20 +457,26 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         # m = snap_util.snapToMap(map_point, filter_last)
         """if m_last.isValid() and m_last.distance() <= m.distance():
             m = m_last"""
-        #self.origFeature.printFeature()
+        self.origFeature.printFeature()
+        QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer: origLayer " + self.origLayer.name(), tag="TOMs panel")
 
         """ v3 try to use some other elements of snap_config
             - snapToCurrentLayer
             - setCurrentLayer
             
         """
+        QgsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer: pos " + str(e.pos().x()) + "|" + str(e.pos().y()),
+                                 tag="TOMs panel")
 
         m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
+        """self.canvas().setSnappingUtils(snap_util)
+        m = snap_util.snapToMap(e.pos(), filter_last)"""
 
         #snap_util.setLayers(old_layers)
         #snap_config.setMode(old_mode)
         #snap_config.setIntersectionSnapping(old_intersections)
-        snap_util.setConfig(old_snap_config)
+        self.canvas().setSnappingUtils(old_snap_util)
+
         #self.last_snap = m
 
         # TODO: Tidy up ...
