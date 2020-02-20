@@ -175,10 +175,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                         return status
 
             # Now update tile revision nrs
+            QgsMessageLog.logMessage("In TOMsProposal:acceptProposal. Updating tile revision nrs",
+                tag="TOMs panel")
             proposalTileDictionary = self.getProposalTileDictionaryForDate()
 
             for tileNr, tile in proposalTileDictionary.items():
-                QgsMessageLog.logMessage("In TOMsProposal.acceptProposal: " + str(tile["id"]) + " current evisionNr: " + str(
+                QgsMessageLog.logMessage("In TOMsProposal.acceptProposal: current tile " + str(tile["id"]) + " current RevisionNr: " + str(
                     tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
                 currTile = TOMsTile(self.proposalsManager, tileNr)
                 status = currTile.updateTileRevisionNr(currProposalID)
@@ -385,25 +387,36 @@ class TOMsTile(QObject):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
             QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", tag="TOMs panel")
-        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... ", tag="TOMs panel")
+        else:
+            self.tileLayerFields = self.tilesLayer.fields()
+            self.idxRevisionNr = self.tilesLayer.fields().indexFromName("RevisionNr")
+            self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
+        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", tag="TOMs panel")
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
-        if self.tilesLayer is None:
+        if self.tilesInAcceptedProposalsLayer is None:
             QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", tag="TOMs panel")
         QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", tag="TOMs panel")
 
     def setTile(self, tileNr):
 
         self.thisTileNr = tileNr
-        self.setTilesLayer()
+
+        if self.tilesLayer is None:
+            self.setTilesLayer()
 
         if (tileNr is not None):
             query = '\"id\" = {tileNr}'.format(tileNr=tileNr)
             request = QgsFeatureRequest().setFilterExpression(query)
             for tile in self.tilesLayer.getFeatures(request):
                 self.thisTile = tile  # make assumption that only one row
+                #self.thisTile.setFields(self.tileLayerFields)
+                QgsMessageLog.logMessage("In TOMsProposal:setTile... tile found ",
+                                         tag="TOMs panel")
                 return True
 
+        QgsMessageLog.logMessage("In TOMsProposal:setTile... tile NOT found ",
+                                         tag="TOMs panel")
         return False # either not found or 0
 
     def tile(self):
@@ -417,13 +430,17 @@ class TOMsTile(QObject):
 
     def setRevisionNr(self, value):
         QgsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), tag="TOMs panel")
-        return self.thisTile.setAttribute("RevisionNr", value)
+        #self.thisTile[self.idxRevisionNr] = value
+        self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxRevisionNr, value)
+        #return self.thisTile.setAttribute("RevisionNr", value)
 
     def lastRevisionDate(self):
-        return self.thisTile.attribute("LastRevisionDate")
+        return self.thisTile[self.idxLastRevisionDate]
 
     def setLastRevisionDate(self, value):
-        return self.thisTile.setAttribute("LastRevisionDate", value)
+        #self.thisTile[self.idxLastRevisionDate] = value
+        self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxLastRevisionDate, value)
+        #return self.thisTile.setAttribute("LastRevisionDate", value)
 
     def getTileRevisionNrAtDate(self, filterDate=None):
 
@@ -479,7 +496,7 @@ class TOMsTile(QObject):
             currProposal = TOMsProposal(self.proposalsManager, currProposalID)
 
         QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()), tag="TOMs panel")
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), tag="TOMs panel")
 
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
@@ -495,11 +512,10 @@ class TOMsTile(QObject):
             newRevisionNr = self.revisionNr() + 1
 
         QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: ", tag="TOMs panel")
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(newRevisionNr) + " revisionDate: " + str(currProposal.getProposalOpenDate()), tag="TOMs panel")
 
         updateStatus = self.setRevisionNr(newRevisionNr)
         self.setLastRevisionDate(currProposal.getProposalOpenDate())
-
 
         # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
 
