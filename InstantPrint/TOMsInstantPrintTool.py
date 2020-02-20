@@ -145,6 +145,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     # Take the output from the form and set the current Proposal
                     indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
+                    QgsMessageLog.logMessage("In TOMsExport. Choosing " + str(proposalNrForPrinting), tag="TOMs panel")
                     printProposal = TOMsProposal(self.proposalsManager, proposalNrForPrinting)
                     # self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
                     self.openDateForPrintProposal = printProposal.getProposalOpenDate()
@@ -154,14 +155,15 @@ class TOMsInstantPrintTool(InstantPrintTool):
             else:
 
                 proposalNrForPrinting = self.proposalsManager.currentProposal()
+                printProposal = self.proposalsManager.currentProposalObject()
 
-            self.TOMsExportAtlas(proposalNrForPrinting)
+            self.TOMsExportAtlas(printProposal)
 
         else:
 
             self.__export()
 
-    def TOMsExportAtlas(self, currProposalID):
+    def TOMsExportAtlas(self, printProposalObject):
 
         # TH (180608): Export function to deal with atlases
 
@@ -183,7 +185,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         # get the map tiles that are affected by the Proposal
         # self.getProposalTileList(currProposalID, currRevisionDate)
 
-        proposalTileDictionaryForDate = self.proposalsManager.currentProposalObject().getProposalTileDictionaryForDate(currRevisionDate)
+        proposalTileDictionaryForDate = printProposalObject.getProposalTileDictionaryForDate(currRevisionDate)
         """self.tileSet = set(
             proposalTileDictionaryForDate)"""  # TODO: Change around use of tileSet - also might be good to have a current proposal as an object in proposalManager...
 
@@ -235,11 +237,11 @@ class TOMsInstantPrintTool(InstantPrintTool):
                                 self.tr("Missing label 'printTypeDetails'"))
 
             # currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
-        printProposal = TOMsProposal(self.proposalsManager, currProposalID)
-        currProposalTitle = printProposal.getProposalTitle()
-        currProposalOpenDate = printProposal.getProposalOpenDate()
+            #printProposal = printProposalObject
+        currProposalTitle = printProposalObject.getProposalTitle()
+        currProposalOpenDate = printProposalObject.getProposalOpenDate()
 
-        if currProposalID == 0:
+        if printProposalObject.thisProposalNr == 0:
             currProposalTitle = "CurrentRestrictions_({date})".format(
                 date=self.proposalsManager.date().toString('yyyyMMMdd'))
 

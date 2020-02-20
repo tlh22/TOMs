@@ -276,7 +276,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             revisionDate = self.proposalsManager.date()
 
         # returns list of tiles in the proposal and their current revision numbers
-        QgsMessageLog.logMessage("In getProposalTileDictionaryForDate. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel")
         dictTilesInProposal = dict()
 
         # Logic is:
@@ -302,7 +302,11 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         else:
 
+            """
+            # *** Unfortunately, this takes too long ... best to just look at Tiles and check current versions   ***
+            
             # loop through all the layers that might have restrictions
+
             for (layerID, layerName) in self.getRestrictionLayersList():
 
                 # clear filter
@@ -315,10 +319,21 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     dictTilesInProposal.update(currRestriction.getTilesForRestriction(revisionDate))
 
                 # reset filter
-                self.tableNames.setLayer(layerName).setSubsetString(currFilter)
+                self.tableNames.setLayer(layerName).setSubsetString(currFilter)"""
+
+            currTileObject = TOMsTile(self.proposalsManager)
+            for currTileRecord in self.tableNames.setLayer("MapGrid").getFeatures():
+
+                QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. Current. Tile: " + str(currTileRecord.attribute("id")), tag="TOMs panel")
+
+                status = currTileObject.setTile(currTileRecord.attribute("id"))
+                lastRevisionNr, lastProposalOpendate = currTileObject.getTileRevisionNrAtDate(revisionDate)
+
+                if lastRevisionNr is not None:   # the assumption is that tiles without restrictions have a NULL revision number
+                    dictTilesInProposal[currTileObject.thisTileNr] = currTileRecord
 
         for tileNr, tile in dictTilesInProposal.items():
-            QgsMessageLog.logMessage("In getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
 
         return dictTilesInProposal
 
@@ -342,7 +357,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
             lastRevisionNr, lastProposalOpendate = currTile.getTileRevisionNrAtDate(currRevisionDate)
             currRevisionNr = currTile["RevisionNr"]
-            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (currTile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
+            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tileNr) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
             if currRevisionNr is None:
                 MapGridLayer.changeAttributeValue(currTile.id(),MapGridLayer.fields().indexFromName("RevisionNr"), 1)
             else:
@@ -359,7 +374,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             idxRevisionNr = TilesInAcceptedProposalsLayer.fields().indexFromName("RevisionNr")
 
             newRecord[idxProposalID]= self.thisProposalNr()
-            newRecord[idxTileNr]= tile["id"]
+            newRecord[idxTileNr]= tileNr
             newRecord[idxRevisionNr]= currRevisionNr + 1
             newRecord.setGeometry(QgsGeometry())
 
@@ -389,6 +404,7 @@ class TOMsTile(QObject):
             QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", tag="TOMs panel")
         else:
             self.tileLayerFields = self.tilesLayer.fields()
+            self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
             self.idxRevisionNr = self.tilesLayer.fields().indexFromName("RevisionNr")
             self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
         QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", tag="TOMs panel")
