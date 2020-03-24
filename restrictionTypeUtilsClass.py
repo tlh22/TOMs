@@ -103,15 +103,16 @@ class TOMsParams(QObject):
             # QgsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", tag="TOMs panel")
 
             for param in self.TOMsParamsList:
-                # QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel")
+                QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel")
+                currParam = None
                 try:
                     currParam = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param)
                 except None:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
 
-                if currParam:
+                if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    # QgsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param) + " as " + str(currParam), tag="TOMs panel")
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False

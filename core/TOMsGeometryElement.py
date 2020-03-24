@@ -58,13 +58,13 @@ class TOMsGeometryElement(QObject):
         self.nrBays = 0
         self.currBayOrientation = 0
 
-        #QgsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", tag="TOMs panel")
 
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
             self.nrBays = float(currFeature.attribute("NrBays"))
             self.currBayOrientation = currFeature.attribute("BayOrientation")
 
-            #QgsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", tag="TOMs panel")
 
     @abstractmethod
     def getElementGeometry(self):
@@ -80,6 +80,8 @@ class TOMsGeometryElement(QObject):
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
+        QgsMessageLog.logMessage("In generatePolygon ... ", tag="TOMs panel")
+
         outputGeometry = QgsGeometry()
 
         for (shape, line) in listGeometryPairs:
@@ -94,12 +96,13 @@ class TOMsGeometryElement(QObject):
 
                 linesList = newGeometry.asMultiPolyline()
 
-                for verticesList in linesList:
+                outputGeometry = QgsGeometry.fromPolygonXY(linesList)
+                """for verticesList in linesList:
 
                     res = outputGeometry.addPointsXY(verticesList.asPolyline(), QgsWkbTypes.PolygonGeometry)
                     if res != QgsGeometry.OperationResult.Success:
                         QgsMessageLog.logMessage(
-                            "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")
+                            "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")"""
 
             else:
 
@@ -114,6 +117,8 @@ class TOMsGeometryElement(QObject):
     def generateMultiLineShape(self, listGeometries):
         # ... and combine the geometries. NB: May be more than one
 
+        QgsMessageLog.logMessage("In generateMultiLineShape ... ", tag="TOMs panel")
+
         outputGeometry = QgsGeometry()
 
         for (shape) in listGeometries:
@@ -127,11 +132,16 @@ class TOMsGeometryElement(QObject):
         return outputGeometry
 
     def getLine(self, AzimuthToCentreLine=None):
+
+        QgsMessageLog.logMessage("In getLine ... ", tag="TOMs panel")
+
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
         return self.getShape(self.BayOffsetFromKerb, AzimuthToCentreLine)
 
     def getShape(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
+
+        QgsMessageLog.logMessage("In getShape ... ", tag="TOMs panel")
 
         feature = self.currFeature
         restGeomType = self.currRestGeomType
@@ -219,6 +229,8 @@ class TOMsGeometryElement(QObject):
                 # if restGeomType == 5 or restGeomType == 25:  # echelon
                 if restGeomType in [5, 25]:  # echelon
                     QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
+                    if not str(orientation).isnumeric():
+                        orientation = AzimuthToCentreLine
                     diffEchelonAz = generateGeometryUtils.checkDegrees(orientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
                     QgsMessageLog.logMessage("In geomType: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz),

@@ -62,6 +62,8 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
 def generateDisplayGeometry(feature, parent):
     #def generateDisplayGeometry(restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
 
+    res = None
+
     try:
         """QgsMessageLog.logMessage(
             "In generateDisplayGeometry: New restriction .................................................................... ID: " + str(
