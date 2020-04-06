@@ -193,7 +193,7 @@ class TOMsGeometryElement(QObject):
 
             Az = generateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
 
-            # QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), tag="TOMs panel")
 
             # if this is the first point
 
@@ -204,7 +204,7 @@ class TOMsGeometryElement(QObject):
                 Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
 
                 newAz = generateGeometryUtils.checkDegrees(Az + Turn)
-                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), tag="TOMs panel")
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
                 # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
@@ -228,15 +228,23 @@ class TOMsGeometryElement(QObject):
 
                 # if restGeomType == 5 or restGeomType == 25:  # echelon
                 if restGeomType in [5, 25]:  # echelon
-                    QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
-                    if not str(orientation).isnumeric():
+                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(orientation), tag="TOMs panel")
+                    if self.is_float(orientation) == False:
                         orientation = AzimuthToCentreLine
-                    diffEchelonAz = generateGeometryUtils.checkDegrees(orientation - newAz)
-                    newAz = Az + Turn + diffEchelonAz
-                    QgsMessageLog.logMessage("In geomType: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz),
-                                             tag="TOMs panel")
+
+                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(float(orientation)), tag="TOMs panel")
+
+                    diffEchelonAz1 = float(orientation) - newAz
+                    # QgsMessageLog.logMessage("In getShape: diffEchelonAz1: " + str(diffEchelonAz1), tag="TOMs panel")
+
+                    diffEchelonAz = generateGeometryUtils.checkDegrees(diffEchelonAz1)
+                    #QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz1: " + str(diffEchelonAz1) + " diffEchelonAz: " + str(diffEchelonAz),
+                    #                         tag="TOMs panel")
+
+                    newAz = generateGeometryUtils.checkDegrees(newAz + diffEchelonAz)
+                    #QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz),
+                    #                         tag="TOMs panel")
                     cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
-                    pass
 
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(shpExtent) * cosa),
@@ -280,7 +288,7 @@ class TOMsGeometryElement(QObject):
             # QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
 
             # standard bay
-        newAz = Az + Turn + diffEchelonAz
+        newAz = generateGeometryUtils.checkDegrees(Az + Turn + diffEchelonAz)
         # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
@@ -305,6 +313,13 @@ class TOMsGeometryElement(QObject):
         # QgsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), tag="TOMs panel")
 
         return newLine, parallelLine
+
+    def is_float(self, value):
+        try:
+            float(value)
+            return True
+        except:
+            return False
 
     def getZigZag(self, wavelength=None, shpExtent=None):
 
@@ -487,7 +502,7 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape()
-        outputGeometry1A, paralletLine1A = self.getLine()
+        #outputGeometry1A, paralletLine1A = self.getLine()
 
         return self.generatePolygon([(outputGeometry1, parallelLine1)])
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
@@ -501,13 +516,13 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
     def getElementGeometry(self):
         # QgsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... BayWidth/2 = " + str((self.BayWidth)/2), tag="TOMs panel")
         outputGeometry1, parallelLine1 = self.getShape((self.BayWidth)/2)
-        outputGeometry1A, paralletLine1A = self.getLine()
+        #outputGeometry1A, paralletLine1A = self.getLine()
 
         outputGeometry2, parallelLine2 = self.getShape((self.BayWidth)/2, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        outputGeometry2A, paralletLine2A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        #outputGeometry2A, paralletLine2A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
 
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -517,10 +532,10 @@ class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.BayWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        #outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -530,36 +545,36 @@ class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.BayLength)
-        outputGeometry1A, paralletLine1A = self.getLine()
+        #outputGeometry1A, paralletLine1A = self.getLine()
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryEchelonPolygonType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.BayLength)
-        outputGeometry1A, paralletLine1A = self.getLine()
+        #outputGeometry1A, paralletLine1A = self.getLine()
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        #outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -574,15 +589,15 @@ class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryCrossoverPolygonType ... ", tag="TOMs panel")
 
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.CrossoverShapeWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        #outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 """ ***** """
 
@@ -608,7 +623,7 @@ class ElementGeometryFactory():
                 return generatedGeometryPerpendicularLineType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.ECHELON:
-                return generatedGeometryPerpendicularLineType(currFeature).getElementGeometry()
+                return generatedGeometryEchelonLineType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT:
                 return generatedGeometryPerpendicularOnPavementLineType(currFeature).getElementGeometry()
@@ -638,16 +653,16 @@ class ElementGeometryFactory():
                 return generatedGeometryPerpendicularPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.ECHELON_POLYGON:
-                return generatedGeometryPerpendicularPolygonType(currFeature).getElementGeometry()
+                return generatedGeometryEchelonPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT_POLYGON:
-                return generatedGeometryBayLineType(currFeature).getElementGeometry()
+                return generatedGeometryPerpendicularOnPavementPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.OUTLINE_BAY_POLYGON:
                 return generatedGeometryOutlineBayPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
-                return generatedGeometryBayLineType(currFeature).getElementGeometry()
+                return generatedGeometryCrossoverPolygonType(currFeature).getElementGeometry()
 
             raise AssertionError("Restriction Geometry Type NOT found")
 

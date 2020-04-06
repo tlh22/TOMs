@@ -85,9 +85,9 @@ class RestrictionFormUtils(QtWidgets.QDialog):
 
         # Generate the full path to the file
 
-        fileName1 = layerName + "_Photos_01"
-        fileName2 = layerName + "_Photos_02"
-        fileName3 = layerName + "_Photos_03"
+        fileName1 = "Photos_01"
+        fileName2 = "Photos_02"
+        fileName3 = "Photos_03"
 
         idx1 = self.currRestrictionLayer.fields().indexFromName(fileName1)
         idx2 = self.currRestrictionLayer.fields().indexFromName(fileName2)
