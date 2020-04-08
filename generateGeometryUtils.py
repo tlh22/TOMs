@@ -844,7 +844,7 @@ class generateGeometryUtils:
         if loadingTimeID == 1:  # 'At Any Time'
             loadDesc = None """
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + str(GeometryID) + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
         return waitDesc, loadDesc
 
     @staticmethod
