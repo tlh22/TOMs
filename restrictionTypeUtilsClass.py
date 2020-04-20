@@ -58,6 +58,7 @@ from .generateGeometryUtils import generateGeometryUtils
 #from core.proposalsManager import *
 from .core import (TOMsProposal, TOMsTile)
 from .core.TOMsTransaction import (TOMsTransaction)
+from . import toms_config
 
 from abc import ABCMeta
 import datetime
@@ -145,28 +146,7 @@ class TOMSLayers(QObject):
         #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-        self.TOMsLayerList = ["Proposals",
-                         "ProposalStatusTypes",
-                         "ActionOnProposalAcceptanceTypes",
-                         "RestrictionLayers",
-                         "RestrictionsInProposals",
-                         "Bays",
-                         "Lines",
-                         "Signs",
-                         "RestrictionPolygons",
-                         "ConstructionLines",
-                         "MapGrid",
-                         "CPZs",
-                         "ParkingTariffAreas",
-                         "StreetGazetteerRecords",
-                         "RoadCentreLine",
-                         "RoadCasement",
-                         "TilesInAcceptedProposals",
-                         "RestrictionTypes",
-                         "BayLineTypes",
-                         "SignTypes",
-                         "RestrictionPolygonTypes"
-                         ]
+        self.TOMsLayerList = toms_config.ALL_LAYERS
         self.TOMsLayerDict = {}
 
     def getLayers(self):

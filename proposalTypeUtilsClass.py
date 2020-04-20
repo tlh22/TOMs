@@ -41,6 +41,8 @@ import time
 
 import uuid
 
+from . import toms_config
+
 class ProposalTypeUtilsMixin():
 
     def __init__(self):
@@ -48,18 +50,7 @@ class ProposalTypeUtilsMixin():
         pass
 
     def getRestrictionLayersList(self):
-
-        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
-
-        layerTypeList= []
-        for layerType in self.RestrictionLayers.getFeatures():
-
-            layerID = layerType["id"]
-            layerName = layerType["RestrictionLayerName"]
-
-            layerTypeList.append([layerID, layerName])
-
-        return layerTypeList
+        return toms_config.RESTRICTION_LAYERS
 
     def getRestrictionLayerFromID(self, layerID):
         # return the layer given the row in "RestrictionLayers"
