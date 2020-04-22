@@ -666,10 +666,8 @@ class generateGeometryUtils:
         return phase((rect(1, a1) + rect(1, a2)) / 2.0)
 
     @staticmethod
-    def generateWaitingLabelLeader(feature):
-
-        #QgsMessageLog.logMessage("In generateWaitingLabelLeader", tag="TOMs panel")
-        # check to see scale
+    def generateMultiLabelLeaders(feature):
+        """This generates leaders for labels as multipoints"""
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
@@ -678,44 +676,22 @@ class generateGeometryUtils:
 
         if currScale <= minScale:
 
-            if feature.attribute("labelX"):
-                #QgsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+            # we're accessing the labels layer, meaning that feature.geometry() is the label's position (multipoint)
+            label_geometry = feature.geometry().asMultiPoint()
 
-                # now generate line
-                length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+            # we need to get the main geometry too
+            # unfortunately, the attribute returns an eWKT instead of a QgsGeometry (see post on qgis-dev 22/04/2020)
+            main_ewkt = feature.attribute("geom")
+            main_wkt = main_ewkt[main_ewkt.index(';')+1:]
+            main_geom = QgsGeometry.fromWkt(main_wkt)
 
-            pass
+            # we build a collection for the leaders
+            leaders = []
+            for label_pos in label_geometry:
+                nearest_point = main_geom.nearestPoint(QgsGeometry.fromPointXY(label_pos)).asPoint()
+                leaders.append([nearest_point, label_pos])
 
-        pass
-
-        return None
-
-    @staticmethod
-    def generateLoadingLabelLeader(feature):
-
-        #QgsMessageLog.logMessage("In generateLoadingLabelLeader", tag="TOMs panel")
-        # check to see scale
-
-        minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
-        currScale = float(iface.mapCanvas().scale())
-
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
-
-        if currScale <= minScale:
-
-            if feature.attribute("labelLoadingX"):
-                #QgsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
-
-                # now generate line
-                length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
-
-            pass
-
-        pass
+            return QgsGeometry.fromMultiPolylineXY(leaders)
 
         return None
 

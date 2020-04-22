@@ -146,38 +146,21 @@ def generate_ZigZag(feature, parent):
     return newUSRN
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
-def getWaitingLabelLeader(feature, parent):
-	# If the scale is within range (< 1250) and the label has been moved, create a line
+def getMultiLabelLeader(feature, parent):
 
-    #QgsMessageLog.logMessage(
-    #    "In getWaitingLabelLeader ", tag="TOMs panel")
+    # QgsMessageLog.logMessage(
+    #    "In getMultiLabelLeader ", tag="TOMs panel")
     try:
-        labelLeaderGeom = generateGeometryUtils.generateWaitingLabelLeader(feature)
-    except:
-        QgsMessageLog.logMessage('getWaitingLabelLeader', tag="TOMs panel")
+        labelLeaderGeom = generateGeometryUtils.generateMultiLabelLeaders(feature)
+    except Exception:
+        QgsMessageLog.logMessage('getMultiLabelLeader', tag="TOMs panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
-            'getWaitingLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
+            'getMultiLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
             tag="TOMs panel")
 
     return labelLeaderGeom
 
-@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
-def getLoadingLabelLeader(feature, parent):
-	# If the scale is within range (< 1250) and the label has been moved, create a line
-
-    #QgsMessageLog.logMessage(
-    #    "In getLoadingLabelLeader ", tag="TOMs panel")
-    try:
-        labelLeaderGeom = generateGeometryUtils.generateLoadingLabelLeader(feature)
-    except:
-        QgsMessageLog.logMessage('getLoadingLabelLeader', tag="TOMs panel")
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
-            'getLoadingLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel")
-
-    return labelLeaderGeom
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getBayLabelLeader(feature, parent):
@@ -403,8 +386,7 @@ functions = [
     getRoadName,
     getUSRN,
     generate_ZigZag,
-    getWaitingLabelLeader,
-    getLoadingLabelLeader,
+    getMultiLabelLeader,
     getBayLabelLeader,
     getPolygonLabelLeader,
     getWaitingRestrictionLabelText,
