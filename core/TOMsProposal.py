@@ -475,13 +475,18 @@ class TOMsTile(QObject):
 
         # Grab the results from the layer
         features = self.tilesInAcceptedProposalsLayer.getFeatures(QgsFeatureRequest(expr))
-        tileProposal = TOMsProposal(self)
+        tileProposal = TOMsProposal(self, self.proposalsManager)
 
         for feature in sorted(features, key=lambda f: f[2], reverse=True):
             lastProposalID = feature["ProposalID"]
             lastRevisionNr = feature["RevisionNr"]
 
-            tileProposal.setProposal(lastProposalID)
+            proposalStatus = tileProposal.setProposal(lastProposalID)
+            if proposalStatus == False:
+                QgsMessageLog.logMessage(
+                    "In getTileRevisionNrAtDate: not able to see proposal for " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                    tag="TOMs panel")
+                break
 
             #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
             lastProposalOpendate = tileProposal.getProposalOpenDate()

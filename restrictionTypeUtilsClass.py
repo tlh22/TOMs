@@ -92,9 +92,9 @@ class TOMsParams(QObject):
         found = True
 
         # Check for project being open
-        project = QgsProject.instance()
+        currProject = QgsProject.instance()
 
-        if len(project.fileName()) == 0:
+        if len(currProject.fileName()) == 0:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
             found = False
 
@@ -104,6 +104,9 @@ class TOMsParams(QObject):
 
             for param in self.TOMsParamsList:
                 QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel")
+
+                """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
+                    currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
                 currParam = None
                 try:
                     currParam = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param)
@@ -162,7 +165,7 @@ class TOMSLayers(QObject):
                          "RoadCentreLine",
                          "RoadCasement",
                          "TilesInAcceptedProposals",
-                         "RestrictionTypes",
+                         #"RestrictionTypes",
                          "BayLineTypes",
                          "SignTypes",
                          "RestrictionPolygonTypes"
@@ -843,13 +846,13 @@ class RestrictionTypeUtilsMixin():
 
         # Generate the full path to the file
 
-        fileName1 = layerName + "_Photos_01"
+        """fileName1 = layerName + "_Photos_01"
         fileName2 = layerName + "_Photos_02"
-        fileName3 = layerName + "_Photos_03"
+        fileName3 = layerName + "_Photos_03"""""
 
-        idx1 = currRestLayer.fields().indexFromName(fileName1)
-        idx2 = currRestLayer.fields().indexFromName(fileName2)
-        idx3 = currRestLayer.fields().indexFromName(fileName3)
+        idx1 = currRestLayer.fields().indexFromName("Photos_01")
+        idx2 = currRestLayer.fields().indexFromName("Photos_02")
+        idx3 = currRestLayer.fields().indexFromName("Photos_03")
 
         QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
                                  tag="TOMs panel")
