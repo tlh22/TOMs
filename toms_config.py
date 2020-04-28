@@ -35,7 +35,9 @@ ALL_LAYERS = [
 # This list is used mainly to update the filters.
 # The ID must match the RestrictionLayers table ID.
 # Multiple layers can reference the same restriction in
-# case the table is loaded multiple times.
+# case the table is loaded multiple times. In that
+# case, always define the main layer before it's labels
+
 
 RESTRICTION_LAYERS = [
     (2, 'Bays'),
@@ -50,4 +52,33 @@ RESTRICTION_LAYERS = [
     (6, 'ControlledParkingZones.label_pos'),
     (7, 'ParkingTariffAreas'),
     (7, 'ParkingTariffAreas.label_pos'),
+]
+
+LABELS_FOR_RESTRICTIONS = {
+    'Bays': [
+        'Bays.label_pos',
+    ],
+    'Lines': [
+        'Lines.label_pos',
+        'Lines.label_loading_pos',
+    ],
+    'Signs': [],
+    'RestrictionPolygons': [
+        'RestrictionPolygons.label_pos',
+    ],
+    'CPZs': [],
+    'ControlledParkingZones.label_pos': [
+        'ParkingTariffAreas',
+        'ParkingTariffAreas.label_pos',
+    ],
+}
+
+# This list all layers that are in the same transaction
+# (implemented in TOMsTransaction)
+
+TRANSACTION_LIST = [L[1] for L in RESTRICTION_LAYERS] + [
+    "Proposals",
+    "RestrictionsInProposals",
+    "MapGrid",
+    "TilesInAcceptedProposals",
 ]

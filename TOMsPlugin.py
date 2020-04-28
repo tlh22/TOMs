@@ -70,6 +70,19 @@ class TOMs:
 
         QgsMessageLog.logMessage("Starting TOMs ... ", tag="TOMs panel")
 
+        # Monkeypatch to avoid slowdown because of logging
+        # FIXME : create own logger function and replace calls to
+        # QgslogMessage all over the code instead
+        logMessage = QgsMessageLog.logMessage
+        def mute(*args, **kwargs):
+            if kwargs.get('tag') == 'TOMs panel':
+                pass
+            else:
+                logMessage(*args, **kwargs)
+        QgsMessageLog.logMessage = mute
+        QgsMessageLog.logMessage("AM I MUTE ? yes i am", tag="TOMs panel")
+        QgsMessageLog.logMessage("ARE OTHER MUTE ? no they arent")
+
         """Constructor.
         
         :param iface: An interface instance that will be passed to this class

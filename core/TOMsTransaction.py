@@ -48,6 +48,7 @@ import functools
 import time
 import os
 
+from ..toms_config import TRANSACTION_LIST
 from ..constants import (
     ProposalStatus,
     RestrictionAction,
@@ -73,18 +74,7 @@ class TOMsTransaction(QObject):
         self.tableNames = self.proposalsManager.tableNames
         self.errorOccurred = False
 
-        self.TOMsTransactionList = \
-            ["Proposals",
-             "RestrictionsInProposals",
-             "Bays",
-             "Lines",
-             "Signs",
-             "RestrictionPolygons",
-             "MapGrid",
-             "CPZs",
-             "ParkingTariffAreas",
-             "TilesInAcceptedProposals"
-             ]
+        self.TOMsTransactionList = TRANSACTION_LIST
 
         self.prepareLayerSet()
 
