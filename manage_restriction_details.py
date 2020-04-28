@@ -807,122 +807,90 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
 
     def doEditLabels(self):
-        # Adapted from doEditRestriction
 
-        # self.proposalsManager.TOMsToolChanged.emit()
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
 
+        # We start by unsetting all tools
+        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
+        self.actionEditLabels.setChecked(False)
+
+        self._currently_editted_label_layers = []
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
-        if currProposalID > 0:
+        # Get the active layer
+        currRestrictionLayer = self.iface.activeLayer()
 
-            if self.actionEditLabels.isChecked():
+        if not (currProposalID > 0):
+            alert_box("Changes to current data are not allowed. Changes are made via Proposals")
+            return
 
-                QgsMessageLog.logMessage("In actionEditLabels - tool being activated", tag="TOMs panel")
+        if not currRestrictionLayer or currRestrictionLayer.selectedFeatureCount() == 0:
+            alert_box("Select restriction for edit")
+            return
 
-                # Need to clear any other maptools ....   ********
+        # get the corresponding label layer
+        label_layers_names = LABELS_FOR_RESTRICTIONS[currRestrictionLayer.name()]
 
-                currRestrictionLayer = self.iface.activeLayer()
+        if len(label_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
 
-                if currRestrictionLayer:
+        # get the selected features on the restriction layer
+        # unfortunately, ids of two layers reprenseting the same tables do not seem to be identical
+        # so we need to do this little dance...
+        pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
+        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+        pk_attr_idx = pk_attrs_idxs[0]
+        pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
+        selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
+        selected_expression = '"{}" IN ({})'.format(pk_attr, selected_pks)
 
-                    QgsMessageLog.logMessage("In doEditLabels. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+        # we keep the bouding box for zooming
+        box = currRestrictionLayer.boundingBoxOfSelected()
 
-                    if currRestrictionLayer.selectedFeatureCount() > 0:
+        for label_layers_name in label_layers_names:
 
-                        # get the selected features on the restriction layer
-                        # unfortnately, ids of two layers reprenseting the same tables do not seem to be identical
-                        # so we need to do this little dance...
-                        pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
-                        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
-                        pk_attr_idx = pk_attrs_idxs[0]
-                        pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
-                        selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
-                        selected_expression = '"{}" IN ({})'.format(pk_attr, selected_pks)
+            # get the label layer
+            label_layer = QgsProject.instance().mapLayersByName(label_layers_name)[0]
 
-                        # we keep the bouding box for zooming
-                        box = currRestrictionLayer.boundingBoxOfSelected()
+            # keep track of the layer to commit changes when vertex tool disabled
+            self._currently_editted_label_layers.append(label_layer)
 
-                        # get the corresponding label layer
-                        label_layers_names = LABELS_FOR_RESTRICTIONS[currRestrictionLayer.name()]
+            # reselect the same feature on the label layer
+            label_layer.selectByExpression(selected_expression)
 
-                        if len(label_layers_names) > 0:
+            # add the selection to the boudingbox (for zooming)
+            box.combineExtentWith(label_layer.boundingBoxOfSelected())
 
-                            # self.restrictionTransaction.startTransactionGroup()
+            # toggle edit mode
+            label_layer.startEditing()
 
-                            for label_layers_name in label_layers_names:
+        # enable the vertex tool
+        self.iface.actionVertexTool().trigger()
+        self.mapTool = self.iface.mapCanvas().mapTool()
+        self.mapTool.deactivated.connect(self.stopEditLabels)
+        self.actionEditLabels.setChecked(True)
 
-                                # get the label layer
-                                label_layer = QgsProject.instance().mapLayersByName(label_layers_name)[0]
+        # zoom to the bouding box
+        box.scale(1.5)
+        self.iface.mapCanvas().setExtent(box)
+        self.iface.mapCanvas().refresh()
 
-                                # reselect the same feature on the label layer
-                                label_layer.selectByExpression(selected_expression)
 
-                                # add the selection to the boudingbox (for zooming)
-                                box.combineExtentWith(label_layer.boundingBoxOfSelected())
-
-                                # toggle edit mode and enable the vertex tool
-                                self.iface.setActiveLayer(label_layer)
-                                # label_layer.startEditing()
-                                self.iface.actionToggleEditing().trigger()
-                                # self.mapTool = self.iface.mapCanvas().mapTool()
-                                # FIXME : for some reason, when we leave edit mode, this crashes....
-                                # works well when we enable without the plugin
-
-                            # enable the vertex tool
-                            self.iface.actionVertexTool().trigger()
-
-                            # zoom to the bouding box
-                            box.scale(1.5)
-                            self.iface.mapCanvas().setExtent(box)
-                            self.iface.mapCanvas().refresh()
-
-                        else:
-                            reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                                            "No labels for this restriction type",
-                                                            QMessageBox.Ok)
-
-                            self.actionEditLabels.setChecked(False)
-                            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                            self.mapTool = None
-
-                    else:
-
-                        reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                                        "Select restriction for edit",
-                                                        QMessageBox.Ok)
-
-                        self.actionEditLabels.setChecked(False)
-                        self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                        self.mapTool = None
-
-                else:
-
-                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                                    "Select restriction for edit",
-                                                    QMessageBox.Ok)
-                    self.actionEditLabels.setChecked(False)
-                    self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                    self.mapTool = None
-
-            else:
-
-                QgsMessageLog.logMessage("In doEditLabels - tool deactivated", tag="TOMs panel")
-
-                self.actionEditLabels.setChecked(False)
-                self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                self.mapTool = None
-
-        else:
-
-            reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                            "Changes to current data are not allowed. Changes are made via Proposals",
-                                            QMessageBox.Ok)
-            self.actionEditLabels.setChecked(False)
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            self.mapTool = None
+    def stopEditLabels(self):
+        # commit and cleanup after vertex tool stopped
+        for layer in self._currently_editted_label_layers:
+            layer.commitChanges()
+        self._currently_editted_label_layers = []
+        self.actionEditLabels.setChecked(False)
+        self.mapTool.deactivated.disconnect(self.stopEditLabels)
+        self.iface.mapCanvas().unsetMapTool(self.mapTool)
+        self.mapTool = None
 
 
     def doSplitRestriction(self):

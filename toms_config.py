@@ -76,7 +76,13 @@ LABELS_FOR_RESTRICTIONS = {
 # This list all layers that are in the same transaction
 # (implemented in TOMsTransaction)
 
-TRANSACTION_LIST = [L[1] for L in RESTRICTION_LAYERS] + [
+TRANSACTION_LIST = [
+    "Bays",
+    "Lines",
+    "Signs",
+    "RestrictionPolygons",
+    "CPZs",
+    "ControlledParkingZones",
     "Proposals",
     "RestrictionsInProposals",
     "MapGrid",
