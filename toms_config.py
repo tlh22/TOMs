@@ -25,6 +25,10 @@ ALL_LAYERS = [
     "RestrictionPolygonTypes",
     "Lines.label_pos",
     "Lines.label_loading_pos",
+    "Bays.label_pos",
+    "RestrictionPolygons.label_pos",
+    "ParkingTariffAreas.label_pos",
+    "ControlledParkingZones.label_pos",
 ]
 
 # This lists all restriction layers.
@@ -35,11 +39,15 @@ ALL_LAYERS = [
 
 RESTRICTION_LAYERS = [
     (2, 'Bays'),
+    (2, 'Bays.label_pos'),
     (3, 'Lines'),
     (3, 'Lines.label_pos'),
     (3, 'Lines.label_loading_pos'),
     (5, 'Signs'),
     (4, 'RestrictionPolygons'),
+    (4, 'RestrictionPolygons.label_pos'),
     (6, 'CPZs'),
+    (6, 'ControlledParkingZones.label_pos'),
     (7, 'ParkingTariffAreas'),
+    (7, 'ParkingTariffAreas.label_pos'),
 ]

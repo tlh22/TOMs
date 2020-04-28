@@ -12,15 +12,47 @@ ALTER TABLE public."Lines" ADD COLUMN "label_pos" public.geometry(MultiPoint, 27
 ALTER TABLE public."Lines" ADD COLUMN "label_loading_pos" public.geometry(MultiPoint, 27700);
 ALTER TABLE public."RestrictionPolygons" ADD COLUMN "label_pos" public.geometry(MultiPoint, 27700);
 ALTER TABLE public."Bays" ADD COLUMN "label_pos" public.geometry(MultiPoint, 27700);
+ALTER TABLE public."ParkingTariffAreas" ADD COLUMN "label_pos" public.geometry(MultiPoint, 27700);
+ALTER TABLE public."ControlledParkingZones" ADD COLUMN "label_pos" public.geometry(MultiPoint, 27700);
 
--- Migrate manually positionned label (Lines)
+
+-- Create default label positions
+
 UPDATE public."Lines" SET
-    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelX", "labelY"), 27700)),
-    "label_loading_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelLoadingX", "labelLoadingY"), 27700));
+    "label_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5)),
+    "label_loading_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5));
+
 UPDATE public."RestrictionPolygons" SET
-    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelX", "labelY"), 27700));
+    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+
 UPDATE public."Bays" SET
-    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("label_X", "label_Y"), 27700));
+    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+
+UPDATE public."ParkingTariffAreas" SET
+    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+
+UPDATE public."ControlledParkingZones" SET
+    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+
+
+-- Migrate manually positionned label
+
+UPDATE public."Lines" SET
+    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelX", "labelY"), 27700))
+WHERE "labelX" IS NOT NULL AND "labelY" IS NOT NULL;
+
+UPDATE public."Lines" SET
+    "label_loading_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelLoadingX", "labelLoadingY"), 27700))
+WHERE "labelLoadingX" IS NOT NULL AND "labelLoadingY" IS NOT NULL;
+
+UPDATE public."RestrictionPolygons" SET
+    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("labelX", "labelY"), 27700))
+WHERE "labelX" IS NOT NULL AND "labelY" IS NOT NULL;
+
+UPDATE public."Bays" SET
+    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("label_X", "label_Y"), 27700))
+WHERE "label_X" IS NOT NULL AND "label_Y" IS NOT NULL;
+
 
 -- Remove obsolete fields
 ALTER TABLE public."Lines" DROP COLUMN "labelX";
@@ -36,7 +68,7 @@ ALTER TABLE public."Bays" DROP COLUMN "label_X";
 ALTER TABLE public."Bays" DROP COLUMN "label_Y";
 ALTER TABLE public."Bays" DROP COLUMN "label_Rotation";
 
-CREATE OR REPLACE FUNCTION after_upsert_fct() RETURNS trigger AS /*"""*/ $$
+CREATE OR REPLACE FUNCTION restriction_mngmt() RETURNS trigger AS /*"""*/ $$
 
 import plpy
 
@@ -76,7 +108,7 @@ def ensure_labels_points(main_geom, label_geom):
 
         # get the center (if a line) or the centroid (if not a line)
         # TODO : manage edge case when a feature exits and re-enterds a sheet (we get a MultiLineString, and should return center point of each instead of centroid)
-        plan = plpy.prepare("SELECT CASE WHEN ST_GeometryType($1::geometry) = 'ST_LineString' THEN ST_LineInterpolatePoint($1::geometry, 0.5) ELSE ST_Centroid($1::geometry) END as p", ['text'])
+        plan = plpy.prepare("SELECT CASE WHEN ST_GeometryType($1::geometry) = 'ST_LineString' THEN ST_LineInterpolatePoint($1::geometry, 0.5) WHEN ST_GeometryType($1::geometry) = 'ST_Polygon' THEN ST_PointOnSurface($1::geometry) ELSE ST_Centroid($1::geometry) END as p", ['text'])
         point = plpy.execute(plan, [intersection])[0]["p"]
 
         # we collect that point into label_pos
@@ -95,33 +127,22 @@ if TD["table_name"] == 'Lines':
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
 
-$$ LANGUAGE plpython3u
+$$ LANGUAGE plpython3u;
 
 /*"""*/
 
-
 -- Create the triggers
-
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."Bays" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."Lines" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."Signs" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."RestrictionPolygons" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."CPZs" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-CREATE TRIGGER update_leader BEFORE INSERT OR UPDATE ON public."ParkingTariffAreas" FOR EACH ROW
-EXECUTE PROCEDURE after_upsert_fct();
-
-
--- run the trigger on all rows
---UPDATE public."Bays" SET geom = geom;
-UPDATE public."Lines" SET geom = geom;
---UPDATE public."Signs" SET geom = geom;
---UPDATE public."RestrictionPolygons" SET geom = geom;
---UPDATE public."CPZs" SET geom = geom;
---UPDATE public."ParkingTariffAreas" SET geom = geom;
+-- insert
+CREATE TRIGGER insert_mngmt BEFORE INSERT ON public."Bays" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER insert_mngmt BEFORE INSERT ON public."Lines" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER insert_mngmt BEFORE INSERT ON public."RestrictionPolygons" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER insert_mngmt BEFORE INSERT ON public."ControlledParkingZones" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER insert_mngmt BEFORE INSERT ON public."ParkingTariffAreas" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
+-- update
+CREATE TRIGGER update_mngmt BEFORE UPDATE ON public."Bays" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER update_mngmt BEFORE UPDATE ON public."Lines" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) OR NOT ST_Equals(OLD.label_loading_pos, NEW.label_loading_pos) ) EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER update_mngmt BEFORE UPDATE ON public."RestrictionPolygons" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER update_mngmt BEFORE UPDATE ON public."ControlledParkingZones" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER update_mngmt BEFORE UPDATE ON public."ParkingTariffAreas" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
 
 /*"""*/
