@@ -599,6 +599,95 @@ class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
         return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
+""" ***** SIGNS  ***** """
+"""
+class generatedGeometrySignType(TOMsGeometryElement):
+    def __init__(self, currFeature):
+        super().__init__(currFeature)
+        QgsMessageLog.logMessage("In factory. generatedGeometrySignType ... ", tag="TOMs panel")
+
+        try:
+            self.signOrientation = self.currFeature.attribute("SignOrientation")
+        except KeyError as e:
+            self.signOrientation = None
+
+    def getElementGeometry(self):
+
+        if not self.signOrientation:
+            return None
+
+        QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(self.signOrientation), tag="TOMs2 panel")
+
+        lineGeom = None
+        if self.signOrientation is None:
+            return None
+
+        orientationList = generateGeometryUtils.getSignOrientation(self.currFeature, lineLayer)
+
+        # Now generate a line in the appropriate direction
+        if orientationList[1]:
+            # work out the length of the line based on the number of plates in the sign
+            platesInSign = generateGeometryUtils.getPlatesInSign(self.currFeature)
+            nrPlatesInSign = len(platesInSign)
+            #QgsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), tag="TOMs2 panel")
+            lineLength = (nrPlatesInSign + 1) * distanceForIcons
+            #QgsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), tag="TOMs2 panel")
+            print('getSignLine lineLength: {}'.format(lineLength))
+
+            signPt = self.currFeature.geometry().asPoint()
+            # generate lines
+            if self.signOrientation == 1:  # "Facing in same direction as road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[1], lineLength)
+            elif self.signOrientation == 2:  # "Facing in opposite direction to road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[2], lineLength)
+            elif self.signOrientation == 3:  # "Facing road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[3], lineLength)
+            elif self.signOrientation == 4:  # "Facing away from road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[4], lineLength)
+            else:
+                return None
+
+        #QgsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), tag="TOMs2 panel")
+        return lineGeom
+
+    def getSignOrientation(ptFeature, lineLayer):
+
+        try:
+            signOrientation = ptFeature.attribute("SignOrientation")
+        except KeyError as e:
+            return [None, None, None, None, None]
+
+        #QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
+
+        lineGeom = None
+        if signOrientation is None:
+            return [None, None, None, None, None]
+
+        # find closest point/feature on lineLayer
+
+        signPt = ptFeature.geometry().asPoint()
+        #print('signPt: {}'.format(signPt.asWkt()))
+        QgsMessageLog.logMessage('getSignLine signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), tag="TOMs2 panel")
+        closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
+        #QgsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), tag="TOMs2 panel")
+
+        # Now generate a line in the appropriate direction
+        if closestPoint:
+            # get the orientation of the line feature
+            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection) = generateGeometryUtils.getLineOrientationAtPoint(
+                signPt, closestFeature)
+            #QgsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), tag="TOMs2 panel")
+            #print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
+
+            # make it match sign orientation
+            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature]
+
+        return [None, None, None, None, None]
+
+    def getSignLine(ptFeature, lineLayer, distanceForIcons):
+"""
+
+
 """ ***** """
 
 class ElementGeometryFactory():
