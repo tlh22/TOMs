@@ -1215,7 +1215,14 @@ class generateGeometryUtils:
         except KeyError as e:
             return [None, None, None, None, None]
 
-        #QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
+        try:
+            signOriginalGeometry = ptFeature.attribute("original_geom_wkt")
+        except KeyError as e:
+            QgsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', tag="TOMs2 panel")
+            return [None, None, None, None, None]
+
+        QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
+        QgsMessageLog.logMessage('getSignLine - signOriginalGeometry: {}'.format(signOriginalGeometry), tag="TOMs2 panel")
 
         lineGeom = None
         if signOrientation is None:
@@ -1223,9 +1230,10 @@ class generateGeometryUtils:
 
         # find closest point/feature on lineLayer
 
-        signPt = ptFeature.geometry().asPoint()
+        #signPt = ptFeature.geometry().asPoint()
+        signPt = QgsGeometry.fromWkt(signOriginalGeometry).asPoint()
         #print('signPt: {}'.format(signPt.asWkt()))
-        QgsMessageLog.logMessage('getSignLine signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), tag="TOMs2 panel")
+        #QgsMessageLog.logMessage('getSignLine signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), tag="TOMs2 panel")
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
         #QgsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), tag="TOMs2 panel")
 
@@ -1317,9 +1325,10 @@ class generateGeometryUtils:
 
     @staticmethod
     def getGeneratedSignLine(feature):
-        #QgsMessageLog.logMessage('getGeneratedSignLine ...', tag="TOMs2 panel")
+        QgsMessageLog.logMessage('getGeneratedSignLine ...', tag="TOMs2 panel")
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
-        distanceForIcons = 10
+        distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
+        #distanceForIcons = 10
         #iconSize = 4
         #nrPlatesInSign = generateGeometryUtils.getNrPlatesInSign(feature)
         #print ('nrPlates: {}'.format(nrPlatesInSign))

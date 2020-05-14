@@ -131,18 +131,19 @@ class test_TOMs_geometryUtils(unittest.TestCase):
              QgsField("SignType_2", QVariant.Int),
              QgsField("SignType_3", QVariant.Int),
              QgsField("SignType_4", QVariant.Int),
+             QgsField("original_geom", QVariant.Geometry),
              ])
         testFieldsB = testProviderB.fields()
 
         testFeature2A = QgsFeature(testFieldsB)
         testFeature2A.setGeometry(testPoint1)
-        testFeature2A.setAttributes(["Alpha", 1, 1])
+        testFeature2A.setAttributes(["Alpha", 1, 1, None, None, None, testPoint1.asWkt()])
         testFeature2B = QgsFeature(testFieldsB)
         testFeature2B.setGeometry(testPoint1)
-        testFeature2B.setAttributes(["Beta", 2, 1, 1])
+        testFeature2B.setAttributes(["Beta", 2, 1, 1, None, None, testPoint1.asWkt()])
         testFeature2C = QgsFeature(testFieldsB)
         testFeature2C.setGeometry(testPoint1)
-        testFeature2C.setAttributes(["Gamma", 3, 1, 1, 1])
+        testFeature2C.setAttributes(["Gamma", 3, 1, 1, 1, None, testPoint1.asWkt()])
         testProviderB.addFeatures([testFeature2A, testFeature2B, testFeature2C])
         testLayerB.reload()
 
