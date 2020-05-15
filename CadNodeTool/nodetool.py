@@ -27,6 +27,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 # from qgis.core import *
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsGeometry,
@@ -77,11 +78,11 @@ class OneFeatureFilter(QgsPointLocator.MatchFilter):
         QgsPointLocator.MatchFilter.__init__(self)
         self.layer = layer
         self.fid = fid
-        QgsMessageLog.logMessage("In nodetool:OneFeatureFilter: Layer " + layer.name() + " | " + str(fid),
-                                 tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In nodetool:OneFeatureFilter: Layer " + layer.name() + " | " + str(fid),
+                                 level=Qgis.Info)
     def acceptMatch(self, match):
-        QgsMessageLog.logMessage("In nodetool:OneFeatureFilter: matchLayer " + match.layer().name() + " | " + str(match.featureId()),
-                                 tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In nodetool:OneFeatureFilter: matchLayer " + match.layer().name() + " | " + str(match.featureId()),
+                                 level=Qgis.Info)
         return match.layer() == self.layer and match.featureId() == self.fid
 
 
@@ -216,7 +217,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         self.endpoint_marker = None
 
     def deactivate(self):
-        QgsMessageLog.logMessage("In nodeTool:deactivate .... ", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In nodeTool:deactivate .... ", level=Qgis.Info)
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()
         QgsMapToolAdvancedDigitizing.deactivate(self)
@@ -227,10 +228,10 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         layer = self.canvas().currentLayer()
         # layer = self.iface.activeLayer()
 
-        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:can_use_current_layer.  layer is " + str(layer.name()), level=Qgis.Info)
 
         if not layer:
-            QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In NodeTool:can_use_current_layer - no active layer!", level=Qgis.Info)
             print ("no active layer!")
             return False
 
@@ -242,7 +243,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             print ("layer not editable!")
             return False
 
-        QgsMessageLog.logMessage("In NodeTool:can_use_current_layer - using current layer", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:can_use_current_layer - using current layer", level=Qgis.Info)
 
         return True
 
@@ -270,13 +271,13 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def cadCanvasPressEvent(self, e):
 
-        QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent", level=Qgis.Info)
 
         if not self.can_use_current_layer():
-            QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - NOT using current layer ...", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - NOT using current layer ...", level=Qgis.Info)
             return
 
-        QgsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - can use layer ...", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:cadCanvasPressEvent - can use layer ...", level=Qgis.Info)
 
         # We now have a valid layer ...
 
@@ -298,7 +299,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def cadCanvasReleaseEvent(self, e):
 
-        QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent", level=Qgis.Info)
 
         if not self.can_use_current_layer():
             return
@@ -344,20 +345,20 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         else:  # selection rect is not being dragged
             if e.button() == Qt.LeftButton:
                 # accepting action
-                QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging ...", tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging ...", level=Qgis.Info)
                 if self.dragging:
-                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging vertex ...", tag="TOMs panel", level=Qgis.Info)
+                    TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging vertex ...", level=Qgis.Info)
                     self.move_vertex(e.mapPoint(), e.mapPointMatch())
                 elif self.dragging_edge:
-                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging edge ...", tag="TOMs panel", level=Qgis.Info)
+                    TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging edge ...", level=Qgis.Info)
                     map_point = self.toMapCoordinates(e.pos())  # do not use e.mapPoint() as it may be snapped
                     self.move_edge(map_point)
                 else:
-                    QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging something ...", tag="TOMs panel", level=Qgis.Info)
+                    TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Dragging something ...", level=Qgis.Info)
                     self.start_dragging(e)
             elif e.button() == Qt.RightButton:
                 # cancelling action
-                QgsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Stop dragging.", tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In NodeTool:cadCanvasReleaseEvent. Stop dragging.", level=Qgis.Info)
                 self.stop_dragging()
 
         self.dragging_rect_start_pos = None
@@ -550,7 +551,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def mouse_move_not_dragging(self, e):
 
-        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging", level=Qgis.Info)
 
         if self.mouse_at_endpoint is not None:
             # check if we are still at the endpoint, i.e. whether to keep showing
@@ -566,12 +567,12 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         # do not use snap from mouse event, use our own with any editable layer
         m = self.snap_to_editable_layer(e)
 
-        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: snap point " + str(m.type()) +";" + str(m.isValid()) + "; " + self.toMapCoordinates(e.pos()).asWkt(), tag="TOMs panel", level=Qgis.Info)
-        QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex " + str(m.hasVertex()) +"; edge" + str(m.hasEdge()) + "; area " + str(m.hasArea()), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: snap point " + str(m.type()) +";" + str(m.isValid()) + "; " + self.toMapCoordinates(e.pos()).asWkt(), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex " + str(m.hasVertex()) +"; edge" + str(m.hasEdge()) + "; area " + str(m.hasArea()), level=Qgis.Info)
 
         # possibility to move a node
         if m.type() == QgsPointLocator.Vertex:
-            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex ...", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: vertex ...", level=Qgis.Info)
             self.vertex_band.setToGeometry(QgsGeometry.fromPointXY(m.point()), None)
             self.vertex_band.setVisible(True)
             is_circular_vertex = False
@@ -601,7 +602,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # possibility to create new node here - or to move the edge
         if m.type() == QgsPointLocator.Edge:
-            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: edge ...", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_draggin: edge ...", level=Qgis.Info)
             map_point = self.toMapCoordinates(e.pos())
             edge_center, is_near_center = self._match_edge_center_test(m, map_point)
             self.edge_center_marker.setCenter(QgsPointXY(edge_center))
@@ -618,14 +619,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         # highlight feature
         if m.isValid() and m.layer():
-            QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: highlighting feature ...", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: highlighting feature ...", level=Qgis.Info)
             if self.feature_band_source == (m.layer(), m.featureId()):
                 return  # skip regeneration of rubber band if not needed
             geom = self.cached_geometry(m.layer(), m.featureId())
             if QgsWkbTypes.isCurvedType(geom.get().wkbType()):
                 geom = QgsGeometry(geom.get().segmentize())
-                QgsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: showing feature ...",
-                                         tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In NodeTool:mouse_move_not_dragging: showing feature ...",
+                                         level=Qgis.Info)
             self.feature_band.setToGeometry(geom, m.layer())
             self.feature_band.setVisible(True)
             self.feature_band_source = (m.layer(), m.featureId())
@@ -635,7 +636,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def keyPressEvent(self, e):
 
-        QgsMessageLog.logMessage("In NodeTool:keyPressEvent", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:keyPressEvent", level=Qgis.Info)
 
         if not self.dragging and len(self.selected_nodes) == 0:
             return
@@ -671,7 +672,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def on_cached_geometry_changed(self, fid, geom):
         """ update geometry of our feature """
-        QgsMessageLog.logMessage("In NodeTool:on_cached_geometry_changed", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:on_cached_geometry_changed", level=Qgis.Info)
         layer = self.sender()
         assert layer in self.cache
         if fid in self.cache[layer]:
@@ -686,7 +687,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging(self, e):
 
-        QgsMessageLog.logMessage("In start_dragging", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In start_dragging", level=Qgis.Info)
 
         map_point = self.toMapCoordinates(e.pos())
         if self.is_near_endpoint_marker(map_point):
@@ -720,7 +721,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         assert m.hasVertex()
 
-        QgsMessageLog.logMessage("In start_dragging_move_vertex ...", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In start_dragging_move_vertex ...", level=Qgis.Info)
 
         geom = self.cached_geometry(m.layer(), m.featureId())
 
@@ -756,14 +757,14 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
             if not isinstance(layer, QgsVectorLayer) or not layer.isEditable():
                 continue
 
-            QgsMessageLog.logMessage("In start_dragging_move_vertex. Considering " + str(layer.name()), tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In start_dragging_move_vertex. Considering " + str(layer.name()), level=Qgis.Info)
 
             for other_m in self.layer_vertices_snapped_to_point(layer, map_point):
-                QgsMessageLog.logMessage("In start_dragging_move_vertex. Looking for match on " + str(layer.name()), tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In start_dragging_move_vertex. Looking for match on " + str(layer.name()), level=Qgis.Info)
 
                 if other_m == m: continue
 
-                QgsMessageLog.logMessage("In start_dragging_move_vertex. Found locator for " + str(layer.name()), tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In start_dragging_move_vertex. Found locator for " + str(layer.name()), level=Qgis.Info)
 
                 other_g = self.cached_geometry(other_m.layer(), other_m.featureId())
 
@@ -803,7 +804,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
                 pt = QgsPoint()
                 vNr = 0
 
-                QgsMessageLog.logMessage("In layer_vertices_snapped_to_point.acceptMatch", tag="TOMs panel", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In layer_vertices_snapped_to_point.acceptMatch", level=Qgis.Info)
 
                 # while match_geom.get().nextVertex(vid, pt):
                 geomIter = match_geom.vertices()
@@ -822,7 +823,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
                 return True
 
-        QgsMessageLog.logMessage("In layer_vertices_snapped_to_point", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In layer_vertices_snapped_to_point", level=Qgis.Info)
 
         myfilter = MyFilter(self)
         loc = self.canvas().snappingUtils().locatorForLayer(layer)
@@ -831,7 +832,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_add_vertex(self, m):
 
-        QgsMessageLog.logMessage("In start_dragging_add_vertex", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In start_dragging_add_vertex", level=Qgis.Info)
         assert m.hasEdge()
 
         # activate advanced digitizing dock
@@ -862,7 +863,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_add_vertex_at_endpoint(self, map_point):
 
-        QgsMessageLog.logMessage("In start_dragging_add_vertex_at_endpoint", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In start_dragging_add_vertex_at_endpoint", level=Qgis.Info)
         assert self.mouse_at_endpoint is not None
 
         # activate advanced digitizing dock
@@ -887,7 +888,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def start_dragging_edge(self, m, map_point):
 
-        QgsMessageLog.logMessage("In start_dragging_edge", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In start_dragging_edge", level=Qgis.Info)
         assert m.hasEdge()
 
         # activate advanced digitizing
@@ -929,7 +930,7 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
     def stop_dragging(self):
 
-        QgsMessageLog.logMessage("In stop_dragging", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In stop_dragging", level=Qgis.Info)
         # deactivate advanced digitizing
         # self.setMode(self.CaptureNone)
         self. setAutoSnapEnabled(False)  # v3

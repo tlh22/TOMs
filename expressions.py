@@ -26,6 +26,7 @@ import qgis
 #from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
@@ -44,18 +45,18 @@ import sys, traceback
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent):
     try:
-        """QgsMessageLog.logMessage(
+        """TOMsMessageLog.logMessage(
             "In generate_display_geometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel", level=Qgis.Info)"""
+                geometryID), level=Qgis.Info)"""
 
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
 
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'generate_display_geometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     return res
 
@@ -66,17 +67,17 @@ def generateDisplayGeometry(feature, parent):
     res = None
 
     try:
-        """QgsMessageLog.logMessage(
+        """TOMsMessageLog.logMessage(
             "In generateDisplayGeometry: New restriction .................................................................... ID: " + str(
-                geometryID), tag="TOMs panel", level=Qgis.Info)"""
+                geometryID), level=Qgis.Info)"""
 
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
 
     except:
-        QgsMessageLog.logMessage('generateDisplayGeometry', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), level=Qgis.Info)
 
     return res
 
@@ -85,31 +86,31 @@ def getAzimuthToRoadCentreLine(feature, parent):
 	# find the shortest line from this point to the road centre line layer
 	# http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
-	#QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel", level=Qgis.Info)
+	#TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", level=Qgis.Info)
 
     try:
         return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
 
     except:
-        QgsMessageLog.logMessage('getAzimuthToRoadCentreLine', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getAzimuthToRoadCentreLine', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getAzimuthToRoadCentreLine: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
 def getRoadName(feature, parent):
 	# Determine road name from the kerb line layer
 
-    #QgsMessageLog.logMessage("In getRoadName(helper):", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getRoadName(helper):", level=Qgis.Info)
     try:
         newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
     except:
-        QgsMessageLog.logMessage('getRoadName', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getRoadName', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getRoadName: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
     return newStreetName
 
 
@@ -117,16 +118,16 @@ def getRoadName(feature, parent):
 def getUSRN(feature, parent):
 	# Determine road name from the kerb line layer
 
-    #QgsMessageLog.logMessage("In getUSRN(helper):", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getUSRN(helper):", level=Qgis.Info)
 
     try:
         newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
     except:
-        QgsMessageLog.logMessage('getUSRN', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getUSRN', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getUSRN: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     return newUSRN
 
@@ -137,11 +138,11 @@ def generate_ZigZag(feature, parent):
     try:
         res = generateGeometryUtils.zigzag(feature, 2, 1)
     except:
-        QgsMessageLog.logMessage('generate_ZigZag', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('generate_ZigZag', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'generate_ZigZag: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
     return res
 
     return newUSRN
@@ -150,16 +151,16 @@ def generate_ZigZag(feature, parent):
 def getWaitingLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    #QgsMessageLog.logMessage(
-    #    "In getWaitingLabelLeader ", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage(
+    #    "In getWaitingLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateWaitingLabelLeader(feature)
     except:
-        QgsMessageLog.logMessage('getWaitingLabelLeader', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getWaitingLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getWaitingLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     return labelLeaderGeom
 
@@ -167,16 +168,16 @@ def getWaitingLabelLeader(feature, parent):
 def getLoadingLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    #QgsMessageLog.logMessage(
-    #    "In getLoadingLabelLeader ", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage(
+    #    "In getLoadingLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateLoadingLabelLeader(feature)
     except:
-        QgsMessageLog.logMessage('getLoadingLabelLeader', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getLoadingLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getLoadingLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     return labelLeaderGeom
 
@@ -184,15 +185,15 @@ def getLoadingLabelLeader(feature, parent):
 def getBayLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    # QgsMessageLog.logMessage("In getBayLabelLeader ", tag="TOMs panel", level=Qgis.Info)
+    # TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateBayLabelLeader(feature)
     except:
-        QgsMessageLog.logMessage('getBayLabelLeader', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getBayLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getBayLabelLeader: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     return labelLeaderGeom
 
@@ -200,35 +201,35 @@ def getBayLabelLeader(feature, parent):
 def getPolygonLabelLeader(feature, parent):
 	# If the scale is within range (< 1250) and the label has been moved, create a line
 
-    #QgsMessageLog.logMessage("In getBayLabelLeader ", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generatePolygonLabelLeader(feature)
     except:
-        QgsMessageLog.logMessage('getPolygonLabelLeader', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getPolygonLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getPolygonLabelLeader: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
     return labelLeaderGeom
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def getWaitingRestrictionLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    #QgsMessageLog.logMessage("In getWaitingRestrictionLabelText:", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText:", level=Qgis.Info)
 
     try:
         waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
     except:
-        QgsMessageLog.logMessage('getWaitingRestrictionLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getWaitingRestrictionLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getWaitingRestrictionLabelText: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
-    #QgsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), level=Qgis.Info)
     # waitingText = "Test"
     if waitingText:
         labelText = "No Waiting: " + waitingText
@@ -241,27 +242,27 @@ def getWaitingRestrictionLabelText(feature, parent):
 def getLoadingRestrictionLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText:", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText:", level=Qgis.Info)
 
     try:
         waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
     except:
-        QgsMessageLog.logMessage('getLoadingRestrictionLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getLoadingRestrictionLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getLoadingRestrictionLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
-        """QgsMessageLog.logMessage(
+        """TOMsMessageLog.logMessage(
         "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
-        tag="TOMs panel", level=Qgis.Info)"""
+        level=Qgis.Info)"""
 
     if loadingText:
         #labelText = "No Loading: " + loadingText
         labelText = loadingText
 
-        #QgsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), tag="TOMs panel", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), level=Qgis.Info)
         return labelText
 
     return None
@@ -271,18 +272,18 @@ def getBayTimePeriodLabelText(feature, parent):
 	# Returns the text to label the feature
 
     try:
-        #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:", tag="TOMs panel", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:", level=Qgis.Info)
 
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
     except:
-        QgsMessageLog.logMessage('getBayTimePeriodLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getBayTimePeriodLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getBayTimePeriodLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
-    #QgsMessageLog.logMessage("In getBayTimePeriodLabelText:" + str(timePeriodText), tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:" + str(timePeriodText), level=Qgis.Info)
 
     return timePeriodText
 
@@ -291,19 +292,19 @@ def getBayMaxStayLabelText(feature, parent):
 	# Returns the text to label the feature
 
     try:
-        #QgsMessageLog.logMessage("In getBayMaxStayLabelText:", tag="TOMs panel", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getBayMaxStayLabelText:", level=Qgis.Info)
 
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
     except:
-        QgsMessageLog.logMessage('getBayMaxStayLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getBayMaxStayLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getBayMaxStayLabelText: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
-    #QgsMessageLog.logMessage("In getBayMaxStayLabelText: " + str(maxStayText), tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getBayMaxStayLabelText: " + str(maxStayText), level=Qgis.Info)
 
     return maxStayText
 
@@ -311,17 +312,17 @@ def getBayMaxStayLabelText(feature, parent):
 def getBayNoReturnLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    # QgsMessageLog.logMessage("In getBayNoReturnLabelText:", tag="TOMs panel", level=Qgis.Info)
+    # TOMsMessageLog.logMessage("In getBayNoReturnLabelText:", level=Qgis.Info)
     try:
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
     except:
-        QgsMessageLog.logMessage('getBayNoReturnLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getBayNoReturnLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getBayNoReturnLabelText: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
-    #QgsMessageLog.logMessage("In getBayNoReturnLabelText: " + str(noReturnText), tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getBayNoReturnLabelText: " + str(noReturnText), level=Qgis.Info)
 
     return noReturnText
 
@@ -329,16 +330,16 @@ def getBayNoReturnLabelText(feature, parent):
 def getBayLabelText(feature, parent):
 	# Returns the text to label the feature
 
-    QgsMessageLog.logMessage("In getBayLabelText:", tag="TOMs panel", level=Qgis.Info)
+    TOMsMessageLog.logMessage("In getBayLabelText:", level=Qgis.Info)
     try:
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
     except:
-        QgsMessageLog.logMessage('getBayLabelText', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getBayLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getBayLabelText: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
     labelText = ''
 
@@ -355,7 +356,7 @@ def getBayLabelText(feature, parent):
             labelText = labelText + ';'
         labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
 
-    #QgsMessageLog.logMessage("In getBayLabelText: " + str(labelText), tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getBayLabelText: " + str(labelText), level=Qgis.Info)
 
     return labelText
 
@@ -363,18 +364,18 @@ def getBayLabelText(feature, parent):
 def getCPZ(feature, parent):
 	# Returns the CPZ for the feature - or None
 
-    #QgsMessageLog.logMessage("In getCPZ:", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getCPZ:", level=Qgis.Info)
 
     try:
         cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
     except:
-        QgsMessageLog.logMessage('getCPZ', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getCPZ', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getCPZ: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
-    #QgsMessageLog.logMessage("In getCPZ: CPZ " + str(cpzNr), tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getCPZ: CPZ " + str(cpzNr), level=Qgis.Info)
 
     return cpzNr
 
@@ -382,18 +383,18 @@ def getCPZ(feature, parent):
 def getPTA(feature, parent):
 	# Returns the CPZ for the feature - or None
 
-    #QgsMessageLog.logMessage("In getPTA:", tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getPTA:", level=Qgis.Info)
     try:
         ptaName, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(feature)
     except:
-        QgsMessageLog.logMessage('getPTA', tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage('getPTA', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        QgsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
             'getPTA: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel", level=Qgis.Info)
+            level=Qgis.Info)
 
-    #QgsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), tag="TOMs panel", level=Qgis.Info)
+    #TOMsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), level=Qgis.Info)
 
     return ptaName
 
@@ -423,7 +424,7 @@ def registerFunctions():
     toms_list = QgsExpression.Functions()
 
     for func in functions:
-        QgsMessageLog.logMessage("Considering function {}".format(func.name()), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("Considering function {}".format(func.name()), level=Qgis.Info)
         try:
             if func in toms_list:
                 QgsExpression.unregisterFunction(func.name())
@@ -433,20 +434,20 @@ def registerFunctions():
             pass
 
         if QgsExpression.registerFunction(func):
-            QgsMessageLog.logMessage("Registered expression function {}".format(func.name()), tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("Registered expression function {}".format(func.name()), level=Qgis.Info)
             #qgis.toms_functions[func.name()] = func
 
     """for title in qgis.toms_functions:
-        QgsMessageLog.logMessage("toms_functions function {}".format(title), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("toms_functions function {}".format(title), level=Qgis.Info)
 
     for title2 in toms_list:
-        QgsMessageLog.logMessage("toms_list function {}".format(title2.name()), tag="TOMs panel", level=Qgis.Info)"""
+        TOMsMessageLog.logMessage("toms_list function {}".format(title2.name()), level=Qgis.Info)"""
 
 def unregisterFunctions():
     # Unload all the functions that we created.
     for func in functions:
         QgsExpression.unregisterFunction(func.name())
-        QgsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("Unregistered expression function {}".format(func.name()), level=Qgis.Info)
         #del qgis.toms_functions[func.name()]
 
     QgsExpression.cleanRegisteredFunctions()

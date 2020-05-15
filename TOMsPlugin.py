@@ -41,6 +41,7 @@ from qgis.PyQt.QtCore import (
     qVersion
 )
 
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
@@ -49,7 +50,6 @@ from qgis.core import (
 )
 
 # Import the code for the dialog
-from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.expressions import registerFunctions, unregisterFunctions
 from TOMs.proposals_panel import proposalsPanel
 
@@ -58,7 +58,7 @@ class TOMs:
 
     def __init__(self, iface):
 
-        QgsMessageLog.logMessage("Starting TOMs ... ", tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("Starting TOMs ... ", tag='TOMs Panel', level=Qgis.Warning)
 
         """Constructor.
         
@@ -76,7 +76,7 @@ class TOMs:
         self.actions = []   # ?? check - assume it initialises array of actions
 
         # Set up local logging
-        loggingUtils = TOMsMessageLog(iface)
+        loggingUtils = TOMsMessageLog()
         loggingUtils.setLogFile()
 
         TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)

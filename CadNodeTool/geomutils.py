@@ -1,5 +1,6 @@
 
 # from qgis.core import *
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsGeometry,

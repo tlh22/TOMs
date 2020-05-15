@@ -31,38 +31,44 @@ from qgis.core import (
 import os.path
 import time, datetime
 
-class TOMsMessageLog():
+class TOMsMessageLog(QgsMessageLog):
 
-    def __init__(self, iface):
-        self.iface = iface
+    def __init__(self):
+        super().__init__()
 
     def logMessage(*args, **kwargs):
         # check to see if a logging level has been set
-        try:
-            debug_level = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
-        except None:
-            debug_level = Qgis.Warning
-        if not debug_level:
-            debug_level = Qgis.Warning
+        def currentLoggingLevel():
+            """
+            Returns the current proposal
+            """
+            currLoggingLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
+            if not currLoggingLevel:
+                currLoggingLevel = Qgis.Warning
+            return int(currLoggingLevel)
 
-        currLevel = kwargs.get('level')
+        debug_level = currentLoggingLevel()
 
-        if not currLevel:
-            currLevel = Qgis.Info
+        messageLevel = kwargs.get('level')
 
-        if currLevel >= debug_level:
-            QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs panel")
+        #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
+
+        if not messageLevel:
+            messageLevel = Qgis.Info
+
+        if messageLevel >= debug_level:
+            QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
 
     def setLogFile(self):
 
         logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
 
         if logFilePath:
-            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel", level=Qgis.Info)
+            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs Panel", level=Qgis.Info)
 
             logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
             self.filename = os.path.join(logFilePath, logfile)
-            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel", level=Qgis.Info)
+            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs Panel", level=Qgis.Info)
             QgsApplication.messageLog().messageReceived.connect(self.write_log_message)
 
     def write_log_message(self, message, tag, level):

@@ -19,6 +19,7 @@ from qgis.PyQt.QtWidgets import (
     QAction
 )
 
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry,
@@ -51,13 +52,13 @@ class TOMsTile(QObject):
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", tag="TOMs panel", level=Qgis.Info)
-        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... ", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... ", level=Qgis.Info)
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", tag="TOMs panel", level=Qgis.Info)
-        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", tag="TOMs panel", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Info)
 
     def setTile(self, tileNr):
 
@@ -93,7 +94,7 @@ class TOMsTile(QObject):
 
     def getTileRevisionNrAtDate(self, filterDate=None):
 
-        QgsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate.", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate.", level=Qgis.Info)
 
         if filterDate is None:
             filterDate = self.proposalsManager.date()
@@ -102,7 +103,7 @@ class TOMsTile(QObject):
 
         queryString = "\"TileNr\" = " + str(self.thisTileNr)
 
-        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
@@ -119,26 +120,26 @@ class TOMsTile(QObject):
             #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
             lastProposalOpendate = tileProposal.getProposalOpenDate()
 
-            QgsMessageLog.logMessage(
+            TOMsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                tag="TOMs panel", level=Qgis.Info)
+                level=Qgis.Info)
 
-            QgsMessageLog.logMessage(
+            TOMsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
-                tag="TOMs panel", level=Qgis.Info)
+                level=Qgis.Info)
 
             if lastProposalOpendate <= filterDate:
-                QgsMessageLog.logMessage(
+                TOMsMessageLog.logMessage(
                     "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    tag="TOMs panel", level=Qgis.Info)
+                    level=Qgis.Info)
                 return lastRevisionNr, lastProposalOpendate
 
         return 0, None
 
     def updateTileRevisionNr(self):
 
-        QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile" + str(self.thisTileNr) + " currRevNr: ", tag="TOMs panel", level=Qgis.Info)
+        TOMsMessageLog.logMessage(
+            "In TOMsTile:updateTileRevisionNr. tile" + str(self.thisTileNr) + " currRevNr: ", level=Qgis.Info)
 
         # This will update the revision numberwithin "Tiles" and add a record to "TilesWithinAcceptedProposals"
 
@@ -146,9 +147,9 @@ class TOMsTile(QObject):
 
         # check that there are no revisions beyond this date
         if self.lastRevisionDate < currProposal.getProposalOpenDate():
-            QgsMessageLog.logMessage(
+            TOMsMessageLog.logMessage(
                 "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync",
-                tag="TOMs panel", level=Qgis.Info)
+                level=Qgis.Info)
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
 
