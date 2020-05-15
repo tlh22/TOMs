@@ -1,6 +1,7 @@
 
 # from qgis.core import *
 from qgis.core import (
+    Qgis,
     QgsGeometry,
     QgsGeometryCollection,
     QgsCurve,

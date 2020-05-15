@@ -20,6 +20,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsFeatureRequest,
     QgsRectangle, QgsExpression
@@ -39,13 +40,13 @@ from ..constants import (
 class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     def __init__(self, proposalsManager, proposalNr=None):
         QObject.__init__(self)
-        QgsMessageLog.logMessage("In TOMsProposal:init. ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal:init. ... ", tag="TOMs panel", level=Qgis.Info)
         self.proposalsManager = proposalsManager
         self.tableNames = self.proposalsManager.tableNames
 
         self.setProposalsLayer()
 
-        QgsMessageLog.logMessage("In TOMsProposal:init. ... proposals layer set ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal:init. ... proposals layer set ", tag="TOMs panel", level=Qgis.Info)
 
         if proposalNr is not None:
             self.setProposal(proposalNr)
@@ -55,7 +56,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         self.proposalsLayer = self.tableNames.setLayer("Proposals")
 
         if self.proposalsLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposal:setProposalsLayer. Proposals layer NOT set !!!", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal:setProposalsLayer. Proposals layer NOT set !!!", tag="TOMs panel", level=Qgis.Info)
             return False
         else:
             idxProposalID = self.proposalsLayer.fields().indexFromName("ProposalID")
@@ -64,7 +65,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             self.idxOpenDate = self.proposalsLayer.fields().indexFromName("ProposalOpenDate")
             self.idxProposalStatusID = self.proposalsLayer.fields().indexFromName("ProposalStatusID")
 
-        QgsMessageLog.logMessage("In TOMsProposal:setProposalsLayer... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal:setProposalsLayer... ", tag="TOMs panel", level=Qgis.Info)
 
     def setProposal(self, proposalID):
 
@@ -101,7 +102,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         QgsMessageLog.logMessage(
             "In TOMsProposal:createProposal - attributes: (fid=" + str(self.thisProposal.id()) + ") " + str(
                 self.thisProposal.attributes()),
-            tag="TOMs panel")
+            tag="TOMs panel", level=Qgis.Info)
 
         return self
 
@@ -144,7 +145,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     def acceptProposal(self):
 
         currProposalID = self.thisProposalNr
-        QgsMessageLog.logMessage("In TOMsProposal.acceptProposal - " + str(self.thisProposalNr), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal.acceptProposal - " + str(self.thisProposalNr), tag="TOMs panel", level=Qgis.Info)
 
         """ Steps in acceptance are:
         1. Set new open/close dates for restrictions ( remember to clear filter )
@@ -171,24 +172,24 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                         QgsMessageLog.logMessage(
                             "In TOMsProposal:acceptProposal. " + str(
                                 currRestrictionID) + " error on Action",
-                            tag="TOMs panel")
+                            tag="TOMs panel", level=Qgis.Info)
                         return status
 
             # Now update tile revision nrs
             QgsMessageLog.logMessage("In TOMsProposal:acceptProposal. Updating tile revision nrs",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
             proposalTileDictionary = self.getProposalTileDictionaryForDate()
 
             for tileNr, tile in proposalTileDictionary.items():
                 QgsMessageLog.logMessage("In TOMsProposal.acceptProposal: current tile " + str(tile["id"]) + " current RevisionNr: " + str(
-                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
                 currTile = TOMsTile(self.proposalsManager, tileNr)
                 status = currTile.updateTileRevisionNr(currProposalID)
                 if status == False:
                     QgsMessageLog.logMessage(
                         "In TOMsProposal:acceptProposal. " + str(
                             tileNr) + " error updating tile revision details",
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
                     return status
 
             # Now update Proposal
@@ -200,11 +201,11 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
     def rejectProposal(self):
 
-        QgsMessageLog.logMessage("In TOMsProposal.rejectProposal - " + str(self.thisProposalNr), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal.rejectProposal - " + str(self.thisProposalNr), tag="TOMs panel", level=Qgis.Info)
         status = self.setProposalStatusID(ProposalStatus.REJECTED)
 
         if status:
-            QgsMessageLog.logMessage("In TOMsProposal.rejectProposal.  Proposal Rejected ... ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal.rejectProposal.  Proposal Rejected ... ", tag="TOMs panel", level=Qgis.Info)
             #self.proposalsManager.newProposalCreated.emit(0)
 
         return status
@@ -229,7 +230,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         if actionOnAcceptance is not None:
             query = ("{query} AND \"ActionOnProposalAcceptance\" = {actionOnAcceptance}").format(query=query, actionOnAcceptance=str(actionOnAcceptance))
 
-        QgsMessageLog.logMessage("In __getRestrictionsInProposalForLayerForAction. query: " + str(query), tag="TOMs panel")
+        QgsMessageLog.logMessage("In __getRestrictionsInProposalForLayerForAction. query: " + str(query), tag="TOMs panel", level=Qgis.Info)
         request = QgsFeatureRequest().setFilterExpression(query)
 
         restrictionList = []
@@ -241,7 +242,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     def getProposalBoundingBox(self):
 
         # Need to remember that filters are in operation, so need to ensure that Restriction features are available
-        QgsMessageLog.logMessage("In getProposalBoundingBox.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalBoundingBox.", tag="TOMs panel", level=Qgis.Info)
         currProposalID = self.thisProposalNr
         geometryBoundingBox = QgsRectangle()
 
@@ -250,12 +251,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             for (layerID, layerName) in self.getRestrictionLayersList():
                 currLayer = self.tableNames.setLayer(layerName)
                 restrictionStr = self.__getRestrictionsListForLayerForAction(layerID)
-                #QgsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") request:" + restrictionStr, tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") request:" + restrictionStr, tag="TOMs panel", level=Qgis.Info)
 
                 #currLayer.blockSignals(True)
                 # unset filter to get geometries of closed features
                 layerFilterString = currLayer.subsetString()
-                QgsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") filter 1:" + layerFilterString, tag="TOMs panel")
+                QgsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") filter 1:" + layerFilterString, tag="TOMs panel", level=Qgis.Info)
                 currLayer.setSubsetString(None)
 
                 query = '"RestrictionID" IN ({restrictions})'.format(restrictions=restrictionStr)
@@ -266,7 +267,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
                 currLayer.setSubsetString(layerFilterString)
                 #currLayer.blockSignals(False)
-                QgsMessageLog.logMessage("In getProposalBoundingBox. (" + currLayer.name() + ") filter 1:" + currLayer.subsetString(), tag="TOMs panel")
+                QgsMessageLog.logMessage("In getProposalBoundingBox. (" + currLayer.name() + ") filter 1:" + currLayer.subsetString(), tag="TOMs panel", level=Qgis.Info)
 
         return geometryBoundingBox
 
@@ -276,7 +277,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             revisionDate = self.proposalsManager.date()
 
         # returns list of tiles in the proposal and their current revision numbers
-        QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. considering Proposal: " + str (self.getProposalNr()) + " for " + str(revisionDate), tag="TOMs panel", level=Qgis.Info)
         dictTilesInProposal = dict()
 
         # Logic is:
@@ -324,7 +325,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             currTileObject = TOMsTile(self.proposalsManager)
             for currTileRecord in self.tableNames.setLayer("MapGrid").getFeatures():
 
-                QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. Current. Tile: " + str(currTileRecord.attribute("id")), tag="TOMs panel")
+                QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. Current. Tile: " + str(currTileRecord.attribute("id")), tag="TOMs panel", level=Qgis.Info)
 
                 status = currTileObject.setTile(currTileRecord.attribute("id"))
                 lastRevisionNr, lastProposalOpendate = currTileObject.getTileRevisionNrAtDate(revisionDate)
@@ -333,13 +334,13 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     dictTilesInProposal[currTileObject.thisTileNr] = currTileRecord
 
         for tileNr, tile in dictTilesInProposal.items():
-            QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
 
         return dictTilesInProposal
 
     def updateTileRevisionNrsInProposal(self, dictTilesInProposal):
 
-        QgsMessageLog.logMessage("In TOMsProposal:updateTileRevisionNrsInProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal:updateTileRevisionNrsInProposal.", tag="TOMs panel", level=Qgis.Info)
         # Increment the relevant tile numbers
 
         currRevisionDate = self.getProposalOpenDate()
@@ -357,7 +358,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
             lastRevisionNr, lastProposalOpendate = currTile.getTileRevisionNrAtDate(currRevisionDate)
             currRevisionNr = currTile["RevisionNr"]
-            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tileNr) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
+            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tileNr) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel", level=Qgis.Info)
             if currRevisionNr is None:
                 MapGridLayer.changeAttributeValue(currTile.id(),MapGridLayer.fields().indexFromName("RevisionNr"), 1)
             else:
@@ -401,18 +402,18 @@ class TOMsTile(QObject):
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", tag="TOMs panel", level=Qgis.Info)
         else:
             self.tileLayerFields = self.tilesLayer.fields()
             self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
             self.idxRevisionNr = self.tilesLayer.fields().indexFromName("RevisionNr")
             self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
-        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", tag="TOMs panel", level=Qgis.Info)
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesInAcceptedProposalsLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", tag="TOMs panel")
-        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", tag="TOMs panel", level=Qgis.Info)
 
     def setTile(self, tileNr):
 
@@ -428,11 +429,11 @@ class TOMsTile(QObject):
                 self.thisTile = tile  # make assumption that only one row
                 #self.thisTile.setFields(self.tileLayerFields)
                 QgsMessageLog.logMessage("In TOMsProposal:setTile... tile found ",
-                                         tag="TOMs panel")
+                                         tag="TOMs panel", level=Qgis.Info)
                 return True
 
         QgsMessageLog.logMessage("In TOMsProposal:setTile... tile NOT found ",
-                                         tag="TOMs panel")
+                                         tag="TOMs panel", level=Qgis.Info)
         return False # either not found or 0
 
     def tile(self):
@@ -445,7 +446,7 @@ class TOMsTile(QObject):
         return self.thisTile.attribute("RevisionNr")
 
     def setRevisionNr(self, value):
-        QgsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), tag="TOMs panel", level=Qgis.Info)
         #self.thisTile[self.idxRevisionNr] = value
         self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxRevisionNr, value)
         #return self.thisTile.setAttribute("RevisionNr", value)
@@ -460,7 +461,7 @@ class TOMsTile(QObject):
 
     def getTileRevisionNrAtDate(self, filterDate=None):
 
-        QgsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate.", tag="TOMs panel", level=Qgis.Info)
 
         if filterDate is None:
             filterDate = self.proposalsManager.date()
@@ -469,7 +470,7 @@ class TOMsTile(QObject):
 
         queryString = "\"TileNr\" = " + str(self.thisTileNr)
 
-        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
@@ -485,7 +486,7 @@ class TOMsTile(QObject):
             if proposalStatus == False:
                 QgsMessageLog.logMessage(
                     "In getTileRevisionNrAtDate: not able to see proposal for " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 break
 
             #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
@@ -493,16 +494,16 @@ class TOMsTile(QObject):
 
             QgsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             QgsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             if lastProposalOpendate <= filterDate:
                 QgsMessageLog.logMessage(
                     "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 return lastRevisionNr, lastProposalOpendate
 
         return None, None
@@ -517,13 +518,13 @@ class TOMsTile(QObject):
             currProposal = TOMsProposal(self.proposalsManager, currProposalID)
 
         QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), tag="TOMs panel")
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), tag="TOMs panel", level=Qgis.Info)
 
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
             QgsMessageLog.logMessage(
                 "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
             QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
 
@@ -533,7 +534,7 @@ class TOMsTile(QObject):
             newRevisionNr = self.revisionNr() + 1
 
         QgsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(newRevisionNr) + " revisionDate: " + str(currProposal.getProposalOpenDate()), tag="TOMs panel")
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(newRevisionNr) + " revisionDate: " + str(currProposal.getProposalOpenDate()), tag="TOMs panel", level=Qgis.Info)
 
         updateStatus = self.setRevisionNr(newRevisionNr)
         self.setLastRevisionDate(currProposal.getProposalOpenDate())
@@ -559,7 +560,7 @@ class TOMsProposalElement(QObject):
     def __init__(self, proposalsManager, layerID, restriction, restrictionID):
         #def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__()
-        QgsMessageLog.logMessage("In TOMsProposalElement.init. Creating Proposal Element ... " + str(layerID) + ";" + str(restriction), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsProposalElement.init. Creating Proposal Element ... " + str(layerID) + ";" + str(restriction), tag="TOMs panel", level=Qgis.Info)
         self.proposalsManager = proposalsManager
         self.currProposal = self.proposalsManager.currentProposalObject()
         self.tableNames = self.proposalsManager.tableNames
@@ -575,7 +576,7 @@ class TOMsProposalElement(QObject):
             self.setElement(restrictionID)
 
         QgsMessageLog.logMessage(
-        "In factory. Creating Proposal Element ... " + str(self.thisElement), tag="TOMs panel")
+        "In factory. Creating Proposal Element ... " + str(self.thisElement), tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         return self.thisElement.attribute("GeometryID")
@@ -583,8 +584,8 @@ class TOMsProposalElement(QObject):
     def setThisLayer(self):
         self.thisLayer = self.proposalsManager.getRestrictionLayerFromID(self.layerID)
         if self.thisLayer is None:
-            QgsMessageLog.logMessage("In TOMsProposalElement:setThisLayer. layer NOT set !!! for " + str(self.layerID), tag="TOMs panel")
-        QgsMessageLog.logMessage("In TOMsProposalElement:setThisLayer ... ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsProposalElement:setThisLayer. layer NOT set !!! for " + str(self.layerID), tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In TOMsProposalElement:setThisLayer ... ", tag="TOMs panel", level=Qgis.Info)
 
     def setElement(self, restrictionID):
         self.thisRestrictionID = restrictionID
@@ -595,7 +596,7 @@ class TOMsProposalElement(QObject):
             request = QgsFeatureRequest().setFilterExpression(query)
             for element in self.thisLayer.getFeatures(request):
                 self.thisElement = element  # make assumption that only one row
-                QgsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), tag="TOMs panel")
+                QgsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), tag="TOMs panel", level=Qgis.Info)
                 return True
 
         QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("RestrictionID: \'{restrictionID}\' not found within layer {layerName}".format(restrictionID=restrictionID, layerName=self.thisLayer.name())))
@@ -607,7 +608,7 @@ class TOMsProposalElement(QObject):
     def getTilesForRestriction(self, filterDate):
         # get the tile(s) for a given restriction
 
-        QgsMessageLog.logMessage("In getTilesForRestriction. ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTilesForRestriction. ", tag="TOMs panel", level=Qgis.Info)
 
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         idxTileID = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
@@ -615,8 +616,8 @@ class TOMsProposalElement(QObject):
         dictTilesInRestriction = dict()
 
         QgsMessageLog.logMessage(
-            "In factory. Creating Proposal Element ... " + str(self.thisRestrictionID) + ";" + str(self.thisElement.geometry().asWkt()), tag="TOMs panel")
-        QgsMessageLog.logMessage("In getTilesForRestriction. restGeom " + self.thisElement.geometry().boundingBox().asWktPolygon(), tag="TOMs panel")
+            "In factory. Creating Proposal Element ... " + str(self.thisRestrictionID) + ";" + str(self.thisElement.geometry().asWkt()), tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In getTilesForRestriction. restGeom " + self.thisElement.geometry().boundingBox().asWktPolygon(), tag="TOMs panel", level=Qgis.Info)
 
         request = QgsFeatureRequest().setFilterRect(self.thisElement.geometry().boundingBox()).setFlags(QgsFeatureRequest.ExactIntersect)
 
@@ -625,13 +626,13 @@ class TOMsProposalElement(QObject):
         for tile in self.tilesLayer.getFeatures(request):
 
             currTileNr = tile.attribute("id")
-            # QgsMessageLog.logMessage("In getTilesForRestriction. Tile: " + str(currTileNr), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getTilesForRestriction. Tile: " + str(currTileNr), tag="TOMs panel", level=Qgis.Info)
 
             if tile.geometry().intersects(self.thisElement.geometry()):
                 # get revision number and add tile to list
                 # currRevisionNrForTile = self.getTileRevisionNr(tile)
                 QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(
-                    tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel")
+                    tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel", level=Qgis.Info)
 
                 # check revision nr, etc
 
@@ -658,13 +659,13 @@ class TOMsProposalElement(QObject):
                     "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
                         tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(
                         idxTileID),
-                    tag="TOMs panel")"""
+                    tag="TOMs panel", level=Qgis.Info)"""
 
                 dictTilesInRestriction[currTileNr] = tile
 
                 QgsMessageLog.logMessage(
                     "In getTileForRestriction. len tileSet: " + str(len(dictTilesInRestriction)),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
 
                 pass
 
@@ -680,7 +681,7 @@ class TOMsProposalElement(QObject):
         # update the Open/Close date for the restriction
         QgsMessageLog.logMessage("In updateProposalElement. layer: " + str(
             self.thisLayer.name()) + " currRestId: " + self.thisRestrictionID + " Opendate: " + str(
-            currProposalOpenDate), tag="TOMs panel")
+            currProposalOpenDate), tag="TOMs panel", level=Qgis.Info)
 
         # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
 
@@ -690,14 +691,14 @@ class TOMsProposalElement(QObject):
                                                                       "OpenDate"),
                                                                   currProposalOpenDate)
             QgsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Opened", tag="TOMs panel")
+                "In updateRestriction. " + self.thisRestrictionID + " Opened", tag="TOMs panel", level=Qgis.Info)
         else:  # Close
             statusUpd = self.thisLayer.changeAttributeValue(self.thisElement.id(),
                                                             self.thisLayer.fields().indexFromName(
                                                                       "CloseDate"),
                                                                   currProposalOpenDate)
             QgsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Closed", tag="TOMs panel")
+                "In updateRestriction. " + self.thisRestrictionID + " Closed", tag="TOMs panel", level=Qgis.Info)
 
         return statusUpd
 
@@ -707,7 +708,7 @@ class TOMsProposalElement(QObject):
 class TOMsRestriction(TOMsProposalElement):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating TOMsRestriction ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating TOMsRestriction ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getDisplayGeometry(self):
         pass
@@ -715,7 +716,7 @@ class TOMsRestriction(TOMsProposalElement):
 class Bay(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating BAY ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating BAY ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -726,7 +727,7 @@ class Bay(TOMsRestriction):
 class Line(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating LINE ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating LINE ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -737,7 +738,7 @@ class Line(TOMsRestriction):
 class Sign(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating SIGN ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating SIGN ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -748,7 +749,7 @@ class Sign(TOMsRestriction):
 class TOMsPolygonRestriction(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating POLYGON ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating POLYGON ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getZoneType(self):
         pass
@@ -759,7 +760,7 @@ class TOMsPolygonRestriction(TOMsRestriction):
 class PedestrianZone(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating PedestrianZone ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating PedestrianZone ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -771,7 +772,7 @@ class PedestrianZone(TOMsRestriction):
 class CPZ(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating CPZ ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating CPZ ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -782,7 +783,7 @@ class CPZ(TOMsRestriction):
 class PTA(TOMsRestriction):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating PTA ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating PTA ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -793,7 +794,7 @@ class PTA(TOMsRestriction):
 class TOMsLabel(TOMsProposalElement):
     def __init__(self, proposalsManager, layerID=None, restriction=None, restrictionID=None):
         super().__init__(proposalsManager, layerID, restriction, restrictionID)
-        QgsMessageLog.logMessage("In factory. Creating Label ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. Creating Label ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getGeometryID(self):
         pass
@@ -802,7 +803,7 @@ class ProposalElementFactory():
 
     @staticmethod
     def getProposalElement(proposalsManager, proposalElementType, restriction, RestrictionID):
-        QgsMessageLog.logMessage("In factory. getProposalElement ... " + str(proposalElementType) + ";" + str(restriction), tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. getProposalElement ... " + str(proposalElementType) + ";" + str(restriction), tag="TOMs panel", level=Qgis.Info)
         try:
             if proposalElementType == RestrictionLayers.BAYS:
                 return Bay(proposalsManager, proposalElementType, restriction, RestrictionID)
@@ -819,7 +820,7 @@ class ProposalElementFactory():
                 return PTA(proposalsManager, proposalElementType, restriction, RestrictionID)
             raise AssertionError("Restriction Type NOT found")
         except AssertionError as _e:
-            QgsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ", tag="TOMs panel", level=Qgis.Info)
 
 class RestrictionPolygonFactory():
 
@@ -837,6 +838,6 @@ class RestrictionPolygonFactory():
             raise AssertionError("Proposal Type NOT found")
         except AssertionError as _e:
             QgsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
 

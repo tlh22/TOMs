@@ -35,6 +35,7 @@ from qgis.PyQt.QtCore import (
 # from qgis.PyQt.QtGui import *
 # from qgis import core
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsExpression,
     QgsFeatureRequest,
@@ -57,6 +58,7 @@ from .search_bar import searchBar
 
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
 from .core.TOMsTransaction import (TOMsTransaction)
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
 from .constants import (
     ProposalStatus,
@@ -93,12 +95,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
         self.searchBar.disableSearchBar()
 
-        pass
+        TOMsMessageLog.logMessage("Finished proposalsPanel init ...", level=Qgis.Warning)
 
     def onInitProposalsPanel(self):
         """Filter main layer based on date and state options"""
         
-        QgsMessageLog.logMessage("In onInitProposalsPanel", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onInitProposalsPanel", tag="TOMs panel", level=Qgis.Info)
 
         #print "** STARTING ProposalPanel"
 
@@ -111,13 +113,13 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         if self.actionProposalsPanel.isChecked():
 
-            QgsMessageLog.logMessage("In onInitProposalsPanel. Activating ...", tag="TOMs panel")
+            QgsMessageLog.logMessage("In onInitProposalsPanel. Activating ...", tag="TOMs panel", level=Qgis.Info)
 
             self.openTOMsTools()
 
         else:
 
-            QgsMessageLog.logMessage("In onInitProposalsPanel. Deactivating ...", tag="TOMs panel")
+            QgsMessageLog.logMessage("In onInitProposalsPanel. Deactivating ...", tag="TOMs panel", level=Qgis.Info)
 
             self.closeTOMsTools()
 
@@ -126,11 +128,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def openTOMsTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
-        QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In openTOMsTools. Activating ...", tag="TOMs panel", level=Qgis.Info)
         self.closeTOMs = False
 
         # Check that tables are present
-        QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", tag="TOMs panel", level=Qgis.Info)
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
 
         self.tableNames.getLayers()
@@ -203,7 +205,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
     def closeTOMsTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
-        QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In closeTOMsTools. Deactivating ...", tag="TOMs panel", level=Qgis.Info)
 
         # TODO: Delete any objects that are no longer needed
 
@@ -229,7 +231,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
     def createProposalcb(self):
 
-        QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel")
+        QgsMessageLog.logMessage("In createProposalcb", tag="TOMs panel", level=Qgis.Info)
         # set up a "NULL" field for "No proposals to be shown"
 
         #self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
@@ -240,19 +242,19 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         currProposalID = 0
         currProposalTitle = "0 - No proposal shown"
 
-        QgsMessageLog.logMessage("In createProposalcb: Adding 0", tag="TOMs panel")
+        QgsMessageLog.logMessage("In createProposalcb: Adding 0", tag="TOMs panel", level=Qgis.Info)
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
         for (currProposalID, currProposalTitle, currProposalStatusID, currProposalOpenDate, currProposal) in sorted(self.proposalsManager.getProposalsListWithStatus(ProposalStatus.IN_PREPARATION), key=lambda f: f[1]):
-            QgsMessageLog.logMessage("In createProposalcb: proposalID: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel")
+            QgsMessageLog.logMessage("In createProposalcb: proposalID: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel", level=Qgis.Info)
             self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
         # set up action for when the proposal is changed
         self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
 
     def onChangeProposal(self):
-        QgsMessageLog.logMessage("In onChangeProposal", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onChangeProposal", tag="TOMs panel", level=Qgis.Info)
 
         # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
         newProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
@@ -260,14 +262,14 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         newProposalTitle = self.dock.cb_ProposalsList.currentText()
 
         self.setCurrentProposal(newProposalID)
-        QgsMessageLog.logMessage("In onChangeProposal. newProposalID: " + str(newProposalID) + " newProposalTitle: " + str(newProposalTitle), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onChangeProposal. newProposalID: " + str(newProposalID) + " newProposalTitle: " + str(newProposalTitle), tag="TOMs panel", level=Qgis.Info)
 
         # Set the project variable
 
         reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back", QMessageBox.Ok)
 
     def onNewProposal(self):
-        QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onNewProposal", tag="TOMs panel", level=Qgis.Info)
 
         # set up a transaction
         self.proposalTransaction.startTransactionGroup()
@@ -295,7 +297,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         if self.button_box is None:
             QgsMessageLog.logMessage(
                 "In onNewProposal. button box not found",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             #self.button_box.accepted.disconnect()
         self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.newProposal, self.newProposalObject, self.Proposals, self.proposalDialog, self.proposalTransaction))
@@ -313,7 +315,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         pass
 
     def onNewProposalCreated(self, proposal):
-        QgsMessageLog.logMessage("In onNewProposalCreated. New proposal = " + str(proposal), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onNewProposalCreated. New proposal = " + str(proposal), tag="TOMs panel", level=Qgis.Info)
 
         self.createProposalcb()
 
@@ -321,9 +323,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         for currIndex in range(self.dock.cb_ProposalsList.count()):
             currProposalID = self.dock.cb_ProposalsList.itemData(currIndex)
-            #QgsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), tag="TOMs panel", level=Qgis.Info)
             if currProposalID == proposal:
-                QgsMessageLog.logMessage("In onNewProposalCreated. index found as " + str(currIndex), tag="TOMs panel")
+                QgsMessageLog.logMessage("In onNewProposalCreated. index found as " + str(currIndex), tag="TOMs panel", level=Qgis.Info)
                 self.dock.cb_ProposalsList.setCurrentIndex(currIndex)
                 return
 
@@ -345,7 +347,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         pass
 
     def onProposalDetails(self):
-        QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onProposalDetails", tag="TOMs panel", level=Qgis.Info)
 
         # set up transaction
         self.proposalTransaction.startTransactionGroup()
@@ -369,7 +371,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         if self.button_box is None:
             QgsMessageLog.logMessage(
                 "In onNewProposal. button box not found",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
         self.button_box.accepted.disconnect()
         self.button_box.accepted.connect(functools.partial(self.onSaveProposalFormDetails, self.currProposal, self.currProposalObject, self.Proposals, self.proposalDialog, self.proposalTransaction))
@@ -384,24 +386,24 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         pass
 
     def onProposalListIndexChanged(self):
-        QgsMessageLog.logMessage("In onProposalListIndexChanged.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onProposalListIndexChanged.", tag="TOMs panel", level=Qgis.Info)
         #currProposal = self.proposalsManager.currentProposal()
         #currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
         #self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
 
         currProposal_cbIndex = self.dock.cb_ProposalsList.currentIndex()
-        QgsMessageLog.logMessage("In onProposalListIndexChanged. Current Index = " + str(currProposal_cbIndex), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onProposalListIndexChanged. Current Index = " + str(currProposal_cbIndex), tag="TOMs panel", level=Qgis.Info)
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposal_cbIndex)
         self.proposalsManager.setCurrentProposal(currProposalID)
 
-        QgsMessageLog.logMessage("In onProposalChanged. Zoom to extents", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onProposalChanged. Zoom to extents", tag="TOMs panel", level=Qgis.Info)
         """if self.proposalsManager.getProposalBoundingBox():
-            QgsMessageLog.logMessage("In onProposalChanged. Bounding box found", tag="TOMs panel")
+            QgsMessageLog.logMessage("In onProposalChanged. Bounding box found", tag="TOMs panel", level=Qgis.Info)
             self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
             self.iface.mapCanvas().refresh()"""
 
     def updateCurrentProposal(self):
-        QgsMessageLog.logMessage("In updateCurrentProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In updateCurrentProposal.", tag="TOMs panel", level=Qgis.Info)
         """Will be called whenever a new entry is selected in the combobox"""
 
         # Can we check to see if there are any outstanding edits?!!
@@ -421,12 +423,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalsManager.setCurrentProposal(currProposalID)
 
     def onDateChanged(self):
-        QgsMessageLog.logMessage("In onDateChanged.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onDateChanged.", tag="TOMs panel", level=Qgis.Info)
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
 
         """ onChangeProposalStatus(self):
-        QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fields().indexFromName("ProposalStatusID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fields().indexFromName("ProposalStatusID")), tag="TOMs panel", level=Qgis.Info)
 
         # check to see if the proposal is "Accepted"
         acceptProposal = False
@@ -450,7 +452,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         return acceptProposal"""
 
         """def getRestrictionLayerTableID(self, currRestLayer):
-        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel", level=Qgis.Info)
         # find the ID for the layer within the table "
 
         RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
@@ -463,12 +465,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
             if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
                 layersTableID = layer.attribute("id")
 
-        QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), tag="TOMs panel", level=Qgis.Info)
 
         return layersTableID"""
 
     def getProposal(self, proposalID):
-        QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposal.", tag="TOMs panel", level=Qgis.Info)
 
         # proposalsLayer = QgsMapLayerRegistry.instance().mapLayersByName("Proposals")[0]  -- v2
         proposalsLayer = QgsProject.instance().mapLayersByName("Proposals")[0]

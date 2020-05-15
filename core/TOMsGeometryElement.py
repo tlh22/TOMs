@@ -20,6 +20,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry, QgsGeometryUtils,
     QgsFeatureRequest,
     QgsRectangle, QgsPointXY, QgsWkbTypes
@@ -40,7 +41,7 @@ class TOMsGeometryElement(QObject):
     def __init__(self, currFeature):
         super().__init__()
 
-        QgsMessageLog.logMessage("In TOMsGeometryElement.init: " + str(currFeature.attribute("GeometryID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: " + str(currFeature.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
         params = TOMsParams()
         params.getParams()
@@ -58,20 +59,20 @@ class TOMsGeometryElement(QObject):
         self.nrBays = 0
         self.currBayOrientation = 0
 
-        QgsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", tag="TOMs panel", level=Qgis.Info)
 
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
             self.nrBays = float(currFeature.attribute("NrBays"))
             self.currBayOrientation = currFeature.attribute("BayOrientation")
 
-        QgsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", tag="TOMs panel", level=Qgis.Info)
 
     @abstractmethod
     def getElementGeometry(self):
         """ This is the final shape - uses functions below. It really is abstract """
 
     def checkFeatureIsBay(self, restGeomType):   # possibly put at Element level ...
-        #QgsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel", level=Qgis.Info)
         if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
             return True
         else:
@@ -80,15 +81,15 @@ class TOMsGeometryElement(QObject):
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
-        QgsMessageLog.logMessage("In generatePolygon ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In generatePolygon ... ", tag="TOMs panel", level=Qgis.Info)
 
         outputGeometry = QgsGeometry()
 
         for (shape, line) in listGeometryPairs:
 
-            QgsMessageLog.logMessage("In generatePolygon:  shape ********: " + shape.asWkt(), tag="TOMs panel")
+            QgsMessageLog.logMessage("In generatePolygon:  shape ********: " + shape.asWkt(), tag="TOMs panel", level=Qgis.Info)
             QgsMessageLog.logMessage("In generatePolygon:  line ********: " + line.asWkt(),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             newGeometry = shape.combine(line)
 
@@ -102,7 +103,7 @@ class TOMsGeometryElement(QObject):
                     res = outputGeometry.addPointsXY(verticesList.asPolyline(), QgsWkbTypes.PolygonGeometry)
                     if res != QgsGeometry.OperationResult.Success:
                         QgsMessageLog.logMessage(
-                            "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")"""
+                            "In generatePolygon: NOT able to add part  ...", tag="TOMs panel", level=Qgis.Info)"""
 
             else:
 
@@ -110,14 +111,14 @@ class TOMsGeometryElement(QObject):
 
                 if res != QgsGeometry.OperationResult.Success:
                     QgsMessageLog.logMessage(
-                        "In generatePolygon: NOT able to add part  ...", tag="TOMs panel")
+                        "In generatePolygon: NOT able to add part  ...", tag="TOMs panel", level=Qgis.Info)
 
         return outputGeometry
 
     def generateMultiLineShape(self, listGeometries):
         # ... and combine the geometries. NB: May be more than one
 
-        QgsMessageLog.logMessage("In generateMultiLineShape ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In generateMultiLineShape ... ", tag="TOMs panel", level=Qgis.Info)
 
         outputGeometry = QgsGeometry()
 
@@ -127,13 +128,13 @@ class TOMsGeometryElement(QObject):
 
             if res != QgsGeometry.OperationResult.Success:
                 QgsMessageLog.logMessage(
-                    "In generateMultiLineShape: NOT able to add part  ...", tag="TOMs panel")
+                    "In generateMultiLineShape: NOT able to add part  ...", tag="TOMs panel", level=Qgis.Info)
 
         return outputGeometry
 
     def getLine(self, AzimuthToCentreLine=None):
 
-        QgsMessageLog.logMessage("In getLine ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getLine ... ", tag="TOMs panel", level=Qgis.Info)
 
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
@@ -141,7 +142,7 @@ class TOMsGeometryElement(QObject):
 
     def getShape(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
-        QgsMessageLog.logMessage("In getShape ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getShape ... ", tag="TOMs panel", level=Qgis.Info)
 
         feature = self.currFeature
         restGeomType = self.currRestGeomType
@@ -173,7 +174,7 @@ class TOMsGeometryElement(QObject):
 
         line = generateGeometryUtils.getLineForAz(feature)
 
-        # QgsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), tag="TOMs panel", level=Qgis.Info)
 
         if len(line) == 0:
             return 0
@@ -189,37 +190,37 @@ class TOMsGeometryElement(QObject):
 
         for i in range(len(line) - 1):
 
-            # QgsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), tag="TOMs panel", level=Qgis.Info)
 
             Az = generateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
 
-            # QgsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), tag="TOMs panel", level=Qgis.Info)
 
             # if this is the first point
 
             if i == 0:
                 # determine which way to turn towards CL
-                # QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel", level=Qgis.Info)
 
                 Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
 
                 newAz = generateGeometryUtils.checkDegrees(Az + Turn)
-                # QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), tag="TOMs panel", level=Qgis.Info)
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel", level=Qgis.Info)
 
                 # dx = float(offset) * cosa
                 # dy = float(offset) * cosb
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel", level=Qgis.Info)
 
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
 
                 parallelPtsList.append(
                     QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
-                # QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel", level=Qgis.Info)
 
                 # Now add the point at the extent. If it is an echelon bay:
                 #   a. calculate the difference between the first Az and the echelon Az (??), and
@@ -228,31 +229,31 @@ class TOMsGeometryElement(QObject):
 
                 # if restGeomType == 5 or restGeomType == 25:  # echelon
                 if restGeomType in [5, 25]:  # echelon
-                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(orientation), tag="TOMs panel")
+                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(orientation), tag="TOMs panel", level=Qgis.Info)
                     if self.is_float(orientation) == False:
                         orientation = AzimuthToCentreLine
 
-                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(float(orientation)), tag="TOMs panel")
+                    # QgsMessageLog.logMessage("In getShape: orientation: " + str(float(orientation)), tag="TOMs panel", level=Qgis.Info)
 
                     diffEchelonAz1 = float(orientation) - newAz
-                    # QgsMessageLog.logMessage("In getShape: diffEchelonAz1: " + str(diffEchelonAz1), tag="TOMs panel")
+                    # QgsMessageLog.logMessage("In getShape: diffEchelonAz1: " + str(diffEchelonAz1), tag="TOMs panel", level=Qgis.Info)
 
                     diffEchelonAz = generateGeometryUtils.checkDegrees(diffEchelonAz1)
                     #QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz1: " + str(diffEchelonAz1) + " diffEchelonAz: " + str(diffEchelonAz),
-                    #                         tag="TOMs panel")
+                    #                         tag="TOMs panel", level=Qgis.Info)
 
                     newAz = generateGeometryUtils.checkDegrees(newAz + diffEchelonAz)
                     #QgsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz),
-                    #                         tag="TOMs panel")
+                    #                         tag="TOMs panel", level=Qgis.Info)
                     cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(shpExtent) * cosa),
                              line[i].y() + (float(shpExtent) * cosb)))
-                # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel", level=Qgis.Info)
 
                 # ptsList.append(newPoint)
-                # QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel", level=Qgis.Info)
 
                 # ptsList.append(QgsPoint(line[i].x()+(float(bayWidth)*cosa), line[i].y()+(float(bayWidth)*cosb)))
 
@@ -260,15 +261,15 @@ class TOMsGeometryElement(QObject):
 
                 # now pass along the feature
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel", level=Qgis.Info)
 
                 # need to work out half of bisected angle
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel", level=Qgis.Info)
 
                 newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
 
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
                 ptsList.append(
@@ -276,20 +277,20 @@ class TOMsGeometryElement(QObject):
 
                 parallelPtsList.append(
                     QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
-            # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel", level=Qgis.Info)
 
             prevAz = Az
 
-            # QgsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), tag="TOMs panel", level=Qgis.Info)
 
             # have reached the end of the feature. Now need to deal with last point.
             # Use Azimuth from last segment but change the points
 
-            # QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel", level=Qgis.Info)
 
             # standard bay
         newAz = generateGeometryUtils.checkDegrees(Az + Turn + diffEchelonAz)
-        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
         ptsList.append(QgsPointXY(line[len(line) - 1].x() + (float(shpExtent) * cosa),
@@ -309,8 +310,8 @@ class TOMsGeometryElement(QObject):
         #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
 
-        # QgsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), tag="TOMs panel")
-        # QgsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), tag="TOMs panel", level=Qgis.Info)
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), tag="TOMs panel", level=Qgis.Info)
 
         return newLine, parallelLine
 
@@ -323,7 +324,7 @@ class TOMsGeometryElement(QObject):
 
     def getZigZag(self, wavelength=None, shpExtent=None):
 
-        QgsMessageLog.logMessage("In getZigZag ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getZigZag ... ", tag="TOMs panel", level=Qgis.Info)
 
         if not wavelength:
             wavelength = 3.0
@@ -342,16 +343,16 @@ class TOMsGeometryElement(QObject):
         NrSegments = int(length / wavelength)    # e.g., length = 33, wavelength = 4
         interval = int(length/float(NrSegments) * 10000) / 10000
 
-        QgsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), tag="TOMs panel", level=Qgis.Info)
 
         Az = line[0].azimuth(line[1])
 
-        # QgsMessageLog.logMessage("In getZigZag. Az = " + str(Az) + "; AzCL = " + str(self.currAzimuthToCentreLine) + "; line[0]: " + line[0].asWkt() + "; line[1]: " + line[1].asWkt(), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getZigZag. Az = " + str(Az) + "; AzCL = " + str(self.currAzimuthToCentreLine) + "; line[0]: " + line[0].asWkt() + "; line[1]: " + line[1].asWkt(), tag="TOMs panel", level=Qgis.Info)
 
         Turn = generateGeometryUtils.turnToCL(Az, self.currAzimuthToCentreLine)
 
         newAz = Az + Turn
-        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
         # deal with two points
@@ -372,10 +373,10 @@ class TOMsGeometryElement(QObject):
 
             interpolatedPointC = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
 
-            QgsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
-            # QgsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel", level=Qgis.Info)
+            # QgsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), tag="TOMs panel", level=Qgis.Info)
 
-            QgsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), tag="TOMs panel", level=Qgis.Info)
 
             ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
 
@@ -383,7 +384,7 @@ class TOMsGeometryElement(QObject):
 
             interpolatedPointD = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
 
-            # QgsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), tag="TOMs panel", level=Qgis.Info)
 
             ptsList.append(QgsPointXY(interpolatedPointD.x() + (float(shpExtent) * cosa),
                      interpolatedPointD.y() + (float(shpExtent) * cosb)))
@@ -403,7 +404,7 @@ class TOMsGeometryElement(QObject):
 class generatedGeometryBayLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape()
@@ -413,7 +414,7 @@ class generatedGeometryBayLineType(TOMsGeometryElement):
 class generatedGeometryHalfOnHalfOffLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -426,7 +427,7 @@ class generatedGeometryHalfOnHalfOffLineType(TOMsGeometryElement):
 class generatedGeometryOnPavementLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryOnPavementLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryOnPavementLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -436,7 +437,7 @@ class generatedGeometryOnPavementLineType(TOMsGeometryElement):
 class generatedGeometryPerpendicularLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
@@ -446,7 +447,7 @@ class generatedGeometryPerpendicularLineType(TOMsGeometryElement):
 class generatedGeometryEchelonLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryEchelonLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryEchelonLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
@@ -456,7 +457,7 @@ class generatedGeometryEchelonLineType(TOMsGeometryElement):
 class generatedGeometryPerpendicularOnPavementLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -466,7 +467,7 @@ class generatedGeometryPerpendicularOnPavementLineType(TOMsGeometryElement):
 class generatedGeometryOutlineShape(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryOutlineShape ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryOutlineShape ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         return self.currFeature.geometry()
@@ -475,7 +476,7 @@ class generatedGeometryOutlineShape(TOMsGeometryElement):
 class generatedGeometryLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryLineType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryLineType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getLine()
@@ -485,7 +486,7 @@ class generatedGeometryLineType(TOMsGeometryElement):
 class generatedGeometryZigZagType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryZigZagType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryZigZagType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -497,7 +498,7 @@ class generatedGeometryZigZagType(TOMsGeometryElement):
 class generatedGeometryBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -511,10 +512,10 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
 class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
-        # QgsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... BayWidth/2 = " + str((self.BayWidth)/2), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... BayWidth/2 = " + str((self.BayWidth)/2), tag="TOMs panel", level=Qgis.Info)
         outputGeometry1, parallelLine1 = self.getShape((self.BayWidth)/2)
         #outputGeometry1A, paralletLine1A = self.getLine()
 
@@ -527,7 +528,7 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryOnPavementPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryOnPavementPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -540,7 +541,7 @@ class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
 class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -553,7 +554,7 @@ class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
 class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryEchelonPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryEchelonPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -566,7 +567,7 @@ class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
 class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -579,7 +580,7 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
 class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryOutlineBayPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryOutlineBayPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -589,7 +590,7 @@ class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometryCrossoverPolygonType ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. generatedGeometryCrossoverPolygonType ... ", tag="TOMs panel", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -607,7 +608,7 @@ class ElementGeometryFactory():
     def getElementGeometry(currFeature):
 
         currRestGeomType = currFeature.attribute("GeomShapeID")
-        QgsMessageLog.logMessage("In factory. getElementGeometry " + str(currFeature.attribute("GeometryID")) + ":" + str(currRestGeomType), tag="TOMs panel")
+        QgsMessageLog.logMessage("In factory. getElementGeometry " + str(currFeature.attribute("GeometryID")) + ":" + str(currRestGeomType), tag="TOMs panel", level=Qgis.Info)
 
         try:
             if currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY:
@@ -667,4 +668,4 @@ class ElementGeometryFactory():
             raise AssertionError("Restriction Geometry Type NOT found")
 
         except AssertionError as _e:
-            QgsMessageLog.logMessage("In ElementGeometryFactory. TYPE not found or something else ... ", tag="TOMs panel")
+            QgsMessageLog.logMessage("In ElementGeometryFactory. TYPE not found or something else ... ", tag="TOMs panel", level=Qgis.Info)

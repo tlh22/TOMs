@@ -34,6 +34,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsProject,
     QgsMessageLog,
@@ -49,7 +50,7 @@ class searchBar():
 
     def __init__(self, iface, TOMsSearchBar, proposalsManager):
 
-        QgsMessageLog.logMessage("In searchBar", tag="TOMs panel")
+        QgsMessageLog.logMessage("In searchBar", tag="TOMs panel", level=Qgis.Info)
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
@@ -64,7 +65,7 @@ class searchBar():
         # https: // gis.stackexchange.com / questions / 244584 / adding - textbox - to - qgis - plugin - toolbar
 
     def initSearchBar(self):
-        QgsMessageLog.logMessage("In initSearchBox:", tag="TOMs panel")
+        QgsMessageLog.logMessage("In initSearchBox:", tag="TOMs panel", level=Qgis.Info)
 
         self.initialPass = True
         self.gazetteerStringList = []
@@ -99,14 +100,14 @@ class searchBar():
         self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
 
     def enableSearchBar(self):
-        QgsMessageLog.logMessage("In enableSearchBar", tag="TOMs panel")
+        QgsMessageLog.logMessage("In enableSearchBar", tag="TOMs panel", level=Qgis.Info)
 
         self.actionGoToItem.setEnabled(True)
         self.toolButton.setEnabled(True)
         self.searchTextbox.textChanged.connect(self.doLookupItem)
 
     def disableSearchBar(self):
-        QgsMessageLog.logMessage("In disableSearchBar", tag="TOMs panel")
+        QgsMessageLog.logMessage("In disableSearchBar", tag="TOMs panel", level=Qgis.Info)
 
         self.initialPass = True
         self.actionGoToItem.setEnabled(False)
@@ -115,7 +116,7 @@ class searchBar():
 
     def doLookupItem(self):
 
-        QgsMessageLog.logMessage("In doLookupItem:", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doLookupItem:", tag="TOMs panel", level=Qgis.Info)
 
         # TODO: Check whether or not a project has been opened
 
@@ -126,7 +127,7 @@ class searchBar():
             self.initialPass = False
 
         searchText = self.searchTextbox.text()
-        QgsMessageLog.logMessage("In doLookupItem: searchText " + str(searchText), tag="TOMs panel")
+        QgsMessageLog.logMessage("In doLookupItem: searchText " + str(searchText), tag="TOMs panel", level=Qgis.Info)
 
         #search_in = txt
         #query = "SELECT myfield1, myfield2 FROM my_table WHERE '%s' LIKE '%' || search_field || '%';" % (search_in)
@@ -137,7 +138,7 @@ class searchBar():
     def setupCompleter(self):
         # set up string list for completer
 
-        QgsMessageLog.logMessage("In setupCompleter:", tag="TOMs panel")
+        QgsMessageLog.logMessage("In setupCompleter:", tag="TOMs panel", level=Qgis.Info)
         lookupStringSet = set()
         # https://gis.stackexchange.com/questions/155805/qstringlist-error-in-plugin-of-qgis-2-10
 
@@ -151,7 +152,7 @@ class searchBar():
                 nameString = nameString + ", " + locality
 
             if nameString:
-                QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel")
+                QgsMessageLog.logMessage("In setupCompleter: nameString: " + nameString, tag="TOMs panel", level=Qgis.Info)
                 lookupStringSet.add(nameString)
                 # self.gazetteerStringList.append((nameString))
 
@@ -166,17 +167,17 @@ class searchBar():
 
     def doGoToItem(self):
 
-        QgsMessageLog.logMessage("In doGoToItem:", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doGoToItem:", tag="TOMs panel", level=Qgis.Info)
 
         searchText = self.searchTextbox.text()
-        QgsMessageLog.logMessage("In doGoToItem: searchText " + str(searchText), tag="TOMs panel")
+        QgsMessageLog.logMessage("In doGoToItem: searchText " + str(searchText), tag="TOMs panel", level=Qgis.Info)
 
         # Split out the components of the text
 
         streetName, localityName = searchText.split(',')
         #amendedStreetName = streetName.replace("'", "\'\'")
         #amendedLocalityName = localityName.replace("'", "\'\'")
-        QgsMessageLog.logMessage("In doGoToItem: streetName: " + str(streetName.replace("'", "\'\'")) + " locality: + " + str(localityName.replace("'", "\'\'")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In doGoToItem: streetName: " + str(streetName.replace("'", "\'\'")) + " locality: + " + str(localityName.replace("'", "\'\'")), tag="TOMs panel", level=Qgis.Info)
 
         # Now search for the street
 
@@ -184,7 +185,7 @@ class searchBar():
         if localityName:
             queryString = queryString + " AND \"Locality\" = \'" + localityName.replace("'", "\'\'").lstrip() + "\'"
 
-        QgsMessageLog.logMessage("In doGoToItem: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In doGoToItem: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         it = self.GazetteerLayer.selectByExpression(queryString, QgsVectorLayer.SetSelection)
 

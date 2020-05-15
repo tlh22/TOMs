@@ -32,6 +32,7 @@ from qgis.PyQt.QtCore import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsExpression,
     QgsFeatureRequest,
@@ -95,7 +96,7 @@ class TOMsTransaction(QObject):
         # self.tableNames = TOMSLayers(self.iface)
         # self.tableNames.getLayers()
 
-        QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", tag="TOMs panel", level=Qgis.Info)
 
         # idxRestrictionsLayerName = self.tableNames.RESTRICTIONLAYERS.fields().indexFromName("RestrictionLayerName")
 
@@ -110,23 +111,23 @@ class TOMsTransaction(QObject):
             # restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             self.setTransactionGroup.append(self.tableNames.setLayer(layer))
-            QgsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, tag="TOMs panel", level=Qgis.Info)
 
     def createTransactionGroup(self):
 
         QgsMessageLog.logMessage("In TOMsTransaction.createTransactionGroup",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         """if self.currTransactionGroup:
             QgsMessageLog.logMessage("In createTransactionGroup. Transaction ALREADY exists",
-                                    tag="TOMs panel")
+                                    tag="TOMs panel", level=Qgis.Info)
             return"""
 
         if self.currTransactionGroup:
 
             for layer in self.setTransactionGroup:
                 self.currTransactionGroup.addLayer(layer)
-                QgsMessageLog.logMessage("In createTransactionGroup. Adding " + str(layer.name()), tag="TOMs panel")
+                QgsMessageLog.logMessage("In createTransactionGroup. Adding " + str(layer.name()), tag="TOMs panel", level=Qgis.Info)
 
                 layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
                 layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
@@ -148,17 +149,17 @@ class TOMsTransaction(QObject):
 
     def startTransactionGroup(self):
 
-        QgsMessageLog.logMessage("In startTransactionGroup.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In startTransactionGroup.", tag="TOMs panel", level=Qgis.Info)
 
         if self.currTransactionGroup.isEmpty():
-            QgsMessageLog.logMessage("In startTransactionGroup. Currently empty adding layers", tag="TOMs panel")
+            QgsMessageLog.logMessage("In startTransactionGroup. Currently empty adding layers", tag="TOMs panel", level=Qgis.Info)
             self.createTransactionGroup()
 
         status = self.tableNames.setLayer(self.TOMsTransactionList[0]).startEditing()  # could be any table ...
         if status == False:
-            QgsMessageLog.logMessage("In startTransactionGroup. *** Error starting transaction ...", tag="TOMs panel")
+            QgsMessageLog.logMessage("In startTransactionGroup. *** Error starting transaction ...", tag="TOMs panel", level=Qgis.Info)
         else:
-            QgsMessageLog.logMessage("In startTransactionGroup. Transaction started correctly!!! ...", tag="TOMs panel")
+            QgsMessageLog.logMessage("In startTransactionGroup. Transaction started correctly!!! ...", tag="TOMs panel", level=Qgis.Info)
         return status
 
     def layerModified(self):
@@ -170,22 +171,22 @@ class TOMsTransaction(QObject):
 
     def printMessage(self, layer, message):
         QgsMessageLog.logMessage("In printMessage. " + str(message) + " ... " + str(layer.name()),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
     def printAttribChanged(self, fid, idx, v):
         QgsMessageLog.logMessage("Attributes changed for feature " + str(fid),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
     def printRaiseError(self, layer, message):
         QgsMessageLog.logMessage("Error from " + str(layer.name()) + ": " + str(message),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
         self.errorOccurred = True
         self.errorMessage = message
 
     def commitTransactionGroup(self, currRestrictionLayer):
 
         QgsMessageLog.logMessage("In commitTransactionGroup",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
         currMapTool = self.iface.mapCanvas().mapTool()
@@ -194,7 +195,7 @@ class TOMsTransaction(QObject):
 
         if not self.currTransactionGroup:
             QgsMessageLog.logMessage("In commitTransactionGroup. Transaction DOES NOT exist",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             return
 
         if self.errorOccurred == True:
@@ -219,23 +220,23 @@ class TOMsTransaction(QObject):
                     return False"""
 
         """QgsMessageLog.logMessage("In commitTransactionGroup. Committing transaction",
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
 
         # modifiedTransaction = self.currTransactionGroup.modified()
 
         """if self.modified == True:
             QgsMessageLog.logMessage("In commitTransactionGroup. Transaction has been changed ...",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
         else:
             QgsMessageLog.logMessage("In commitTransactionGroup. Transaction has NOT been changed ...",
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
 
         # self.currTransactionGroup.commitError.connect(self.errorInTransaction)
 
         for layer in self.setTransactionGroup:
 
             QgsMessageLog.logMessage("In commitTransactionGroup. Considering: " + layer.name(),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             commitStatus = layer.commitChanges()
             # commitStatus = True  # for testing ...
@@ -249,7 +250,7 @@ class TOMsTransaction(QObject):
                 commitStatus = False
 
                 QgsMessageLog.logMessage("In commitTransactionGroup. error: " + str(layer.commitErrors()),
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
 
             if commitStatus == False:
                 reply = QMessageBox.information(None, "Error",
@@ -277,7 +278,7 @@ class TOMsTransaction(QObject):
         reply = QMessageBox.information(None, "Error",
                                         "Proposal changes failed: " + errorMsg, QMessageBox.Ok)
         QgsMessageLog.logMessage("In errorInTransaction: " + errorMsg,
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         # def __del__(self):
         # pass
@@ -288,7 +289,7 @@ class TOMsTransaction(QObject):
 
             if self.currTransactionGroup.modified():
                 QgsMessageLog.logMessage("In deleteTransactionGroup. Transaction contains edits ... NOT deleting",
-                                         tag="TOMs panel")
+                                         tag="TOMs panel", level=Qgis.Info)
                 return
 
             self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
@@ -301,7 +302,7 @@ class TOMsTransaction(QObject):
     def rollBackTransactionGroup(self):
 
         QgsMessageLog.logMessage("In rollBackTransactionGroup",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
@@ -309,10 +310,10 @@ class TOMsTransaction(QObject):
         try:
             self.tableNames.setLayer(self.TOMsTransactionList[0]).rollBack()  # could be any table ...
             QgsMessageLog.logMessage("In rollBackTransactionGroup. Transaction rolled back correctly ...",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
         except:
             QgsMessageLog.logMessage("In rollBackTransactionGroup. error: ...",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
         # self.iface.activeLayer().stopEditing()
 

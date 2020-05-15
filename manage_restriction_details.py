@@ -33,6 +33,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsProject,
     QgsMessageLog,
@@ -47,7 +48,6 @@ import os
 from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 
 from .mapTools import *
-#from TOMsUtils import *
 from .constants import (
     ProposalStatus,
     RestrictionAction
@@ -56,15 +56,13 @@ from .constants import (
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
 from .core.TOMsTransaction import (TOMsTransaction)
 
-#from BayRestrictionForm import BayRestrictionForm
-
 import functools
 
 class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def __init__(self, iface, TOMsToolbar, proposalsManager):
 
-        QgsMessageLog.logMessage("In manageRestrictionDetails::init", tag="TOMs panel")
+        QgsMessageLog.logMessage("In manageRestrictionDetails::init", tag="TOMs panel", level=Qgis.Info)
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -157,7 +155,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def enableTOMsToolbarItems(self, restrictionTransaction):
 
-        QgsMessageLog.logMessage("In enableTOMsToolbarItems", tag="TOMs panel")
+        QgsMessageLog.logMessage("In enableTOMsToolbarItems", tag="TOMs panel", level=Qgis.Info)
 
         self.actionSelectRestriction.setEnabled(True)
         self.actionRestrictionDetails.setEnabled(True)
@@ -186,7 +184,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def disableTOMsToolbarItems(self):
 
-        QgsMessageLog.logMessage("In disableTOMsToolbarItems", tag="TOMs panel")
+        QgsMessageLog.logMessage("In disableTOMsToolbarItems", tag="TOMs panel", level=Qgis.Info)
 
         self.actionSelectRestriction.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
@@ -205,7 +203,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         """ Select point and then display details
         """
 
-        QgsMessageLog.logMessage("In doSelectRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doSelectRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -225,7 +223,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def doRestrictionDetails(self):
         """ Select point and then display details
         """
-        QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doRestrictionDetails", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -236,7 +234,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         if currRestrictionLayer:
 
-            QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name() + " Nr feats: " + str(currRestrictionLayer.selectedFeatureCount())), tag="TOMs panel")
+            QgsMessageLog.logMessage("In doRestrictionDetails. currLayer: " + str(currRestrictionLayer.name() + " Nr feats: " + str(currRestrictionLayer.selectedFeatureCount())), tag="TOMs panel", level=Qgis.Info)
 
             if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -252,7 +250,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                     #self.restrictionForm.show()
 
                     QgsMessageLog.logMessage(
-                        "In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+                        "In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel", level=Qgis.Info)
 
                     dialog = self.iface.getFeatureForm(currRestrictionLayer, currRestriction)
 
@@ -290,7 +288,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doCreateBayRestriction(self):
 
-        QgsMessageLog.logMessage("In doCreateBayRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateBayRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -307,7 +305,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doCreateBayRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateBayRestriction - tool activated", tag="TOMs panel", level=Qgis.Info)
 
                 # self.restrictionTransaction.startTransactionGroup()  # start editing
 
@@ -329,7 +327,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doCreateBayRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateBayRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
@@ -353,7 +351,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doCreateLineRestriction(self):
 
-        QgsMessageLog.logMessage("In doCreateLineRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateLineRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -370,7 +368,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doCreateLineRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateLineRestriction - tool activated", tag="TOMs panel", level=Qgis.Info)
 
                 # self.restrictionTransaction.startTransactionGroup()  # start editing
 
@@ -390,7 +388,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doCreateLineRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateLineRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
@@ -410,7 +408,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doCreatePolygonRestriction(self):
 
-        QgsMessageLog.logMessage("In doCreatePolygonRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreatePolygonRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -427,7 +425,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool activated", tag="TOMs panel", level=Qgis.Info)
 
                 #self.currLayer = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionPolygons")[0]
                 #currLayer = self.tableNames.RESTRICTION_POLYGONS
@@ -444,7 +442,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreatePolygonRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
@@ -464,7 +462,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doCreateSignRestriction(self):
 
-        QgsMessageLog.logMessage("In doCreateSignRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateSignRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -481,7 +479,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doCreateSignRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateSignRestriction - tool activated", tag="TOMs panel", level=Qgis.Info)
 
                 # self.restrictionTransaction.startTransactionGroup()
 
@@ -501,7 +499,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doCreateSignRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doCreateSignRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
@@ -523,7 +521,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doCreateConstructionLine(self):
 
-        QgsMessageLog.logMessage("In doCreateConstructionLine", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doCreateConstructionLine", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -535,7 +533,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             # set TOMs layer as active layer (for editing)...
 
-            QgsMessageLog.logMessage("In doCreateConstructionLine - tool activated", tag="TOMs panel")
+            QgsMessageLog.logMessage("In doCreateConstructionLine - tool activated", tag="TOMs panel", level=Qgis.Info)
 
             self.currLayer = QgsProject.instance().mapLayersByName("ConstructionLines")[0]
             self.iface.setActiveLayer(self.currLayer)
@@ -550,7 +548,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         else:
 
-            QgsMessageLog.logMessage("In doCreateConstructionLine - tool deactivated", tag="TOMs panel")
+            QgsMessageLog.logMessage("In doCreateConstructionLine - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
@@ -563,7 +561,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         #def onCreateRestriction(self, newRestriction):
         """ Called by map tool when a restriction is created
         """
-        #QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In onCreateRestriction - after shape created", tag="TOMs panel", level=Qgis.Info)
 
         #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
 
@@ -574,7 +572,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doRemoveRestriction(self):
         # pass control to MapTool and then deal with Proposals issues from there ??
-        QgsMessageLog.logMessage("In doRemoveRestriction", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doRemoveRestriction", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -592,7 +590,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # set TOMs layer as active layer (for editing)...
 
-                QgsMessageLog.logMessage("In doRemoveRestriction - tool activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doRemoveRestriction - tool activated", tag="TOMs panel", level=Qgis.Info)
 
                 #self.TOMslayer = QgsMapLayerRegistry.instance().mapLayersByName("TOMs_Layer")[0]
                 #iface.setActiveLayer(self.TOMslayer)
@@ -605,7 +603,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doRemoveRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doRemoveRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
@@ -619,7 +617,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if currRestrictionLayer:
 
-                QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+                QgsMessageLog.logMessage("In doRemoveRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel", level=Qgis.Info)
 
                 if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -651,7 +649,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         pass
 
     def onRemoveRestriction(self, currRestrictionLayer, currRestriction):
-        QgsMessageLog.logMessage("In onRemoveRestriction. currLayer: " + str(currRestrictionLayer.id()) + " CurrFeature: " + str(currRestriction.id()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onRemoveRestriction. currLayer: " + str(currRestrictionLayer.id()) + " CurrFeature: " + str(currRestriction.id()), tag="TOMs panel", level=Qgis.Info)
 
         #self.currRestrictionLayer = currRestrictionLayer
         #self.currRestriction = currRestriction
@@ -666,17 +664,17 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
             # NB: This is the only case of a restriction being truly deleted
 
-            QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel")
+            QgsMessageLog.logMessage("In onRemoveRestriction. Removing from RestrictionsInProposals and currLayer.", tag="TOMs panel", level=Qgis.Info)
 
             # Delete from RestrictionsInProposals
             result = self.deleteRestrictionInProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID)
 
             if result:
                 QgsMessageLog.logMessage("In onRemoveRestriction. Deleting restriction id: " + str(currRestriction.id()),
-                                         tag="TOMs panel")
+                                         tag="TOMs panel", level=Qgis.Info)
                 deleteStatus = currRestrictionLayer.deleteFeature(currRestriction.id())
                 QgsMessageLog.logMessage("In onRemoveRestriction. deleteStatus: " + str(deleteStatus),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             else:
                 QMessageBox.information(None, "ERROR", ("Error deleting restriction ..."))
@@ -686,7 +684,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             #    - enter the restriction into the table RestrictionInProposals as closed, and
             #
             QgsMessageLog.logMessage("In onRemoveRestriction. Closing existing restriction.",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerID, currProposalID,
                                                           RestrictionAction.OPEN)  # 2 = Close
@@ -703,7 +701,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doEditRestriction(self):
 
-        QgsMessageLog.logMessage("In doEditRestriction - starting", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doEditRestriction - starting", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -716,7 +714,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionEditRestriction.isChecked():
 
-                QgsMessageLog.logMessage("In actionEditRestriction - tool being activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In actionEditRestriction - tool being activated", tag="TOMs panel", level=Qgis.Info)
 
                 # Need to clear any other maptools ....   ********
 
@@ -724,7 +722,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 if currRestrictionLayer:
 
-                    QgsMessageLog.logMessage("In doEditRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In doEditRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel", level=Qgis.Info)
 
                     if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -767,7 +765,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doEditRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doEditRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.actionEditRestriction.setChecked(False)
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
@@ -791,13 +789,13 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         pass
 
-        QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doEditRestriction - leaving", tag="TOMs panel", level=Qgis.Info)
 
         pass
 
     def doSplitRestriction(self):
 
-        QgsMessageLog.logMessage("In doSplitRestriction - starting", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doSplitRestriction - starting", tag="TOMs panel", level=Qgis.Info)
 
         self.proposalsManager.TOMsToolChanged.emit()
 
@@ -810,7 +808,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionSplitRestriction.isChecked():
 
-                QgsMessageLog.logMessage("In doSplitRestriction - tool being activated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doSplitRestriction - tool being activated", tag="TOMs panel", level=Qgis.Info)
 
                 # Need to clear any other maptools ....   ********
 
@@ -818,7 +816,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 if currRestrictionLayer:
 
-                    QgsMessageLog.logMessage("In doSplitRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In doSplitRestriction. currLayer: " + str(currRestrictionLayer.name()), tag="TOMs panel", level=Qgis.Info)
 
                     if currRestrictionLayer.selectedFeatureCount() > 0:
 
@@ -861,7 +859,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                QgsMessageLog.logMessage("In doSplitRestriction - tool deactivated", tag="TOMs panel")
+                QgsMessageLog.logMessage("In doSplitRestriction - tool deactivated", tag="TOMs panel", level=Qgis.Info)
 
                 self.actionSplitRestriction.setChecked(False)
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
@@ -885,7 +883,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         pass
 
-        QgsMessageLog.logMessage("In doSplitRestriction - leaving", tag="TOMs panel")
+        QgsMessageLog.logMessage("In doSplitRestriction - leaving", tag="TOMs panel", level=Qgis.Info)
 
         pass
 

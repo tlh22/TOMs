@@ -23,6 +23,7 @@ from PyQt5.QtPrintSupport import (
     QPrintDialog, QPrinter
     )
 from qgis.core import (
+    Qgis,
     QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter,
     QgsPrintLayout, QgsLayoutItemRegistry, PROJECT_SCALES, QgsLayoutItemMap,
     QgsMessageLog, QgsExpression, QgsFeatureRequest
@@ -61,7 +62,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         self.exportButton.clicked.connect(self.TOMsExport)
 
     def createAcceptedProposalcb(self):
-        QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel")
+        QgsMessageLog.logMessage("In createAcceptedProposalcb", tag="TOMs panel", level=Qgis.Info)
         # set up a "NULL" field for "No proposals to be shown"
 
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
@@ -69,7 +70,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         for (currProposalID, currProposalTitle, currProposalStatusID, currProposalOpenDate, currProposal) in sorted(
                 self.proposalsManager.getProposalsListWithStatus(ProposalStatus.ACCEPTED), key=lambda f: f[1]):
             QgsMessageLog.logMessage(
-                "In createProposalcb: queryString: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel")
+                "In createProposalcb: queryString: " + str(currProposalID) + ":" + currProposalTitle, tag="TOMs panel", level=Qgis.Info)
             self.acceptedProposalDialog.cb_AcceptedProposalsList.addItem(currProposalTitle, currProposalID)
 
     def TOMsSelectLayout(self):
@@ -145,7 +146,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     # Take the output from the form and set the current Proposal
                     indexProposal = self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
                     proposalNrForPrinting = self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(indexProposal)
-                    QgsMessageLog.logMessage("In TOMsExport. Choosing " + str(proposalNrForPrinting), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In TOMsExport. Choosing " + str(proposalNrForPrinting), tag="TOMs panel", level=Qgis.Info)
                     printProposal = TOMsProposal(self.proposalsManager, proposalNrForPrinting)
                     # self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
                     self.openDateForPrintProposal = printProposal.getProposalOpenDate()
@@ -246,7 +247,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 date=self.proposalsManager.date().toString('yyyyMMMdd'))
 
         QgsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currLayoutAtlas.count()) + " items ....",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         currLayoutAtlas.setEnabled(True)
         currLayoutAtlas.updateFeatures()
@@ -264,14 +265,14 @@ class TOMsInstantPrintTool(InstantPrintTool):
             tileWithDetails = proposalTileDictionaryForDate[currTileNr]
 
             if tileWithDetails == None:
-                QgsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", tag="TOMs panel")
+                QgsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", tag="TOMs panel", level=Qgis.Info)
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
                                     self.tr("Could not find details for " + str(currTileNr)))
                 break
 
             QgsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " RevisionNr: " + str(
                 tileWithDetails["RevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"]),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
                 composerRevisionNr.setText(str(tileWithDetails["RevisionNr"]))
@@ -359,7 +360,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
     def TOMsChooseTiles(self, tileDictionary):
         # function to display and allow choice of tiles for printing
 
-        QgsMessageLog.logMessage("In TOMsChooseTiles ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMsChooseTiles ", tag="TOMs panel", level=Qgis.Info)
 
         # set the dialog (somehow)
 
@@ -368,7 +369,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         tileSet = set()
         for tileNr, tile in tileDictionary.items():
-            QgsMessageLog.logMessage("In TOMsChooseTiles: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsChooseTiles: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
             tileSet.add(tile)
 
         self.tileListDialog = printListDialog(tileSet, idxMapTileId)
@@ -380,7 +381,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         # See if OK was pressed
         if result:
             QgsMessageLog.logMessage("In TOMsChooseTiles. Now printing - getValues ...",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             tilesToPrint = self.tileListDialog.getValues()
 
         # ToDo: deal with cancel
@@ -397,7 +398,7 @@ class printListDialog(printListDialog, QDialog):
         # Set up the user interface from Designer.
         self.setupUi(self)
 
-        QgsMessageLog.logMessage("In printListDialog. Initiating ...",             tag="TOMs panel")
+        QgsMessageLog.logMessage("In printListDialog. Initiating ...",             tag="TOMs panel", level=Qgis.Info)
 
         self.initValues = initValues
         self.idxValue = idxValue
@@ -420,7 +421,7 @@ class printListDialog(printListDialog, QDialog):
         # Check if we check or uncheck the value:
         """QgsMessageLog.logMessage(
             "In printListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
-            tag="TOMs panel")"""
+            tag="TOMs panel", level=Qgis.Info)"""
 
         if element.checkState() == Qt.Checked:
             #self.tilesToPrint.append(element.data(Qt.DisplayRole))
@@ -438,7 +439,7 @@ class printListDialog(printListDialog, QDialog):
                 self.tilesToPrint.add(feature)
                 QgsMessageLog.logMessage(
                     "In TOMsTileListDialog. Adding: " + str(currValue) + " ; " + str(len(self.tilesToPrint)),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 return
 
     def removedFeatureFromSet(self, valueToRemove):
@@ -451,7 +452,7 @@ class printListDialog(printListDialog, QDialog):
                 self.tilesToPrint.remove(feature)
                 QgsMessageLog.logMessage(
                     "In TOMsTileListDialog. Removing: " + str(currValue) + " ; " + str(len(self.tilesToPrint)) ,
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 return
 
     def toggleValues(self):
@@ -460,7 +461,7 @@ class printListDialog(printListDialog, QDialog):
 
         QgsMessageLog.logMessage(
             "In TOMsTileListDialog. In toggleValues. toggleState: " + str(self.cbToggleTiles.checkState()),
-            tag="TOMs panel")
+            tag="TOMs panel", level=Qgis.Info)
 
         if self.cbToggleTiles.checkState() == Qt.Checked:
             for i in range(self.LIST.count()):
@@ -469,7 +470,7 @@ class printListDialog(printListDialog, QDialog):
                 self.LIST.item(i).setCheckState(Qt.Checked)
                 """QgsMessageLog.logMessage(
                     "In TOMsTileListDialog. In toggleValues. setting: " + str(self.LIST.item(i).text()),
-                    tag="TOMs panel")"""
+                    tag="TOMs panel", level=Qgis.Info)"""
 
         else:
 
@@ -482,7 +483,7 @@ class printListDialog(printListDialog, QDialog):
         '''Fill the QListWidget with values'''
         # Delete everything
         QgsMessageLog.logMessage("In TOMsTileListDialog. In populateList",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         self.LIST.clear()
 
@@ -493,7 +494,7 @@ class printListDialog(printListDialog, QDialog):
             element.setData(Qt.UserRole, attr[self.idxValue])
 
             """QgsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
 
             self.tilesToPrint.add(feature)
             element.setCheckState(Qt.Checked)
@@ -504,12 +505,12 @@ class printListDialog(printListDialog, QDialog):
         '''Return the selected values of the QListWidget'''
 
         QgsMessageLog.logMessage("In TOMsTileListDialog. In getValues. Len List = " + str(len(self.tilesToPrint)),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         for feature in sorted(self.tilesToPrint, key=lambda f: f[self.idxValue]):
             attr = feature.attributes()
             currValue = attr[self.idxValue]
             QgsMessageLog.logMessage("In Choose tiles form ... Returning " + str(attr[self.idxValue]),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
         return self.tilesToPrint

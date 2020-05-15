@@ -51,7 +51,7 @@ class CadNodeToolPlugin:
 
     def onCurrentLayerChanged(self):
 
-        QgsMessageLog.logMessage("In NodeTool:onCurrentLayerChanged", tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:onCurrentLayerChanged", tag="TOMs panel", level=Qgis.Info)
 
         if isinstance(self.current_layer, QgsVectorLayer):
             self.current_layer.editingStarted.disconnect(self.onEditingStartStop)
@@ -64,6 +64,6 @@ class CadNodeToolPlugin:
 
     def onEditingStartStop(self):
 
-        QgsMessageLog.logMessage("In NodeTool:onEditingStartStop", tag="TOMs panel")
+        QgsMessageLog.logMessage("In NodeTool:onEditingStartStop", tag="TOMs panel", level=Qgis.Info)
 
         self.action.setEnabled(self.tool.can_use_current_layer())

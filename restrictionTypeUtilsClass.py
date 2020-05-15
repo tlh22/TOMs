@@ -32,6 +32,7 @@ from qgis.PyQt.QtCore import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsExpression,
     QgsFeatureRequest,
@@ -41,7 +42,8 @@ from qgis.core import (
     QgsTransaction,
     QgsTransactionGroup,
     QgsProject,
-    QgsApplication
+    QgsApplication,
+    Qgis
 )
 
 from qgis.gui import *
@@ -74,7 +76,7 @@ class TOMsParams(QObject):
         QObject.__init__(self)
         # self.iface = iface
 
-        QgsMessageLog.logMessage("In TOMSParams.init ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSParams.init ...", tag="TOMs panel", level=Qgis.Info)
         self.TOMsParamsList = ["BayWidth",
                           "BayLength",
                           "BayOffsetFromKerb",
@@ -82,13 +84,14 @@ class TOMsParams(QObject):
                           "CrossoverShapeWidth",
                           "PhotoPath",
                           "MinimumTextDisplayScale"
+                          "TOMsDebugLevel"
                         ]
 
         self.TOMsParamsDict = {}
 
     def getParams(self):
 
-        QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.getParams ...", tag="TOMs panel", level=Qgis.Info)
         found = True
 
         # Check for project being open
@@ -100,10 +103,10 @@ class TOMsParams(QObject):
 
         else:
 
-            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", tag="TOMs panel", level=Qgis.Info)
 
             for param in self.TOMsParamsList:
-                QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel")
+                QgsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), tag="TOMs panel", level=Qgis.Info)
 
                 """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
                     currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
@@ -115,7 +118,7 @@ class TOMsParams(QObject):
 
                 if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    QgsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param) + " as " + str(currParam), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param) + " as " + str(currParam), tag="TOMs panel", level=Qgis.Info)
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False
@@ -126,7 +129,7 @@ class TOMsParams(QObject):
         else:
             self.TOMsParamsSet.emit()
 
-            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... finished ", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In TOMSLayers.getParams ... finished ", tag="TOMs panel", level=Qgis.Info)
 
         return found
 
@@ -144,7 +147,7 @@ class TOMSLayers(QObject):
         QObject.__init__(self)
         self.iface = iface
 
-        QgsMessageLog.logMessage("In TOMSLayers.init ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.init ...", tag="TOMs panel", level=Qgis.Info)
         #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
@@ -174,7 +177,7 @@ class TOMSLayers(QObject):
 
     def getLayers(self):
 
-        QgsMessageLog.logMessage("In TOMSLayers.getLayers ...", tag="TOMs panel")
+        QgsMessageLog.logMessage("In TOMSLayers.getLayers ...", tag="TOMs panel", level=Qgis.Info)
         found = True
 
         # Check for project being open
@@ -223,9 +226,9 @@ class originalFeature(object):
 
     def printFeature(self):
         QgsMessageLog.logMessage("In originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
         QgsMessageLog.logMessage("In originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
@@ -233,18 +236,14 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class Logger(metaclass=Singleton):
-    def __init__(self, iface):
-        # Set up log file and collect any relevant messages
-        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+class TOMsLogger(QgsMessageLog):
+    def __init__(self, message_level):
+        super().__init__()
+        self.message_level = message_level
 
-        if logFilePath:
-            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
-
-            logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
-            self.filename = os.path.join(logFilePath, logfile)
-            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
-            QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)
+    def logMessage(self, message, tag, level):
+        if level >= self.message_level:
+            QgsMessageLog.logmessage(message, tag, level)
 
     def write_log_message(self, message, tag, level):
         # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
@@ -270,7 +269,7 @@ class RestrictionTypeUtilsMixin():
 
     def restrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         # returns True if resstriction is in Proposal
-        QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In restrictionInProposal.", tag="TOMs panel", level=Qgis.Info)
 
         RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
 
@@ -285,13 +284,13 @@ class RestrictionTypeUtilsMixin():
                         restrictionFound = True
 
         QgsMessageLog.logMessage("In restrictionInProposal. restrictionFound: " + str(restrictionFound),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         return restrictionFound
 
     def addRestrictionToProposal(self, restrictionID, restrictionLayerTableID, proposalID, proposedAction):
         # adds restriction to the "RestrictionsInProposals" layer
-        QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In addRestrictionToProposal.", tag="TOMs panel", level=Qgis.Info)
 
         RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
 
@@ -313,7 +312,7 @@ class RestrictionTypeUtilsMixin():
 
         QgsMessageLog.logMessage(
             "In addRestrictionToProposal. Before record create. RestrictionID: " + str(restrictionID),
-            tag="TOMs panel")
+            tag="TOMs panel", level=Qgis.Info)
 
         attrs = newRestrictionsInProposal.attributes()
 
@@ -325,7 +324,7 @@ class RestrictionTypeUtilsMixin():
 
     def getRestrictionsLayer(self, currRestrictionTableRecord):
         # return the layer given the row in "RestrictionLayers"
-        QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionLayer.", tag="TOMs panel", level=Qgis.Info)
 
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
@@ -339,7 +338,7 @@ class RestrictionTypeUtilsMixin():
 
     def getRestrictionsLayerFromID(self, currRestrictionTableID):
         # return the layer given the row in "RestrictionLayers"
-        QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel", level=Qgis.Info)
 
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
@@ -355,7 +354,7 @@ class RestrictionTypeUtilsMixin():
         return restrictionLayer
 
     def getRestrictionLayerTableID(self, currRestLayer):
-        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel", level=Qgis.Info)
         # find the ID for the layer within the table "
 
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
@@ -369,31 +368,31 @@ class RestrictionTypeUtilsMixin():
                 layersTableID = layer.attribute("id")
 
         QgsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         return layersTableID
 
     def getRestrictionBasedOnRestrictionID(self, currRestrictionID, currRestrictionLayer):
         # return the layer given the row in "RestrictionLayers"
-        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel", level=Qgis.Info)
 
         #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
 
         queryString = "\"RestrictionID\" = \'" + currRestrictionID + "\'"
 
-        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
         for feature in currRestrictionLayer.getFeatures(QgsFeatureRequest(expr)):
             return feature
 
-        QgsMessageLog.logMessage("In getRestriction: Restriction not found", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestriction: Restriction not found", tag="TOMs panel", level=Qgis.Info)
         return None
 
 
     def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
-        QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), tag="TOMs panel", level=Qgis.Info)
 
         returnStatus = False
 
@@ -406,7 +405,7 @@ class RestrictionTypeUtilsMixin():
                 if restrictionInProposal.attribute("RestrictionTableID") == currRestrictionLayerID:
                     if restrictionInProposal.attribute("ProposalID") == proposalID:
                         QgsMessageLog.logMessage("In deleteRestrictionInProposal - deleting ",
-                                                 tag="TOMs panel")
+                                                 tag="TOMs panel", level=Qgis.Info)
 
                         attrs = restrictionInProposal.attributes()
 
@@ -419,7 +418,7 @@ class RestrictionTypeUtilsMixin():
         return returnStatus
 
     def onSaveRestrictionDetails(self, currRestriction, currRestrictionLayer, dialog, restrictionTransaction):
-        QgsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
         #currRestrictionLayer.startEditing()
 
@@ -436,7 +435,7 @@ class RestrictionTypeUtilsMixin():
                 # restriction already is part of the current proposal
                 # simply make changes to the current restriction in the current layer
                 QgsMessageLog.logMessage("In onSaveRestrictionDetails. Saving details straight from form." + str(currRestriction.attribute("GeometryID")),
-                                         tag="TOMs panel")
+                                         tag="TOMs panel", level=Qgis.Info)
 
                 #res = dialog.save()
                 status = currRestrictionLayer.updateFeature(currRestriction)
@@ -444,10 +443,10 @@ class RestrictionTypeUtilsMixin():
 
                 """if res == True:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Form saved.",
-                                             tag="TOMs panel")
+                                             tag="TOMs panel", level=Qgis.Info)
                 else:
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Form NOT saved.",
-                                             tag="TOMs panel")"""
+                                             tag="TOMs panel", level=Qgis.Info)"""
 
             else:
 
@@ -458,7 +457,7 @@ class RestrictionTypeUtilsMixin():
                 #    - make a copy of the restriction in the current layer (with the new details)
 
                 # QgsMessageLog.logMessage("In onSaveRestrictionDetails. Adding restriction. ID: " + str(currRestriction.id()),
-                #                         tag="TOMs panel")
+                #                         tag="TOMs panel", level=Qgis.Info)
 
                 # Create a new feature using the current details
 
@@ -468,7 +467,7 @@ class RestrictionTypeUtilsMixin():
                 QgsMessageLog.logMessage(
                     "In onSaveRestrictionDetails. Adding new restriction (1). ID: " + str(
                         newRestrictionID),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
 
                 if currRestriction[idxRestrictionID] is None:
                     # This is a feature that has just been created.
@@ -481,7 +480,7 @@ class RestrictionTypeUtilsMixin():
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Adding new restriction. ID: " + str(currRestriction[idxRestrictionID]),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
 
                     status = self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, RestrictionAction.OPEN)  # Open = 1
@@ -489,17 +488,17 @@ class RestrictionTypeUtilsMixin():
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Transaction Status 1: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
 
                     """ attributeForm saves to the layer. Has the feature been added to the layer?"""
 
                     status = dialog.attributeForm().save()  # this issues a commit on the transaction?
                     #dialog.accept()
-                    #QgsMessageLog.logMessage("Form accepted", tag="TOMs panel")
+                    #QgsMessageLog.logMessage("Form accepted", tag="TOMs panel", level=Qgis.Info)
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
                     currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
 
                 else:
@@ -514,7 +513,7 @@ class RestrictionTypeUtilsMixin():
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Closing existing restriction. ID: " + str(
                             currRestriction[idxRestrictionID]),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
 
                     status = self.addRestrictionToProposal(currRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, RestrictionAction.CLOSE)  # Open = 1; Close = 2
@@ -532,13 +531,13 @@ class RestrictionTypeUtilsMixin():
 
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Clone restriction. New ID: " + str(newRestriction[idxRestrictionID]),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
 
                     attrs2 = newRestriction.attributes()
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails: clone Restriction: " + str(attrs2),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
                     QgsMessageLog.logMessage("In onSaveRestrictionDetails. Clone: {}".format(newRestriction.geometry().asWkt()),
-                                             tag="TOMs panel")
+                                             tag="TOMs panel", level=Qgis.Info)
 
                     status = self.addRestrictionToProposal(newRestriction[idxRestrictionID], currRestrictionLayerTableID,
                                              currProposalID, RestrictionAction.OPEN)  # Open = 1; Close = 2
@@ -546,7 +545,7 @@ class RestrictionTypeUtilsMixin():
                     QgsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Opening clone. ID: " + str(
                             newRestriction[idxRestrictionID]),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
 
                     dialog.attributeForm().close()
                     currRestriction = self.origFeature.getFeature()
@@ -558,10 +557,10 @@ class RestrictionTypeUtilsMixin():
 
             attrs1 = currRestriction.attributes()
             QgsMessageLog.logMessage("In onSaveRestrictionDetails: currRestriction: " + str(attrs1),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. curr: {}".format(currRestriction.geometry().asWkt()),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             # Make sure that the saving will not be executed immediately, but
             # only when the event loop runs into the next iteration to avoid
@@ -570,21 +569,21 @@ class RestrictionTypeUtilsMixin():
             QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 3: " + str(
                     restrictionTransaction.currTransactionGroup.modified()),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             commitStatus = restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
             #restrictionTransaction.deleteTransactionGroup()
             QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 4: " + str(
                     restrictionTransaction.currTransactionGroup.modified()),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
             # Trying to unset map tool to force updates ...
             #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
             #dialog.accept()
             """QgsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 5: " + str(
                     restrictionTransaction.currTransactionGroup.modified()) + " commitStatus " + str(commitStatus),
-                tag="TOMs panel")"""
+                tag="TOMs panel", level=Qgis.Info)"""
             #status = dialog.attributeForm().close()
             #dialog.accept()
             #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
@@ -604,7 +603,7 @@ class RestrictionTypeUtilsMixin():
 
         QgsMessageLog.logMessage(
         "In onSaveRestrictionDetails. Finished",
-        tag="TOMs panel")
+        tag="TOMs panel", level=Qgis.Info)
 
         status = dialog.close()
         currRestrictionLayer.removeSelection()
@@ -617,7 +616,7 @@ class RestrictionTypeUtilsMixin():
         #self.setupPanelTabs(self.iface, self.dock)
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
-        QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In setDefaultRestrictionDetails: ", tag="TOMs panel", level=Qgis.Info)
 
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
@@ -661,7 +660,7 @@ class RestrictionTypeUtilsMixin():
         pass
 
     def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
-        QgsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), tag="TOMs panel")
+        QgsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), tag="TOMs panel", level=Qgis.Info)
 
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
@@ -718,7 +717,7 @@ class RestrictionTypeUtilsMixin():
         # update the Open/Close date for the restriction
         QgsMessageLog.logMessage("In updateRestriction. layer: " + str(
             currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
-            currProposalOpenDate), tag="TOMs panel")
+            currProposalOpenDate), tag="TOMs panel", level=Qgis.Info)
 
         # idxOpenDate = currRestrictionLayer.fields().indexFromName("OpenDate2")
         # idxCloseDate = currRestrictionLayer.fields().indexFromName("CloseDate2")
@@ -727,24 +726,24 @@ class RestrictionTypeUtilsMixin():
         currRestrictionLayer.setSubsetString("")
 
         for currRestriction in currRestrictionLayer.getFeatures():
-            #QgsMessageLog.logMessage("In updateRestriction. checkRestId: " + currRestriction.attribute("GeometryID"), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In updateRestriction. checkRestId: " + currRestriction.attribute("GeometryID"), tag="TOMs panel", level=Qgis.Info)
 
             if currRestriction.attribute("RestrictionID") == currRestrictionID:
                 QgsMessageLog.logMessage(
                     "In updateRestriction. Action on: " + currRestrictionID + " Action: " + str(currAction),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 if currAction == RestrictionAction.OPEN:  # Open
                     statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                               currRestrictionLayer.fields().indexFromName("OpenDate"),
                                                               currProposalOpenDate)
                     QgsMessageLog.logMessage(
-                        "In updateRestriction. " + currRestrictionID + " Opened", tag="TOMs panel")
+                        "In updateRestriction. " + currRestrictionID + " Opened", tag="TOMs panel", level=Qgis.Info)
                 else:  # Close
                     statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                               currRestrictionLayer.fields().indexFromName("CloseDate"),
                                                               currProposalOpenDate)
                     QgsMessageLog.logMessage(
-                        "In updateRestriction. " + currRestrictionID + " Closed", tag="TOMs panel")
+                        "In updateRestriction. " + currRestrictionID + " Closed", tag="TOMs panel", level=Qgis.Info)
 
                 return statusUpd
 
@@ -765,7 +764,7 @@ class RestrictionTypeUtilsMixin():
         if restrictionDialog is None:
             QgsMessageLog.logMessage(
                 "In setupRestrictionDialog. dialog not found",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
         #restrictionDialog.attributeForm().disconnectButtonBox()
         button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
@@ -774,7 +773,7 @@ class RestrictionTypeUtilsMixin():
         if button_box is None:
             QgsMessageLog.logMessage(
                 "In setupRestrictionDialog. button box not found",
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
         #button_box.accepted.disconnect(restrictionDialog.accept)
         #button_box.accepted.disconnect()
@@ -790,12 +789,12 @@ class RestrictionTypeUtilsMixin():
         self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)
 
         """def onSaveRestrictionDetailsFromForm(self):
-        QgsMessageLog.logMessage("In onSaveRestrictionDetailsFromForm", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveRestrictionDetailsFromForm", tag="TOMs panel", level=Qgis.Info)
         self.onSaveRestrictionDetails(self.currRestriction,
                                       self.currRestrictionLayer, self.restrictionDialog, self.restrictionTransaction)"""
 
     def onRejectRestrictionDetailsFromForm(self, restrictionDialog, restrictionTransaction):
-        QgsMessageLog.logMessage("In onRejectRestrictionDetailsFromForm", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onRejectRestrictionDetailsFromForm", tag="TOMs panel", level=Qgis.Info)
         #self.currRestrictionLayer.destroyEditCommand()
         restrictionDialog.reject()
 
@@ -812,7 +811,7 @@ class RestrictionTypeUtilsMixin():
 
     def onAttributeChangedClass2(self, currFeature, layer, fieldName, value):
         QgsMessageLog.logMessage(
-            "In FormOpen:onAttributeChangedClass 2 - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), tag="TOMs panel")
+            "In FormOpen:onAttributeChangedClass 2 - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), tag="TOMs panel", level=Qgis.Info)
 
         # self.currRestriction.setAttribute(fieldName, value)
         try:
@@ -831,7 +830,7 @@ class RestrictionTypeUtilsMixin():
 
         # Function to deal with photo fields
 
-        QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel")
+        QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel", level=Qgis.Info)
 
         FIELD1 = dialog.findChild(QLabel, "Photo_Widget_01")
         FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
@@ -855,21 +854,21 @@ class RestrictionTypeUtilsMixin():
         idx3 = currRestLayer.fields().indexFromName("Photos_03")
 
         QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
         # if currRestrictionFeature[idx1]:
-        # QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), tag="TOMs panel")
-        # QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), tag="TOMs panel")
-        # QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), tag="TOMs panel", level=Qgis.Info)
+        # QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), tag="TOMs panel", level=Qgis.Info)
+        # QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), tag="TOMs panel", level=Qgis.Info)
 
         if FIELD1:
             QgsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             if currRestrictionFeature[idx1]:
                 newPhotoFileName1 = os.path.join(path_absolute, currRestrictionFeature[idx1])
             else:
                 newPhotoFileName1 = None
 
-            QgsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+            QgsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), tag="TOMs panel", level=Qgis.Info)
             pixmap1 = QPixmap(newPhotoFileName1)
             if pixmap1.isNull():
                 pass
@@ -877,11 +876,11 @@ class RestrictionTypeUtilsMixin():
             else:
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+                QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel", level=Qgis.Info)
 
         if FIELD2:
             QgsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             if currRestrictionFeature[idx2]:
                 newPhotoFileName2 = os.path.join(path_absolute, currRestrictionFeature[idx2])
             else:
@@ -889,7 +888,7 @@ class RestrictionTypeUtilsMixin():
 
             # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature[idx2]))
             # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(fileName2)))
-            QgsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+            QgsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), tag="TOMs panel", level=Qgis.Info)
             pixmap2 = QPixmap(newPhotoFileName2)
             if pixmap2.isNull():
                 pass
@@ -897,11 +896,11 @@ class RestrictionTypeUtilsMixin():
             else:
                 FIELD2.setPixmap(pixmap2)
                 FIELD2.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+                QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel", level=Qgis.Info)
 
         if FIELD3:
             QgsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             if currRestrictionFeature[idx3]:
                 newPhotoFileName3 = os.path.join(path_absolute, currRestrictionFeature[idx3])
             else:
@@ -918,15 +917,15 @@ class RestrictionTypeUtilsMixin():
             else:
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
+                QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel", level=Qgis.Info)
 
         pass
 
     def onSaveProposalFormDetails(self, currProposalRecord, currProposalObject, proposalsLayer, proposalsDialog, proposalTransaction):
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel", level=Qgis.Info)
 
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
-        #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel", level=Qgis.Info)
 
         #self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
         self.Proposals = proposalsLayer
@@ -945,7 +944,7 @@ class RestrictionTypeUtilsMixin():
 
         newProposalStatusID = currProposalRecord[idxProposalStatusID]
         newProposalOpenDate = currProposalRecord[idxProposalOpenDate]
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposalStatusID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposalStatusID), tag="TOMs panel", level=Qgis.Info)
 
         #updateStatus = False
         newProposal = False
@@ -981,7 +980,7 @@ class RestrictionTypeUtilsMixin():
                 updateStatus = currProposalObject.acceptProposal()
 
                 QgsMessageLog.logMessage(
-                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
+                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel", level=Qgis.Info)
 
                 if updateStatus == True or updateStatus is None:
                     status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
@@ -1010,7 +1009,7 @@ class RestrictionTypeUtilsMixin():
                 updateStatus = currProposalObject.rejectProposal()
 
                 QgsMessageLog.logMessage(
-                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel")
+                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), tag="TOMs panel", level=Qgis.Info)
 
                 if updateStatus == True or updateStatus is None:
                     status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
@@ -1025,7 +1024,7 @@ class RestrictionTypeUtilsMixin():
 
             QgsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. currProposalID = " + str(currProposalID),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             # self.Proposals.updateFeature(currProposalObject.getProposalRecord())  # TH (added for v3)
             updateStatus = proposalsDialog.attributeForm().save()
@@ -1037,7 +1036,7 @@ class RestrictionTypeUtilsMixin():
 
                 newProposal = True
                 QgsMessageLog.logMessage(
-                    "In onSaveProposalFormDetails. New Proposal ... ", tag="TOMs panel")
+                    "In onSaveProposalFormDetails. New Proposal ... ", tag="TOMs panel", level=Qgis.Info)
 
                 # add geometry
                 #currProposal.setGeometry(QgsGeometry())
@@ -1050,20 +1049,20 @@ class RestrictionTypeUtilsMixin():
 
             QgsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
             updateStatus = True"""
 
             #proposalsDialog.accept()
             proposalsDialog.reject()
 
             #saveStatus = proposalsDialog.attributeForm().save()
-            #QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposalObject.attributes()), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposalObject.attributes()), tag="TOMs panel", level=Qgis.Info)
 
             QgsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
                     proposalTransaction.currTransactionGroup.modified()),
-            tag="TOMs panel")
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposalTitle) + " Status: " + str(currProposalStatusID), tag="TOMs panel")
+            tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposalTitle) + " Status: " + str(currProposalStatusID), tag="TOMs panel", level=Qgis.Info)
 
 
         # Make sure that the saving will not be executed immediately, but
@@ -1084,14 +1083,14 @@ class RestrictionTypeUtilsMixin():
         # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
 
         if newProposal == True:
-            QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(currProposalID), tag="TOMs panel")
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(currProposalID), tag="TOMs panel", level=Qgis.Info)
             #self.proposalsManager.setCurrentProposal(currProposal[idxProposalID])
             #ProposalTypeUtils.iface.proposalChanged.emit()
 
             for proposal in self.Proposals.getFeatures():
                 if proposal[idxProposalTitle] == currProposalTitle:
                     QgsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(proposal.id()),
-                                             tag="TOMs panel")
+                                             tag="TOMs panel", level=Qgis.Info)
                     newProposalID = proposal[idxProposalID]
                     #self.proposalsManager.setCurrentProposal(proposal[idxProposalID])
 
@@ -1108,7 +1107,7 @@ class RestrictionTypeUtilsMixin():
 
         """
         def acceptProposal(self, currProposalID, currProposalOpenDate):
-            QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel")
+            QgsMessageLog.logMessage("In acceptProposal.", tag="TOMs panel", level=Qgis.Info)
     
             # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
     
@@ -1150,7 +1149,7 @@ class RestrictionTypeUtilsMixin():
         """
 
     def updateTileRevisionNrs(self, currProposalID):
-        QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel", level=Qgis.Info)
         # Increment the relevant tile numbers
         tileProposal = TOMsProposal(self.proposalsManager, currProposalID)
 
@@ -1176,7 +1175,7 @@ class RestrictionTypeUtilsMixin():
             #  TODO: Create a tile object and have increment method ...
 
             currRevisionNr = tile["RevisionNr"]
-            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel")
+            QgsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), tag="TOMs panel", level=Qgis.Info)
             if currRevisionNr is None:
                 MapGridLayer.changeAttributeValue(tile.id(),MapGridLayer.fields().indexFromName("RevisionNr"), 1)
             else:
@@ -1203,7 +1202,7 @@ class RestrictionTypeUtilsMixin():
     def getProposalTileList(self, listProposalID, currRevisionDate):
 
         # returns list of tiles in the proposal and their current revision numbers
-        QgsMessageLog.logMessage("In getProposalTileList. consider Proposal: " + str (listProposalID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalTileList. consider Proposal: " + str (listProposalID), tag="TOMs panel", level=Qgis.Info)
         self.tileSet = set()
 
         # Logic is:
@@ -1255,7 +1254,7 @@ class RestrictionTypeUtilsMixin():
                 currLayerName = currLayerDetails["RestrictionLayerName"]
                 QgsMessageLog.logMessage(
                     "In getProposalTileList. Considering layer: " + currLayerDetails["RestrictionLayerName"],
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
 
                 if QgsProject.instance().mapLayersByName(currLayerName):
                     currRestrictionLayer = QgsProject.instance().mapLayersByName(currLayerName)[0]
@@ -1289,7 +1288,7 @@ class RestrictionTypeUtilsMixin():
                                 # restrictionsString = restrictionsString + ", '" + row["RestrictionID"] + "'"
                                 """QgsMessageLog.logMessage(
                                     "In getProposalTileList. A restrictionsString: " + restrictionsString,
-                                    tag="TOMs panel")"""
+                                    tag="TOMs panel", level=Qgis.Info)"""
                                 currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID,
                                                                                           currRestrictionLayer)
                                 if currRestriction:
@@ -1325,14 +1324,14 @@ class RestrictionTypeUtilsMixin():
             # Setup a request
             queryString = "\"RevisionNr\" IS NOT NULL "
 
-            QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
             expr = QgsExpression(queryString)
 
             for tile in self.tileLayer.getFeatures(QgsFeatureRequest(expr)):
 
                 QgsMessageLog.logMessage("In getProposalTileList (after fetch): " + str(tile["id"]) + " RevisionNr: " + str(
-                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
 
                 currRevisionNr = tile["RevisionNr"]
                 currLastRevisionDate = tile["LastRevisionDate"]
@@ -1343,7 +1342,7 @@ class RestrictionTypeUtilsMixin():
 
                 QgsMessageLog.logMessage(
                     "In getProposalTileList (after getTileRevisionNrAtDate): " + str(tile["id"]) + " RevisionNr: " + str(
-                        revisionNr) + " RevisionDate: " + str(revisionDate), tag="TOMs panel")
+                        revisionNr) + " RevisionDate: " + str(revisionDate), tag="TOMs panel", level=Qgis.Info)
 
                 if revisionNr >= 0:
                     if revisionNr != tile.attribute("RevisionNr"):
@@ -1352,42 +1351,42 @@ class RestrictionTypeUtilsMixin():
                         tile.setAttribute("LastRevisionDate", revisionDate)
 
                     QgsMessageLog.logMessage("In getProposalTileList (before write): " + str(tile["id"]) + " RevisionNr: " + str(
-                            tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+                            tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
 
                 self.tileSet.add((tile))
 
-        QgsMessageLog.logMessage("In getProposalTileList: finished adding ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalTileList: finished adding ... ", tag="TOMs panel", level=Qgis.Info)
 
         for tile in self.tileSet:
-            QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel")
+            QgsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), tag="TOMs panel", level=Qgis.Info)
 
         #sorted(list(set(output)))
         #return self.tileList
 
     """def getProposalTitle(self, proposalID):
         # return the layer given the row in "RestrictionLayers"
-        QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalTitle.", tag="TOMs panel", level=Qgis.Info)
 
         #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
         idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
         idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
         queryString = "\"ProposalID\" = " + str(proposalID)
 
-        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
         for feature in self.Proposals.getFeatures(QgsFeatureRequest(expr)):
             return feature[idxProposalTitle], feature[idxProposalOpenDate]
 
-        QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getProposalTitle: Proposal not found", tag="TOMs panel", level=Qgis.Info)
         return None, None"""
 
     def getTilesForRestriction(self, currRestriction, filterDate):
 
         # get the tile(s) for a given restriction
 
-        QgsMessageLog.logMessage("In getTileForRestriction. ", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileForRestriction. ", tag="TOMs panel", level=Qgis.Info)
 
         #a.geometry().intersects(f.geometry()):
 
@@ -1399,7 +1398,7 @@ class RestrictionTypeUtilsMixin():
             if tile.geometry().intersects(currRestriction.geometry()):
                 # get revision number and add tile to list
                 #currRevisionNrForTile = self.getTileRevisionNr(tile)
-                QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel")
+                QgsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), tag="TOMs panel", level=Qgis.Info)
 
                 # check revision nr, etc
                 currTileNr = tile.attribute("id")
@@ -1414,7 +1413,7 @@ class RestrictionTypeUtilsMixin():
 
                         """QgsMessageLog.logMessage(
                             "In getTileForRestriction. revised details: " + str(revisionNr) + "; " + str(revisionDate),
-                            tag="TOMs panel")"""
+                            tag="TOMs panel", level=Qgis.Info)"""
 
                 else:
 
@@ -1427,7 +1426,7 @@ class RestrictionTypeUtilsMixin():
                 QgsMessageLog.logMessage(
                             "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
                                 tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(idxTileID),
-                            tag="TOMs panel")
+                            tag="TOMs panel", level=Qgis.Info)
 
                 #self.tileSet.add((tile))
                 #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id"))
@@ -1435,12 +1434,12 @@ class RestrictionTypeUtilsMixin():
                 if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.setLayer("MapGrid").fields().indexFromName("id")) == False:
                     QgsMessageLog.logMessage(
                         "In addFeatureToSet. Adding: " + str(currTileNr) + " ; " + str(len(self.tileSet)),
-                        tag="TOMs panel")
+                        tag="TOMs panel", level=Qgis.Info)
                     self.tileSet.add((tile))
 
                 QgsMessageLog.logMessage(
                             "In getTileForRestriction. len tileSet: " + str(len(self.tileSet)),
-                            tag="TOMs panel")
+                            tag="TOMs panel", level=Qgis.Info)
 
                 pass
 
@@ -1449,7 +1448,7 @@ class RestrictionTypeUtilsMixin():
     def checkFeatureInSet(self, featureSet, currFeature, idxValue):
 
         """QgsMessageLog.logMessage(
-            "In checkFeatureInSet. ", tag="TOMs panel")"""
+            "In checkFeatureInSet. ", tag="TOMs panel", level=Qgis.Info)"""
 
         found = False
         currFeatureID = currFeature[idxValue]
@@ -1466,13 +1465,13 @@ class RestrictionTypeUtilsMixin():
 
     def getTileRevisionNr(self, currTile):
         # return the revision number for the tile
-        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestriction.", tag="TOMs panel", level=Qgis.Info)
 
         #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
 
         queryString = "\"id\" = " + + str(currTile.attribute("id"))
 
-        QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
@@ -1480,18 +1479,18 @@ class RestrictionTypeUtilsMixin():
             currRevisionNr = feature["RevisionNr"]
             return currRevisionNr
 
-        QgsMessageLog.logMessage("In getTileRevisionNr: tile not found", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileRevisionNr: tile not found", tag="TOMs panel", level=Qgis.Info)
         return None
 
     def getTileRevisionNrAtDate(self, tileNr, filterDate):
         # return the revision number for the tile
-        QgsMessageLog.logMessage("In getTileRevisionNrAtDate.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate.", tag="TOMs panel", level=Qgis.Info)
 
         #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
 
         queryString = "\"TileNr\" = " + str(tileNr)
 
-        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), tag="TOMs panel", level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
@@ -1516,22 +1515,22 @@ class RestrictionTypeUtilsMixin():
 
             QgsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             QgsMessageLog.logMessage(
                 "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
-                tag="TOMs panel")
+                tag="TOMs panel", level=Qgis.Info)
 
             if lastProposalOpendate <= filterDate:
                 QgsMessageLog.logMessage(
                     "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 return lastRevisionNr, lastProposalOpendate
 
         return None, None
 
     def rejectProposal(self, currProposalID):
-        QgsMessageLog.logMessage("In rejectProposal.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In rejectProposal.", tag="TOMs panel", level=Qgis.Info)
 
         # This is a "reset" so change all open/close dates back to null. **** Need to be careful if a restriction is in more than one proposal
 
@@ -1565,15 +1564,15 @@ class RestrictionTypeUtilsMixin():
 
     def getLookupDescription(self, lookupLayer, code):
 
-        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel", level=Qgis.Info)
 
         query = "\"Code\" = " + str(code)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel", level=Qgis.Info)
 
         for row in lookupLayer.getFeatures(request):
-            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel", level=Qgis.Info)
             return row.attribute("Description") # make assumption that only one row
 
         return None
@@ -1594,7 +1593,7 @@ class RestrictionTypeUtilsMixin():
     def prepareRestrictionForEdit(self, currRestriction, currRestrictionLayer):
 
         QgsMessageLog.logMessage("In prepareRestrictionForEdit",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         # if required, clone the current restriction and enter details into "RestrictionsInProposals" table
 
@@ -1603,7 +1602,7 @@ class RestrictionTypeUtilsMixin():
         idxRestrictionID = currRestrictionLayer.fields().indexFromName("RestrictionID")
 
         if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer), self.proposalsManager.currentProposal()):
-            QgsMessageLog.logMessage("In prepareRestrictionForEdit - adding details to RestrictionsInProposal", tag="TOMs panel")
+            QgsMessageLog.logMessage("In prepareRestrictionForEdit - adding details to RestrictionsInProposal", tag="TOMs panel", level=Qgis.Info)
             #  This one is not in the current Proposal, so now we need to:
             #  - generate a new ID and assign it to the feature for which the geometry has changed
             #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
@@ -1612,7 +1611,7 @@ class RestrictionTypeUtilsMixin():
             newFeature = self.cloneRestriction(currRestriction, currRestrictionLayer)
 
             # Check to see if the feature is added
-            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature exists in layer - " + newFeature.attribute("RestrictionID"), tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature exists in layer - " + newFeature.attribute("RestrictionID"), tag="TOMs panel", level=Qgis.Info)
 
             # Add details to "RestrictionsInProposals"
 
@@ -1620,17 +1619,17 @@ class RestrictionTypeUtilsMixin():
                                           self.getRestrictionLayerTableID(currRestrictionLayer),
                                           self.proposalsManager.currentProposal(),
                                           RestrictionAction.OPEN)  # close the original feature
-            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature closed.", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature closed.", tag="TOMs panel", level=Qgis.Info)
 
             self.addRestrictionToProposal(newFeature[idxRestrictionID], self.getRestrictionLayerTableID(currRestrictionLayer),
                                           self.proposalsManager.currentProposal(),
                                           RestrictionAction.OPEN)  # open the new one
-            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature opened.", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - feature opened.", tag="TOMs panel", level=Qgis.Info)
 
 
         else:
 
-            QgsMessageLog.logMessage("In TOMsNodeTool:init - restriction exists in RestrictionsInProposal", tag="TOMs panel")
+            QgsMessageLog.logMessage("In TOMsNodeTool:init - restriction exists in RestrictionsInProposal", tag="TOMs panel", level=Qgis.Info)
             #newFeature = currRestriction
 
         # test to see if the geometry is correct
@@ -1640,13 +1639,13 @@ class RestrictionTypeUtilsMixin():
 
     def onFeatureAdded(self, fid):
         QgsMessageLog.logMessage("In onFeatureAdded - newFid: " + str(fid),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
         self.newFid = fid
 
     def cloneRestriction(self, originalFeature, restrictionLayer):
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction",
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
         #  This one is not in the current Proposal, so now we need to:
         #  - generate a new ID and assign it to the feature for which the geometry has changed
         #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
@@ -1685,13 +1684,13 @@ class RestrictionTypeUtilsMixin():
         restrictionLayer.updateFields()
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - addStatus: " + str(addStatus) + " featureID: " + str(self.newFid), #+ " geomStatus: " + str(geomStatus),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - attributes: (fid=" + str(newFeature.id()) + ") " + str(newFeature.attributes()),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         QgsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction - newGeom: " + newFeature.geometry().asWkt(),
-                                 tag="TOMs panel")
+                                 tag="TOMs panel", level=Qgis.Info)
 
         # test to see that feature has been added ...
         feat = restrictionLayer.getFeatures(

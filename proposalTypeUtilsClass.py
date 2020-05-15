@@ -21,6 +21,7 @@ from qgis.PyQt.QtCore import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsMessageLog,
     QgsFeature,
@@ -63,7 +64,7 @@ class ProposalTypeUtilsMixin():
 
     def getRestrictionLayerFromID(self, layerID):
         # return the layer given the row in "RestrictionLayers"
-        # QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel", level=Qgis.Info)
 
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
@@ -75,7 +76,7 @@ class ProposalTypeUtilsMixin():
         return None
 
     def getRestrictionLayerIDfromLayer(self, currLayer):
-        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel", level=Qgis.Info)
         # find the ID for the layer within the table "
 
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")

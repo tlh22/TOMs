@@ -13,6 +13,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsMessageLog,
     QgsFeature,
@@ -54,13 +55,13 @@ class generateGeometryUtils:
     def turnToCL(Az1, Az2):
         # function to determine direction of turn to road centre    *** needs to be checked carefully ***
         # Az1 = Az of current line; Az2 = Az to roadCentreline
-        # QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In turnToCL Az1 = " + str(Az1) + " Az2 = " + str(Az2), tag="TOMs panel", level=Qgis.Info)
 
         AzCL = Az1 - 90.0
         if AzCL < 0:
             AzCL = AzCL + 360.0
 
-        # QgsMessageLog.logMessage("In turnToCL AzCL = " + str(AzCL), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In turnToCL AzCL = " + str(AzCL), tag="TOMs panel", level=Qgis.Info)
 
         # Need to check quadrant
 
@@ -73,14 +74,14 @@ class generateGeometryUtils:
 
         g = abs(float(AzCL) - float(Az2))
 
-        # QgsMessageLog.logMessage("In turnToCL Diff = " + str(g), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In turnToCL Diff = " + str(g), tag="TOMs panel", level=Qgis.Info)
 
         if g < 90:
             Turn = -90
         else:
             Turn = 90
 
-        # QgsMessageLog.logMessage("In turnToCL Turn = " + str(Turn), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In turnToCL Turn = " + str(Turn), tag="TOMs panel", level=Qgis.Info)
 
         return Turn
 
@@ -88,13 +89,13 @@ class generateGeometryUtils:
     def calcBisector(prevAz, currAz, Turn, WidthRest):
         # function to return Az of bisector
 
-        # QgsMessageLog.logMessage("In calcBisector", tag="TOMs panel")
-        # QgsMessageLog.logMessage("In calcBisector: prevAz: " + str(prevAz) + " currAz: " + str(currAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector", tag="TOMs panel", level=Qgis.Info)
+        # QgsMessageLog.logMessage("In calcBisector: prevAz: " + str(prevAz) + " currAz: " + str(currAz), tag="TOMs panel", level=Qgis.Info)
 
         prevAzA = generateGeometryUtils.checkDegrees(prevAz + float(Turn))
         currAzA = generateGeometryUtils.checkDegrees(currAz + float(Turn))
 
-        # QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAzA: " + str(currAzA), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAzA: " + str(currAzA), tag="TOMs panel", level=Qgis.Info)
 
         """
         if prevAz > 180:
@@ -103,20 +104,20 @@ class generateGeometryUtils:
             revPrevAz = prevAz + float(180)
         """
 
-        # QgsMessageLog.logMessage("In calcBisector: revPrevAz: " + str(revPrevAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: revPrevAz: " + str(revPrevAz), tag="TOMs panel", level=Qgis.Info)
 
         diffAz = prevAzA - currAzA
 
-        # QgsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), tag="TOMs panel", level=Qgis.Info)
 
         diffAngle = diffAz / float(2)
         bisectAz = prevAzA - diffAngle
 
         diffAngle_rad = math.radians(diffAngle)
-        # QgsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), tag="TOMs panel", level=Qgis.Info)
         distToPt = float(WidthRest) / math.cos(diffAngle_rad)
 
-        # QgsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), tag="TOMs panel", level=Qgis.Info)
 
         return bisectAz, distToPt
 
@@ -129,7 +130,7 @@ class generateGeometryUtils:
         elif Az < float(0):
             newAz = Az + float(360)
 
-        # QgsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
 
         return newAz
 
@@ -147,13 +148,13 @@ class generateGeometryUtils:
     @staticmethod
     def determineRoadName(feature):
 
-        QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel")
-        QgsMessageLog.logMessage("In setRoadName(helper)2:", tag="TOMs panel")
+        QgsMessageLog.logMessage("In setRoadName(helper):", tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In setRoadName(helper)2:", tag="TOMs panel", level=Qgis.Info)
 
         RoadCasementLayer = QgsProject.instance().mapLayersByName("RoadCasement")[0]
 
         # take the first point from the geometry
-        QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().asWkt()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In setRoadName: {}".format(feature.geometry().asWkt()), tag="TOMs panel", level=Qgis.Info)
 
         """line = generateGeometryUtils.getLineForAz(feature)
 
@@ -170,7 +171,7 @@ class generateGeometryUtils:
 
         if geom:
             if geom.type() == QgsWkbTypes.LineGeometry:
-                QgsMessageLog.logMessage("In setRoadName(helper): considering line", tag="TOMs panel")
+                QgsMessageLog.logMessage("In setRoadName(helper): considering line", tag="TOMs panel", level=Qgis.Info)
                 line = generateGeometryUtils.getLineForAz(feature)
 
                 if len(line) == 0:
@@ -181,25 +182,25 @@ class generateGeometryUtils:
                 #secondPt = ptList[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
             elif geom.type() == QgsWkbTypes.PointGeometry: # Point
-                QgsMessageLog.logMessage("In setRoadName(helper): considering point", tag="TOMs panel")
+                QgsMessageLog.logMessage("In setRoadName(helper): considering point", tag="TOMs panel", level=Qgis.Info)
                 testPt = feature.geometry().asPoint()
 
                 #tolerance_nearby = 5.0
 
             elif feature.geometry().type() == QgsWkbTypes.PolygonGeometry: # Polygon
-                QgsMessageLog.logMessage("In setRoadName(helper): considering polygon", tag="TOMs panel")
+                QgsMessageLog.logMessage("In setRoadName(helper): considering polygon", tag="TOMs panel", level=Qgis.Info)
                 ptList = feature.geometry().asPolygon()[0]
                 testPt = ptList[
                     0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
         else:
-            QgsMessageLog.logMessage("In setRoadName: unknown geometry type", tag="TOMs panel")
+            QgsMessageLog.logMessage("In setRoadName: unknown geometry type", tag="TOMs panel", level=Qgis.Info)
             return
 
         #nrPts = len(ptList)
-        #QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), tag="TOMs panel", level=Qgis.Info)
 
-        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(testPt.x()), tag="TOMs panel")
+        QgsMessageLog.logMessage("In setRoadName: secondPt: " + str(testPt.x()), tag="TOMs panel", level=Qgis.Info)
 
         # check for the feature within RoadCasement_NSG_StreetName layer
         #tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
@@ -208,7 +209,7 @@ class generateGeometryUtils:
                                                                 tolerance_nearby)
 
         if nearestRC_feature:
-            # QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().asWkt(), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().asWkt(), tag="TOMs panel", level=Qgis.Info)
 
             idx_StreetName = RoadCasementLayer.fields().indexFromName('StreetName')
             idx_USRN = RoadCasementLayer.fields().indexFromName('USRN')
@@ -216,7 +217,7 @@ class generateGeometryUtils:
             StreetName = nearestRC_feature.attributes()[idx_StreetName]
             USRN = nearestRC_feature.attributes()[idx_USRN]
 
-            QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel")
+            QgsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), tag="TOMs panel", level=Qgis.Info)
 
             return StreetName, USRN
 
@@ -238,7 +239,7 @@ class generateGeometryUtils:
         # - existence of geoemtry
         # - whether or not it is multi-part
 
-        #QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLineForAz(helper):", tag="TOMs panel", level=Qgis.Info)
 
         geom = feature.geometry()
         # line = QgsGeometry()
@@ -249,7 +250,7 @@ class generateGeometryUtils:
                     lines = geom.asMultiPolyline()
                     nrLines = len(lines)
 
-                    #QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().asWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel")
+                    #QgsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().asWkt()  + " - NrLines = " + str(nrLines), tag="TOMs panel", level=Qgis.Info)
 
                     # take the first line as the one we are interested in
                     if nrLines > 0:
@@ -266,11 +267,11 @@ class generateGeometryUtils:
                 return line
 
             else:
-                QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel")
+                QgsMessageLog.logMessage("In getLineForAz(helper): Incorrect geometry found", tag="TOMs panel", level=Qgis.Info)
                 return None
 
         else:
-            QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel")
+            QgsMessageLog.logMessage("In getLineForAz(helper): geometry not found", tag="TOMs panel", level=Qgis.Info)
             return None
 
     @staticmethod
@@ -278,14 +279,14 @@ class generateGeometryUtils:
         # find the shortest line from this point to the road centre line layer
         # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
-        # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel")
+        # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", tag="TOMs panel", level=Qgis.Info)
 
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
 
         """if feature.geometry():
             geom = feature.geometry()
         else:
-            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", tag="TOMs panel")
+            QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", tag="TOMs panel", level=Qgis.Info)
             return 0"""
 
         # take the a point from the geometry
@@ -299,11 +300,11 @@ class generateGeometryUtils:
 
         testPt = feature.geometry().centroid().asPoint()        #lineGeom = QgsGeometry.fromPolyline((line[::])
         #lineLength = lineGeom.length()
-        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), tag="TOMs panel", level=Qgis.Info)
         #testPt = lineGeom.interpolate(lineLength / 2.0)
         #testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
-        # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), tag="TOMs panel", level=Qgis.Info)
 
         # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
@@ -328,7 +329,7 @@ class generateGeometryUtils:
                 closestFeature = f
                 featureFound = True
 
-        # QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), tag="TOMs panel", level=Qgis.Info)
 
         if featureFound:
             # now obtain the line between the testPt and the nearest feature
@@ -342,11 +343,11 @@ class generateGeometryUtils:
             startPt.setY(startPtV2.y())"""
 
             QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
 
             Az = QgsPoint(testPt).azimuth(startPt)
             # Az = generateGeometryUtils.checkDegrees(testPt.azimuth(startPt))
-            # QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), tag="TOMs panel", level=Qgis.Info)
 
             return Az
         else:
@@ -364,7 +365,7 @@ class generateGeometryUtils:
             If no feature is close to the given coordinate, we return None.
         """
 
-        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer) + "tol: " + str(tolerance), tag="TOMs panel")
+        QgsMessageLog.logMessage("In findFeatureAt2. Incoming layer: " + str(layer) + "tol: " + str(tolerance), tag="TOMs panel", level=Qgis.Info)
 
         searchRect = QgsRectangle(layerPt.x() - tolerance,
                                   layerPt.y() - tolerance,
@@ -376,7 +377,7 @@ class generateGeometryUtils:
         request.setFlags(QgsFeatureRequest.ExactIntersect)
 
         for feature in layer.getFeatures(request):
-            QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel")
+            QgsMessageLog.logMessage("In findFeatureAt2. feature found", tag="TOMs panel", level=Qgis.Info)
             return feature  # Return first matching feature.
 
         return None
@@ -392,7 +393,7 @@ class generateGeometryUtils:
         """
         @staticmethod
         def checkFeatureIsBay(restGeomType):
-            QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel")
+            QgsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), tag="TOMs panel", level=Qgis.Info)
             if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
                 return True
             else:
@@ -402,12 +403,12 @@ class generateGeometryUtils:
     @staticmethod
     def getDisplayGeometry(feature, restGeomType, offset, shpExtent, orientation, AzimuthToCentreLine):
         # Obtain relevant variables
-        #QgsMessageLog.logMessage("In getDisplayGeometry: restGeomType = " + str(restGeomType), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry: restGeomType = " + str(restGeomType), tag="TOMs panel", level=Qgis.Info)
 
         # Need to check why the project variable function is not working
 
         restrictionID = feature.attribute("GeometryID")
-        QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getDisplayGeometry: New restriction .................................................................... ID: " + str(restrictionID), tag="TOMs panel", level=Qgis.Info)
         # restGeomType = feature.attribute("GeomShapeID")
         #AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
         #QgsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
@@ -437,14 +438,14 @@ class generateGeometryUtils:
 
         line = generateGeometryUtils.getLineForAz(feature)
 
-        # QgsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), tag="TOMs panel", level=Qgis.Info)
 
         if len(line) == 0:
             return 0
 
         # Now have a valid set of points
 
-        # QgsMessageLog.logMessage("In getDisplayGeometry:  Now processing line", tag="TOMs panel")
+        # QgsMessageLog.logMessage("In getDisplayGeometry:  Now processing line", tag="TOMs panel", level=Qgis.Info)
 
         ptsList = []
         parallelPtsList = []
@@ -455,34 +456,34 @@ class generateGeometryUtils:
 
         for i in range(len(line) - 1):
 
-            # QgsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), tag="TOMs panel", level=Qgis.Info)
 
             Az = line[i].azimuth(line[i + 1])
 
-            # QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), tag="TOMs panel", level=Qgis.Info)
 
             # if this is the first point
 
             if i == 0:
                 # determine which way to turn towards CL
-                # QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: considering first point", tag="TOMs panel", level=Qgis.Info)
 
                 Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
 
                 newAz = Az + Turn
-                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), tag="TOMs panel", level=Qgis.Info)
 
                 # dx = float(offset) * cosa
                 # dy = float(offset) * cosb
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: dx: " + str(dx) + " dy: " + str(dy), tag="TOMs panel", level=Qgis.Info)
 
                 ptsList.append(
                     QgsPoint(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
-                # QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: added point 1 ", tag="TOMs panel", level=Qgis.Info)
 
                 # Now add the point at the extent. If it is an echelon bay:
                 #   a. calculate the difference between the first Az and the echelon Az (??), and
@@ -491,20 +492,20 @@ class generateGeometryUtils:
 
                 #if restGeomType == 5 or restGeomType == 25:  # echelon
                 if restGeomType in [5, 25]:  # echelon
-                    QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In geomType: orientation: " + str(orientation), tag="TOMs panel", level=Qgis.Info)
                     diffEchelonAz = generateGeometryUtils.checkDegrees(orientation - newAz)
                     newAz = Az + Turn + diffEchelonAz
-                    QgsMessageLog.logMessage("In geomType: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz), tag="TOMs panel")
+                    QgsMessageLog.logMessage("In geomType: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz), tag="TOMs panel", level=Qgis.Info)
                     cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
                     pass
 
                 ptsList.append(
                     QgsPoint(line[i].x() + (float(shpExtent) * cosa),
                              line[i].y() + (float(shpExtent) * cosb)))
-                # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: added point 2 ", tag="TOMs panel", level=Qgis.Info)
 
                 # ptsList.append(newPoint)
-                # QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel")
+                # QgsMessageLog.logMessage("In geomType: after append ", tag="TOMs panel", level=Qgis.Info)
 
                 # ptsList.append(QgsPoint(line[i].x()+(float(bayWidth)*cosa), line[i].y()+(float(bayWidth)*cosb)))
 
@@ -512,11 +513,11 @@ class generateGeometryUtils:
 
                 # now pass along the feature
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: considering point: " + str(i), tag="TOMs panel", level=Qgis.Info)
 
                 # need to work out half of bisected angle
 
-                # QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel")
+                # QgsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), tag="TOMs panel", level=Qgis.Info)
 
                 newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
 
@@ -527,20 +528,20 @@ class generateGeometryUtils:
                 parallelPtsList.append(
                     QgsPoint(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
-            # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In generate_display_geometry: point appended", tag="TOMs panel", level=Qgis.Info)
 
             prevAz = Az
 
-        # QgsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), tag="TOMs panel", level=Qgis.Info)
 
         # have reached the end of the feature. Now need to deal with last point.
         # Use Azimuth from last segment but change the points
 
-        # QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: feature processed. Now at last point ", tag="TOMs panel", level=Qgis.Info)
 
        # standard bay
         newAz = Az + Turn + diffEchelonAz
-        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel")
+        # QgsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), tag="TOMs panel", level=Qgis.Info)
         cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
         ptsList.append(QgsPoint(line[len(line) - 1].x() + (float(shpExtent) * cosa),
@@ -557,7 +558,7 @@ class generateGeometryUtils:
         newLine = QgsGeometry.fromPolyline(ptsList)
         parallelLine = QgsGeometry.fromPolyline(parallelPtsList)
 
-        #QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.asWkt(), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.asWkt(), tag="TOMs panel", level=Qgis.Info)
 
 
         return newLine, parallelPtsList
@@ -577,43 +578,43 @@ class generateGeometryUtils:
 
         """
 
-        QgsMessageLog.logMessage("In zigzag", tag="TOMs panel")
+        QgsMessageLog.logMessage("In zigzag", tag="TOMs panel", level=Qgis.Info)
 
         line, parallelLine = generateGeometryUtils.getDisplayGeometry(feature, restGeometryType, offset, shpExtent, orientation, AzimuthToCentreLine)
 
-        #QgsMessageLog.logMessage("In zigzag - have geometry + " + line.asWkt(), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have geometry + " + line.asWkt(), tag="TOMs panel", level=Qgis.Info)
 
         length = line.length()
         #QgsMessageLog.logMessage(
         #    "In zigzag - have geometry. Length = " + str(length) + " wavelength: " + str(wavelength),
-        #    tag="TOMs panel")
+        #    tag="TOMs panel", level=Qgis.Info)
 
         segments = int(length / wavelength)
         # Find equally spaced points that approximate the line
-        #QgsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), tag="TOMs panel", level=Qgis.Info)
 
         points = []
         countSegments = 0
         while countSegments <= segments:
-            # QgsMessageLog.logMessage("In zigzag - countSegment = " + str(countSegments), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In zigzag - countSegment = " + str(countSegments), tag="TOMs panel", level=Qgis.Info)
             interpolateDistance = int(countSegments * int(wavelength))
-            # QgsMessageLog.logMessage("In zigzag - interpolateDistance = " + str(interpolateDistance), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In zigzag - interpolateDistance = " + str(interpolateDistance), tag="TOMs panel", level=Qgis.Info)
             points.append(line.interpolate(float(interpolateDistance)).asPoint())
-            # QgsMessageLog.logMessage("In zigzag - added Point", tag="TOMs panel")
+            # QgsMessageLog.logMessage("In zigzag - added Point", tag="TOMs panel", level=Qgis.Info)
             countSegments = countSegments + 1
 
-        #QgsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), tag="TOMs panel", level=Qgis.Info)
 
         # Calculate the azimuths of the approximating line segments
 
         azimuths = []
 
         for i in range(len(points) - 1):
-            # QgsMessageLog.logMessage("In zigzag - creating Az: i = " + str(i), tag="TOMs panel")
+            # QgsMessageLog.logMessage("In zigzag - creating Az: i = " + str(i), tag="TOMs panel", level=Qgis.Info)
             azimuths.append((points[i].azimuth(points[i + 1])))
 
         #QgsMessageLog.logMessage("In zigzag - after azimuths: i " + str(i) + " len(az): " + str(len(azimuths)),
-        #                         tag="TOMs panel")
+        #                         tag="TOMs panel", level=Qgis.Info)
 
         # Average consecutive azimuths and rotate 90 deg counterclockwise
 
@@ -624,7 +625,7 @@ class generateGeometryUtils:
                                range(len(points) - 1)])
         zigzagazimuths.append(azimuths[-1] - math.pi / 2)
 
-        #QgsMessageLog.logMessage("In zigzag - about to create shape", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - about to create shape", tag="TOMs panel", level=Qgis.Info)
 
         cosa = 0.0
         cosb = 0.0
@@ -634,30 +635,30 @@ class generateGeometryUtils:
         for i in range(len(points) - 1):
             # Alternate the sign
 
-            #QgsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i / 2)), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i / 2)), tag="TOMs panel", level=Qgis.Info)
 
             # currX = points[i].x()
             # currY = points[i].y()
 
             dst = amplitude * 1 - 2 * (i - 2 * math.floor(
                 i / 2))  # b = a - m.*floor(a./m)  is the same as   b = mod( a , m )      Thus: i - 2 * math.floor(i/2)
-            #QgsMessageLog.logMessage("In zigzag - dst: " + str(dst) + " Az: " + str(azimuths[i]), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - dst: " + str(dst) + " Az: " + str(azimuths[i]), tag="TOMs panel", level=Qgis.Info)
 
             # currAz = zigzagazimuths[i]
             cosa, cosb = generateGeometryUtils.cosdir_azim(azimuths[i])
 
-            #QgsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), tag="TOMs panel", level=Qgis.Info)
 
             zigzagpoints.append(
                 QgsPoint(points[i].x() + (float(offset) * cosa), points[i].y() + (float(offset) * cosb)))
 
-            #QgsMessageLog.logMessage("In zigzag - point added: " + str(i), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In zigzag - point added: " + str(i), tag="TOMs panel", level=Qgis.Info)
             # zigzagpoints.append(QgsPoint(points[i][0] + math.sin(zigzagazimuths[i]) * dst, points[i][1] + math.cos(zigzagazimuths[i]) * dst))
 
         # Create new feature from the list of zigzag points
         gLine = QgsGeometry.fromPolyline(zigzagpoints)
 
-        #QgsMessageLog.logMessage("In zigzag - shape created", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In zigzag - shape created", tag="TOMs panel", level=Qgis.Info)
 
         return gLine
 
@@ -668,19 +669,19 @@ class generateGeometryUtils:
     @staticmethod
     def generateWaitingLabelLeader(feature):
 
-        #QgsMessageLog.logMessage("In generateWaitingLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateWaitingLabelLeader", tag="TOMs panel", level=Qgis.Info)
         # check to see scale
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         if currScale <= minScale:
 
             if feature.attribute("labelX"):
                 #QgsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
                 # now generate line
                 length = feature.geometry().length()
@@ -695,19 +696,19 @@ class generateGeometryUtils:
     @staticmethod
     def generateLoadingLabelLeader(feature):
 
-        #QgsMessageLog.logMessage("In generateLoadingLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLoadingLabelLeader", tag="TOMs panel", level=Qgis.Info)
         # check to see scale
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         if currScale <= minScale:
 
             if feature.attribute("labelLoadingX"):
                 #QgsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
                 # now generate line
                 length = feature.geometry().length()
@@ -722,13 +723,13 @@ class generateGeometryUtils:
     @staticmethod
     def generateBayLabelLeader(feature):
 
-        #QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel", level=Qgis.Info)
         # check to see scale
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        QgsMessageLog.logMessage("In generateBayLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        QgsMessageLog.logMessage("In generateBayLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         if currScale <= minScale:
 
@@ -736,7 +737,7 @@ class generateGeometryUtils:
 
                 length = feature.geometry().length()
                 QgsMessageLog.logMessage(
-                    "In generateBayLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+                    "In generateBayLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
                 """
                 # now generate line
@@ -748,14 +749,14 @@ class generateGeometryUtils:
 
                 for i, pt in enumerate(points):
                     QgsMessageLog.logMessage(
-                        "In generateBayLabelLeader. pt: " + str(i) + "; " + pt.asWkt(), tag="TOMs panel")
+                        "In generateBayLabelLeader. pt: " + str(i) + "; " + pt.asWkt(), tag="TOMs panel", level=Qgis.Info)
                     # + ":" + QgsWkbTypes.displayString(pt.wkbType())
 
                 lineGeom = QgsGeometry.fromPolyline(points)
 
                 QgsMessageLog.logMessage(
                     "In generateBayLabelLeader. line: " + lineGeom.asWkt() ,
-                    tag="TOMs panel")
+                    tag="TOMs panel", level=Qgis.Info)
                 
                 return lineGeom
                 """
@@ -770,19 +771,19 @@ class generateGeometryUtils:
     @staticmethod
     def generatePolygonLabelLeader(feature):
 
-        #QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateBayLabelLeader", tag="TOMs panel", level=Qgis.Info)
         # check to see scale
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         if currScale <= minScale:
 
             if feature.attribute("labelX"):
                 QgsMessageLog.logMessage(
-                    "In generatePolygonLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel")
+                    "In generatePolygonLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), tag="TOMs panel", level=Qgis.Info)
 
                 pt = feature.geometry().nearestPoint()
 
@@ -797,22 +798,22 @@ class generateGeometryUtils:
 
     @staticmethod
     def getMininumScaleForDisplay():
-        #QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay", tag="TOMs panel", level=Qgis.Info)
 
         minScale = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('MinimumTextDisplayScale')
 
-        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale(1): " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale(1): " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         if minScale == None:
             minScale = 1250
-        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), tag="TOMs panel", level=Qgis.Info)
 
         return minScale
 
     @staticmethod
     def getWaitingLoadingRestrictionLabelText(feature):
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", tag="TOMs panel", level=Qgis.Info)
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
@@ -823,18 +824,18 @@ class generateGeometryUtils:
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel", level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
         """QgsMessageLog.logMessage(
             "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
-            tag="TOMs panel")"""
+            tag="TOMs panel", level=Qgis.Info)"""
 
         if CPZWaitingTimeID:
             #QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
-            #                         tag="TOMs panel")
+            #                         tag="TOMs panel", level=Qgis.Info)
             if CPZWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
@@ -844,13 +845,13 @@ class generateGeometryUtils:
         if loadingTimeID == 1:  # 'At Any Time'
             loadDesc = None """
 
-        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), tag="TOMs panel", level=Qgis.Info)
         return waitDesc, loadDesc
 
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText", tag="TOMs panel", level=Qgis.Info)
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
@@ -860,13 +861,13 @@ class generateGeometryUtils:
 
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriods")[0]
 
-        #QgsMessageLog.logMessage("In getBayRestrictionLabelText (2)", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText (2)", tag="TOMs panel", level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
         timePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, timePeriodID)
 
-        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), tag="TOMs panel", level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionPTA = feature.attribute("ParkingTariffArea")
@@ -879,15 +880,15 @@ class generateGeometryUtils:
 
         QgsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
-            tag="TOMs panel")
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel")
+            tag="TOMs panel", level=Qgis.Info)
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), tag="TOMs panel", level=Qgis.Info)
 
         if timePeriodID == 1:  # 'At Any Time'
             timePeriodDesc = None
 
         if CPZWaitingTimeID:
             QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
-                                     tag="TOMs panel")
+                                     tag="TOMs panel", level=Qgis.Info)
             if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
 
@@ -896,32 +897,32 @@ class generateGeometryUtils:
 
         if TariffZoneMaxStayID:
             """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
             if TariffZoneMaxStayID == maxStayID:
                 maxStayDesc = None
 
         if TariffZoneNoReturnID:
             """QgsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                                     tag="TOMs panel")"""
+                                     tag="TOMs panel", level=Qgis.Info)"""
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
 
-        QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel")
+        QgsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), tag="TOMs panel", level=Qgis.Info)
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 
     @staticmethod
     def getLookupDescription(lookupLayer, code):
 
-        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupDescription", tag="TOMs panel", level=Qgis.Info)
 
         query = "\"Code\" = " + str(code)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), tag="TOMs panel", level=Qgis.Info)
 
         for row in lookupLayer.getFeatures(request):
-            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), tag="TOMs panel", level=Qgis.Info)
             return row.attribute("Description") # make assumption that only one row
 
         return None
@@ -929,15 +930,15 @@ class generateGeometryUtils:
     @staticmethod
     def getLookupLabelText(lookupLayer, code):
 
-        #QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupLabelText", tag="TOMs panel", level=Qgis.Info)
 
         query = "\"Code\" = " + str(code)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        #QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel", level=Qgis.Info)
 
         for row in lookupLayer.getFeatures(request):
-            #QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel", level=Qgis.Info)
             return row.attribute("LabelText") # make assumption that only one row
 
         return None
@@ -945,11 +946,11 @@ class generateGeometryUtils:
     @staticmethod
     def getCurrentCPZDetails(feature):
 
-        QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel")
+        QgsMessageLog.logMessage("In getCurrentCPZDetails", tag="TOMs panel", level=Qgis.Info)
         CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
 
         restrictionID = feature.attribute("GeometryID")
-        #QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), tag="TOMs panel", level=Qgis.Info)
 
         geom = feature.geometry()
 
@@ -959,7 +960,7 @@ class generateGeometryUtils:
 
             currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
-            #QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), tag="TOMs panel", level=Qgis.Info)
 
             return currentCPZ, cpzWaitingTimeID
 
@@ -968,11 +969,11 @@ class generateGeometryUtils:
     @staticmethod
     def getCurrentPTADetails(feature):
 
-        #QgsMessageLog.logMessage("In getCurrentPTADetails", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentPTADetails", tag="TOMs panel", level=Qgis.Info)
         PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         restrictionID = feature.attribute("GeometryID")
-        #QgsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), tag="TOMs panel", level=Qgis.Info)
 
         geom = feature.geometry()
 
@@ -985,7 +986,7 @@ class generateGeometryUtils:
             ptaNoReturnTimeID = currentPTAFeature.attribute("NoReturnTimeID")
             ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
-            #QgsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), tag="TOMs panel", level=Qgis.Info)
 
             return currentPTA, ptaMaxStayID, ptaNoReturnTimeID
 
@@ -1003,7 +1004,7 @@ class generateGeometryUtils:
             If no feature is close to the given coordinate, we return None.
         """
 
-        #QgsMessageLog.logMessage("In getPolygonForRestriction.", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getPolygonForRestriction.", tag="TOMs panel", level=Qgis.Info)
 
         line = generateGeometryUtils.getLineForAz(restriction)
 
@@ -1012,11 +1013,11 @@ class generateGeometryUtils:
                 return 0
 
             testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
-            #QgsMessageLog.logMessage("In getPolygonForRestriction." + str(testPt.x()), tag="TOMs panel")
+            #QgsMessageLog.logMessage("In getPolygonForRestriction." + str(testPt.x()), tag="TOMs panel", level=Qgis.Info)
 
             for poly in layer.getFeatures():
                 if poly.geometry().contains(QgsGeometry.fromPointXY(testPt)):
-                    #QgsMessageLog.logMessage("In getPolygonForRestriction. feature found", tag="TOMs panel")
+                    #QgsMessageLog.logMessage("In getPolygonForRestriction. feature found", tag="TOMs panel", level=Qgis.Info)
                     return poly
 
         return None
@@ -1024,7 +1025,7 @@ class generateGeometryUtils:
     @staticmethod
     def getCPZWaitingTimeID(cpzNr):
 
-        #QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getCPZWaitingTimeID", tag="TOMs panel", level=Qgis.Info)
 
         CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
 
@@ -1032,9 +1033,9 @@ class generateGeometryUtils:
 
             currentCPZ = poly.attribute("CPZ")
             if currentCPZ == cpzNr:
-                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", tag="TOMs panel", level=Qgis.Info)
                 cpzWaitingTimeID = poly.attribute("WaitingTimeID")
-                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), tag="TOMs panel", level=Qgis.Info)
                 return cpzWaitingTimeID
 
         return None
@@ -1042,7 +1043,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneDetails(tpaNr):
 
-        #QgsMessageLog.logMessage("In getTariffZoneDetails", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneDetails", tag="TOMs panel", level=Qgis.Info)
 
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1050,11 +1051,11 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                #QgsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", tag="TOMs panel", level=Qgis.Info)
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
                 ptaMaxStayID = poly.attribute("MaxStayID")
                 ptaNoReturnTimeID = poly.attribute("NoReturnTimeID")
-                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel", level=Qgis.Info)
                 return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnTimeID
 
         return None, None, None
@@ -1062,7 +1063,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneMaxStayID(tpaNr):
 
-        #QgsMessageLog.logMessage("In getTariffZoneMaxStayID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneMaxStayID", tag="TOMs panel", level=Qgis.Info)
 
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1070,9 +1071,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", tag="TOMs panel", level=Qgis.Info)
                 ptaMaxStayID = poly.attribute("MaxStayID")
-                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), tag="TOMs panel", level=Qgis.Info)
                 return ptaMaxStayID
 
         return None
@@ -1080,7 +1081,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneNoReturnID(tpaNr):
 
-        #QgsMessageLog.logMessage("In getTariffZoneNoReturnID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneNoReturnID", tag="TOMs panel", level=Qgis.Info)
 
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1088,9 +1089,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", tag="TOMs panel", level=Qgis.Info)
                 ptaNoReturnID = poly.attribute("NoReturnTimeID")
-                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), tag="TOMs panel", level=Qgis.Info)
                 return ptaNoReturnID
 
         return None
@@ -1098,7 +1099,7 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneTimePeriodID(tpaNr):
 
-        #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID", tag="TOMs panel", level=Qgis.Info)
 
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
@@ -1106,9 +1107,9 @@ class generateGeometryUtils:
 
             currentPTA = poly.attribute("Name")
             if currentPTA == tpaNr:
-                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", tag="TOMs panel", level=Qgis.Info)
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
-                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. ID." + str(ptaTimePeriodID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getTariffZoneTimePeriodID. ID." + str(ptaTimePeriodID), tag="TOMs panel", level=Qgis.Info)
                 return ptaTimePeriodID
 
         return None
@@ -1116,7 +1117,7 @@ class generateGeometryUtils:
     @staticmethod
     def getAdjacentGridSquares(currGridSquare):
 
-        #QgsMessageLog.logMessage("In getAdjacentGridSquares", tag="TOMs panel")
+        #QgsMessageLog.logMessage("In getAdjacentGridSquares", tag="TOMs panel", level=Qgis.Info)
 
         CPZLayer = QgsProject.instance().mapLayersByName("MapGrid")[0]
 
@@ -1124,9 +1125,9 @@ class generateGeometryUtils:
 
             currentCPZ = poly.attribute("zone_no")
             if currentCPZ == cpzNr:
-                #QgsMessageLog.logMessage("In getAdjacentGridSquares. Found CPZ.", tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getAdjacentGridSquares. Found CPZ.", tag="TOMs panel", level=Qgis.Info)
                 cpzWaitingTimeID = poly.attribute("WaitingTimeID")
-                #QgsMessageLog.logMessage("In getAdjacentGridSquares. ID." + str(cpzWaitingTimeID), tag="TOMs panel")
+                #QgsMessageLog.logMessage("In getAdjacentGridSquares. ID." + str(cpzWaitingTimeID), tag="TOMs panel", level=Qgis.Info)
                 return cpzWaitingTimeID
 
         return None
