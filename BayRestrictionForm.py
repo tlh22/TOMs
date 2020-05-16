@@ -21,7 +21,9 @@ from qgis.PyQt.QtWidgets import (
     QDialogButtonBox,
     QLabel
 )
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
+    Qgis,
     QgsMessageLog,
     QgsExpressionContextUtils
 )
@@ -62,7 +64,7 @@ class RestrictionFormUtils(QtWidgets.QDialog):
         self.photoDetails()
 
     """def onAttributeChanged(self, feature, fieldName, value):
-        #QgsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), tag="TOMs panel")
+        #TOMsMessageLog.logMessage("In restrictionFormOpen:onAttributeChanged - layer: " + str(layer.name()) + " (" + str(feature.attribute("GeometryID")) + "): " + fieldName + ": " + str(value), level=Qgis.Info)
 
         feature.setAttribute(fieldName,value)"""
 
@@ -70,7 +72,7 @@ class RestrictionFormUtils(QtWidgets.QDialog):
 
         # Function to deal with photo fields
 
-        QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel")
+        TOMsMessageLog.logMessage("In photoDetails", level=Qgis.Info)
 
         FIELD1 = self.ui.findChild(QLabel, "Photo_Widget_01")
         FIELD2 = self.ui.findChild(QLabel, "Photo_Widget_02")
@@ -93,21 +95,21 @@ class RestrictionFormUtils(QtWidgets.QDialog):
         idx2 = self.currRestrictionLayer.fields().indexFromName(fileName2)
         idx3 = self.currRestrictionLayer.fields().indexFromName(fileName3)
 
-        QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3), tag="TOMs panel")
+        TOMsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3), level=Qgis.Info)
         #if currRestrictionFeature[idx1]:
-        #QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), tag="TOMs panel")
-        #QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), tag="TOMs panel")
-        #QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), tag="TOMs panel")
+        #TOMsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), level=Qgis.Info)
 
         if FIELD1:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
-                                     tag="TOMs panel")
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
+                                     level=Qgis.Info)
             if self.currRestriction[idx1]:
                 newPhotoFileName1 = os.path.join(path_absolute, self.currRestriction[idx1])
             else:
                 newPhotoFileName1 = None
 
-            QgsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
             pixmap1 = QPixmap(newPhotoFileName1)
             if pixmap1.isNull():
                 pass
@@ -115,11 +117,11 @@ class RestrictionFormUtils(QtWidgets.QDialog):
             else:
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
 
         if FIELD2:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
-                                     tag="TOMs panel")
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
+                                     level=Qgis.Info)
             if self.currRestriction[idx2]:
                 newPhotoFileName2 = os.path.join(path_absolute, self.currRestriction[idx2])
             else:
@@ -127,7 +129,7 @@ class RestrictionFormUtils(QtWidgets.QDialog):
 
             #newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature[idx2]))
             #newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(fileName2)))
-            QgsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
             pixmap2 = QPixmap(newPhotoFileName2)
             if pixmap2.isNull():
                 pass
@@ -135,11 +137,11 @@ class RestrictionFormUtils(QtWidgets.QDialog):
             else:
                 FIELD1.setPixmap(pixmap2)
                 FIELD1.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
+                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
 
         if FIELD3:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
-                                     tag="TOMs panel")
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
+                                     level=Qgis.Info)
             if self.currRestriction[idx3]:
                 newPhotoFileName3 = os.path.join(path_absolute, self.currRestriction[idx3])
             else:
@@ -156,6 +158,6 @@ class RestrictionFormUtils(QtWidgets.QDialog):
             else:
                 FIELD1.setPixmap(pixmap3)
                 FIELD1.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
+                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
 
         pass

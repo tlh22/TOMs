@@ -19,7 +19,9 @@ from qgis.PyQt.QtWidgets import (
     QAction
 )
 
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     # QgsMapLayerRegistry,
     QgsMessageLog, QgsFeature, QgsGeometry,
@@ -92,7 +94,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         """
         Set the current date
         """
-        QgsMessageLog.logMessage('Current date changed to {date}'.format(date=value.toString('dd/MM/yyyy')), tag="TOMs panel")
+        TOMsMessageLog.logMessage('Current date changed to {date}'.format(date=value.toString('dd/MM/yyyy')), level=Qgis.Info)
         self.__date = value
         self.dateChanged.emit()
         self.updateMapCanvas()
@@ -117,7 +119,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         """
         Set the current proposal
         """
-        QgsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), tag="TOMs panel")
+        TOMsMessageLog.logMessage('Current proposal changed to {proposal_id}'.format(proposal_id=value), level=Qgis.Info)
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentProposal', value)
 
         self.currProposalObject.setProposal(self.currentProposal())
@@ -150,7 +152,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         Whenever the current proposal or the date changes we need to update the canvas.
         """
 
-        QgsMessageLog.logMessage('Entering updateMapCanvas', tag="TOMs panel")
+        TOMsMessageLog.logMessage('Entering updateMapCanvas', level=Qgis.Info)
 
         dateString = self.__date.toString('dd-MM-yyyy')
         currProposalID = self.currentProposal()
@@ -164,8 +166,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         for (layerID, layerName) in self.getRestrictionLayersList():
-            QgsMessageLog.logMessage(
-                "Considering layer: " + layerName, tag="TOMs panel")
+            TOMsMessageLog.logMessage(
+                "Considering layer: " + layerName, level=Qgis.Info)
 
             layerFilterString = filterString
 
@@ -185,20 +187,20 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             else:
                 layerFilterString = layerFilterString + ")"
 
-            QgsMessageLog.logMessage("In updateMapCanvas. Layer: " + layerName + " Date Filter: " + layerFilterString, tag="TOMs panel")
+            TOMsMessageLog.logMessage("In updateMapCanvas. Layer: " + layerName + " Date Filter: " + layerFilterString, level=Qgis.Info)
             self.tableNames.setLayer(layerName).setSubsetString(layerFilterString)
 
             """for (currRestrictionID, currRestriction) in self.__getCurrentRestrictionsForLayer(
                     layerID):
-                QgsMessageLog.logMessage(
-                    "In updateMapCanvas. Layer: " + layerName + " Factory RestrictionID: " + str(currRestrictionID), tag="TOMs panel")"""
+                TOMsMessageLog.logMessage(
+                    "In updateMapCanvas. Layer: " + layerName + " Factory RestrictionID: " + str(currRestrictionID), level=Qgis.Info)"""
         pass
 
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
         for (layerID, layerName) in self.getRestrictionLayersList():
-            QgsMessageLog.logMessage("Clearing filter for layer: " + layerName, tag="TOMs panel")
+            TOMsMessageLog.logMessage("Clearing filter for layer: " + layerName, level=Qgis.Info)
             self.tableNames.setLayer(layerName).setSubsetString('')
 
         pass
@@ -218,13 +220,13 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
 
-        QgsMessageLog.logMessage("In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " Filter: " + filterString,
-                                 tag="TOMs panel")
+        TOMsMessageLog.logMessage("In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " Filter: " + filterString,
+                                 level=Qgis.Info)
         restrictionList = []
         for currentRestrictionDetails in thisLayer.getFeatures(request):
-            QgsMessageLog.logMessage(
+            TOMsMessageLog.logMessage(
                 "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " restrictionID: " + str(currentRestrictionDetails["RestrictionID"]),
-                tag="TOMs panel")
+                level=Qgis.Info)
             currRestriction = ProposalElementFactory.getProposalElement(self, layerID,
                                                                         currentRestrictionDetails,
                                                                         currentRestrictionDetails["RestrictionID"])
@@ -235,7 +237,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     # @pyqtSlot()
     #def setProposalDetails(self):
     """ Needed because Proposal object can be created before layers details are set ... perhaps a sequencing issue here ... """
-    """QgsMessageLog.logMessage("In proposalsManager. SetProposalDetails ... ", tag="TOMs panel")
+    """TOMsMessageLog.logMessage("In proposalsManager. SetProposalDetails ... ", level=Qgis.Info)
         self.setTOMsActivated = True
         self.currProposalObject.setProposalsLayer()"""
 
@@ -248,7 +250,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         if proposalStatus is not None:
             query = ("\"ProposalStatusID\" = {proposalStatus}").format(proposalStatus=str(proposalStatus))
 
-        QgsMessageLog.logMessage("In __getProposalsListWithStatus. query: " + str(query), tag="TOMs panel")
+        TOMsMessageLog.logMessage("In __getProposalsListWithStatus. query: " + str(query), level=Qgis.Info)
         request = QgsFeatureRequest().setFilterExpression(query)
 
         proposalsList = []

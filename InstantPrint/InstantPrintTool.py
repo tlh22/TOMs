@@ -19,7 +19,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtPrintSupport import (
     QPrintDialog, QPrinter
     )
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
+    Qgis,
     QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter,
     QgsPrintLayout, QgsLayoutItemRegistry, PROJECT_SCALES, QgsLayoutItemMap,
     QgsMessageLog, QgsExpression, QgsFeatureRequest

@@ -20,7 +20,9 @@ from qgis.PyQt.QtCore import (
     QTimer
 )
 
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsMessageLog,
     QgsFeature,
@@ -63,7 +65,7 @@ class ProposalTypeUtilsMixin():
 
     def getRestrictionLayerFromID(self, layerID):
         # return the layer given the row in "RestrictionLayers"
-        # QgsMessageLog.logMessage("In getRestrictionsLayerFromID.", tag="TOMs panel")
+        # TOMsMessageLog.logMessage("In getRestrictionsLayerFromID.", level=Qgis.Info)
 
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
@@ -75,7 +77,7 @@ class ProposalTypeUtilsMixin():
         return None
 
     def getRestrictionLayerIDfromLayer(self, currLayer):
-        QgsMessageLog.logMessage("In getRestrictionLayerTableID.", tag="TOMs panel")
+        TOMsMessageLog.logMessage("In getRestrictionLayerTableID.", level=Qgis.Info)
         # find the ID for the layer within the table "
 
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
