@@ -155,10 +155,10 @@ ALTER SEQUENCE public."EDI_AdoptedRoads_id_seq" OWNED BY public."EDI_AdoptedRoad
 
 
 --
--- Name: EDI_RC_with_USRN_StreetNames; Type: TABLE; Schema: public; Owner: postgres
+-- Name: EDI_RC_with_USRN_RoadNames; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public."EDI_RC_with_USRN_StreetNames" (
+CREATE TABLE public."EDI_RC_with_USRN_RoadNames" (
     id integer NOT NULL,
     geom public.geometry(LineString,27700),
     "OBJECTID_1" integer,

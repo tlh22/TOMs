@@ -52,7 +52,7 @@ def generate_display_geometry(geometryID, restGeomType, AzimuthToCenterLine, off
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
 
-    except:
+    except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
             'generate_display_geometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
@@ -74,7 +74,7 @@ def generateDisplayGeometry(feature, parent):
         # res = generateGeometryUtils.getRestrictionGeometry(feature)
         res = ElementGeometryFactory.getElementGeometry(feature)
 
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), level=Qgis.Info)
@@ -91,7 +91,7 @@ def getAzimuthToRoadCentreLine(feature, parent):
     try:
         return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
 
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getAzimuthToRoadCentreLine', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -104,14 +104,14 @@ def getRoadName(feature, parent):
 
     #TOMsMessageLog.logMessage("In getRoadName(helper):", level=Qgis.Info)
     try:
-        newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
-    except:
+        newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
+    except Exception:
         TOMsMessageLog.logMessage('getRoadName', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
             'getRoadName: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
             level=Qgis.Info)
-    return newStreetName
+    return newRoadName
 
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
@@ -121,8 +121,8 @@ def getUSRN(feature, parent):
     #TOMsMessageLog.logMessage("In getUSRN(helper):", level=Qgis.Info)
 
     try:
-        newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
-    except:
+        newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
+    except Exception:
         TOMsMessageLog.logMessage('getUSRN', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -137,7 +137,7 @@ def generate_ZigZag(feature, parent):
 
     try:
         res = generateGeometryUtils.zigzag(feature, 2, 1)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('generate_ZigZag', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -155,7 +155,7 @@ def getWaitingLabelLeader(feature, parent):
     #    "In getWaitingLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateWaitingLabelLeader(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getWaitingLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -172,7 +172,7 @@ def getLoadingLabelLeader(feature, parent):
     #    "In getLoadingLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateLoadingLabelLeader(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getLoadingLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -188,7 +188,7 @@ def getBayLabelLeader(feature, parent):
     # TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generateBayLabelLeader(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getBayLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -204,7 +204,7 @@ def getPolygonLabelLeader(feature, parent):
     #TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
     try:
         labelLeaderGeom = generateGeometryUtils.generatePolygonLabelLeader(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getPolygonLabelLeader', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -221,7 +221,7 @@ def getWaitingRestrictionLabelText(feature, parent):
 
     try:
         waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getWaitingRestrictionLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -247,7 +247,7 @@ def getLoadingRestrictionLabelText(feature, parent):
     try:
         waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
 
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getLoadingRestrictionLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -276,7 +276,7 @@ def getBayTimePeriodLabelText(feature, parent):
 
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getBayTimePeriodLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -296,7 +296,7 @@ def getBayMaxStayLabelText(feature, parent):
 
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
 
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getBayMaxStayLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -315,7 +315,7 @@ def getBayNoReturnLabelText(feature, parent):
     # TOMsMessageLog.logMessage("In getBayNoReturnLabelText:", level=Qgis.Info)
     try:
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getBayNoReturnLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -333,7 +333,7 @@ def getBayLabelText(feature, parent):
     TOMsMessageLog.logMessage("In getBayLabelText:", level=Qgis.Info)
     try:
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getBayLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -368,7 +368,7 @@ def getCPZ(feature, parent):
 
     try:
         cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getCPZ', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -386,7 +386,7 @@ def getPTA(feature, parent):
     #TOMsMessageLog.logMessage("In getPTA:", level=Qgis.Info)
     try:
         ptaName, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(feature)
-    except:
+    except Exception:
         TOMsMessageLog.logMessage('getPTA', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(

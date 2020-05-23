@@ -84,7 +84,7 @@ class TOMsParams(QObject):
                           "LineOffsetFromKerb",
                           "CrossoverShapeWidth",
                           "PhotoPath",
-                          "MinimumTextDisplayScale"
+                          "MinimumTextDisplayScale",
                           "TOMsDebugLevel"
                         ]
 
@@ -92,7 +92,7 @@ class TOMsParams(QObject):
 
     def getParams(self):
 
-        TOMsMessageLog.logMessage("In TOMSLayers.getParams ...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsParams.getParams ...", level=Qgis.Info)
         found = True
 
         # Check for project being open
@@ -107,7 +107,7 @@ class TOMsParams(QObject):
             # TOMsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", level=Qgis.Info)
 
             for param in self.TOMsParamsList:
-                TOMsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info)
 
                 """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
                     currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
@@ -119,7 +119,7 @@ class TOMsParams(QObject):
 
                 if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    TOMsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
+                    TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False
@@ -230,26 +230,6 @@ class originalFeature(object):
                                  level=Qgis.Info)
         TOMsMessageLog.logMessage("In originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
                                  level=Qgis.Info)
-class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-class TOMsLogger(QgsMessageLog):
-    def __init__(self, message_level):
-        super().__init__()
-        self.message_level = message_level
-
-    def logMessage(self, message, tag, level):
-        if level >= self.message_level:
-            TOMsMessageLog.logMessage(message, tag, level)
-
-    def write_log_message(self, message, tag, level):
-        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
-        with open(self.filename, 'a') as logfile:
-            logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 
 class RestrictionTypeUtilsMixin():
     #def __init__(self):
@@ -344,7 +324,7 @@ class RestrictionTypeUtilsMixin():
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
         idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
+        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("Code")
 
         for layer in RestrictionsLayers.getFeatures():
             if layer[idxRestrictionsLayerID] == currRestrictionTableID:
@@ -366,7 +346,7 @@ class RestrictionTypeUtilsMixin():
 
         for layer in RestrictionsLayers.getFeatures():
             if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
-                layersTableID = layer.attribute("id")
+                layersTableID = layer.attribute("Code")
 
         TOMsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
                                  level=Qgis.Info)
@@ -390,7 +370,6 @@ class RestrictionTypeUtilsMixin():
 
         TOMsMessageLog.logMessage("In getRestriction: Restriction not found", level=Qgis.Info)
         return None
-
 
     def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         TOMsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), level=Qgis.Info)
@@ -500,7 +479,8 @@ class RestrictionTypeUtilsMixin():
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
                         level=Qgis.Info)
-                    currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
+                    #currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
+                    currRestrictionLayer.addFeature(currRestriction)  # TH (added for v3)
 
                 else:
 
@@ -622,7 +602,7 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.geometry().length())
+            #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
@@ -635,7 +615,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
 
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
-            currRestriction.setAttribute("Lines_DateTime", currDate)
+            #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
             currRestriction.setAttribute("RestrictionTypeID", 101)  # 28 = Permit Holders Bays (Bays)
@@ -650,7 +630,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
             currRestriction.setAttribute("ParkingTariffArea", currentPTA)
 
-            currRestriction.setAttribute("Bays_DateTime", currDate)
+            #currRestriction.setAttribute("Bays_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Signs":
             currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
@@ -1251,7 +1231,7 @@ class RestrictionTypeUtilsMixin():
 
                 # get the layer from the name
 
-                currLayerID = currLayerDetails["id"]
+                currLayerID = currLayerDetails["Code"]
                 currLayerName = currLayerDetails["RestrictionLayerName"]
                 TOMsMessageLog.logMessage(
                     "In getProposalTileList. Considering layer: " + currLayerDetails["RestrictionLayerName"],

@@ -18,7 +18,7 @@ from qgis.core import (
     QgsExpressionContextUtils,
     QgsMessageLog,
     QgsFeature,
-    QgsGeometry,
+    QgsGeometry, QgsGeometryUtils,
     QgsFeatureRequest,
     QgsPoint,
     QgsPointXY,
@@ -124,24 +124,27 @@ class generateGeometryUtils:
 
     @staticmethod
     def checkDegrees(Az):
-        newAz = Az
+        """newAz = Az
 
         if Az >= float(360):
             newAz = Az - float(360)
         elif Az < float(0):
             newAz = Az + float(360)
+        TOMsMessageLog.logMessage("In checkDegrees (1): newAz: " + str(newAz), level=Qgis.Info)"""
 
-        # TOMsMessageLog.logMessage("In checkDegrees: newAz: " + str(newAz), level=Qgis.Info)
+        newAz = math.degrees(QgsGeometryUtils().normalizedAngle(math.radians(Az)))
+
+        #TOMsMessageLog.logMessage("In checkDegrees (2): newAz: " + str(newAz), level=Qgis.Info)
 
         return newAz
 
     @staticmethod
     def setRoadName(feature):
 
-        newStreetName, newUSRN = generateGeometryUtils.determineRoadName(feature)
+        newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
         # now set the attributes
-        if newStreetName:
-            feature.setAttribute("RoadName", newStreetName)
+        if newRoadName:
+            feature.setAttribute("RoadName", newRoadName)
             feature.setAttribute("USRN", newUSRN)
 
             # feature.setAttribute("AzimuthToRoadCentreLine", int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature)))
@@ -203,7 +206,7 @@ class generateGeometryUtils:
 
         TOMsMessageLog.logMessage("In setRoadName: secondPt: " + str(testPt.x()), level=Qgis.Info)
 
-        # check for the feature within RoadCasement_NSG_StreetName layer
+        # check for the feature within RoadCasement_NSG_RoadName layer
         #tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
 
         nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, testPt, RoadCasementLayer,
@@ -212,15 +215,15 @@ class generateGeometryUtils:
         if nearestRC_feature:
             # TOMsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().asWkt(), level=Qgis.Info)
 
-            idx_StreetName = RoadCasementLayer.fields().indexFromName('StreetName')
+            idx_RoadName = RoadCasementLayer.fields().indexFromName('RoadName')
             idx_USRN = RoadCasementLayer.fields().indexFromName('USRN')
 
-            StreetName = nearestRC_feature.attributes()[idx_StreetName]
+            RoadName = nearestRC_feature.attributes()[idx_RoadName]
             USRN = nearestRC_feature.attributes()[idx_USRN]
 
-            TOMsMessageLog.logMessage("In setRoadName: StreetName: " + str(StreetName), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In setRoadName: RoadName: " + str(RoadName), level=Qgis.Info)
 
-            return StreetName, USRN
+            return RoadName, USRN
 
         else:
             return None, None
@@ -280,7 +283,7 @@ class generateGeometryUtils:
         # find the shortest line from this point to the road centre line layer
         # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
 
-        # TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", level=Qgis.Info)
 
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
 
@@ -305,7 +308,7 @@ class generateGeometryUtils:
         #testPt = lineGeom.interpolate(lineLength / 2.0)
         #testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
-        # TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), level=Qgis.Info)
 
         # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
@@ -330,7 +333,7 @@ class generateGeometryUtils:
                 closestFeature = f
                 featureFound = True
 
-        # TOMsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: shortestDistance: " + str(shortestDistance), level=Qgis.Info)
 
         if featureFound:
             # now obtain the line between the testPt and the nearest feature
@@ -346,7 +349,8 @@ class generateGeometryUtils:
             TOMsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
                                      level=Qgis.Info)
 
-            Az = QgsPoint(testPt).azimuth(startPt)
+            Az = generateGeometryUtils.checkDegrees(QgsPoint(testPt).azimuth(startPt))
+
             # Az = generateGeometryUtils.checkDegrees(testPt.azimuth(startPt))
             # TOMsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), level=Qgis.Info)
 
@@ -680,13 +684,13 @@ class generateGeometryUtils:
 
         if currScale <= minScale:
 
-            if feature.attribute("labelX"):
+            if feature.attribute("label_X"):
                 #TOMsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
+                #    "In generateLabelLeader. label_X set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
 
                 # now generate line
                 length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
 
             pass
 
@@ -707,13 +711,13 @@ class generateGeometryUtils:
 
         if currScale <= minScale:
 
-            if feature.attribute("labelLoadingX"):
+            if feature.attribute("labelLoading_X"):
                 #TOMsMessageLog.logMessage(
-                #    "In generateLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
+                #    "In generateLabelLeader. label_X set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
 
                 # now generate line
                 length = feature.geometry().length()
-                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelLoadingX"), feature.attribute("labelLoadingY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("labelLoading_X"), feature.attribute("labelLoading_Y"))])
 
             pass
 
@@ -738,7 +742,7 @@ class generateGeometryUtils:
 
                 length = feature.geometry().length()
                 TOMsMessageLog.logMessage(
-                    "In generateBayLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
+                    "In generateBayLabelLeader. label_X set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
 
                 """
                 # now generate line
@@ -782,14 +786,14 @@ class generateGeometryUtils:
 
         if currScale <= minScale:
 
-            if feature.attribute("labelX"):
+            if feature.attribute("label_X"):
                 TOMsMessageLog.logMessage(
-                    "In generatePolygonLabelLeader. labelX set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
+                    "In generatePolygonLabelLeader. label_X set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
 
                 pt = feature.geometry().nearestPoint()
 
                 # now generate line
-                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().nearestPoint().asPoint()), QgsPoint(feature.attribute("labelX"), feature.attribute("labelY"))])
+                return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().nearestPoint().asPoint()), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
 
             pass
 
@@ -860,24 +864,21 @@ class generateGeometryUtils:
 
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
 
-        TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriods")[0]
+        TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
 
-        #TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)", level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
         timePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, timePeriodID)
 
-        #TOMsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionPTA = feature.attribute("ParkingTariffArea")
 
         CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
         TariffZoneTimePeriodID, TariffZoneMaxStayID, TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneDetails(restrictionPTA)
-        #TariffZoneMaxStayID = generateGeometryUtils.getTariffZoneMaxStayID(restrictionPTA)
-        #TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneNoReturnID(restrictionPTA)
-        #TariffZoneTimePeriodID = generateGeometryUtils.getTariffZoneTimePeriodID(restrictionPTA)
 
         TOMsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
@@ -960,7 +961,7 @@ class generateGeometryUtils:
         if currentCPZFeature:
 
             currentCPZ = currentCPZFeature.attribute("CPZ")
-            cpzWaitingTimeID = currentCPZFeature.attribute("WaitingTimeID")
+            cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
             #TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), level=Qgis.Info)
 
             return currentCPZ, cpzWaitingTimeID
@@ -981,8 +982,7 @@ class generateGeometryUtils:
         currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
 
         if currentPTAFeature:
-
-            currentPTA = currentPTAFeature.attribute("Name")
+            currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
             ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
             ptaNoReturnTimeID = currentPTAFeature.attribute("NoReturnTimeID")
             ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
@@ -1026,17 +1026,16 @@ class generateGeometryUtils:
     @staticmethod
     def getCPZWaitingTimeID(cpzNr):
 
-        #TOMsMessageLog.logMessage("In getCPZWaitingTimeID", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getCPZWaitingTimeID", level=Qgis.Info)
 
         CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
 
         for poly in CPZLayer.getFeatures():
-
             currentCPZ = poly.attribute("CPZ")
             if currentCPZ == cpzNr:
-                #TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
-                cpzWaitingTimeID = poly.attribute("WaitingTimeID")
-                #TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
+                cpzWaitingTimeID = poly.attribute("TimePeriodID")
+                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), level=Qgis.Info)
                 return cpzWaitingTimeID
 
         return None
@@ -1044,20 +1043,19 @@ class generateGeometryUtils:
     @staticmethod
     def getTariffZoneDetails(tpaNr):
 
-        #TOMsMessageLog.logMessage("In getTariffZoneDetails", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getTariffZoneDetails", level=Qgis.Info)
 
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         for poly in tpaLayer.getFeatures():
-
-            currentPTA = poly.attribute("Name")
+            currentPTA = poly.attribute("ParkingTariffArea")
             if currentPTA == tpaNr:
-                #TOMsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", level=Qgis.Info)
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
                 ptaMaxStayID = poly.attribute("MaxStayID")
-                ptaNoReturnTimeID = poly.attribute("NoReturnTimeID")
-                #TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), level=Qgis.Info)
-                return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnTimeID
+                ptaNoReturnID = poly.attribute("NoReturnID")
+                TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), level=Qgis.Info)
+                return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
@@ -1069,8 +1067,7 @@ class generateGeometryUtils:
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         for poly in tpaLayer.getFeatures():
-
-            currentPTA = poly.attribute("Name")
+            currentPTA = poly.attribute("ParkingTariffArea")
             if currentPTA == tpaNr:
                 #TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", level=Qgis.Info)
                 ptaMaxStayID = poly.attribute("MaxStayID")
@@ -1087,8 +1084,7 @@ class generateGeometryUtils:
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         for poly in tpaLayer.getFeatures():
-
-            currentPTA = poly.attribute("Name")
+            currentPTA = poly.attribute("ParkingTariffArea")
             if currentPTA == tpaNr:
                 #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", level=Qgis.Info)
                 ptaNoReturnID = poly.attribute("NoReturnTimeID")
@@ -1105,8 +1101,7 @@ class generateGeometryUtils:
         tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
         for poly in tpaLayer.getFeatures():
-
-            currentPTA = poly.attribute("Name")
+            currentPTA = poly.attribute("ParkingTariffArea")
             if currentPTA == tpaNr:
                 #TOMsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", level=Qgis.Info)
                 ptaTimePeriodID = poly.attribute("TimePeriodID")
