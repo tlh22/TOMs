@@ -20,6 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
+import time, datetime
+import functools
+import os.path
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction,
@@ -92,8 +96,10 @@ class TOMs:
         self.actions = []   # ?? check - assume it initialises array of actions
 
         # Set up local logging
-        loggingUtils = TOMsMessageLog()
-        loggingUtils.setLogFile()
+        loggingUtil = TOMsMessageLog()
+        filename = loggingUtil.setLogFile()
+        TOMsMessageLog.logMessage("In write_log_message ... " + filename, level=Qgis.Info)
+        #QgsApplication.messageLog().messageReceived.connect(write_log_message)
 
         TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)
 

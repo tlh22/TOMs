@@ -165,7 +165,7 @@ class MapToolMixin:
         for layerDetails in self.RestrictionLayers.getFeatures():
 
             # Exclude consideration of CPZs
-            if layerDetails.attribute("id") >= 6:  # CPZs
+            if layerDetails.attribute("Code") >= 6:  # CPZs
                 continue
 
             self.currLayer = RestrictionTypeUtilsMixin.getRestrictionsLayer (layerDetails)
@@ -362,10 +362,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
-            if layerDetails.attribute("id") >= 6:   # CPZs, PTAs
+            if layerDetails.attribute("Code") >= 6:   # CPZs, PTAs
                 continue
 
-            if layerDetails.attribute("id") == RestrictionLayers.BAYS:  # Bays
+            if layerDetails.attribute("Code") == RestrictionLayers.BAYS:  # Bays
                 tolerance = 2.0
             else:
                 tolerance = 0.5
@@ -385,8 +385,8 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             # Loop through all features in the layer to find the closest feature
             for f in self.currLayer.getFeatures(request):
 
-                if (layerDetails.attribute("id") == RestrictionLayers.BAYS or
-                    layerDetails.attribute("id") == RestrictionLayers.LINES):
+                if (layerDetails.attribute("Code") == RestrictionLayers.BAYS or
+                    layerDetails.attribute("Code") == RestrictionLayers.LINES):
                     context.setFeature(f)
                     expression1 = QgsExpression(
                         'generate_display_geometry ("GeometryID",  "GeomShapeID",  "AzimuthToRoadCentreLine",   @BayOffsetFromKerb, @BayWidth)')
@@ -396,10 +396,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                                              level=Qgis.Info)
                     if shapeGeom.intersects(searchRectA):
                         # Add any features that are found should be added to a list
-                        restrictionList.append((f,layerDetails.attribute("id"), self.currLayer))
+                        restrictionList.append((f,layerDetails.attribute("Code"), self.currLayer))
                     # layerList.append(self.currLayer)
                 else:
-                    restrictionList.append((f, layerDetails.attribute("id"), self.currLayer))
+                    restrictionList.append((f, layerDetails.attribute("Code"), self.currLayer))
 
         TOMsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(restrictionList)), level=Qgis.Info)
 
@@ -554,9 +554,10 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         snapping_layer3 = QgsSnappingUtils.LayerConfig(ConstructionLines, QgsPointLocator.Vertex and QgsPointLocator.Edge, 0.5,
                                                        QgsTolerance.LayerUnits)
         """
-        self.snappingConfig = QgsSnappingConfig()
+        self.snapper = canvas.snappingUtils()
+        self.snappingConfig = QgsSnappingConfig(QgsProject.instance())
 
-        #self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
+        #####self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
 
         self.snappingConfig.setMode(QgsSnappingConfig.AdvancedConfiguration)
 
@@ -749,7 +750,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
                 newRestrictionID = str(uuid.uuid4())
                 feature[self.layer.fields().indexFromName("RestrictionID")] = newRestrictionID
-                self.layer.addFeature(feature)  # TH (added for v3)
+                #self.layer.addFeature(feature)  # TH (added for v3)
 
                 dialog = self.iface.getFeatureForm(self.layer, feature)
 
