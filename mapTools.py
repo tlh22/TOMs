@@ -868,8 +868,6 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         # now split the restriction. (NB: THis is done at layer level
 
-
-
         self.layer.featureAdded.connect(self.splitFeatureAdded)
         self.layer.geometryChanged.connect(self.splitFeatureChanged)
 

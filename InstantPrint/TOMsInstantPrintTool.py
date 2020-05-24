@@ -194,6 +194,9 @@ class TOMsInstantPrintTool(InstantPrintTool):
         # Now check which tiles to use
         self.tilesToPrint = self.TOMsChooseTiles(proposalTileDictionaryForDate)
 
+        TOMsMessageLog.logMessage("In TOMsExportAtlas. now have " + str(len(self.tilesToPrint)) + " items ....",
+                                  level=Qgis.Info)
+
         if len(self.tilesToPrint) == 0:
             return
 
@@ -271,19 +274,20 @@ class TOMsInstantPrintTool(InstantPrintTool):
                                     self.tr("Could not find details for " + str(currTileNr)))
                 break
 
-            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " RevisionNr: " + str(
-                tileWithDetails["RevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"]),
+            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " CurrRevisionNr: " + str(
+                tileWithDetails["CurrRevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"])  +
+                                                                             " lastUpdateDate: " + currProposalOpenDate.toString('dd-MMM-yyyy'),
                                      level=Qgis.Info)
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
-                composerRevisionNr.setText(str(tileWithDetails["RevisionNr"]))
+                composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"]))
                 composerEffectiveDate.setText(
                     '{date}'.format(date=tileWithDetails["LastRevisionDate"].toString('dd-MMM-yyyy')))
             else:
-                composerRevisionNr.setText(str(tileWithDetails["RevisionNr"] + 1))
+                composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"] + 1))
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
-                    '{date}'.format(date=self.openDateForPrintProposal.toString('dd-MMM-yyyy')))
+                    '{date}'.format(date=currProposalOpenDate.toString('dd-MMM-yyyy')))
 
             filename = currProposalTitle + "_" + str(
                 currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
@@ -370,7 +374,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         tileSet = set()
         for tileNr, tile in tileDictionary.items():
-            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(tile["id"]) + " CurrRevisionNr: " + str(tile["CurrRevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
             tileSet.add(tile)
 
         self.tileListDialog = printListDialog(tileSet, idxMapTileId)

@@ -110,14 +110,14 @@ class TOMsProposalElement(QObject):
                 # get revision number and add tile to list
                 # currRevisionNrForTile = self.getTileRevisionNr(tile)
                 TOMsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(
-                    tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), level=Qgis.Info)
+                    tile.attribute("CurrRevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), level=Qgis.Info)
 
                 # check revision nr, etc
 
                 """ TODO: Tidy this up ... with Tile object ..."""
                 currTile.setTile(currTileNr)
-                revisionNr, revisionDate = self.currTile.getTileRevisionNrAtDate(filterDate)
-                tile.setAttribute("RevisionNr", revisionNr)
+                CurrRevisionNr, revisionDate = self.currTile.getTileRevisionNrAtDate(filterDate)
+                tile.setAttribute("CurrRevisionNr", CurrRevisionNr)
                 tile.setAttribute("LastRevisionDate", revisionDate)
 
                 """if revisionNr:

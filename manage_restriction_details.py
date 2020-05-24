@@ -206,7 +206,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doSelectRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         if not self.actionSelectRestriction.isChecked():
             self.actionSelectRestriction.setChecked(False)
@@ -226,7 +226,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         """
         TOMsMessageLog.logMessage("In doRestrictionDetails", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
@@ -291,7 +291,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doCreateBayRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -354,7 +354,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doCreateLineRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -411,7 +411,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doCreatePolygonRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -465,7 +465,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doCreateSignRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -524,7 +524,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doCreateConstructionLine", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -575,7 +575,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # pass control to MapTool and then deal with Proposals issues from there ??
         TOMsMessageLog.logMessage("In doRemoveRestriction", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         #self.mapTool = None
 
@@ -704,7 +704,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doEditRestriction - starting", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 
@@ -798,7 +798,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doSplitRestriction - starting", level=Qgis.Info)
 
-        self.proposalsManager.TOMsToolChanged.emit()
+        #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
 

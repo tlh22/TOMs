@@ -990,12 +990,12 @@ class generateGeometryUtils:
         if currentPTAFeature:
             currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
             ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
-            ptaNoReturnTimeID = currentPTAFeature.attribute("NoReturnTimeID")
+            ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
             ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
             #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
 
-            return currentPTA, ptaMaxStayID, ptaNoReturnTimeID
+            return currentPTA, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
@@ -1093,7 +1093,7 @@ class generateGeometryUtils:
             currentPTA = poly.attribute("ParkingTariffArea")
             if currentPTA == tpaNr:
                 #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", level=Qgis.Info)
-                ptaNoReturnID = poly.attribute("NoReturnTimeID")
+                ptaNoReturnID = poly.attribute("NoReturnID")
                 #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), level=Qgis.Info)
                 return ptaNoReturnID
 

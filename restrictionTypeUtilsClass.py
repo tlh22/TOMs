@@ -449,8 +449,8 @@ class RestrictionTypeUtilsMixin():
                         newRestrictionID),
                     level=Qgis.Info)
 
-                if currRestriction[idxRestrictionID] is None:
-                    # This is a feature that has just been created.
+                if currRestriction[idxOpenDate] is None:
+                    # This is a feature that has just been created, i.e., it is not currently part of the proposal and did not previously exist
 
                     # Not quite sure what is happening here but think the following:
                     #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
@@ -624,10 +624,10 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
 
-            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+            currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
-            currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
+            currRestriction.setAttribute("NoReturnID", ptaNoReturnID)
             currRestriction.setAttribute("ParkingTariffArea", currentPTA)
 
             #currRestriction.setAttribute("Bays_DateTime", currDate)
@@ -676,7 +676,7 @@ class RestrictionTypeUtilsMixin():
 
         elif currRestrictionLayer.name() == "Bays":
 
-            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+            currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ParkingTariffArea"), currentPTA)
 

@@ -38,7 +38,7 @@ from ..constants import (
 )
 
 class TOMsTile(QObject):
-    def __init__(self, proposalsManager, tileNr=None):
+    def __init__(self, proposalsManager, tileNr=None):   # TODO: include a date here
         QObject.__init__(self)
 
         self.proposalsManager = proposalsManager
@@ -52,13 +52,13 @@ class TOMsTile(QObject):
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Info)
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer... ", level=Qgis.Info)
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Info)
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Info)
 
     def setTile(self, tileNr):
 
@@ -81,16 +81,23 @@ class TOMsTile(QObject):
         return self.thisTileNr
 
     def revisionNr(self):
-        return self.thisTile.attribute("RevisionNr")
+        currRevisionNr = self.thisTile.attribute("CurrRevisionNr")
+        TOMsMessageLog.logMessage('In TOMsTile:revisionNr - .{}.'.format(currRevisionNr), level=Qgis.Info)
+        if currRevisionNr is None:
+            currRevisionNr = 0
+
+        return currRevisionNr
 
     def setRevisionNr(self, value):
-        return self.thisTile.setAttribute("RevisionNr", value)
+        self.thisTile.setAttribute("CurrRevisionNr", value)
+        return
 
     def lastRevisionDate(self):
         return self.thisTile.attribute("LastRevisionDate")
 
     def setLastRevisionDate(self, value):
-        return self.thisTile.setAttribute("LastRevisionDate", value)
+        self.thisTile.setAttribute("LastRevisionDate", value)
+        return
 
     def getTileRevisionNrAtDate(self, filterDate=None):
 
@@ -103,7 +110,7 @@ class TOMsTile(QObject):
 
         queryString = "\"TileNr\" = " + str(self.thisTileNr)
 
-        TOMsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
