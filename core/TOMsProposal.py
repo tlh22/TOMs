@@ -335,7 +335,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     dictTilesInProposal[currTileObject.thisTileNr] = currTileRecord
 
         for tileNr, tile in dictTilesInProposal.items():
-            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tile["id"]) + " RevisionNr: " + str(tile["CurrRevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
 
         return dictTilesInProposal
 
@@ -632,43 +632,22 @@ class TOMsProposalElement(QObject):
             if tile.geometry().intersects(self.thisElement.geometry()):
                 # get revision number and add tile to list
                 # currRevisionNrForTile = self.getTileRevisionNr(tile)
-                TOMsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(
-                    tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getTilesForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(
+                    tile.attribute("CurrRevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), level=Qgis.Info)
 
                 # check revision nr, etc
 
-                """ TODO: Tidy this up ... with Tile object ..."""
+                """ TODO: Check effects of amending revisionNr/date"""
                 currTile.setTile(currTileNr)
                 revisionNr, revisionDate = currTile.getTileRevisionNrAtDate(filterDate)
-                tile.setAttribute("RevisionNr", revisionNr)
-                tile.setAttribute("LastRevisionDate", revisionDate)
-
-                """if revisionNr:
-
-                    if revisionNr != tile.attribute("RevisionNr"):
-                        tile.setAttribute("RevisionNr", revisionNr)
-                    if revisionDate != tile.attribute("LastRevisionDate"):
-                        tile.setAttribute("LastRevisionDate", revisionDate)
-
-                else:
-
-                    # if there is no RevisionNr for the tile, set it to 0. This should only be the case for proposals.
-
-                    tile.setAttribute("RevisionNr", 0)
-
-                TOMsMessageLog.logMessage(
-                    "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
-                        tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(
-                        idxTileID),
-                    level=Qgis.Info)"""
+                currTile.setRevisionNr(revisionNr)
+                currTile.setLastRevisionDate(revisionDate)
 
                 dictTilesInRestriction[currTileNr] = tile
 
                 TOMsMessageLog.logMessage(
-                    "In getTileForRestriction. len tileSet: " + str(len(dictTilesInRestriction)),
+                    "In getTilesForRestriction. len tileSet: " + str(len(dictTilesInRestriction)),
                     level=Qgis.Info)
-
-                pass
 
         return dictTilesInRestriction
 

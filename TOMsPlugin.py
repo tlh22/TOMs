@@ -80,12 +80,26 @@ class TOMs:
         self.actions = []   # ?? check - assume it initialises array of actions
 
         # Set up local logging
-        loggingUtil = TOMsMessageLog()
-        filename = loggingUtil.setLogFile()
-        TOMsMessageLog.logMessage("In write_log_message ... " + filename, level=Qgis.Info)
-        #QgsApplication.messageLog().messageReceived.connect(write_log_message)
+        # Set up log file and collect any relevant messages
+        """logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+
+        if logFilePath:
+
+            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
+
+            logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
+            self.filename = os.path.join(logFilePath, logfile)
+            QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
+            #QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)  # Not quite sure why this fails ...moved to TOMsMessageLog ..."""
 
         TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)
+
+    def write_log_message(self, message, tag, level):
+        TOMsMessageLog.logMessage("In write_log_message ... " + self.filename, level=Qgis.Info)
+        with open(self.filename, 'a') as logfile:
+            logfile.write(
+                '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
+                                                                      tag=tag, level=level, message=message))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""

@@ -34,7 +34,7 @@ from qgis.core import (
 class TOMsMessageLog(QgsMessageLog):
 
     def __init__(self):
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     def logMessage(*args, **kwargs):
         # check to see if a logging level has been set
@@ -51,7 +51,7 @@ class TOMsMessageLog(QgsMessageLog):
 
         messageLevel = kwargs.get('level')
 
-        #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
+        # QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
 
         if not messageLevel:
             messageLevel = Qgis.Info
@@ -59,20 +59,20 @@ class TOMsMessageLog(QgsMessageLog):
         if messageLevel >= debug_level:
             QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
 
-    def write_log_message(self, message, tag, level):
-        TOMsMessageLog.logMessage("In write_log_message ... " + self.filename, level=Qgis.Info)
-        with open(self.filename, 'a') as logfile:
-            logfile.write(
-                '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
-                                                                      tag=tag, level=level, message=message))
+            logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
 
-    def setLogFile(self):
+            if logFilePath:
 
-        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+                #QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs panel")
 
-        if logFilePath:
-            QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs Panel", level=Qgis.Info)
-            logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
-            filename = os.path.join(logFilePath, logfile)
-            QgsMessageLog.logMessage("Sorting out log file " + filename, tag="TOMs Panel", level=Qgis.Info)
-            return filename
+                logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
+                filename = os.path.join(logFilePath, logfile)
+                #QgsMessageLog.logMessage("Sorting out log file" + filename, tag="TOMs panel")
+                #QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)  # For some reason, when this is used outside, it crashes QGIS - without any messages ...
+                with open(filename, 'a') as logfile:
+                    logfile.write(
+                        '{dateDetails}[{tag}]: {level} :: {message}\n'.format(
+                            dateDetails=time.strftime("%Y%m%d:%H%M%S"),
+                            tag=kwargs.get('tag'), level=kwargs.get('level'), message=''.join(str(e) for e in args)))
+
+

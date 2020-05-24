@@ -385,7 +385,7 @@ def getPTA(feature, parent):
 
     #TOMsMessageLog.logMessage("In getPTA:", level=Qgis.Info)
     try:
-        ptaName, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(feature)
+        ptaName, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(feature)
     except Exception:
         TOMsMessageLog.logMessage('getPTA', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
