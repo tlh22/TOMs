@@ -114,14 +114,34 @@
           </font>
          </property>
          <property name="text">
-          <string>Street Furniture:</string>
+          <string>Sign Type 4:</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QComboBox" name="Signs_Attachment"/>
+        <widget class="QComboBox" name="SignType_4"/>
        </item>
        <item row="4" column="0">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="1">
+        <widget class="QDateEdit" name="OpenDate">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
         <widget class="QLabel" name="lbl_GeometryType">
          <property name="minimumSize">
           <size>
@@ -135,12 +155,9 @@
           </font>
          </property>
          <property name="text">
-          <string>Mounting:</string>
+          <string>Effective Date:</string>
          </property>
         </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="Signs_Mount"/>
        </item>
       </layout>
      </widget>
@@ -229,7 +246,7 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Survey Date:</string>
+          <string>Last Update Date:</string>
          </property>
         </widget>
        </item>
@@ -243,7 +260,7 @@
        <item row="5" column="0">
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Surveyor:</string>
+          <string>Last Changed By:</string>
          </property>
         </widget>
        </item>
@@ -274,40 +291,6 @@
        </item>
        <item row="6" column="1">
         <widget class="QLineEdit" name="RestrictionID"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="TicketMachine">
-      <attribute name="title">
-       <string>Ticket Machine</string>
-      </attribute>
-      <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="Type1_7">
-         <property name="text">
-          <string>Ticket Machine Number:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="TicketMachine_Nr"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="checkBox">
-         <property name="text">
-          <string>Ringo present</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="Type1_8">
-         <property name="text">
-          <string>Ticket Machine Issues:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="Compl_Signs_TicketMachines"/>
        </item>
       </layout>
      </widget>
@@ -386,113 +369,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Conformance">
-      <attribute name="title">
-       <string>Conformance</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_TimePeriod_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Fading:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="Compl_Signs_Faded"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lbl_MaxStay_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Obscurred:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="Compl_Signs_Obscured"/>
-       </item>
-       <item row="2" column="1">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="Compl_Signs_Direction">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Facing wrong direction:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="Compl_Signs_Obsolete">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Sign Obsolete: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCheckBox" name="Compl_Signs_OtherOptions">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Other placement options:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Notes:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QTextEdit" name="Signs_Notes"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Photos taken:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QCheckBox" name="PhotoTaken">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </item>
    <item row="0" column="0">
@@ -513,7 +389,14 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="2" column="2">
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
     <widget class="QLineEdit" name="GeometryID">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -534,13 +417,6 @@
      </property>
      <property name="placeholderText">
       <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QDialogButtonBox" name="button_box">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

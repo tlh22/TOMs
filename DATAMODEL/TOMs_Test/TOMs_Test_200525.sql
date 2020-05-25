@@ -5,7 +5,7 @@
 -- Dumped from database version 12.2
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-24 22:44:17
+-- Started on 2020-05-25 22:40:46
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 14 (class 2615 OID 193240)
+-- TOC entry 9 (class 2615 OID 210583)
 -- Name: addresses; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -29,7 +29,7 @@ CREATE SCHEMA "addresses";
 ALTER SCHEMA "addresses" OWNER TO "postgres";
 
 --
--- TOC entry 23 (class 2615 OID 193038)
+-- TOC entry 12 (class 2615 OID 210584)
 -- Name: compliance; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -39,7 +39,7 @@ CREATE SCHEMA "compliance";
 ALTER SCHEMA "compliance" OWNER TO "postgres";
 
 --
--- TOC entry 12 (class 2615 OID 193039)
+-- TOC entry 13 (class 2615 OID 210585)
 -- Name: compliance_lookups; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -49,7 +49,7 @@ CREATE SCHEMA "compliance_lookups";
 ALTER SCHEMA "compliance_lookups" OWNER TO "postgres";
 
 --
--- TOC entry 20 (class 2615 OID 193032)
+-- TOC entry 14 (class 2615 OID 210586)
 -- Name: highways_network; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -59,7 +59,7 @@ CREATE SCHEMA "highways_network";
 ALTER SCHEMA "highways_network" OWNER TO "postgres";
 
 --
--- TOC entry 25 (class 2615 OID 193037)
+-- TOC entry 18 (class 2615 OID 210587)
 -- Name: local_authority; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -69,7 +69,7 @@ CREATE SCHEMA "local_authority";
 ALTER SCHEMA "local_authority" OWNER TO "postgres";
 
 --
--- TOC entry 22 (class 2615 OID 193034)
+-- TOC entry 20 (class 2615 OID 210588)
 -- Name: toms; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -79,7 +79,7 @@ CREATE SCHEMA "toms";
 ALTER SCHEMA "toms" OWNER TO "postgres";
 
 --
--- TOC entry 15 (class 2615 OID 193033)
+-- TOC entry 17 (class 2615 OID 210589)
 -- Name: toms_lookups; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -89,7 +89,7 @@ CREATE SCHEMA "toms_lookups";
 ALTER SCHEMA "toms_lookups" OWNER TO "postgres";
 
 --
--- TOC entry 18 (class 2615 OID 193031)
+-- TOC entry 15 (class 2615 OID 210590)
 -- Name: topography; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -99,7 +99,7 @@ CREATE SCHEMA "topography";
 ALTER SCHEMA "topography" OWNER TO "postgres";
 
 --
--- TOC entry 8 (class 2615 OID 193035)
+-- TOC entry 11 (class 2615 OID 210591)
 -- Name: transfer; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -109,7 +109,7 @@ CREATE SCHEMA "transfer";
 ALTER SCHEMA "transfer" OWNER TO "postgres";
 
 --
--- TOC entry 1796 (class 2612 OID 195377)
+-- TOC entry 1789 (class 2612 OID 210595)
 -- Name: plpython3u; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
 
@@ -119,7 +119,7 @@ CREATE OR REPLACE PROCEDURAL LANGUAGE "plpython3u";
 ALTER PROCEDURAL LANGUAGE "plpython3u" OWNER TO "postgres";
 
 --
--- TOC entry 5 (class 3079 OID 191182)
+-- TOC entry 5 (class 3079 OID 210596)
 -- Name: dblink; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -127,7 +127,16 @@ CREATE EXTENSION IF NOT EXISTS "dblink" WITH SCHEMA "public";
 
 
 --
--- TOC entry 4 (class 3079 OID 191228)
+-- TOC entry 4500 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: EXTENSION "dblink"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "dblink" IS 'connect to other PostgreSQL databases from within a database';
+
+
+--
+-- TOC entry 4 (class 3079 OID 210642)
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -135,7 +144,16 @@ CREATE EXTENSION IF NOT EXISTS "postgis" WITH SCHEMA "public";
 
 
 --
--- TOC entry 2 (class 3079 OID 193446)
+-- TOC entry 4501 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: EXTENSION "postgis"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "postgis" IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+--
+-- TOC entry 3 (class 3079 OID 211644)
 -- Name: postgres_fdw; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -143,7 +161,16 @@ CREATE EXTENSION IF NOT EXISTS "postgres_fdw" WITH SCHEMA "public";
 
 
 --
--- TOC entry 3 (class 3079 OID 192230)
+-- TOC entry 4502 (class 0 OID 0)
+-- Dependencies: 3
+-- Name: EXTENSION "postgres_fdw"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "postgres_fdw" IS 'foreign-data wrapper for remote PostgreSQL servers';
+
+
+--
+-- TOC entry 2 (class 3079 OID 211648)
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -151,7 +178,16 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "public";
 
 
 --
--- TOC entry 1080 (class 1255 OID 208285)
+-- TOC entry 4503 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
+-- TOC entry 1072 (class 1255 OID 211659)
 -- Name: create_geometryid(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -189,7 +225,7 @@ $$;
 ALTER FUNCTION "public"."create_geometryid"() OWNER TO "postgres";
 
 --
--- TOC entry 1079 (class 1255 OID 193541)
+-- TOC entry 1073 (class 1255 OID 211660)
 -- Name: set_last_update_details(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -209,7 +245,7 @@ $$;
 ALTER FUNCTION "public"."set_last_update_details"() OWNER TO "postgres";
 
 --
--- TOC entry 1078 (class 1255 OID 193540)
+-- TOC entry 1074 (class 1255 OID 211661)
 -- Name: set_restriction_length(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -230,7 +266,7 @@ ALTER FUNCTION "public"."set_restriction_length"() OWNER TO "postgres";
 SET default_table_access_method = "heap";
 
 --
--- TOC entry 281 (class 1259 OID 193738)
+-- TOC entry 221 (class 1259 OID 211662)
 -- Name: BaysLinesFadedTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -243,7 +279,7 @@ CREATE TABLE "compliance_lookups"."BaysLinesFadedTypes" (
 ALTER TABLE "compliance_lookups"."BaysLinesFadedTypes" OWNER TO "postgres";
 
 --
--- TOC entry 280 (class 1259 OID 193736)
+-- TOC entry 222 (class 1259 OID 211668)
 -- Name: BayLinesFadedTypes_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -259,8 +295,8 @@ CREATE SEQUENCE "compliance_lookups"."BayLinesFadedTypes_Code_seq"
 ALTER TABLE "compliance_lookups"."BayLinesFadedTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4507 (class 0 OID 0)
--- Dependencies: 280
+-- TOC entry 4504 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: BayLinesFadedTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -268,7 +304,7 @@ ALTER SEQUENCE "compliance_lookups"."BayLinesFadedTypes_Code_seq" OWNED BY "comp
 
 
 --
--- TOC entry 283 (class 1259 OID 193903)
+-- TOC entry 223 (class 1259 OID 211670)
 -- Name: BaysLines_SignIssueTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -281,7 +317,7 @@ CREATE TABLE "compliance_lookups"."BaysLines_SignIssueTypes" (
 ALTER TABLE "compliance_lookups"."BaysLines_SignIssueTypes" OWNER TO "postgres";
 
 --
--- TOC entry 282 (class 1259 OID 193901)
+-- TOC entry 224 (class 1259 OID 211676)
 -- Name: BaysLines_SignIssueTypes_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -297,8 +333,8 @@ CREATE SEQUENCE "compliance_lookups"."BaysLines_SignIssueTypes_Code_seq"
 ALTER TABLE "compliance_lookups"."BaysLines_SignIssueTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4508 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 4505 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: BaysLines_SignIssueTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -306,7 +342,7 @@ ALTER SEQUENCE "compliance_lookups"."BaysLines_SignIssueTypes_Code_seq" OWNED BY
 
 
 --
--- TOC entry 268 (class 1259 OID 193144)
+-- TOC entry 225 (class 1259 OID 211678)
 -- Name: ConditionTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -319,7 +355,7 @@ CREATE TABLE "compliance_lookups"."ConditionTypes" (
 ALTER TABLE "compliance_lookups"."ConditionTypes" OWNER TO "postgres";
 
 --
--- TOC entry 267 (class 1259 OID 193142)
+-- TOC entry 226 (class 1259 OID 211681)
 -- Name: ConditionTypes_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -335,8 +371,8 @@ CREATE SEQUENCE "compliance_lookups"."ConditionTypes_Code_seq"
 ALTER TABLE "compliance_lookups"."ConditionTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4509 (class 0 OID 0)
--- Dependencies: 267
+-- TOC entry 4506 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: ConditionTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -344,7 +380,7 @@ ALTER SEQUENCE "compliance_lookups"."ConditionTypes_Code_seq" OWNED BY "complian
 
 
 --
--- TOC entry 276 (class 1259 OID 193210)
+-- TOC entry 227 (class 1259 OID 211683)
 -- Name: MHTC_CheckIssueType; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -357,7 +393,7 @@ CREATE TABLE "compliance_lookups"."MHTC_CheckIssueType" (
 ALTER TABLE "compliance_lookups"."MHTC_CheckIssueType" OWNER TO "postgres";
 
 --
--- TOC entry 275 (class 1259 OID 193208)
+-- TOC entry 228 (class 1259 OID 211689)
 -- Name: MHTC_CheckIssueType_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -373,8 +409,8 @@ CREATE SEQUENCE "compliance_lookups"."MHTC_CheckIssueType_Code_seq"
 ALTER TABLE "compliance_lookups"."MHTC_CheckIssueType_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4510 (class 0 OID 0)
--- Dependencies: 275
+-- TOC entry 4507 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: MHTC_CheckIssueType_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -382,7 +418,7 @@ ALTER SEQUENCE "compliance_lookups"."MHTC_CheckIssueType_Code_seq" OWNED BY "com
 
 
 --
--- TOC entry 278 (class 1259 OID 193221)
+-- TOC entry 229 (class 1259 OID 211691)
 -- Name: MHTC_CheckStatus; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -395,7 +431,7 @@ CREATE TABLE "compliance_lookups"."MHTC_CheckStatus" (
 ALTER TABLE "compliance_lookups"."MHTC_CheckStatus" OWNER TO "postgres";
 
 --
--- TOC entry 277 (class 1259 OID 193219)
+-- TOC entry 230 (class 1259 OID 211697)
 -- Name: MHTC_CheckStatus_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -411,8 +447,8 @@ CREATE SEQUENCE "compliance_lookups"."MHTC_CheckStatus_Code_seq"
 ALTER TABLE "compliance_lookups"."MHTC_CheckStatus_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4511 (class 0 OID 0)
--- Dependencies: 277
+-- TOC entry 4508 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: MHTC_CheckStatus_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -420,7 +456,7 @@ ALTER SEQUENCE "compliance_lookups"."MHTC_CheckStatus_Code_seq" OWNED BY "compli
 
 
 --
--- TOC entry 236 (class 1259 OID 192483)
+-- TOC entry 231 (class 1259 OID 211699)
 -- Name: SignAttachmentTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -434,7 +470,7 @@ CREATE TABLE "compliance_lookups"."SignAttachmentTypes" (
 ALTER TABLE "compliance_lookups"."SignAttachmentTypes" OWNER TO "postgres";
 
 --
--- TOC entry 274 (class 1259 OID 193199)
+-- TOC entry 232 (class 1259 OID 211705)
 -- Name: SignConditionTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -447,7 +483,7 @@ CREATE TABLE "compliance_lookups"."SignConditionTypes" (
 ALTER TABLE "compliance_lookups"."SignConditionTypes" OWNER TO "postgres";
 
 --
--- TOC entry 273 (class 1259 OID 193197)
+-- TOC entry 233 (class 1259 OID 211711)
 -- Name: SignConditionTypes_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -463,8 +499,8 @@ CREATE SEQUENCE "compliance_lookups"."SignConditionTypes_Code_seq"
 ALTER TABLE "compliance_lookups"."SignConditionTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4512 (class 0 OID 0)
--- Dependencies: 273
+-- TOC entry 4509 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: SignConditionTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -472,7 +508,7 @@ ALTER SEQUENCE "compliance_lookups"."SignConditionTypes_Code_seq" OWNED BY "comp
 
 
 --
--- TOC entry 316 (class 1259 OID 205654)
+-- TOC entry 234 (class 1259 OID 211713)
 -- Name: SignFadedTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -486,7 +522,7 @@ CREATE TABLE "compliance_lookups"."SignFadedTypes" (
 ALTER TABLE "compliance_lookups"."SignFadedTypes" OWNER TO "postgres";
 
 --
--- TOC entry 315 (class 1259 OID 205652)
+-- TOC entry 235 (class 1259 OID 211719)
 -- Name: SignFadedTypes_id_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -502,8 +538,8 @@ CREATE SEQUENCE "compliance_lookups"."SignFadedTypes_id_seq"
 ALTER TABLE "compliance_lookups"."SignFadedTypes_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4513 (class 0 OID 0)
--- Dependencies: 315
+-- TOC entry 4510 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: SignFadedTypes_id_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -511,7 +547,7 @@ ALTER SEQUENCE "compliance_lookups"."SignFadedTypes_id_seq" OWNED BY "compliance
 
 
 --
--- TOC entry 272 (class 1259 OID 193179)
+-- TOC entry 236 (class 1259 OID 211721)
 -- Name: SignIlluminationTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -524,7 +560,7 @@ CREATE TABLE "compliance_lookups"."SignIlluminationTypes" (
 ALTER TABLE "compliance_lookups"."SignIlluminationTypes" OWNER TO "postgres";
 
 --
--- TOC entry 271 (class 1259 OID 193177)
+-- TOC entry 237 (class 1259 OID 211727)
 -- Name: SignIlluminationTypes_Code_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -540,8 +576,8 @@ CREATE SEQUENCE "compliance_lookups"."SignIlluminationTypes_Code_seq"
 ALTER TABLE "compliance_lookups"."SignIlluminationTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4514 (class 0 OID 0)
--- Dependencies: 271
+-- TOC entry 4511 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: SignIlluminationTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -549,7 +585,7 @@ ALTER SEQUENCE "compliance_lookups"."SignIlluminationTypes_Code_seq" OWNED BY "c
 
 
 --
--- TOC entry 314 (class 1259 OID 205377)
+-- TOC entry 238 (class 1259 OID 211729)
 -- Name: SignMountTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -563,7 +599,7 @@ CREATE TABLE "compliance_lookups"."SignMountTypes" (
 ALTER TABLE "compliance_lookups"."SignMountTypes" OWNER TO "postgres";
 
 --
--- TOC entry 313 (class 1259 OID 205375)
+-- TOC entry 239 (class 1259 OID 211735)
 -- Name: SignMountTypes_id_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -579,8 +615,8 @@ CREATE SEQUENCE "compliance_lookups"."SignMountTypes_id_seq"
 ALTER TABLE "compliance_lookups"."SignMountTypes_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4515 (class 0 OID 0)
--- Dependencies: 313
+-- TOC entry 4512 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: SignMountTypes_id_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -588,7 +624,7 @@ ALTER SEQUENCE "compliance_lookups"."SignMountTypes_id_seq" OWNED BY "compliance
 
 
 --
--- TOC entry 318 (class 1259 OID 205818)
+-- TOC entry 240 (class 1259 OID 211737)
 -- Name: SignObscurredTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -602,7 +638,7 @@ CREATE TABLE "compliance_lookups"."SignObscurredTypes" (
 ALTER TABLE "compliance_lookups"."SignObscurredTypes" OWNER TO "postgres";
 
 --
--- TOC entry 317 (class 1259 OID 205816)
+-- TOC entry 241 (class 1259 OID 211743)
 -- Name: SignObscurredTypes_id_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -618,8 +654,8 @@ CREATE SEQUENCE "compliance_lookups"."SignObscurredTypes_id_seq"
 ALTER TABLE "compliance_lookups"."SignObscurredTypes_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4516 (class 0 OID 0)
--- Dependencies: 317
+-- TOC entry 4513 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: SignObscurredTypes_id_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -627,7 +663,7 @@ ALTER SEQUENCE "compliance_lookups"."SignObscurredTypes_id_seq" OWNED BY "compli
 
 
 --
--- TOC entry 320 (class 1259 OID 205986)
+-- TOC entry 242 (class 1259 OID 211745)
 -- Name: TicketMachineIssueTypes; Type: TABLE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -641,7 +677,7 @@ CREATE TABLE "compliance_lookups"."TicketMachineIssueTypes" (
 ALTER TABLE "compliance_lookups"."TicketMachineIssueTypes" OWNER TO "postgres";
 
 --
--- TOC entry 319 (class 1259 OID 205984)
+-- TOC entry 243 (class 1259 OID 211751)
 -- Name: TicketMachineIssueTypes_id_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -657,8 +693,8 @@ CREATE SEQUENCE "compliance_lookups"."TicketMachineIssueTypes_id_seq"
 ALTER TABLE "compliance_lookups"."TicketMachineIssueTypes_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4517 (class 0 OID 0)
--- Dependencies: 319
+-- TOC entry 4514 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: TicketMachineIssueTypes_id_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -666,7 +702,7 @@ ALTER SEQUENCE "compliance_lookups"."TicketMachineIssueTypes_id_seq" OWNED BY "c
 
 
 --
--- TOC entry 237 (class 1259 OID 192583)
+-- TOC entry 244 (class 1259 OID 211753)
 -- Name: signAttachmentTypes2_id_seq; Type: SEQUENCE; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -681,8 +717,8 @@ CREATE SEQUENCE "compliance_lookups"."signAttachmentTypes2_id_seq"
 ALTER TABLE "compliance_lookups"."signAttachmentTypes2_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4518 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4515 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: signAttachmentTypes2_id_seq; Type: SEQUENCE OWNED BY; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -690,7 +726,7 @@ ALTER SEQUENCE "compliance_lookups"."signAttachmentTypes2_id_seq" OWNED BY "comp
 
 
 --
--- TOC entry 243 (class 1259 OID 192964)
+-- TOC entry 245 (class 1259 OID 211755)
 -- Name: itn_roadcentreline; Type: TABLE; Schema: highways_network; Owner: postgres
 --
 
@@ -722,7 +758,7 @@ CREATE TABLE "highways_network"."itn_roadcentreline" (
 ALTER TABLE "highways_network"."itn_roadcentreline" OWNER TO "postgres";
 
 --
--- TOC entry 244 (class 1259 OID 192970)
+-- TOC entry 246 (class 1259 OID 211761)
 -- Name: edi_itn_roadcentreline_gid_seq; Type: SEQUENCE; Schema: highways_network; Owner: postgres
 --
 
@@ -737,8 +773,8 @@ CREATE SEQUENCE "highways_network"."edi_itn_roadcentreline_gid_seq"
 ALTER TABLE "highways_network"."edi_itn_roadcentreline_gid_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4519 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 4516 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: edi_itn_roadcentreline_gid_seq; Type: SEQUENCE OWNED BY; Schema: highways_network; Owner: postgres
 --
 
@@ -746,7 +782,7 @@ ALTER SEQUENCE "highways_network"."edi_itn_roadcentreline_gid_seq" OWNED BY "hig
 
 
 --
--- TOC entry 239 (class 1259 OID 192948)
+-- TOC entry 247 (class 1259 OID 211763)
 -- Name: SiteArea; Type: TABLE; Schema: local_authority; Owner: postgres
 --
 
@@ -760,7 +796,7 @@ CREATE TABLE "local_authority"."SiteArea" (
 ALTER TABLE "local_authority"."SiteArea" OWNER TO "postgres";
 
 --
--- TOC entry 240 (class 1259 OID 192954)
+-- TOC entry 248 (class 1259 OID 211769)
 -- Name: SiteArea_id_seq; Type: SEQUENCE; Schema: local_authority; Owner: postgres
 --
 
@@ -775,8 +811,8 @@ CREATE SEQUENCE "local_authority"."SiteArea_id_seq"
 ALTER TABLE "local_authority"."SiteArea_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4520 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 4517 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: SiteArea_id_seq; Type: SEQUENCE OWNED BY; Schema: local_authority; Owner: postgres
 --
 
@@ -784,7 +820,7 @@ ALTER SEQUENCE "local_authority"."SiteArea_id_seq" OWNED BY "local_authority"."S
 
 
 --
--- TOC entry 238 (class 1259 OID 192942)
+-- TOC entry 249 (class 1259 OID 211771)
 -- Name: StreetGazetteerRecords; Type: TABLE; Schema: local_authority; Owner: postgres
 --
 
@@ -805,7 +841,7 @@ CREATE TABLE "local_authority"."StreetGazetteerRecords" (
 ALTER TABLE "local_authority"."StreetGazetteerRecords" OWNER TO "postgres";
 
 --
--- TOC entry 247 (class 1259 OID 192988)
+-- TOC entry 250 (class 1259 OID 211777)
 -- Name: StreetGazetteerRecords_id_seq; Type: SEQUENCE; Schema: local_authority; Owner: postgres
 --
 
@@ -820,8 +856,8 @@ CREATE SEQUENCE "local_authority"."StreetGazetteerRecords_id_seq"
 ALTER TABLE "local_authority"."StreetGazetteerRecords_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4521 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 4518 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: StreetGazetteerRecords_id_seq; Type: SEQUENCE OWNED BY; Schema: local_authority; Owner: postgres
 --
 
@@ -829,7 +865,7 @@ ALTER SEQUENCE "local_authority"."StreetGazetteerRecords_id_seq" OWNED BY "local
 
 
 --
--- TOC entry 302 (class 1259 OID 197281)
+-- TOC entry 251 (class 1259 OID 211779)
 -- Name: RC_Polyline; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -842,7 +878,7 @@ CREATE TABLE "public"."RC_Polyline" (
 ALTER TABLE "public"."RC_Polyline" OWNER TO "postgres";
 
 --
--- TOC entry 301 (class 1259 OID 197279)
+-- TOC entry 252 (class 1259 OID 211785)
 -- Name: RC_Polyline_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -858,8 +894,8 @@ CREATE SEQUENCE "public"."RC_Polyline_id_seq"
 ALTER TABLE "public"."RC_Polyline_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4522 (class 0 OID 0)
--- Dependencies: 301
+-- TOC entry 4519 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: RC_Polyline_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -867,7 +903,7 @@ ALTER SEQUENCE "public"."RC_Polyline_id_seq" OWNED BY "public"."RC_Polyline"."id
 
 
 --
--- TOC entry 304 (class 1259 OID 204862)
+-- TOC entry 253 (class 1259 OID 211787)
 -- Name: RC_Sections; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -885,7 +921,7 @@ CREATE TABLE "public"."RC_Sections" (
 ALTER TABLE "public"."RC_Sections" OWNER TO "postgres";
 
 --
--- TOC entry 303 (class 1259 OID 204860)
+-- TOC entry 254 (class 1259 OID 211793)
 -- Name: RC_Sections_gid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -901,8 +937,8 @@ CREATE SEQUENCE "public"."RC_Sections_gid_seq"
 ALTER TABLE "public"."RC_Sections_gid_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4523 (class 0 OID 0)
--- Dependencies: 303
+-- TOC entry 4520 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: RC_Sections_gid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -910,7 +946,7 @@ ALTER SEQUENCE "public"."RC_Sections_gid_seq" OWNED BY "public"."RC_Sections"."g
 
 
 --
--- TOC entry 306 (class 1259 OID 204875)
+-- TOC entry 255 (class 1259 OID 211795)
 -- Name: RC_Sections_merged; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -932,7 +968,7 @@ CREATE TABLE "public"."RC_Sections_merged" (
 ALTER TABLE "public"."RC_Sections_merged" OWNER TO "postgres";
 
 --
--- TOC entry 305 (class 1259 OID 204873)
+-- TOC entry 256 (class 1259 OID 211801)
 -- Name: RC_Sections_merged_gid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -948,8 +984,8 @@ CREATE SEQUENCE "public"."RC_Sections_merged_gid_seq"
 ALTER TABLE "public"."RC_Sections_merged_gid_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4524 (class 0 OID 0)
--- Dependencies: 305
+-- TOC entry 4521 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: RC_Sections_merged_gid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -957,7 +993,7 @@ ALTER SEQUENCE "public"."RC_Sections_merged_gid_seq" OWNED BY "public"."RC_Secti
 
 
 --
--- TOC entry 229 (class 1259 OID 192276)
+-- TOC entry 257 (class 1259 OID 211803)
 -- Name: Bays_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -972,7 +1008,7 @@ CREATE SEQUENCE "toms"."Bays_id_seq"
 ALTER TABLE "toms"."Bays_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 324 (class 1259 OID 208287)
+-- TOC entry 258 (class 1259 OID 211805)
 -- Name: Bays; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1018,7 +1054,7 @@ CREATE TABLE "toms"."Bays" (
 ALTER TABLE "toms"."Bays" OWNER TO "postgres";
 
 --
--- TOC entry 290 (class 1259 OID 195135)
+-- TOC entry 259 (class 1259 OID 211813)
 -- Name: ControlledParkingZones_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1033,7 +1069,7 @@ CREATE SEQUENCE "toms"."ControlledParkingZones_id_seq"
 ALTER TABLE "toms"."ControlledParkingZones_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 293 (class 1259 OID 195263)
+-- TOC entry 260 (class 1259 OID 211815)
 -- Name: ControlledParkingZones; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1068,7 +1104,7 @@ CREATE TABLE "toms"."ControlledParkingZones" (
 ALTER TABLE "toms"."ControlledParkingZones" OWNER TO "postgres";
 
 --
--- TOC entry 230 (class 1259 OID 192342)
+-- TOC entry 261 (class 1259 OID 211822)
 -- Name: Lines_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1083,7 +1119,7 @@ CREATE SEQUENCE "toms"."Lines_id_seq"
 ALTER TABLE "toms"."Lines_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 325 (class 1259 OID 208353)
+-- TOC entry 262 (class 1259 OID 211824)
 -- Name: Lines; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1129,7 +1165,7 @@ CREATE TABLE "toms"."Lines" (
 ALTER TABLE "toms"."Lines" OWNER TO "postgres";
 
 --
--- TOC entry 296 (class 1259 OID 195350)
+-- TOC entry 263 (class 1259 OID 211831)
 -- Name: MapGrid; Type: TABLE; Schema: toms; Owner: toms_operator
 --
 
@@ -1149,7 +1185,7 @@ CREATE TABLE "toms"."MapGrid" (
 ALTER TABLE "toms"."MapGrid" OWNER TO "toms_operator";
 
 --
--- TOC entry 291 (class 1259 OID 195167)
+-- TOC entry 264 (class 1259 OID 211837)
 -- Name: ParkingTariffAreas_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1164,7 +1200,7 @@ CREATE SEQUENCE "toms"."ParkingTariffAreas_id_seq"
 ALTER TABLE "toms"."ParkingTariffAreas_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 292 (class 1259 OID 195215)
+-- TOC entry 265 (class 1259 OID 211839)
 -- Name: ParkingTariffAreas; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1201,7 +1237,7 @@ CREATE TABLE "toms"."ParkingTariffAreas" (
 ALTER TABLE "toms"."ParkingTariffAreas" OWNER TO "postgres";
 
 --
--- TOC entry 233 (class 1259 OID 192393)
+-- TOC entry 266 (class 1259 OID 211846)
 -- Name: Proposals_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1216,7 +1252,7 @@ CREATE SEQUENCE "toms"."Proposals_id_seq"
 ALTER TABLE "toms"."Proposals_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 294 (class 1259 OID 195314)
+-- TOC entry 267 (class 1259 OID 211848)
 -- Name: Proposals; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1233,7 +1269,7 @@ CREATE TABLE "toms"."Proposals" (
 ALTER TABLE "toms"."Proposals" OWNER TO "postgres";
 
 --
--- TOC entry 234 (class 1259 OID 192444)
+-- TOC entry 268 (class 1259 OID 211855)
 -- Name: RestrictionLayers; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1246,7 +1282,7 @@ CREATE TABLE "toms"."RestrictionLayers" (
 ALTER TABLE "toms"."RestrictionLayers" OWNER TO "postgres";
 
 --
--- TOC entry 235 (class 1259 OID 192447)
+-- TOC entry 269 (class 1259 OID 211858)
 -- Name: RestrictionLayers_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1261,8 +1297,8 @@ CREATE SEQUENCE "toms"."RestrictionLayers_id_seq"
 ALTER TABLE "toms"."RestrictionLayers_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4525 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4522 (class 0 OID 0)
+-- Dependencies: 269
 -- Name: RestrictionLayers_id_seq; Type: SEQUENCE OWNED BY; Schema: toms; Owner: postgres
 --
 
@@ -1270,7 +1306,7 @@ ALTER SEQUENCE "toms"."RestrictionLayers_id_seq" OWNED BY "toms"."RestrictionLay
 
 
 --
--- TOC entry 288 (class 1259 OID 195046)
+-- TOC entry 270 (class 1259 OID 211860)
 -- Name: RestrictionPolygons_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1285,7 +1321,7 @@ CREATE SEQUENCE "toms"."RestrictionPolygons_id_seq"
 ALTER TABLE "toms"."RestrictionPolygons_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 289 (class 1259 OID 195049)
+-- TOC entry 271 (class 1259 OID 211862)
 -- Name: RestrictionPolygons; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1327,7 +1363,7 @@ CREATE TABLE "toms"."RestrictionPolygons" (
 ALTER TABLE "toms"."RestrictionPolygons" OWNER TO "postgres";
 
 --
--- TOC entry 295 (class 1259 OID 195330)
+-- TOC entry 272 (class 1259 OID 211869)
 -- Name: RestrictionsInProposals; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1342,7 +1378,7 @@ CREATE TABLE "toms"."RestrictionsInProposals" (
 ALTER TABLE "toms"."RestrictionsInProposals" OWNER TO "postgres";
 
 --
--- TOC entry 286 (class 1259 OID 194997)
+-- TOC entry 273 (class 1259 OID 211872)
 -- Name: Signs_id_seq; Type: SEQUENCE; Schema: toms; Owner: postgres
 --
 
@@ -1357,7 +1393,7 @@ CREATE SEQUENCE "toms"."Signs_id_seq"
 ALTER TABLE "toms"."Signs_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 323 (class 1259 OID 208181)
+-- TOC entry 274 (class 1259 OID 211874)
 -- Name: Signs; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1405,7 +1441,7 @@ CREATE TABLE "toms"."Signs" (
 ALTER TABLE "toms"."Signs" OWNER TO "postgres";
 
 --
--- TOC entry 297 (class 1259 OID 195359)
+-- TOC entry 275 (class 1259 OID 211881)
 -- Name: TilesInAcceptedProposals; Type: TABLE; Schema: toms; Owner: postgres
 --
 
@@ -1419,7 +1455,7 @@ CREATE TABLE "toms"."TilesInAcceptedProposals" (
 ALTER TABLE "toms"."TilesInAcceptedProposals" OWNER TO "postgres";
 
 --
--- TOC entry 227 (class 1259 OID 192241)
+-- TOC entry 276 (class 1259 OID 211884)
 -- Name: ActionOnProposalAcceptanceTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1432,7 +1468,7 @@ CREATE TABLE "toms_lookups"."ActionOnProposalAcceptanceTypes" (
 ALTER TABLE "toms_lookups"."ActionOnProposalAcceptanceTypes" OWNER TO "postgres";
 
 --
--- TOC entry 228 (class 1259 OID 192247)
+-- TOC entry 277 (class 1259 OID 211890)
 -- Name: ActionOnProposalAcceptanceTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1447,8 +1483,8 @@ CREATE SEQUENCE "toms_lookups"."ActionOnProposalAcceptanceTypes_Code_seq"
 ALTER TABLE "toms_lookups"."ActionOnProposalAcceptanceTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4526 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 4523 (class 0 OID 0)
+-- Dependencies: 277
 -- Name: ActionOnProposalAcceptanceTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1456,7 +1492,7 @@ ALTER SEQUENCE "toms_lookups"."ActionOnProposalAcceptanceTypes_Code_seq" OWNED B
 
 
 --
--- TOC entry 263 (class 1259 OID 193119)
+-- TOC entry 278 (class 1259 OID 211892)
 -- Name: AdditionalConditionTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1469,7 +1505,7 @@ CREATE TABLE "toms_lookups"."AdditionalConditionTypes" (
 ALTER TABLE "toms_lookups"."AdditionalConditionTypes" OWNER TO "postgres";
 
 --
--- TOC entry 262 (class 1259 OID 193117)
+-- TOC entry 279 (class 1259 OID 211895)
 -- Name: AdditionalConditionTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1485,8 +1521,8 @@ CREATE SEQUENCE "toms_lookups"."AdditionalConditionTypes_Code_seq"
 ALTER TABLE "toms_lookups"."AdditionalConditionTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4527 (class 0 OID 0)
--- Dependencies: 262
+-- TOC entry 4524 (class 0 OID 0)
+-- Dependencies: 279
 -- Name: AdditionalConditionTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1494,7 +1530,7 @@ ALTER SEQUENCE "toms_lookups"."AdditionalConditionTypes_Code_seq" OWNED BY "toms
 
 
 --
--- TOC entry 266 (class 1259 OID 193130)
+-- TOC entry 280 (class 1259 OID 211897)
 -- Name: BayLineTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1507,7 +1543,7 @@ CREATE TABLE "toms_lookups"."BayLineTypes" (
 ALTER TABLE "toms_lookups"."BayLineTypes" OWNER TO "postgres";
 
 --
--- TOC entry 265 (class 1259 OID 193128)
+-- TOC entry 281 (class 1259 OID 211900)
 -- Name: BayLineTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1523,8 +1559,8 @@ CREATE SEQUENCE "toms_lookups"."BayLineTypes_Code_seq"
 ALTER TABLE "toms_lookups"."BayLineTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4528 (class 0 OID 0)
--- Dependencies: 265
+-- TOC entry 4525 (class 0 OID 0)
+-- Dependencies: 281
 -- Name: BayLineTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1532,7 +1568,7 @@ ALTER SEQUENCE "toms_lookups"."BayLineTypes_Code_seq" OWNED BY "toms_lookups"."B
 
 
 --
--- TOC entry 309 (class 1259 OID 204932)
+-- TOC entry 282 (class 1259 OID 211902)
 -- Name: BayTypesInUse; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1546,7 +1582,7 @@ CREATE TABLE "toms_lookups"."BayTypesInUse" (
 ALTER TABLE "toms_lookups"."BayTypesInUse" OWNER TO "postgres";
 
 --
--- TOC entry 321 (class 1259 OID 206111)
+-- TOC entry 283 (class 1259 OID 211908)
 -- Name: BayTypesInUse_View; Type: MATERIALIZED VIEW; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1562,7 +1598,7 @@ CREATE MATERIALIZED VIEW "toms_lookups"."BayTypesInUse_View" AS
 ALTER TABLE "toms_lookups"."BayTypesInUse_View" OWNER TO "postgres";
 
 --
--- TOC entry 279 (class 1259 OID 193252)
+-- TOC entry 284 (class 1259 OID 211912)
 -- Name: GeomShapeGroupType; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1574,7 +1610,7 @@ CREATE TABLE "toms_lookups"."GeomShapeGroupType" (
 ALTER TABLE "toms_lookups"."GeomShapeGroupType" OWNER TO "postgres";
 
 --
--- TOC entry 249 (class 1259 OID 193045)
+-- TOC entry 285 (class 1259 OID 211915)
 -- Name: LengthOfTime; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1588,7 +1624,7 @@ CREATE TABLE "toms_lookups"."LengthOfTime" (
 ALTER TABLE "toms_lookups"."LengthOfTime" OWNER TO "postgres";
 
 --
--- TOC entry 248 (class 1259 OID 193043)
+-- TOC entry 286 (class 1259 OID 211921)
 -- Name: LengthOfTime_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1604,8 +1640,8 @@ CREATE SEQUENCE "toms_lookups"."LengthOfTime_Code_seq"
 ALTER TABLE "toms_lookups"."LengthOfTime_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4529 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 4526 (class 0 OID 0)
+-- Dependencies: 286
 -- Name: LengthOfTime_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1613,7 +1649,7 @@ ALTER SEQUENCE "toms_lookups"."LengthOfTime_Code_seq" OWNED BY "toms_lookups"."L
 
 
 --
--- TOC entry 310 (class 1259 OID 204945)
+-- TOC entry 287 (class 1259 OID 211923)
 -- Name: LineTypesInUse; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1627,7 +1663,7 @@ CREATE TABLE "toms_lookups"."LineTypesInUse" (
 ALTER TABLE "toms_lookups"."LineTypesInUse" OWNER TO "postgres";
 
 --
--- TOC entry 322 (class 1259 OID 206116)
+-- TOC entry 288 (class 1259 OID 211929)
 -- Name: LineTypesInUse_View; Type: MATERIALIZED VIEW; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1643,7 +1679,7 @@ CREATE MATERIALIZED VIEW "toms_lookups"."LineTypesInUse_View" AS
 ALTER TABLE "toms_lookups"."LineTypesInUse_View" OWNER TO "postgres";
 
 --
--- TOC entry 251 (class 1259 OID 193056)
+-- TOC entry 289 (class 1259 OID 211933)
 -- Name: PaymentTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1656,7 +1692,7 @@ CREATE TABLE "toms_lookups"."PaymentTypes" (
 ALTER TABLE "toms_lookups"."PaymentTypes" OWNER TO "postgres";
 
 --
--- TOC entry 250 (class 1259 OID 193054)
+-- TOC entry 290 (class 1259 OID 211939)
 -- Name: PaymentTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1672,8 +1708,8 @@ CREATE SEQUENCE "toms_lookups"."PaymentTypes_Code_seq"
 ALTER TABLE "toms_lookups"."PaymentTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4530 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 4527 (class 0 OID 0)
+-- Dependencies: 290
 -- Name: PaymentTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1681,7 +1717,7 @@ ALTER SEQUENCE "toms_lookups"."PaymentTypes_Code_seq" OWNED BY "toms_lookups"."P
 
 
 --
--- TOC entry 253 (class 1259 OID 193065)
+-- TOC entry 291 (class 1259 OID 211941)
 -- Name: ProposalStatusTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1694,7 +1730,7 @@ CREATE TABLE "toms_lookups"."ProposalStatusTypes" (
 ALTER TABLE "toms_lookups"."ProposalStatusTypes" OWNER TO "postgres";
 
 --
--- TOC entry 252 (class 1259 OID 193063)
+-- TOC entry 292 (class 1259 OID 211947)
 -- Name: ProposalStatusTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1710,8 +1746,8 @@ CREATE SEQUENCE "toms_lookups"."ProposalStatusTypes_Code_seq"
 ALTER TABLE "toms_lookups"."ProposalStatusTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4531 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 4528 (class 0 OID 0)
+-- Dependencies: 292
 -- Name: ProposalStatusTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1719,7 +1755,7 @@ ALTER SEQUENCE "toms_lookups"."ProposalStatusTypes_Code_seq" OWNED BY "toms_look
 
 
 --
--- TOC entry 257 (class 1259 OID 193087)
+-- TOC entry 293 (class 1259 OID 211949)
 -- Name: RestrictionGeomShapeTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1732,7 +1768,7 @@ CREATE TABLE "toms_lookups"."RestrictionGeomShapeTypes" (
 ALTER TABLE "toms_lookups"."RestrictionGeomShapeTypes" OWNER TO "postgres";
 
 --
--- TOC entry 255 (class 1259 OID 193076)
+-- TOC entry 294 (class 1259 OID 211955)
 -- Name: RestrictionPolygonTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1745,7 +1781,7 @@ CREATE TABLE "toms_lookups"."RestrictionPolygonTypes" (
 ALTER TABLE "toms_lookups"."RestrictionPolygonTypes" OWNER TO "postgres";
 
 --
--- TOC entry 287 (class 1259 OID 195033)
+-- TOC entry 295 (class 1259 OID 211961)
 -- Name: RestrictionPolygonTypesInUse; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1759,7 +1795,7 @@ CREATE TABLE "toms_lookups"."RestrictionPolygonTypesInUse" (
 ALTER TABLE "toms_lookups"."RestrictionPolygonTypesInUse" OWNER TO "postgres";
 
 --
--- TOC entry 308 (class 1259 OID 204919)
+-- TOC entry 296 (class 1259 OID 211967)
 -- Name: RestrictionPolygonTypesInUse_View; Type: MATERIALIZED VIEW; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1775,7 +1811,7 @@ CREATE MATERIALIZED VIEW "toms_lookups"."RestrictionPolygonTypesInUse_View" AS
 ALTER TABLE "toms_lookups"."RestrictionPolygonTypesInUse_View" OWNER TO "postgres";
 
 --
--- TOC entry 254 (class 1259 OID 193074)
+-- TOC entry 297 (class 1259 OID 211974)
 -- Name: RestrictionPolygonTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1791,8 +1827,8 @@ CREATE SEQUENCE "toms_lookups"."RestrictionPolygonTypes_Code_seq"
 ALTER TABLE "toms_lookups"."RestrictionPolygonTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4532 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 4529 (class 0 OID 0)
+-- Dependencies: 297
 -- Name: RestrictionPolygonTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1800,7 +1836,7 @@ ALTER SEQUENCE "toms_lookups"."RestrictionPolygonTypes_Code_seq" OWNED BY "toms_
 
 
 --
--- TOC entry 256 (class 1259 OID 193085)
+-- TOC entry 298 (class 1259 OID 211976)
 -- Name: RestrictionShapeTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1816,8 +1852,8 @@ CREATE SEQUENCE "toms_lookups"."RestrictionShapeTypes_Code_seq"
 ALTER TABLE "toms_lookups"."RestrictionShapeTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4533 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 4530 (class 0 OID 0)
+-- Dependencies: 298
 -- Name: RestrictionShapeTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1825,7 +1861,7 @@ ALTER SEQUENCE "toms_lookups"."RestrictionShapeTypes_Code_seq" OWNED BY "toms_lo
 
 
 --
--- TOC entry 312 (class 1259 OID 204960)
+-- TOC entry 299 (class 1259 OID 211978)
 -- Name: SignOrientationTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1838,7 +1874,7 @@ CREATE TABLE "toms_lookups"."SignOrientationTypes" (
 ALTER TABLE "toms_lookups"."SignOrientationTypes" OWNER TO "postgres";
 
 --
--- TOC entry 311 (class 1259 OID 204958)
+-- TOC entry 300 (class 1259 OID 211984)
 -- Name: SignOrientationTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1854,8 +1890,8 @@ CREATE SEQUENCE "toms_lookups"."SignOrientationTypes_Code_seq"
 ALTER TABLE "toms_lookups"."SignOrientationTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4534 (class 0 OID 0)
--- Dependencies: 311
+-- TOC entry 4531 (class 0 OID 0)
+-- Dependencies: 300
 -- Name: SignOrientationTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1863,7 +1899,7 @@ ALTER SEQUENCE "toms_lookups"."SignOrientationTypes_Code_seq" OWNED BY "toms_loo
 
 
 --
--- TOC entry 259 (class 1259 OID 193100)
+-- TOC entry 301 (class 1259 OID 211986)
 -- Name: SignTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1876,7 +1912,7 @@ CREATE TABLE "toms_lookups"."SignTypes" (
 ALTER TABLE "toms_lookups"."SignTypes" OWNER TO "postgres";
 
 --
--- TOC entry 264 (class 1259 OID 193123)
+-- TOC entry 302 (class 1259 OID 211992)
 -- Name: SignTypesInUse; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1888,7 +1924,7 @@ CREATE TABLE "toms_lookups"."SignTypesInUse" (
 ALTER TABLE "toms_lookups"."SignTypesInUse" OWNER TO "postgres";
 
 --
--- TOC entry 307 (class 1259 OID 204911)
+-- TOC entry 303 (class 1259 OID 211995)
 -- Name: SignTypesInUse_View; Type: MATERIALIZED VIEW; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1904,7 +1940,7 @@ CREATE MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View" AS
 ALTER TABLE "toms_lookups"."SignTypesInUse_View" OWNER TO "postgres";
 
 --
--- TOC entry 258 (class 1259 OID 193098)
+-- TOC entry 304 (class 1259 OID 212002)
 -- Name: SignTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1920,8 +1956,8 @@ CREATE SEQUENCE "toms_lookups"."SignTypes_Code_seq"
 ALTER TABLE "toms_lookups"."SignTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4535 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 4532 (class 0 OID 0)
+-- Dependencies: 304
 -- Name: SignTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1929,7 +1965,7 @@ ALTER SEQUENCE "toms_lookups"."SignTypes_Code_seq" OWNED BY "toms_lookups"."Sign
 
 
 --
--- TOC entry 261 (class 1259 OID 193109)
+-- TOC entry 305 (class 1259 OID 212004)
 -- Name: TimePeriods; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1943,7 +1979,7 @@ CREATE TABLE "toms_lookups"."TimePeriods" (
 ALTER TABLE "toms_lookups"."TimePeriods" OWNER TO "postgres";
 
 --
--- TOC entry 298 (class 1259 OID 197260)
+-- TOC entry 306 (class 1259 OID 212010)
 -- Name: TimePeriodsInUse; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1955,7 +1991,7 @@ CREATE TABLE "toms_lookups"."TimePeriodsInUse" (
 ALTER TABLE "toms_lookups"."TimePeriodsInUse" OWNER TO "postgres";
 
 --
--- TOC entry 326 (class 1259 OID 208425)
+-- TOC entry 307 (class 1259 OID 212013)
 -- Name: TimePeriodsInUse_View; Type: MATERIALIZED VIEW; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1972,7 +2008,7 @@ CREATE MATERIALIZED VIEW "toms_lookups"."TimePeriodsInUse_View" AS
 ALTER TABLE "toms_lookups"."TimePeriodsInUse_View" OWNER TO "postgres";
 
 --
--- TOC entry 260 (class 1259 OID 193107)
+-- TOC entry 308 (class 1259 OID 212020)
 -- Name: TimePeriods_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1988,8 +2024,8 @@ CREATE SEQUENCE "toms_lookups"."TimePeriods_Code_seq"
 ALTER TABLE "toms_lookups"."TimePeriods_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4536 (class 0 OID 0)
--- Dependencies: 260
+-- TOC entry 4533 (class 0 OID 0)
+-- Dependencies: 308
 -- Name: TimePeriods_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -1997,7 +2033,7 @@ ALTER SEQUENCE "toms_lookups"."TimePeriods_Code_seq" OWNED BY "toms_lookups"."Ti
 
 
 --
--- TOC entry 285 (class 1259 OID 193922)
+-- TOC entry 309 (class 1259 OID 212022)
 -- Name: UnacceptableTypes; Type: TABLE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2010,7 +2046,7 @@ CREATE TABLE "toms_lookups"."UnacceptableTypes" (
 ALTER TABLE "toms_lookups"."UnacceptableTypes" OWNER TO "postgres";
 
 --
--- TOC entry 284 (class 1259 OID 193920)
+-- TOC entry 310 (class 1259 OID 212028)
 -- Name: UnacceptableTypes_Code_seq; Type: SEQUENCE; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2026,8 +2062,8 @@ CREATE SEQUENCE "toms_lookups"."UnacceptableTypes_Code_seq"
 ALTER TABLE "toms_lookups"."UnacceptableTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4537 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 4534 (class 0 OID 0)
+-- Dependencies: 310
 -- Name: UnacceptableTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2035,7 +2071,7 @@ ALTER SEQUENCE "toms_lookups"."UnacceptableTypes_Code_seq" OWNED BY "toms_lookup
 
 
 --
--- TOC entry 270 (class 1259 OID 193168)
+-- TOC entry 311 (class 1259 OID 212030)
 -- Name: Corners; Type: TABLE; Schema: topography; Owner: postgres
 --
 
@@ -2048,7 +2084,7 @@ CREATE TABLE "topography"."Corners" (
 ALTER TABLE "topography"."Corners" OWNER TO "postgres";
 
 --
--- TOC entry 269 (class 1259 OID 193166)
+-- TOC entry 312 (class 1259 OID 212036)
 -- Name: Corners_id_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
 --
 
@@ -2064,8 +2100,8 @@ CREATE SEQUENCE "topography"."Corners_id_seq"
 ALTER TABLE "topography"."Corners_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4538 (class 0 OID 0)
--- Dependencies: 269
+-- TOC entry 4535 (class 0 OID 0)
+-- Dependencies: 312
 -- Name: Corners_id_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
 --
 
@@ -2073,7 +2109,7 @@ ALTER SEQUENCE "topography"."Corners_id_seq" OWNED BY "topography"."Corners"."id
 
 
 --
--- TOC entry 241 (class 1259 OID 192956)
+-- TOC entry 313 (class 1259 OID 212038)
 -- Name: os_mastermap_topography_text; Type: TABLE; Schema: topography; Owner: postgres
 --
 
@@ -2105,7 +2141,7 @@ CREATE TABLE "topography"."os_mastermap_topography_text" (
 ALTER TABLE "topography"."os_mastermap_topography_text" OWNER TO "postgres";
 
 --
--- TOC entry 242 (class 1259 OID 192962)
+-- TOC entry 314 (class 1259 OID 212044)
 -- Name: edi_cartotext_gid_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
 --
 
@@ -2120,8 +2156,8 @@ CREATE SEQUENCE "topography"."edi_cartotext_gid_seq"
 ALTER TABLE "topography"."edi_cartotext_gid_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4539 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 4536 (class 0 OID 0)
+-- Dependencies: 314
 -- Name: edi_cartotext_gid_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
 --
 
@@ -2129,7 +2165,7 @@ ALTER SEQUENCE "topography"."edi_cartotext_gid_seq" OWNED BY "topography"."os_ma
 
 
 --
--- TOC entry 245 (class 1259 OID 192972)
+-- TOC entry 315 (class 1259 OID 212046)
 -- Name: os_mastermap_topography_polygons; Type: TABLE; Schema: topography; Owner: postgres
 --
 
@@ -2159,7 +2195,7 @@ CREATE TABLE "topography"."os_mastermap_topography_polygons" (
 ALTER TABLE "topography"."os_mastermap_topography_polygons" OWNER TO "postgres";
 
 --
--- TOC entry 246 (class 1259 OID 192978)
+-- TOC entry 316 (class 1259 OID 212052)
 -- Name: edi_mm_gid_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
 --
 
@@ -2174,8 +2210,8 @@ CREATE SEQUENCE "topography"."edi_mm_gid_seq"
 ALTER TABLE "topography"."edi_mm_gid_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4540 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 4537 (class 0 OID 0)
+-- Dependencies: 316
 -- Name: edi_mm_gid_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
 --
 
@@ -2183,7 +2219,7 @@ ALTER SEQUENCE "topography"."edi_mm_gid_seq" OWNED BY "topography"."os_mastermap
 
 
 --
--- TOC entry 327 (class 1259 OID 208458)
+-- TOC entry 317 (class 1259 OID 212054)
 -- Name: road_casement; Type: TABLE; Schema: topography; Owner: postgres
 --
 
@@ -2205,7 +2241,7 @@ CREATE TABLE "topography"."road_casement" (
 ALTER TABLE "topography"."road_casement" OWNER TO "postgres";
 
 --
--- TOC entry 231 (class 1259 OID 192351)
+-- TOC entry 318 (class 1259 OID 212060)
 -- Name: LookupCodeTransfers_Bays; Type: TABLE; Schema: transfer; Owner: postgres
 --
 
@@ -2220,7 +2256,7 @@ CREATE TABLE "transfer"."LookupCodeTransfers_Bays" (
 ALTER TABLE "transfer"."LookupCodeTransfers_Bays" OWNER TO "postgres";
 
 --
--- TOC entry 232 (class 1259 OID 192357)
+-- TOC entry 319 (class 1259 OID 212066)
 -- Name: LookupCodeTransfers_Lines; Type: TABLE; Schema: transfer; Owner: postgres
 --
 
@@ -2235,7 +2271,7 @@ CREATE TABLE "transfer"."LookupCodeTransfers_Lines" (
 ALTER TABLE "transfer"."LookupCodeTransfers_Lines" OWNER TO "postgres";
 
 --
--- TOC entry 300 (class 1259 OID 197267)
+-- TOC entry 320 (class 1259 OID 212072)
 -- Name: RC_Polygon; Type: TABLE; Schema: transfer; Owner: postgres
 --
 
@@ -2268,7 +2304,7 @@ CREATE TABLE "transfer"."RC_Polygon" (
 ALTER TABLE "transfer"."RC_Polygon" OWNER TO "postgres";
 
 --
--- TOC entry 299 (class 1259 OID 197265)
+-- TOC entry 321 (class 1259 OID 212078)
 -- Name: RC_Polygon_id_seq; Type: SEQUENCE; Schema: transfer; Owner: postgres
 --
 
@@ -2284,8 +2320,8 @@ CREATE SEQUENCE "transfer"."RC_Polygon_id_seq"
 ALTER TABLE "transfer"."RC_Polygon_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4541 (class 0 OID 0)
--- Dependencies: 299
+-- TOC entry 4538 (class 0 OID 0)
+-- Dependencies: 321
 -- Name: RC_Polygon_id_seq; Type: SEQUENCE OWNED BY; Schema: transfer; Owner: postgres
 --
 
@@ -2293,7 +2329,7 @@ ALTER SEQUENCE "transfer"."RC_Polygon_id_seq" OWNED BY "transfer"."RC_Polygon"."
 
 
 --
--- TOC entry 4006 (class 2604 OID 193741)
+-- TOC entry 3976 (class 2604 OID 212080)
 -- Name: BaysLinesFadedTypes Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2301,7 +2337,7 @@ ALTER TABLE ONLY "compliance_lookups"."BaysLinesFadedTypes" ALTER COLUMN "Code" 
 
 
 --
--- TOC entry 4007 (class 2604 OID 193906)
+-- TOC entry 3977 (class 2604 OID 212081)
 -- Name: BaysLines_SignIssueTypes Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2309,7 +2345,7 @@ ALTER TABLE ONLY "compliance_lookups"."BaysLines_SignIssueTypes" ALTER COLUMN "C
 
 
 --
--- TOC entry 4000 (class 2604 OID 193147)
+-- TOC entry 3978 (class 2604 OID 212082)
 -- Name: ConditionTypes Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2317,7 +2353,7 @@ ALTER TABLE ONLY "compliance_lookups"."ConditionTypes" ALTER COLUMN "Code" SET D
 
 
 --
--- TOC entry 4004 (class 2604 OID 193213)
+-- TOC entry 3979 (class 2604 OID 212083)
 -- Name: MHTC_CheckIssueType Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2325,7 +2361,7 @@ ALTER TABLE ONLY "compliance_lookups"."MHTC_CheckIssueType" ALTER COLUMN "Code" 
 
 
 --
--- TOC entry 4005 (class 2604 OID 193224)
+-- TOC entry 3980 (class 2604 OID 212084)
 -- Name: MHTC_CheckStatus Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2333,7 +2369,7 @@ ALTER TABLE ONLY "compliance_lookups"."MHTC_CheckStatus" ALTER COLUMN "Code" SET
 
 
 --
--- TOC entry 3985 (class 2604 OID 192606)
+-- TOC entry 3981 (class 2604 OID 212085)
 -- Name: SignAttachmentTypes id; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2341,7 +2377,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignAttachmentTypes" ALTER COLUMN "id" SE
 
 
 --
--- TOC entry 4003 (class 2604 OID 193202)
+-- TOC entry 3982 (class 2604 OID 212086)
 -- Name: SignConditionTypes Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2349,7 +2385,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignConditionTypes" ALTER COLUMN "Code" S
 
 
 --
--- TOC entry 4019 (class 2604 OID 205657)
+-- TOC entry 3983 (class 2604 OID 212087)
 -- Name: SignFadedTypes id; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2357,7 +2393,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignFadedTypes" ALTER COLUMN "id" SET DEF
 
 
 --
--- TOC entry 4002 (class 2604 OID 193182)
+-- TOC entry 3984 (class 2604 OID 212088)
 -- Name: SignIlluminationTypes Code; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2365,7 +2401,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignIlluminationTypes" ALTER COLUMN "Code
 
 
 --
--- TOC entry 4018 (class 2604 OID 205380)
+-- TOC entry 3985 (class 2604 OID 212089)
 -- Name: SignMountTypes id; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2373,7 +2409,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignMountTypes" ALTER COLUMN "id" SET DEF
 
 
 --
--- TOC entry 4020 (class 2604 OID 205821)
+-- TOC entry 3986 (class 2604 OID 212090)
 -- Name: SignObscurredTypes id; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2381,7 +2417,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignObscurredTypes" ALTER COLUMN "id" SET
 
 
 --
--- TOC entry 4021 (class 2604 OID 205989)
+-- TOC entry 3987 (class 2604 OID 212091)
 -- Name: TicketMachineIssueTypes id; Type: DEFAULT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2389,7 +2425,7 @@ ALTER TABLE ONLY "compliance_lookups"."TicketMachineIssueTypes" ALTER COLUMN "id
 
 
 --
--- TOC entry 3989 (class 2604 OID 192997)
+-- TOC entry 3988 (class 2604 OID 212092)
 -- Name: itn_roadcentreline gid; Type: DEFAULT; Schema: highways_network; Owner: postgres
 --
 
@@ -2397,7 +2433,7 @@ ALTER TABLE ONLY "highways_network"."itn_roadcentreline" ALTER COLUMN "gid" SET 
 
 
 --
--- TOC entry 3987 (class 2604 OID 192995)
+-- TOC entry 3989 (class 2604 OID 212093)
 -- Name: SiteArea id; Type: DEFAULT; Schema: local_authority; Owner: postgres
 --
 
@@ -2405,7 +2441,7 @@ ALTER TABLE ONLY "local_authority"."SiteArea" ALTER COLUMN "id" SET DEFAULT "nex
 
 
 --
--- TOC entry 3986 (class 2604 OID 192994)
+-- TOC entry 3990 (class 2604 OID 212094)
 -- Name: StreetGazetteerRecords id; Type: DEFAULT; Schema: local_authority; Owner: postgres
 --
 
@@ -2413,7 +2449,7 @@ ALTER TABLE ONLY "local_authority"."StreetGazetteerRecords" ALTER COLUMN "id" SE
 
 
 --
--- TOC entry 4014 (class 2604 OID 197284)
+-- TOC entry 3991 (class 2604 OID 212095)
 -- Name: RC_Polyline id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2421,7 +2457,7 @@ ALTER TABLE ONLY "public"."RC_Polyline" ALTER COLUMN "id" SET DEFAULT "nextval"(
 
 
 --
--- TOC entry 4015 (class 2604 OID 204865)
+-- TOC entry 3992 (class 2604 OID 212096)
 -- Name: RC_Sections gid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2429,7 +2465,7 @@ ALTER TABLE ONLY "public"."RC_Sections" ALTER COLUMN "gid" SET DEFAULT "nextval"
 
 
 --
--- TOC entry 4016 (class 2604 OID 204878)
+-- TOC entry 3993 (class 2604 OID 212097)
 -- Name: RC_Sections_merged gid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2437,7 +2473,7 @@ ALTER TABLE ONLY "public"."RC_Sections_merged" ALTER COLUMN "gid" SET DEFAULT "n
 
 
 --
--- TOC entry 3984 (class 2604 OID 192602)
+-- TOC entry 4000 (class 2604 OID 212098)
 -- Name: RestrictionLayers Code; Type: DEFAULT; Schema: toms; Owner: postgres
 --
 
@@ -2445,7 +2481,7 @@ ALTER TABLE ONLY "toms"."RestrictionLayers" ALTER COLUMN "Code" SET DEFAULT "nex
 
 
 --
--- TOC entry 3983 (class 2604 OID 192593)
+-- TOC entry 4003 (class 2604 OID 212099)
 -- Name: ActionOnProposalAcceptanceTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2453,7 +2489,7 @@ ALTER TABLE ONLY "toms_lookups"."ActionOnProposalAcceptanceTypes" ALTER COLUMN "
 
 
 --
--- TOC entry 3998 (class 2604 OID 193122)
+-- TOC entry 4004 (class 2604 OID 212100)
 -- Name: AdditionalConditionTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2461,7 +2497,7 @@ ALTER TABLE ONLY "toms_lookups"."AdditionalConditionTypes" ALTER COLUMN "Code" S
 
 
 --
--- TOC entry 3999 (class 2604 OID 193133)
+-- TOC entry 4005 (class 2604 OID 212101)
 -- Name: BayLineTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2469,7 +2505,7 @@ ALTER TABLE ONLY "toms_lookups"."BayLineTypes" ALTER COLUMN "Code" SET DEFAULT "
 
 
 --
--- TOC entry 3991 (class 2604 OID 193048)
+-- TOC entry 4006 (class 2604 OID 212102)
 -- Name: LengthOfTime Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2477,7 +2513,7 @@ ALTER TABLE ONLY "toms_lookups"."LengthOfTime" ALTER COLUMN "Code" SET DEFAULT "
 
 
 --
--- TOC entry 3992 (class 2604 OID 193059)
+-- TOC entry 4007 (class 2604 OID 212103)
 -- Name: PaymentTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2485,7 +2521,7 @@ ALTER TABLE ONLY "toms_lookups"."PaymentTypes" ALTER COLUMN "Code" SET DEFAULT "
 
 
 --
--- TOC entry 3993 (class 2604 OID 193068)
+-- TOC entry 4008 (class 2604 OID 212104)
 -- Name: ProposalStatusTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2493,7 +2529,7 @@ ALTER TABLE ONLY "toms_lookups"."ProposalStatusTypes" ALTER COLUMN "Code" SET DE
 
 
 --
--- TOC entry 3995 (class 2604 OID 193090)
+-- TOC entry 4009 (class 2604 OID 212105)
 -- Name: RestrictionGeomShapeTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2501,7 +2537,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionGeomShapeTypes" ALTER COLUMN "Code" 
 
 
 --
--- TOC entry 3994 (class 2604 OID 193079)
+-- TOC entry 4010 (class 2604 OID 212106)
 -- Name: RestrictionPolygonTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2509,7 +2545,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionPolygonTypes" ALTER COLUMN "Code" SE
 
 
 --
--- TOC entry 4017 (class 2604 OID 204963)
+-- TOC entry 4011 (class 2604 OID 212107)
 -- Name: SignOrientationTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2517,7 +2553,7 @@ ALTER TABLE ONLY "toms_lookups"."SignOrientationTypes" ALTER COLUMN "Code" SET D
 
 
 --
--- TOC entry 3996 (class 2604 OID 193103)
+-- TOC entry 4012 (class 2604 OID 212108)
 -- Name: SignTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2525,7 +2561,7 @@ ALTER TABLE ONLY "toms_lookups"."SignTypes" ALTER COLUMN "Code" SET DEFAULT "nex
 
 
 --
--- TOC entry 3997 (class 2604 OID 193112)
+-- TOC entry 4013 (class 2604 OID 212109)
 -- Name: TimePeriods Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2533,7 +2569,7 @@ ALTER TABLE ONLY "toms_lookups"."TimePeriods" ALTER COLUMN "Code" SET DEFAULT "n
 
 
 --
--- TOC entry 4008 (class 2604 OID 193925)
+-- TOC entry 4014 (class 2604 OID 212110)
 -- Name: UnacceptableTypes Code; Type: DEFAULT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -2541,7 +2577,7 @@ ALTER TABLE ONLY "toms_lookups"."UnacceptableTypes" ALTER COLUMN "Code" SET DEFA
 
 
 --
--- TOC entry 4001 (class 2604 OID 193171)
+-- TOC entry 4015 (class 2604 OID 212111)
 -- Name: Corners id; Type: DEFAULT; Schema: topography; Owner: postgres
 --
 
@@ -2549,7 +2585,7 @@ ALTER TABLE ONLY "topography"."Corners" ALTER COLUMN "id" SET DEFAULT "nextval"(
 
 
 --
--- TOC entry 3990 (class 2604 OID 192998)
+-- TOC entry 4017 (class 2604 OID 212112)
 -- Name: os_mastermap_topography_polygons gid; Type: DEFAULT; Schema: topography; Owner: postgres
 --
 
@@ -2557,7 +2593,7 @@ ALTER TABLE ONLY "topography"."os_mastermap_topography_polygons" ALTER COLUMN "g
 
 
 --
--- TOC entry 3988 (class 2604 OID 192996)
+-- TOC entry 4016 (class 2604 OID 212113)
 -- Name: os_mastermap_topography_text gid; Type: DEFAULT; Schema: topography; Owner: postgres
 --
 
@@ -2565,7 +2601,7 @@ ALTER TABLE ONLY "topography"."os_mastermap_topography_text" ALTER COLUMN "gid" 
 
 
 --
--- TOC entry 4013 (class 2604 OID 197270)
+-- TOC entry 4018 (class 2604 OID 212114)
 -- Name: RC_Polygon id; Type: DEFAULT; Schema: transfer; Owner: postgres
 --
 
@@ -2573,8 +2609,8 @@ ALTER TABLE ONLY "transfer"."RC_Polygon" ALTER COLUMN "id" SET DEFAULT "nextval"
 
 
 --
--- TOC entry 4455 (class 0 OID 193738)
--- Dependencies: 281
+-- TOC entry 4394 (class 0 OID 211662)
+-- Dependencies: 221
 -- Data for Name: BaysLinesFadedTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2587,40 +2623,40 @@ INSERT INTO "compliance_lookups"."BaysLinesFadedTypes" ("Code", "Description") V
 
 
 --
--- TOC entry 4457 (class 0 OID 193903)
--- Dependencies: 283
+-- TOC entry 4396 (class 0 OID 211670)
+-- Dependencies: 223
 -- Data for Name: BaysLines_SignIssueTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4442 (class 0 OID 193144)
--- Dependencies: 268
+-- TOC entry 4398 (class 0 OID 211678)
+-- Dependencies: 225
 -- Data for Name: ConditionTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4450 (class 0 OID 193210)
--- Dependencies: 276
+-- TOC entry 4400 (class 0 OID 211683)
+-- Dependencies: 227
 -- Data for Name: MHTC_CheckIssueType; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4452 (class 0 OID 193221)
--- Dependencies: 278
+-- TOC entry 4402 (class 0 OID 211691)
+-- Dependencies: 229
 -- Data for Name: MHTC_CheckStatus; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4410 (class 0 OID 192483)
--- Dependencies: 236
+-- TOC entry 4404 (class 0 OID 211699)
+-- Dependencies: 231
 -- Data for Name: SignAttachmentTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2636,16 +2672,16 @@ INSERT INTO "compliance_lookups"."SignAttachmentTypes" ("id", "Code", "Descripti
 
 
 --
--- TOC entry 4448 (class 0 OID 193199)
--- Dependencies: 274
+-- TOC entry 4405 (class 0 OID 211705)
+-- Dependencies: 232
 -- Data for Name: SignConditionTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4490 (class 0 OID 205654)
--- Dependencies: 316
+-- TOC entry 4407 (class 0 OID 211713)
+-- Dependencies: 234
 -- Data for Name: SignFadedTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2660,16 +2696,16 @@ INSERT INTO "compliance_lookups"."SignFadedTypes" ("id", "Code", "Description") 
 
 
 --
--- TOC entry 4446 (class 0 OID 193179)
--- Dependencies: 272
+-- TOC entry 4409 (class 0 OID 211721)
+-- Dependencies: 236
 -- Data for Name: SignIlluminationTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4488 (class 0 OID 205377)
--- Dependencies: 314
+-- TOC entry 4411 (class 0 OID 211729)
+-- Dependencies: 238
 -- Data for Name: SignMountTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2683,8 +2719,8 @@ INSERT INTO "compliance_lookups"."SignMountTypes" ("id", "Code", "Description") 
 
 
 --
--- TOC entry 4492 (class 0 OID 205818)
--- Dependencies: 318
+-- TOC entry 4413 (class 0 OID 211737)
+-- Dependencies: 240
 -- Data for Name: SignObscurredTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2694,8 +2730,8 @@ INSERT INTO "compliance_lookups"."SignObscurredTypes" ("id", "Code", "Descriptio
 
 
 --
--- TOC entry 4494 (class 0 OID 205986)
--- Dependencies: 320
+-- TOC entry 4415 (class 0 OID 211745)
+-- Dependencies: 242
 -- Data for Name: TicketMachineIssueTypes; Type: TABLE DATA; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -2706,8 +2742,8 @@ INSERT INTO "compliance_lookups"."TicketMachineIssueTypes" ("id", "Code", "Descr
 
 
 --
--- TOC entry 4417 (class 0 OID 192964)
--- Dependencies: 243
+-- TOC entry 4418 (class 0 OID 211755)
+-- Dependencies: 245
 -- Data for Name: itn_roadcentreline; Type: TABLE DATA; Schema: highways_network; Owner: postgres
 --
 
@@ -2727,8 +2763,8 @@ INSERT INTO "highways_network"."itn_roadcentreline" ("gid", "toid", "version", "
 
 
 --
--- TOC entry 4413 (class 0 OID 192948)
--- Dependencies: 239
+-- TOC entry 4420 (class 0 OID 211763)
+-- Dependencies: 247
 -- Data for Name: SiteArea; Type: TABLE DATA; Schema: local_authority; Owner: postgres
 --
 
@@ -2736,8 +2772,8 @@ INSERT INTO "local_authority"."SiteArea" ("id", "name", "geom") VALUES (1, 'TOMs
 
 
 --
--- TOC entry 4412 (class 0 OID 192942)
--- Dependencies: 238
+-- TOC entry 4422 (class 0 OID 211771)
+-- Dependencies: 249
 -- Data for Name: StreetGazetteerRecords; Type: TABLE DATA; Schema: local_authority; Owner: postgres
 --
 
@@ -2758,8 +2794,8 @@ INSERT INTO "local_authority"."StreetGazetteerRecords" ("id", "ESUID", "USRN", "
 
 
 --
--- TOC entry 4476 (class 0 OID 197281)
--- Dependencies: 302
+-- TOC entry 4424 (class 0 OID 211779)
+-- Dependencies: 251
 -- Data for Name: RC_Polyline; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -2773,8 +2809,8 @@ INSERT INTO "public"."RC_Polyline" ("geom", "id") VALUES ('0102000020346C0000100
 
 
 --
--- TOC entry 4478 (class 0 OID 204862)
--- Dependencies: 304
+-- TOC entry 4426 (class 0 OID 211787)
+-- Dependencies: 253
 -- Data for Name: RC_Sections; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -2809,8 +2845,8 @@ INSERT INTO "public"."RC_Sections" ("gid", "geom", "RoadName", "Az", "StartStree
 
 
 --
--- TOC entry 4480 (class 0 OID 204875)
--- Dependencies: 306
+-- TOC entry 4428 (class 0 OID 211795)
+-- Dependencies: 255
 -- Data for Name: RC_Sections_merged; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -2841,16 +2877,16 @@ INSERT INTO "public"."RC_Sections_merged" ("gid", "geom", "RoadName", "Az", "Sta
 
 
 --
--- TOC entry 3981 (class 0 OID 191533)
--- Dependencies: 223
+-- TOC entry 3974 (class 0 OID 210947)
+-- Dependencies: 217
 -- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4498 (class 0 OID 208287)
--- Dependencies: 324
+-- TOC entry 4431 (class 0 OID 211805)
+-- Dependencies: 258
 -- Data for Name: Bays; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2874,8 +2910,8 @@ INSERT INTO "toms"."Bays" ("RestrictionID", "GeometryID", "geom", "RestrictionLe
 
 
 --
--- TOC entry 4467 (class 0 OID 195263)
--- Dependencies: 293
+-- TOC entry 4433 (class 0 OID 211815)
+-- Dependencies: 260
 -- Data for Name: ControlledParkingZones; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2884,8 +2920,8 @@ INSERT INTO "toms"."ControlledParkingZones" ("RestrictionID", "GeometryID", "geo
 
 
 --
--- TOC entry 4499 (class 0 OID 208353)
--- Dependencies: 325
+-- TOC entry 4435 (class 0 OID 211824)
+-- Dependencies: 262
 -- Data for Name: Lines; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2898,11 +2934,14 @@ INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionL
 INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('5dd050cb-8bde-400d-8f03-fccbf492467a', 'L_ 000000008', '0102000020346C000002000000E715BED54EDD134136F9216043922441BD635F0C02DD1341AD1F0F2738922441', 20, 203, 12, 163, NULL, NULL, NULL, NULL, 'George Street', '1012', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-24 14:44:09.184017', 'tim.hancock', 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('dca8d05a-e437-473d-b95d-d50c792e1c97', 'L_ 000000010', '0102000020346C00000200000074B065BEA9DC13411B3F063F2B922441EA030E8C96DC1341B988C17028922441', 5, 214, 10, 163, NULL, NULL, NULL, NULL, 'George Street', '1012', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-24 14:56:12.859736', 'tim.hancock', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('10901e3d-dc68-4dfc-a036-dbb930babcfb', 'L_ 000000009', '0102000020346C000002000000088B9650BCDD13419A8B944F8C9324416AF986965BDE13414B93E3A76A922441', 150.2, 224, 10, 74, NULL, NULL, NULL, NULL, 'North St David Street', '1005', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-24 22:42:01.112644', 'tim.hancock', 126, 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('ed8e2e61-3efb-4a89-86ff-4d4200e72803', 'L_ 000000012', '0102000020346C00000200000069AB00BAFCDD13411B0CD92B179324416AF986965BDE13414B93E3A76A922441', 89.46, 224, 10, 74, NULL, NULL, NULL, NULL, 'North St David Street', '1005', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-25 21:54:31.534286', 'tim.hancock', 126, 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('825fc78e-a8c7-4372-8993-462f37605c68', 'L_ 000000013', '0102000020346C000002000000088B9650BCDD13419A8B944F8C9324413A4E41B6E6DD1341E9F20B353F932441', 39.98, 224, 10, 74, NULL, NULL, NULL, NULL, 'North St David Street', '1005', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-25 21:54:31.534286', 'tim.hancock', 126, 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "toms"."Lines" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "NoWaitingTimeID", "NoLoadingTimeID", "UnacceptableTypeID", "AdditionalConditionID", "ParkingTariffArea", "labelLoading_X", "labelLoading_Y", "labelLoading_Rotation", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('1bf6eef1-37f8-42b6-82b2-848f577146b6', 'L_ 000000011', '0102000020346C0000020000003A4E41B6E6DD1341E9F20B353F93244169AB00BAFCDD13411B0CD92B17932441', 20.76, 224, 10, 74, NULL, NULL, NULL, NULL, 'North St David Street', '1005', NULL, NULL, NULL, NULL, NULL, NULL, 'A', '2020-05-25 21:55:18.946087', 'tim.hancock', 211, 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 --
--- TOC entry 4470 (class 0 OID 195350)
--- Dependencies: 296
+-- TOC entry 4436 (class 0 OID 211831)
+-- Dependencies: 263
 -- Data for Name: MapGrid; Type: TABLE DATA; Schema: toms; Owner: toms_operator
 --
 
@@ -2917,8 +2956,8 @@ INSERT INTO "toms"."MapGrid" ("id", "geom", "mapsheetname", "x_min", "x_max", "y
 
 
 --
--- TOC entry 4466 (class 0 OID 195215)
--- Dependencies: 292
+-- TOC entry 4438 (class 0 OID 211839)
+-- Dependencies: 265
 -- Data for Name: ParkingTariffAreas; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2926,8 +2965,8 @@ INSERT INTO "toms"."ParkingTariffAreas" ("RestrictionID", "GeometryID", "geom", 
 
 
 --
--- TOC entry 4468 (class 0 OID 195314)
--- Dependencies: 294
+-- TOC entry 4440 (class 0 OID 211848)
+-- Dependencies: 267
 -- Data for Name: Proposals; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2936,8 +2975,8 @@ INSERT INTO "toms"."Proposals" ("ProposalID", "ProposalStatusID", "ProposalCreat
 
 
 --
--- TOC entry 4408 (class 0 OID 192444)
--- Dependencies: 234
+-- TOC entry 4441 (class 0 OID 211855)
+-- Dependencies: 268
 -- Data for Name: RestrictionLayers; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2950,16 +2989,17 @@ INSERT INTO "toms"."RestrictionLayers" ("Code", "RestrictionLayerName") VALUES (
 
 
 --
--- TOC entry 4463 (class 0 OID 195049)
--- Dependencies: 289
+-- TOC entry 4444 (class 0 OID 211862)
+-- Dependencies: 271
 -- Data for Name: RestrictionPolygons; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
+INSERT INTO "toms"."RestrictionPolygons" ("RestrictionID", "GeometryID", "geom", "RestrictionTypeID", "GeomShapeID", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "LastUpdateDateTime", "LastUpdatePerson", "Orientation", "LabelText", "NoWaitingTimeID", "NoLoadingTimeID", "TimePeriodID", "AreaPermitCode", "CPZ", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes") VALUES ('b0f73006-62f1-4d63-b1b2-758eba0865bf', 'P_ 000000002', '0103000020346C0000010000000F00000063066581C6DE13417446786BA9912441BB5D56FE3BDE1341C5F1FB8F95912441C3135BE73BDE134165C7B98C9591244172E6DE7426DE1341F951E58A9291244167200316F4DD134127F3E27A8B912441D60208618FDD1341870C991F7D9124411339A7D713DD1341A78D24836B912441AFADE9A573DC134180D8DEAC54912441E01E1C715BDC1341023E773951912441770247475BDC134134399F33519124411E61662B37DC1341B199AB424C912441452ACA84D8DB134173D96D433F91244186A5372CCFDB13411CDB8D924E912441CDF03BDABDDE1341103DF1D2B891244163066581C6DE13417446786BA9912441', 3, 50, NULL, NULL, NULL, NULL, 'Rose Street', '1006', NULL, NULL, NULL, NULL, NULL, NULL, '2020-05-25 22:24:34.145395', 'tim.hancock', NULL, NULL, 126, 126, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 --
--- TOC entry 4469 (class 0 OID 195330)
--- Dependencies: 295
+-- TOC entry 4445 (class 0 OID 211869)
+-- Dependencies: 272
 -- Data for Name: RestrictionsInProposals; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
@@ -2986,30 +3026,35 @@ INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID"
 INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 2, 1, '9775d869-1cea-4098-9b2a-ce019afa458e');
 INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 2, 1, '014d6fa9-0c7b-49f5-a9d1-5a4dbef9fad4');
 INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 2, 1, '6500cbc0-5072-4a46-a130-6e79a214d896');
-INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 3, 1, '10901e3d-dc68-4dfc-a036-dbb930babcfb');
 INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 3, 1, 'dca8d05a-e437-473d-b95d-d50c792e1c97');
 INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 2, 1, '62b0bf76-1ad4-4afb-97b4-abf7bc32d05a');
+INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 3, 1, '1bf6eef1-37f8-42b6-82b2-848f577146b6');
+INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 3, 1, 'ed8e2e61-3efb-4a89-86ff-4d4200e72803');
+INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 3, 1, '825fc78e-a8c7-4372-8993-462f37605c68');
+INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 4, 1, 'b0f73006-62f1-4d63-b1b2-758eba0865bf');
+INSERT INTO "toms"."RestrictionsInProposals" ("ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID") VALUES (4, 5, 1, '194544db-37b3-4603-97e9-b93d372b3d66');
 
 
 --
--- TOC entry 4497 (class 0 OID 208181)
--- Dependencies: 323
+-- TOC entry 4447 (class 0 OID 211874)
+-- Dependencies: 274
 -- Data for Name: Signs; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
+INSERT INTO "toms"."Signs" ("RestrictionID", "GeometryID", "geom", "Photos_01", "Photos_02", "Photos_03", "Notes", "RoadName", "USRN", "OpenDate", "CloseDate", "LastUpdateDateTime", "LastUpdatePerson", "SignType_1", "SignType_2", "SignType_3", "SignType_4", "Photos_04", "SignOrientationTypeID", "Signs_Mount", "Signs_Attachment", "Compl_Signs_Faded", "Compl_Signs_Obscured", "Compl_Sign_Direction", "Compl_Signs_Obsolete", "Compl_Signs_OtherOptions", "Compl_Signs_TicketMachines", "TicketMachine_Nr", "RingoPresent", "SignIlluminationTypeID", "SignConditionTypeID", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes", "SignAddress", "original_geom_wkt") VALUES ('194544db-37b3-4603-97e9-b93d372b3d66', 'S_ 000000001', '0101000020346C0000029BD886F4DD1341E222517214932441', NULL, NULL, NULL, NULL, 'North St David Street', '1005', NULL, NULL, '2020-05-25 22:36:08.78344', 'tim.hancock', 26, 23, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 --
--- TOC entry 4471 (class 0 OID 195359)
--- Dependencies: 297
+-- TOC entry 4448 (class 0 OID 211881)
+-- Dependencies: 275
 -- Data for Name: TilesInAcceptedProposals; Type: TABLE DATA; Schema: toms; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4401 (class 0 OID 192241)
--- Dependencies: 227
+-- TOC entry 4449 (class 0 OID 211884)
+-- Dependencies: 276
 -- Data for Name: ActionOnProposalAcceptanceTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3018,16 +3063,16 @@ INSERT INTO "toms_lookups"."ActionOnProposalAcceptanceTypes" ("Code", "Descripti
 
 
 --
--- TOC entry 4437 (class 0 OID 193119)
--- Dependencies: 263
+-- TOC entry 4451 (class 0 OID 211892)
+-- Dependencies: 278
 -- Data for Name: AdditionalConditionTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4440 (class 0 OID 193130)
--- Dependencies: 266
+-- TOC entry 4453 (class 0 OID 211897)
+-- Dependencies: 280
 -- Data for Name: BayLineTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3110,8 +3155,8 @@ INSERT INTO "toms_lookups"."BayLineTypes" ("Code", "Description") VALUES (146, '
 
 
 --
--- TOC entry 4483 (class 0 OID 204932)
--- Dependencies: 309
+-- TOC entry 4455 (class 0 OID 211902)
+-- Dependencies: 282
 -- Data for Name: BayTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3132,8 +3177,8 @@ INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "Style
 
 
 --
--- TOC entry 4453 (class 0 OID 193252)
--- Dependencies: 279
+-- TOC entry 4457 (class 0 OID 211912)
+-- Dependencies: 284
 -- Data for Name: GeomShapeGroupType; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3142,8 +3187,8 @@ INSERT INTO "toms_lookups"."GeomShapeGroupType" ("Code") VALUES ('Polygon');
 
 
 --
--- TOC entry 4423 (class 0 OID 193045)
--- Dependencies: 249
+-- TOC entry 4458 (class 0 OID 211915)
+-- Dependencies: 285
 -- Data for Name: LengthOfTime; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3168,8 +3213,8 @@ INSERT INTO "toms_lookups"."LengthOfTime" ("Code", "Description", "LabelText") V
 
 
 --
--- TOC entry 4484 (class 0 OID 204945)
--- Dependencies: 310
+-- TOC entry 4460 (class 0 OID 211923)
+-- Dependencies: 287
 -- Data for Name: LineTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3181,8 +3226,8 @@ INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "Styl
 
 
 --
--- TOC entry 4425 (class 0 OID 193056)
--- Dependencies: 251
+-- TOC entry 4462 (class 0 OID 211933)
+-- Dependencies: 289
 -- Data for Name: PaymentTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3193,8 +3238,8 @@ INSERT INTO "toms_lookups"."PaymentTypes" ("Code", "Description") VALUES (4, 'Pa
 
 
 --
--- TOC entry 4427 (class 0 OID 193065)
--- Dependencies: 253
+-- TOC entry 4464 (class 0 OID 211941)
+-- Dependencies: 291
 -- Data for Name: ProposalStatusTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3204,8 +3249,8 @@ INSERT INTO "toms_lookups"."ProposalStatusTypes" ("Code", "Description") VALUES 
 
 
 --
--- TOC entry 4431 (class 0 OID 193087)
--- Dependencies: 257
+-- TOC entry 4466 (class 0 OID 211949)
+-- Dependencies: 293
 -- Data for Name: RestrictionGeomShapeTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3232,8 +3277,8 @@ INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") V
 
 
 --
--- TOC entry 4429 (class 0 OID 193076)
--- Dependencies: 255
+-- TOC entry 4467 (class 0 OID 211955)
+-- Dependencies: 294
 -- Data for Name: RestrictionPolygonTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3251,8 +3296,8 @@ INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VAL
 
 
 --
--- TOC entry 4461 (class 0 OID 195033)
--- Dependencies: 287
+-- TOC entry 4468 (class 0 OID 211961)
+-- Dependencies: 295
 -- Data for Name: RestrictionPolygonTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3270,8 +3315,8 @@ INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGro
 
 
 --
--- TOC entry 4486 (class 0 OID 204960)
--- Dependencies: 312
+-- TOC entry 4472 (class 0 OID 211978)
+-- Dependencies: 299
 -- Data for Name: SignOrientationTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3283,8 +3328,8 @@ INSERT INTO "toms_lookups"."SignOrientationTypes" ("Code", "Description") VALUES
 
 
 --
--- TOC entry 4433 (class 0 OID 193100)
--- Dependencies: 259
+-- TOC entry 4474 (class 0 OID 211986)
+-- Dependencies: 301
 -- Data for Name: SignTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3412,8 +3457,8 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description") VALUES (64021, 'O
 
 
 --
--- TOC entry 4438 (class 0 OID 193123)
--- Dependencies: 264
+-- TOC entry 4475 (class 0 OID 211992)
+-- Dependencies: 302
 -- Data for Name: SignTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3439,8 +3484,8 @@ INSERT INTO "toms_lookups"."SignTypesInUse" ("Code") VALUES (34);
 
 
 --
--- TOC entry 4435 (class 0 OID 193109)
--- Dependencies: 261
+-- TOC entry 4478 (class 0 OID 212004)
+-- Dependencies: 305
 -- Data for Name: TimePeriods; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3686,8 +3731,8 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 
 --
--- TOC entry 4472 (class 0 OID 197260)
--- Dependencies: 298
+-- TOC entry 4479 (class 0 OID 212010)
+-- Dependencies: 306
 -- Data for Name: TimePeriodsInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3708,8 +3753,8 @@ INSERT INTO "toms_lookups"."TimePeriodsInUse" ("Code") VALUES (211);
 
 
 --
--- TOC entry 4459 (class 0 OID 193922)
--- Dependencies: 285
+-- TOC entry 4482 (class 0 OID 212022)
+-- Dependencies: 309
 -- Data for Name: UnacceptableTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -3726,8 +3771,8 @@ INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (1
 
 
 --
--- TOC entry 4444 (class 0 OID 193168)
--- Dependencies: 270
+-- TOC entry 4484 (class 0 OID 212030)
+-- Dependencies: 311
 -- Data for Name: Corners; Type: TABLE DATA; Schema: topography; Owner: postgres
 --
 
@@ -3759,24 +3804,24 @@ INSERT INTO "topography"."Corners" ("id", "geom") VALUES (25, '0101000020346C000
 
 
 --
--- TOC entry 4419 (class 0 OID 192972)
--- Dependencies: 245
+-- TOC entry 4488 (class 0 OID 212046)
+-- Dependencies: 315
 -- Data for Name: os_mastermap_topography_polygons; Type: TABLE DATA; Schema: topography; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4415 (class 0 OID 192956)
--- Dependencies: 241
+-- TOC entry 4486 (class 0 OID 212038)
+-- Dependencies: 313
 -- Data for Name: os_mastermap_topography_text; Type: TABLE DATA; Schema: topography; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4501 (class 0 OID 208458)
--- Dependencies: 327
+-- TOC entry 4490 (class 0 OID 212054)
+-- Dependencies: 317
 -- Data for Name: road_casement; Type: TABLE DATA; Schema: topography; Owner: postgres
 --
 
@@ -3807,24 +3852,24 @@ INSERT INTO "topography"."road_casement" ("id", "geom", "RoadName", "ESUID", "US
 
 
 --
--- TOC entry 4405 (class 0 OID 192351)
--- Dependencies: 231
+-- TOC entry 4491 (class 0 OID 212060)
+-- Dependencies: 318
 -- Data for Name: LookupCodeTransfers_Bays; Type: TABLE DATA; Schema: transfer; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4406 (class 0 OID 192357)
--- Dependencies: 232
+-- TOC entry 4492 (class 0 OID 212066)
+-- Dependencies: 319
 -- Data for Name: LookupCodeTransfers_Lines; Type: TABLE DATA; Schema: transfer; Owner: postgres
 --
 
 
 
 --
--- TOC entry 4474 (class 0 OID 197267)
--- Dependencies: 300
+-- TOC entry 4493 (class 0 OID 212072)
+-- Dependencies: 320
 -- Data for Name: RC_Polygon; Type: TABLE DATA; Schema: transfer; Owner: postgres
 --
 
@@ -3832,8 +3877,8 @@ INSERT INTO "transfer"."RC_Polygon" ("id", "geom", "gid", "toid", "version", "ve
 
 
 --
--- TOC entry 4542 (class 0 OID 0)
--- Dependencies: 280
+-- TOC entry 4539 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: BayLinesFadedTypes_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3841,8 +3886,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."BayLinesFadedTypes_Code_seq"', 1
 
 
 --
--- TOC entry 4543 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 4540 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: BaysLines_SignIssueTypes_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3850,8 +3895,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."BaysLines_SignIssueTypes_Code_se
 
 
 --
--- TOC entry 4544 (class 0 OID 0)
--- Dependencies: 267
+-- TOC entry 4541 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: ConditionTypes_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3859,8 +3904,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."ConditionTypes_Code_seq"', 1, fa
 
 
 --
--- TOC entry 4545 (class 0 OID 0)
--- Dependencies: 275
+-- TOC entry 4542 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: MHTC_CheckIssueType_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3868,8 +3913,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."MHTC_CheckIssueType_Code_seq"', 
 
 
 --
--- TOC entry 4546 (class 0 OID 0)
--- Dependencies: 277
+-- TOC entry 4543 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: MHTC_CheckStatus_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3877,8 +3922,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."MHTC_CheckStatus_Code_seq"', 1, 
 
 
 --
--- TOC entry 4547 (class 0 OID 0)
--- Dependencies: 273
+-- TOC entry 4544 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: SignConditionTypes_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3886,8 +3931,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."SignConditionTypes_Code_seq"', 1
 
 
 --
--- TOC entry 4548 (class 0 OID 0)
--- Dependencies: 315
+-- TOC entry 4545 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: SignFadedTypes_id_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3895,8 +3940,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."SignFadedTypes_id_seq"', 8, true
 
 
 --
--- TOC entry 4549 (class 0 OID 0)
--- Dependencies: 271
+-- TOC entry 4546 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: SignIlluminationTypes_Code_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3904,8 +3949,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."SignIlluminationTypes_Code_seq"'
 
 
 --
--- TOC entry 4550 (class 0 OID 0)
--- Dependencies: 313
+-- TOC entry 4547 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: SignMountTypes_id_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3913,8 +3958,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."SignMountTypes_id_seq"', 7, true
 
 
 --
--- TOC entry 4551 (class 0 OID 0)
--- Dependencies: 317
+-- TOC entry 4548 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: SignObscurredTypes_id_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3922,8 +3967,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."SignObscurredTypes_id_seq"', 3, 
 
 
 --
--- TOC entry 4552 (class 0 OID 0)
--- Dependencies: 319
+-- TOC entry 4549 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: TicketMachineIssueTypes_id_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3931,8 +3976,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."TicketMachineIssueTypes_id_seq"'
 
 
 --
--- TOC entry 4553 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4550 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: signAttachmentTypes2_id_seq; Type: SEQUENCE SET; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -3940,8 +3985,8 @@ SELECT pg_catalog.setval('"compliance_lookups"."signAttachmentTypes2_id_seq"', 9
 
 
 --
--- TOC entry 4554 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 4551 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: edi_itn_roadcentreline_gid_seq; Type: SEQUENCE SET; Schema: highways_network; Owner: postgres
 --
 
@@ -3949,8 +3994,8 @@ SELECT pg_catalog.setval('"highways_network"."edi_itn_roadcentreline_gid_seq"', 
 
 
 --
--- TOC entry 4555 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 4552 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: SiteArea_id_seq; Type: SEQUENCE SET; Schema: local_authority; Owner: postgres
 --
 
@@ -3958,8 +4003,8 @@ SELECT pg_catalog.setval('"local_authority"."SiteArea_id_seq"', 1, true);
 
 
 --
--- TOC entry 4556 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 4553 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: StreetGazetteerRecords_id_seq; Type: SEQUENCE SET; Schema: local_authority; Owner: postgres
 --
 
@@ -3967,8 +4012,8 @@ SELECT pg_catalog.setval('"local_authority"."StreetGazetteerRecords_id_seq"', 14
 
 
 --
--- TOC entry 4557 (class 0 OID 0)
--- Dependencies: 301
+-- TOC entry 4554 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: RC_Polyline_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3976,8 +4021,8 @@ SELECT pg_catalog.setval('"public"."RC_Polyline_id_seq"', 7, true);
 
 
 --
--- TOC entry 4558 (class 0 OID 0)
--- Dependencies: 303
+-- TOC entry 4555 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: RC_Sections_gid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3985,8 +4030,8 @@ SELECT pg_catalog.setval('"public"."RC_Sections_gid_seq"', 54, true);
 
 
 --
--- TOC entry 4559 (class 0 OID 0)
--- Dependencies: 305
+-- TOC entry 4556 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: RC_Sections_merged_gid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3994,8 +4039,8 @@ SELECT pg_catalog.setval('"public"."RC_Sections_merged_gid_seq"', 24, true);
 
 
 --
--- TOC entry 4560 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 4557 (class 0 OID 0)
+-- Dependencies: 257
 -- Name: Bays_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
@@ -4003,8 +4048,8 @@ SELECT pg_catalog.setval('"toms"."Bays_id_seq"', 36, true);
 
 
 --
--- TOC entry 4561 (class 0 OID 0)
--- Dependencies: 290
+-- TOC entry 4558 (class 0 OID 0)
+-- Dependencies: 259
 -- Name: ControlledParkingZones_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
@@ -4012,17 +4057,17 @@ SELECT pg_catalog.setval('"toms"."ControlledParkingZones_id_seq"', 8, true);
 
 
 --
--- TOC entry 4562 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 4559 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: Lines_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"toms"."Lines_id_seq"', 10, true);
+SELECT pg_catalog.setval('"toms"."Lines_id_seq"', 13, true);
 
 
 --
--- TOC entry 4563 (class 0 OID 0)
--- Dependencies: 291
+-- TOC entry 4560 (class 0 OID 0)
+-- Dependencies: 264
 -- Name: ParkingTariffAreas_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
@@ -4030,8 +4075,8 @@ SELECT pg_catalog.setval('"toms"."ParkingTariffAreas_id_seq"', 2, true);
 
 
 --
--- TOC entry 4564 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 4561 (class 0 OID 0)
+-- Dependencies: 266
 -- Name: Proposals_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
@@ -4039,8 +4084,8 @@ SELECT pg_catalog.setval('"toms"."Proposals_id_seq"', 4, true);
 
 
 --
--- TOC entry 4565 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4562 (class 0 OID 0)
+-- Dependencies: 269
 -- Name: RestrictionLayers_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
@@ -4048,26 +4093,26 @@ SELECT pg_catalog.setval('"toms"."RestrictionLayers_id_seq"', 1, false);
 
 
 --
--- TOC entry 4566 (class 0 OID 0)
--- Dependencies: 288
+-- TOC entry 4563 (class 0 OID 0)
+-- Dependencies: 270
 -- Name: RestrictionPolygons_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"toms"."RestrictionPolygons_id_seq"', 1, false);
+SELECT pg_catalog.setval('"toms"."RestrictionPolygons_id_seq"', 2, true);
 
 
 --
--- TOC entry 4567 (class 0 OID 0)
--- Dependencies: 286
+-- TOC entry 4564 (class 0 OID 0)
+-- Dependencies: 273
 -- Name: Signs_id_seq; Type: SEQUENCE SET; Schema: toms; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"toms"."Signs_id_seq"', 1, false);
+SELECT pg_catalog.setval('"toms"."Signs_id_seq"', 1, true);
 
 
 --
--- TOC entry 4568 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 4565 (class 0 OID 0)
+-- Dependencies: 277
 -- Name: ActionOnProposalAcceptanceTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4075,8 +4120,8 @@ SELECT pg_catalog.setval('"toms_lookups"."ActionOnProposalAcceptanceTypes_Code_s
 
 
 --
--- TOC entry 4569 (class 0 OID 0)
--- Dependencies: 262
+-- TOC entry 4566 (class 0 OID 0)
+-- Dependencies: 279
 -- Name: AdditionalConditionTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4084,8 +4129,8 @@ SELECT pg_catalog.setval('"toms_lookups"."AdditionalConditionTypes_Code_seq"', 1
 
 
 --
--- TOC entry 4570 (class 0 OID 0)
--- Dependencies: 265
+-- TOC entry 4567 (class 0 OID 0)
+-- Dependencies: 281
 -- Name: BayLineTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4093,8 +4138,8 @@ SELECT pg_catalog.setval('"toms_lookups"."BayLineTypes_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4571 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 4568 (class 0 OID 0)
+-- Dependencies: 286
 -- Name: LengthOfTime_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4102,8 +4147,8 @@ SELECT pg_catalog.setval('"toms_lookups"."LengthOfTime_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4572 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 4569 (class 0 OID 0)
+-- Dependencies: 290
 -- Name: PaymentTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4111,8 +4156,8 @@ SELECT pg_catalog.setval('"toms_lookups"."PaymentTypes_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4573 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 4570 (class 0 OID 0)
+-- Dependencies: 292
 -- Name: ProposalStatusTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4120,8 +4165,8 @@ SELECT pg_catalog.setval('"toms_lookups"."ProposalStatusTypes_Code_seq"', 1, fal
 
 
 --
--- TOC entry 4574 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 4571 (class 0 OID 0)
+-- Dependencies: 297
 -- Name: RestrictionPolygonTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4129,8 +4174,8 @@ SELECT pg_catalog.setval('"toms_lookups"."RestrictionPolygonTypes_Code_seq"', 21
 
 
 --
--- TOC entry 4575 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 4572 (class 0 OID 0)
+-- Dependencies: 298
 -- Name: RestrictionShapeTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4138,8 +4183,8 @@ SELECT pg_catalog.setval('"toms_lookups"."RestrictionShapeTypes_Code_seq"', 1, f
 
 
 --
--- TOC entry 4576 (class 0 OID 0)
--- Dependencies: 311
+-- TOC entry 4573 (class 0 OID 0)
+-- Dependencies: 300
 -- Name: SignOrientationTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4147,8 +4192,8 @@ SELECT pg_catalog.setval('"toms_lookups"."SignOrientationTypes_Code_seq"', 1, fa
 
 
 --
--- TOC entry 4577 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 4574 (class 0 OID 0)
+-- Dependencies: 304
 -- Name: SignTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4156,8 +4201,8 @@ SELECT pg_catalog.setval('"toms_lookups"."SignTypes_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4578 (class 0 OID 0)
--- Dependencies: 260
+-- TOC entry 4575 (class 0 OID 0)
+-- Dependencies: 308
 -- Name: TimePeriods_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4165,8 +4210,8 @@ SELECT pg_catalog.setval('"toms_lookups"."TimePeriods_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4579 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 4576 (class 0 OID 0)
+-- Dependencies: 310
 -- Name: UnacceptableTypes_Code_seq; Type: SEQUENCE SET; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4174,8 +4219,8 @@ SELECT pg_catalog.setval('"toms_lookups"."UnacceptableTypes_Code_seq"', 1, false
 
 
 --
--- TOC entry 4580 (class 0 OID 0)
--- Dependencies: 269
+-- TOC entry 4577 (class 0 OID 0)
+-- Dependencies: 312
 -- Name: Corners_id_seq; Type: SEQUENCE SET; Schema: topography; Owner: postgres
 --
 
@@ -4183,8 +4228,8 @@ SELECT pg_catalog.setval('"topography"."Corners_id_seq"', 25, true);
 
 
 --
--- TOC entry 4581 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 4578 (class 0 OID 0)
+-- Dependencies: 314
 -- Name: edi_cartotext_gid_seq; Type: SEQUENCE SET; Schema: topography; Owner: postgres
 --
 
@@ -4192,8 +4237,8 @@ SELECT pg_catalog.setval('"topography"."edi_cartotext_gid_seq"', 1, false);
 
 
 --
--- TOC entry 4582 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 4579 (class 0 OID 0)
+-- Dependencies: 316
 -- Name: edi_mm_gid_seq; Type: SEQUENCE SET; Schema: topography; Owner: postgres
 --
 
@@ -4201,8 +4246,8 @@ SELECT pg_catalog.setval('"topography"."edi_mm_gid_seq"', 1, false);
 
 
 --
--- TOC entry 4583 (class 0 OID 0)
--- Dependencies: 299
+-- TOC entry 4580 (class 0 OID 0)
+-- Dependencies: 321
 -- Name: RC_Polygon_id_seq; Type: SEQUENCE SET; Schema: transfer; Owner: postgres
 --
 
@@ -4210,7 +4255,7 @@ SELECT pg_catalog.setval('"transfer"."RC_Polygon_id_seq"', 1, true);
 
 
 --
--- TOC entry 4096 (class 2606 OID 193746)
+-- TOC entry 4022 (class 2606 OID 212116)
 -- Name: BaysLinesFadedTypes BayLinesFadedTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4219,7 +4264,7 @@ ALTER TABLE ONLY "compliance_lookups"."BaysLinesFadedTypes"
 
 
 --
--- TOC entry 4098 (class 2606 OID 193911)
+-- TOC entry 4024 (class 2606 OID 212118)
 -- Name: BaysLines_SignIssueTypes BaysLines_SignIssueTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4228,7 +4273,7 @@ ALTER TABLE ONLY "compliance_lookups"."BaysLines_SignIssueTypes"
 
 
 --
--- TOC entry 4082 (class 2606 OID 208180)
+-- TOC entry 4026 (class 2606 OID 212120)
 -- Name: ConditionTypes ConditionTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4237,7 +4282,7 @@ ALTER TABLE ONLY "compliance_lookups"."ConditionTypes"
 
 
 --
--- TOC entry 4090 (class 2606 OID 193218)
+-- TOC entry 4028 (class 2606 OID 212122)
 -- Name: MHTC_CheckIssueType MHTC_CheckIssueType_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4246,7 +4291,7 @@ ALTER TABLE ONLY "compliance_lookups"."MHTC_CheckIssueType"
 
 
 --
--- TOC entry 4092 (class 2606 OID 193229)
+-- TOC entry 4030 (class 2606 OID 212124)
 -- Name: MHTC_CheckStatus MHTC_CheckStatus_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4255,7 +4300,7 @@ ALTER TABLE ONLY "compliance_lookups"."MHTC_CheckStatus"
 
 
 --
--- TOC entry 4039 (class 2606 OID 205511)
+-- TOC entry 4032 (class 2606 OID 212126)
 -- Name: SignAttachmentTypes SignAttachmentTypes_Code_key; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4264,7 +4309,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignAttachmentTypes"
 
 
 --
--- TOC entry 4088 (class 2606 OID 193207)
+-- TOC entry 4036 (class 2606 OID 212128)
 -- Name: SignConditionTypes SignConditionTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4273,7 +4318,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignConditionTypes"
 
 
 --
--- TOC entry 4154 (class 2606 OID 205664)
+-- TOC entry 4038 (class 2606 OID 212130)
 -- Name: SignFadedTypes SignFadedTypes_Code_key; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4282,7 +4327,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignFadedTypes"
 
 
 --
--- TOC entry 4156 (class 2606 OID 205662)
+-- TOC entry 4040 (class 2606 OID 212132)
 -- Name: SignFadedTypes SignFadedTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4291,7 +4336,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignFadedTypes"
 
 
 --
--- TOC entry 4086 (class 2606 OID 193187)
+-- TOC entry 4042 (class 2606 OID 212134)
 -- Name: SignIlluminationTypes SignIlluminationTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4300,7 +4345,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignIlluminationTypes"
 
 
 --
--- TOC entry 4150 (class 2606 OID 205387)
+-- TOC entry 4044 (class 2606 OID 212136)
 -- Name: SignMountTypes SignMountTypes_Code_key; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4309,7 +4354,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignMountTypes"
 
 
 --
--- TOC entry 4152 (class 2606 OID 205385)
+-- TOC entry 4046 (class 2606 OID 212138)
 -- Name: SignMountTypes SignMounts_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4318,7 +4363,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignMountTypes"
 
 
 --
--- TOC entry 4158 (class 2606 OID 205899)
+-- TOC entry 4048 (class 2606 OID 212140)
 -- Name: SignObscurredTypes SignObscurredTypes_Code_key; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4327,7 +4372,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignObscurredTypes"
 
 
 --
--- TOC entry 4160 (class 2606 OID 205826)
+-- TOC entry 4050 (class 2606 OID 212142)
 -- Name: SignObscurredTypes SignObscurredTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4336,7 +4381,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignObscurredTypes"
 
 
 --
--- TOC entry 4162 (class 2606 OID 205996)
+-- TOC entry 4052 (class 2606 OID 212144)
 -- Name: TicketMachineIssueTypes TicketMachineIssueTypes_Code_key; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4345,7 +4390,7 @@ ALTER TABLE ONLY "compliance_lookups"."TicketMachineIssueTypes"
 
 
 --
--- TOC entry 4164 (class 2606 OID 205994)
+-- TOC entry 4054 (class 2606 OID 212146)
 -- Name: TicketMachineIssueTypes TicketMachineIssueTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4354,7 +4399,7 @@ ALTER TABLE ONLY "compliance_lookups"."TicketMachineIssueTypes"
 
 
 --
--- TOC entry 4041 (class 2606 OID 192724)
+-- TOC entry 4034 (class 2606 OID 212148)
 -- Name: SignAttachmentTypes signAttachmentTypes_pkey; Type: CONSTRAINT; Schema: compliance_lookups; Owner: postgres
 --
 
@@ -4363,7 +4408,7 @@ ALTER TABLE ONLY "compliance_lookups"."SignAttachmentTypes"
 
 
 --
--- TOC entry 4053 (class 2606 OID 193015)
+-- TOC entry 4057 (class 2606 OID 212150)
 -- Name: itn_roadcentreline edi_itn_roadcentreline_pkey; Type: CONSTRAINT; Schema: highways_network; Owner: postgres
 --
 
@@ -4372,7 +4417,7 @@ ALTER TABLE ONLY "highways_network"."itn_roadcentreline"
 
 
 --
--- TOC entry 4044 (class 2606 OID 193021)
+-- TOC entry 4063 (class 2606 OID 212152)
 -- Name: StreetGazetteerRecords gaz_usrn_pkey; Type: CONSTRAINT; Schema: local_authority; Owner: postgres
 --
 
@@ -4381,7 +4426,7 @@ ALTER TABLE ONLY "local_authority"."StreetGazetteerRecords"
 
 
 --
--- TOC entry 4047 (class 2606 OID 193011)
+-- TOC entry 4060 (class 2606 OID 212154)
 -- Name: SiteArea test_area_pkey; Type: CONSTRAINT; Schema: local_authority; Owner: postgres
 --
 
@@ -4390,7 +4435,7 @@ ALTER TABLE ONLY "local_authority"."SiteArea"
 
 
 --
--- TOC entry 4134 (class 2606 OID 197289)
+-- TOC entry 4065 (class 2606 OID 212156)
 -- Name: RC_Polyline RC_Polyline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4399,7 +4444,7 @@ ALTER TABLE ONLY "public"."RC_Polyline"
 
 
 --
--- TOC entry 4139 (class 2606 OID 204883)
+-- TOC entry 4070 (class 2606 OID 212158)
 -- Name: RC_Sections_merged RC_Sections_merged_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4408,7 +4453,7 @@ ALTER TABLE ONLY "public"."RC_Sections_merged"
 
 
 --
--- TOC entry 4136 (class 2606 OID 204870)
+-- TOC entry 4067 (class 2606 OID 212160)
 -- Name: RC_Sections RC_Sections_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4417,7 +4462,7 @@ ALTER TABLE ONLY "public"."RC_Sections"
 
 
 --
--- TOC entry 4173 (class 2606 OID 208298)
+-- TOC entry 4073 (class 2606 OID 212162)
 -- Name: Bays Bays_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4426,7 +4471,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4175 (class 2606 OID 208296)
+-- TOC entry 4075 (class 2606 OID 212164)
 -- Name: Bays Bays_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4435,7 +4480,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4114 (class 2606 OID 195273)
+-- TOC entry 4078 (class 2606 OID 212166)
 -- Name: ControlledParkingZones ControlledParkingZones_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4444,7 +4489,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4116 (class 2606 OID 195271)
+-- TOC entry 4080 (class 2606 OID 212168)
 -- Name: ControlledParkingZones ControlledParkingZones_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4453,7 +4498,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4178 (class 2606 OID 208363)
+-- TOC entry 4083 (class 2606 OID 212170)
 -- Name: Lines Lines_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4462,16 +4507,16 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4180 (class 2606 OID 208361)
--- Name: Lines Liness_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
+-- TOC entry 4085 (class 2606 OID 212172)
+-- Name: Lines Lines_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
 ALTER TABLE ONLY "toms"."Lines"
-    ADD CONSTRAINT "Liness_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "Lines_pkey" PRIMARY KEY ("RestrictionID");
 
 
 --
--- TOC entry 4125 (class 2606 OID 195357)
+-- TOC entry 4088 (class 2606 OID 212174)
 -- Name: MapGrid MapGrid_pkey; Type: CONSTRAINT; Schema: toms; Owner: toms_operator
 --
 
@@ -4480,7 +4525,7 @@ ALTER TABLE ONLY "toms"."MapGrid"
 
 
 --
--- TOC entry 4109 (class 2606 OID 195225)
+-- TOC entry 4091 (class 2606 OID 212176)
 -- Name: ParkingTariffAreas ParkingTariffAreas_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4489,7 +4534,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4111 (class 2606 OID 195223)
+-- TOC entry 4093 (class 2606 OID 212178)
 -- Name: ParkingTariffAreas ParkingTariffAreas_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4498,7 +4543,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4119 (class 2606 OID 195322)
+-- TOC entry 4096 (class 2606 OID 212180)
 -- Name: Proposals Proposals_PK; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4507,7 +4552,7 @@ ALTER TABLE ONLY "toms"."Proposals"
 
 
 --
--- TOC entry 4121 (class 2606 OID 195324)
+-- TOC entry 4098 (class 2606 OID 212182)
 -- Name: Proposals Proposals_ProposalTitle_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4516,7 +4561,7 @@ ALTER TABLE ONLY "toms"."Proposals"
 
 
 --
--- TOC entry 4035 (class 2606 OID 192662)
+-- TOC entry 4100 (class 2606 OID 212184)
 -- Name: RestrictionLayers RestrictionLayers2_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4525,7 +4570,7 @@ ALTER TABLE ONLY "toms"."RestrictionLayers"
 
 
 --
--- TOC entry 4037 (class 2606 OID 192664)
+-- TOC entry 4102 (class 2606 OID 212186)
 -- Name: RestrictionLayers RestrictionLayers_id_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4534,7 +4579,7 @@ ALTER TABLE ONLY "toms"."RestrictionLayers"
 
 
 --
--- TOC entry 4104 (class 2606 OID 195059)
+-- TOC entry 4104 (class 2606 OID 212188)
 -- Name: RestrictionPolygons RestrictionPolygons_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4543,7 +4588,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4123 (class 2606 OID 195334)
+-- TOC entry 4109 (class 2606 OID 212190)
 -- Name: RestrictionsInProposals RestrictionsInProposals_pk; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4552,7 +4597,7 @@ ALTER TABLE ONLY "toms"."RestrictionsInProposals"
 
 
 --
--- TOC entry 4106 (class 2606 OID 195057)
+-- TOC entry 4106 (class 2606 OID 212192)
 -- Name: RestrictionPolygons RestrictionsPolygons_pk; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4561,7 +4606,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4168 (class 2606 OID 208191)
+-- TOC entry 4111 (class 2606 OID 212194)
 -- Name: Signs Signs_GeometryID_key; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4570,7 +4615,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4170 (class 2606 OID 208189)
+-- TOC entry 4113 (class 2606 OID 212196)
 -- Name: Signs Signs_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4579,7 +4624,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4128 (class 2606 OID 195363)
+-- TOC entry 4116 (class 2606 OID 212198)
 -- Name: TilesInAcceptedProposals TilesInAcceptedProposals_pkey; Type: CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -4588,7 +4633,7 @@ ALTER TABLE ONLY "toms"."TilesInAcceptedProposals"
 
 
 --
--- TOC entry 4029 (class 2606 OID 192620)
+-- TOC entry 4118 (class 2606 OID 212200)
 -- Name: ActionOnProposalAcceptanceTypes ActionOnProposalAcceptanceTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4597,7 +4642,7 @@ ALTER TABLE ONLY "toms_lookups"."ActionOnProposalAcceptanceTypes"
 
 
 --
--- TOC entry 4076 (class 2606 OID 193149)
+-- TOC entry 4120 (class 2606 OID 212202)
 -- Name: AdditionalConditionTypes AdditionalConditionTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4606,7 +4651,7 @@ ALTER TABLE ONLY "toms_lookups"."AdditionalConditionTypes"
 
 
 --
--- TOC entry 4080 (class 2606 OID 193151)
+-- TOC entry 4122 (class 2606 OID 212204)
 -- Name: BayLineTypes BayLineTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4615,7 +4660,7 @@ ALTER TABLE ONLY "toms_lookups"."BayLineTypes"
 
 
 --
--- TOC entry 4144 (class 2606 OID 204939)
+-- TOC entry 4124 (class 2606 OID 212206)
 -- Name: BayTypesInUse BayTypesInUse_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4624,7 +4669,7 @@ ALTER TABLE ONLY "toms_lookups"."BayTypesInUse"
 
 
 --
--- TOC entry 4094 (class 2606 OID 193256)
+-- TOC entry 4127 (class 2606 OID 212208)
 -- Name: GeomShapeGroupType GeomShapeGroupType_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4633,7 +4678,7 @@ ALTER TABLE ONLY "toms_lookups"."GeomShapeGroupType"
 
 
 --
--- TOC entry 4058 (class 2606 OID 193053)
+-- TOC entry 4129 (class 2606 OID 212210)
 -- Name: LengthOfTime LengthOfTime_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4642,7 +4687,7 @@ ALTER TABLE ONLY "toms_lookups"."LengthOfTime"
 
 
 --
--- TOC entry 4146 (class 2606 OID 204952)
+-- TOC entry 4131 (class 2606 OID 212212)
 -- Name: LineTypesInUse LineTypesInUse_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4651,7 +4696,7 @@ ALTER TABLE ONLY "toms_lookups"."LineTypesInUse"
 
 
 --
--- TOC entry 4060 (class 2606 OID 193153)
+-- TOC entry 4134 (class 2606 OID 212214)
 -- Name: PaymentTypes PaymentTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4660,7 +4705,7 @@ ALTER TABLE ONLY "toms_lookups"."PaymentTypes"
 
 
 --
--- TOC entry 4062 (class 2606 OID 193155)
+-- TOC entry 4136 (class 2606 OID 212216)
 -- Name: ProposalStatusTypes ProposalStatusTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4669,7 +4714,7 @@ ALTER TABLE ONLY "toms_lookups"."ProposalStatusTypes"
 
 
 --
--- TOC entry 4102 (class 2606 OID 195037)
+-- TOC entry 4144 (class 2606 OID 212218)
 -- Name: RestrictionPolygonTypesInUse RestrictionPolygonTypesInUse_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4678,7 +4723,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionPolygonTypesInUse"
 
 
 --
--- TOC entry 4064 (class 2606 OID 193157)
+-- TOC entry 4142 (class 2606 OID 212220)
 -- Name: RestrictionPolygonTypes RestrictionPolygonTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4687,7 +4732,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionPolygonTypes"
 
 
 --
--- TOC entry 4066 (class 2606 OID 193095)
+-- TOC entry 4138 (class 2606 OID 212222)
 -- Name: RestrictionGeomShapeTypes RestrictionShapeTypes_Description_key; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4696,7 +4741,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionGeomShapeTypes"
 
 
 --
--- TOC entry 4068 (class 2606 OID 193159)
+-- TOC entry 4140 (class 2606 OID 212224)
 -- Name: RestrictionGeomShapeTypes RestrictionShapeTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4705,7 +4750,7 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionGeomShapeTypes"
 
 
 --
--- TOC entry 4148 (class 2606 OID 204968)
+-- TOC entry 4147 (class 2606 OID 212226)
 -- Name: SignOrientationTypes SignOrientationTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4714,7 +4759,7 @@ ALTER TABLE ONLY "toms_lookups"."SignOrientationTypes"
 
 
 --
--- TOC entry 4078 (class 2606 OID 193127)
+-- TOC entry 4151 (class 2606 OID 212228)
 -- Name: SignTypesInUse SignTypesInUse_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4723,7 +4768,7 @@ ALTER TABLE ONLY "toms_lookups"."SignTypesInUse"
 
 
 --
--- TOC entry 4070 (class 2606 OID 193161)
+-- TOC entry 4149 (class 2606 OID 212230)
 -- Name: SignTypes SignTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4732,7 +4777,7 @@ ALTER TABLE ONLY "toms_lookups"."SignTypes"
 
 
 --
--- TOC entry 4130 (class 2606 OID 197264)
+-- TOC entry 4158 (class 2606 OID 212232)
 -- Name: TimePeriodsInUse TimePeriodsInUse_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4741,7 +4786,7 @@ ALTER TABLE ONLY "toms_lookups"."TimePeriodsInUse"
 
 
 --
--- TOC entry 4072 (class 2606 OID 193165)
+-- TOC entry 4154 (class 2606 OID 212234)
 -- Name: TimePeriods TimePeriods_Description_key; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4750,7 +4795,7 @@ ALTER TABLE ONLY "toms_lookups"."TimePeriods"
 
 
 --
--- TOC entry 4074 (class 2606 OID 193163)
+-- TOC entry 4156 (class 2606 OID 212236)
 -- Name: TimePeriods TimePeriods_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4759,7 +4804,7 @@ ALTER TABLE ONLY "toms_lookups"."TimePeriods"
 
 
 --
--- TOC entry 4100 (class 2606 OID 193930)
+-- TOC entry 4161 (class 2606 OID 212238)
 -- Name: UnacceptableTypes UnacceptableTypes_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4768,7 +4813,7 @@ ALTER TABLE ONLY "toms_lookups"."UnacceptableTypes"
 
 
 --
--- TOC entry 4084 (class 2606 OID 193176)
+-- TOC entry 4163 (class 2606 OID 212240)
 -- Name: Corners Corners_pkey; Type: CONSTRAINT; Schema: topography; Owner: postgres
 --
 
@@ -4777,7 +4822,7 @@ ALTER TABLE ONLY "topography"."Corners"
 
 
 --
--- TOC entry 4050 (class 2606 OID 193013)
+-- TOC entry 4166 (class 2606 OID 212242)
 -- Name: os_mastermap_topography_text edi_cartotext_pkey; Type: CONSTRAINT; Schema: topography; Owner: postgres
 --
 
@@ -4786,7 +4831,7 @@ ALTER TABLE ONLY "topography"."os_mastermap_topography_text"
 
 
 --
--- TOC entry 4056 (class 2606 OID 193017)
+-- TOC entry 4169 (class 2606 OID 212244)
 -- Name: os_mastermap_topography_polygons edi_mm_pkey; Type: CONSTRAINT; Schema: topography; Owner: postgres
 --
 
@@ -4795,7 +4840,7 @@ ALTER TABLE ONLY "topography"."os_mastermap_topography_polygons"
 
 
 --
--- TOC entry 4184 (class 2606 OID 208465)
+-- TOC entry 4171 (class 2606 OID 212246)
 -- Name: road_casement road_casement_pkey; Type: CONSTRAINT; Schema: topography; Owner: postgres
 --
 
@@ -4804,7 +4849,7 @@ ALTER TABLE ONLY "topography"."road_casement"
 
 
 --
--- TOC entry 4031 (class 2606 OID 192642)
+-- TOC entry 4173 (class 2606 OID 212248)
 -- Name: LookupCodeTransfers_Bays LookupCodeTransfers_Bays_pkey; Type: CONSTRAINT; Schema: transfer; Owner: postgres
 --
 
@@ -4813,7 +4858,7 @@ ALTER TABLE ONLY "transfer"."LookupCodeTransfers_Bays"
 
 
 --
--- TOC entry 4033 (class 2606 OID 192644)
+-- TOC entry 4175 (class 2606 OID 212250)
 -- Name: LookupCodeTransfers_Lines LookupCodeTransfers_Lines_pkey; Type: CONSTRAINT; Schema: transfer; Owner: postgres
 --
 
@@ -4822,7 +4867,7 @@ ALTER TABLE ONLY "transfer"."LookupCodeTransfers_Lines"
 
 
 --
--- TOC entry 4132 (class 2606 OID 197272)
+-- TOC entry 4177 (class 2606 OID 212252)
 -- Name: RC_Polygon RC_Polygon_pkey; Type: CONSTRAINT; Schema: transfer; Owner: postgres
 --
 
@@ -4831,7 +4876,7 @@ ALTER TABLE ONLY "transfer"."RC_Polygon"
 
 
 --
--- TOC entry 4051 (class 1259 OID 193024)
+-- TOC entry 4055 (class 1259 OID 212253)
 -- Name: edi_itn_roadcentreline_geom_idx; Type: INDEX; Schema: highways_network; Owner: postgres
 --
 
@@ -4839,7 +4884,7 @@ CREATE INDEX "edi_itn_roadcentreline_geom_idx" ON "highways_network"."itn_roadce
 
 
 --
--- TOC entry 4042 (class 1259 OID 193027)
+-- TOC entry 4061 (class 1259 OID 212254)
 -- Name: gaz_usrn_geom_idx; Type: INDEX; Schema: local_authority; Owner: postgres
 --
 
@@ -4847,7 +4892,7 @@ CREATE INDEX "gaz_usrn_geom_idx" ON "local_authority"."StreetGazetteerRecords" U
 
 
 --
--- TOC entry 4045 (class 1259 OID 193022)
+-- TOC entry 4058 (class 1259 OID 212255)
 -- Name: test_area_geom_idx; Type: INDEX; Schema: local_authority; Owner: postgres
 --
 
@@ -4855,7 +4900,7 @@ CREATE INDEX "test_area_geom_idx" ON "local_authority"."SiteArea" USING "gist" (
 
 
 --
--- TOC entry 4137 (class 1259 OID 204871)
+-- TOC entry 4068 (class 1259 OID 212256)
 -- Name: sidx_RC_Sections_geom; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4863,7 +4908,7 @@ CREATE INDEX "sidx_RC_Sections_geom" ON "public"."RC_Sections" USING "gist" ("ge
 
 
 --
--- TOC entry 4140 (class 1259 OID 204884)
+-- TOC entry 4071 (class 1259 OID 212257)
 -- Name: sidx_RC_Sections_merged_geom; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4871,7 +4916,7 @@ CREATE INDEX "sidx_RC_Sections_merged_geom" ON "public"."RC_Sections_merged" USI
 
 
 --
--- TOC entry 4117 (class 1259 OID 195299)
+-- TOC entry 4081 (class 1259 OID 212258)
 -- Name: controlledparkingzones_geom_idx; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4879,7 +4924,7 @@ CREATE INDEX "controlledparkingzones_geom_idx" ON "toms"."ControlledParkingZones
 
 
 --
--- TOC entry 4176 (class 1259 OID 208349)
+-- TOC entry 4076 (class 1259 OID 212259)
 -- Name: sidx_Bays_geom; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4887,7 +4932,7 @@ CREATE INDEX "sidx_Bays_geom" ON "toms"."Bays" USING "gist" ("geom");
 
 
 --
--- TOC entry 4181 (class 1259 OID 208409)
+-- TOC entry 4086 (class 1259 OID 212260)
 -- Name: sidx_Lines_geom; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4895,7 +4940,7 @@ CREATE INDEX "sidx_Lines_geom" ON "toms"."Lines" USING "gist" ("geom");
 
 
 --
--- TOC entry 4126 (class 1259 OID 195358)
+-- TOC entry 4089 (class 1259 OID 212261)
 -- Name: sidx_MapGrid_geom; Type: INDEX; Schema: toms; Owner: toms_operator
 --
 
@@ -4903,7 +4948,7 @@ CREATE INDEX "sidx_MapGrid_geom" ON "toms"."MapGrid" USING "gist" ("geom");
 
 
 --
--- TOC entry 4112 (class 1259 OID 195261)
+-- TOC entry 4094 (class 1259 OID 212262)
 -- Name: sidx_ParkingTariffAreas_geom; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4911,7 +4956,7 @@ CREATE INDEX "sidx_ParkingTariffAreas_geom" ON "toms"."ParkingTariffAreas" USING
 
 
 --
--- TOC entry 4171 (class 1259 OID 208262)
+-- TOC entry 4114 (class 1259 OID 212263)
 -- Name: sidx_Signs_geom; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4919,7 +4964,7 @@ CREATE INDEX "sidx_Signs_geom" ON "toms"."Signs" USING "gist" ("geom");
 
 
 --
--- TOC entry 4107 (class 1259 OID 195100)
+-- TOC entry 4107 (class 1259 OID 212264)
 -- Name: sidx_restrictionPolygons_geom; Type: INDEX; Schema: toms; Owner: postgres
 --
 
@@ -4927,7 +4972,7 @@ CREATE INDEX "sidx_restrictionPolygons_geom" ON "toms"."RestrictionPolygons" USI
 
 
 --
--- TOC entry 4165 (class 1259 OID 206115)
+-- TOC entry 4125 (class 1259 OID 212265)
 -- Name: BayTypesInUse_View_key; Type: INDEX; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4935,7 +4980,7 @@ CREATE UNIQUE INDEX "BayTypesInUse_View_key" ON "toms_lookups"."BayTypesInUse_Vi
 
 
 --
--- TOC entry 4166 (class 1259 OID 206120)
+-- TOC entry 4132 (class 1259 OID 212266)
 -- Name: LineTypesInUse_View_key; Type: INDEX; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4943,7 +4988,7 @@ CREATE UNIQUE INDEX "LineTypesInUse_View_key" ON "toms_lookups"."LineTypesInUse_
 
 
 --
--- TOC entry 4142 (class 1259 OID 204926)
+-- TOC entry 4145 (class 1259 OID 212267)
 -- Name: RestrictionPolygonTypesInUse_View_key; Type: INDEX; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4951,7 +4996,7 @@ CREATE UNIQUE INDEX "RestrictionPolygonTypesInUse_View_key" ON "toms_lookups"."R
 
 
 --
--- TOC entry 4141 (class 1259 OID 204918)
+-- TOC entry 4152 (class 1259 OID 212268)
 -- Name: SignTypesInUse_View_key; Type: INDEX; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4959,7 +5004,7 @@ CREATE UNIQUE INDEX "SignTypesInUse_View_key" ON "toms_lookups"."SignTypesInUse_
 
 
 --
--- TOC entry 4182 (class 1259 OID 208432)
+-- TOC entry 4159 (class 1259 OID 212269)
 -- Name: TimePeriodsInUse_View_key; Type: INDEX; Schema: toms_lookups; Owner: postgres
 --
 
@@ -4967,7 +5012,7 @@ CREATE UNIQUE INDEX "TimePeriodsInUse_View_key" ON "toms_lookups"."TimePeriodsIn
 
 
 --
--- TOC entry 4048 (class 1259 OID 193023)
+-- TOC entry 4164 (class 1259 OID 212270)
 -- Name: edi_cartotext_geom_idx; Type: INDEX; Schema: topography; Owner: postgres
 --
 
@@ -4975,7 +5020,7 @@ CREATE INDEX "edi_cartotext_geom_idx" ON "topography"."os_mastermap_topography_t
 
 
 --
--- TOC entry 4054 (class 1259 OID 193025)
+-- TOC entry 4167 (class 1259 OID 212271)
 -- Name: edi_mm_geom_idx; Type: INDEX; Schema: topography; Owner: postgres
 --
 
@@ -4983,7 +5028,7 @@ CREATE INDEX "edi_mm_geom_idx" ON "topography"."os_mastermap_topography_polygons
 
 
 --
--- TOC entry 4253 (class 2620 OID 208350)
+-- TOC entry 4240 (class 2620 OID 212272)
 -- Name: Bays create_geometryid_bays; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -4991,7 +5036,7 @@ CREATE TRIGGER "create_geometryid_bays" BEFORE INSERT ON "toms"."Bays" FOR EACH 
 
 
 --
--- TOC entry 4258 (class 2620 OID 208412)
+-- TOC entry 4244 (class 2620 OID 212273)
 -- Name: Lines create_geometryid_lines; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -4999,7 +5044,7 @@ CREATE TRIGGER "create_geometryid_lines" BEFORE INSERT ON "toms"."Lines" FOR EAC
 
 
 --
--- TOC entry 4247 (class 2620 OID 208414)
+-- TOC entry 4248 (class 2620 OID 212274)
 -- Name: RestrictionPolygons create_geometryid_restrictionpolygons; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5007,7 +5052,7 @@ CREATE TRIGGER "create_geometryid_restrictionpolygons" BEFORE INSERT ON "toms"."
 
 
 --
--- TOC entry 4251 (class 2620 OID 208413)
+-- TOC entry 4250 (class 2620 OID 212275)
 -- Name: Signs create_geometryid_signs; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5015,7 +5060,7 @@ CREATE TRIGGER "create_geometryid_signs" BEFORE INSERT ON "toms"."Signs" FOR EAC
 
 
 --
--- TOC entry 4254 (class 2620 OID 208351)
+-- TOC entry 4241 (class 2620 OID 212276)
 -- Name: Bays set_last_update_details_Bays; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5023,7 +5068,7 @@ CREATE TRIGGER "set_last_update_details_Bays" BEFORE INSERT OR UPDATE ON "toms".
 
 
 --
--- TOC entry 4250 (class 2620 OID 208424)
+-- TOC entry 4243 (class 2620 OID 212277)
 -- Name: ControlledParkingZones set_last_update_details_ControlledParkingZones; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5031,7 +5076,7 @@ CREATE TRIGGER "set_last_update_details_ControlledParkingZones" BEFORE INSERT OR
 
 
 --
--- TOC entry 4256 (class 2620 OID 208410)
+-- TOC entry 4245 (class 2620 OID 212278)
 -- Name: Lines set_last_update_details_Lines; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5039,7 +5084,7 @@ CREATE TRIGGER "set_last_update_details_Lines" BEFORE INSERT OR UPDATE ON "toms"
 
 
 --
--- TOC entry 4249 (class 2620 OID 195385)
+-- TOC entry 4247 (class 2620 OID 212279)
 -- Name: ParkingTariffAreas set_last_update_details_ParkingTariffAreas; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5047,7 +5092,7 @@ CREATE TRIGGER "set_last_update_details_ParkingTariffAreas" BEFORE INSERT OR UPD
 
 
 --
--- TOC entry 4248 (class 2620 OID 195383)
+-- TOC entry 4249 (class 2620 OID 212280)
 -- Name: RestrictionPolygons set_last_update_details_RestrictionPolygons; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5055,7 +5100,7 @@ CREATE TRIGGER "set_last_update_details_RestrictionPolygons" BEFORE INSERT OR UP
 
 
 --
--- TOC entry 4252 (class 2620 OID 208263)
+-- TOC entry 4251 (class 2620 OID 212281)
 -- Name: Signs set_last_update_details_Signs; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5063,7 +5108,7 @@ CREATE TRIGGER "set_last_update_details_Signs" BEFORE INSERT OR UPDATE ON "toms"
 
 
 --
--- TOC entry 4255 (class 2620 OID 208352)
+-- TOC entry 4242 (class 2620 OID 212282)
 -- Name: Bays set_restriction_length_Bays; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5071,7 +5116,7 @@ CREATE TRIGGER "set_restriction_length_Bays" BEFORE INSERT OR UPDATE ON "toms"."
 
 
 --
--- TOC entry 4257 (class 2620 OID 208411)
+-- TOC entry 4246 (class 2620 OID 212283)
 -- Name: Lines set_restriction_length_Lines; Type: TRIGGER; Schema: toms; Owner: postgres
 --
 
@@ -5079,7 +5124,7 @@ CREATE TRIGGER "set_restriction_length_Lines" BEFORE INSERT OR UPDATE ON "toms".
 
 
 --
--- TOC entry 4228 (class 2606 OID 208299)
+-- TOC entry 4178 (class 2606 OID 212284)
 -- Name: Bays Bays_AdditionalConditionID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5088,7 +5133,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4229 (class 2606 OID 208304)
+-- TOC entry 4179 (class 2606 OID 212289)
 -- Name: Bays Bays_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5097,7 +5142,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4230 (class 2606 OID 208309)
+-- TOC entry 4180 (class 2606 OID 212294)
 -- Name: Bays Bays_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5106,7 +5151,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4231 (class 2606 OID 208314)
+-- TOC entry 4181 (class 2606 OID 212299)
 -- Name: Bays Bays_GeomShapeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5115,7 +5160,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4232 (class 2606 OID 208319)
+-- TOC entry 4182 (class 2606 OID 212304)
 -- Name: Bays Bays_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5124,7 +5169,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4233 (class 2606 OID 208324)
+-- TOC entry 4183 (class 2606 OID 212309)
 -- Name: Bays Bays_MaxStayID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5133,7 +5178,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4234 (class 2606 OID 208329)
+-- TOC entry 4184 (class 2606 OID 212314)
 -- Name: Bays Bays_NoReturnID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5142,7 +5187,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4235 (class 2606 OID 208334)
+-- TOC entry 4185 (class 2606 OID 212319)
 -- Name: Bays Bays_PayTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5151,7 +5196,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4236 (class 2606 OID 208339)
+-- TOC entry 4186 (class 2606 OID 212324)
 -- Name: Bays Bays_RestrictionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5160,7 +5205,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4237 (class 2606 OID 208344)
+-- TOC entry 4187 (class 2606 OID 212329)
 -- Name: Bays Bays_TimePeriodID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5169,7 +5214,7 @@ ALTER TABLE ONLY "toms"."Bays"
 
 
 --
--- TOC entry 4202 (class 2606 OID 195274)
+-- TOC entry 4188 (class 2606 OID 212334)
 -- Name: ControlledParkingZones ControlledParkingZones_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5178,7 +5223,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4203 (class 2606 OID 195279)
+-- TOC entry 4189 (class 2606 OID 212339)
 -- Name: ControlledParkingZones ControlledParkingZones_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5187,7 +5232,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4204 (class 2606 OID 195284)
+-- TOC entry 4190 (class 2606 OID 212344)
 -- Name: ControlledParkingZones ControlledParkingZones_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5196,7 +5241,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4201 (class 2606 OID 204885)
+-- TOC entry 4191 (class 2606 OID 212349)
 -- Name: ControlledParkingZones ControlledParkingZones_RestrictionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5205,7 +5250,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4205 (class 2606 OID 195294)
+-- TOC entry 4192 (class 2606 OID 212354)
 -- Name: ControlledParkingZones ControlledParkingZones_TimePeriodID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5214,7 +5259,7 @@ ALTER TABLE ONLY "toms"."ControlledParkingZones"
 
 
 --
--- TOC entry 4238 (class 2606 OID 208364)
+-- TOC entry 4193 (class 2606 OID 212359)
 -- Name: Lines Lines_AdditionalConditionID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5223,7 +5268,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4239 (class 2606 OID 208369)
+-- TOC entry 4194 (class 2606 OID 212364)
 -- Name: Lines Lines_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5232,7 +5277,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4240 (class 2606 OID 208374)
+-- TOC entry 4195 (class 2606 OID 212369)
 -- Name: Lines Lines_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5241,7 +5286,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4241 (class 2606 OID 208379)
+-- TOC entry 4196 (class 2606 OID 212374)
 -- Name: Lines Lines_GeomShapeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5250,7 +5295,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4242 (class 2606 OID 208384)
+-- TOC entry 4197 (class 2606 OID 212379)
 -- Name: Lines Lines_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5259,7 +5304,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4243 (class 2606 OID 208389)
+-- TOC entry 4198 (class 2606 OID 212384)
 -- Name: Lines Lines_NoLoadingTimeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5268,7 +5313,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4244 (class 2606 OID 208394)
+-- TOC entry 4199 (class 2606 OID 212389)
 -- Name: Lines Lines_NoWaitingTimeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5277,7 +5322,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4245 (class 2606 OID 208399)
+-- TOC entry 4200 (class 2606 OID 212394)
 -- Name: Lines Lines_RestrictionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5286,7 +5331,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4246 (class 2606 OID 208404)
+-- TOC entry 4201 (class 2606 OID 212399)
 -- Name: Lines Lines_UnacceptableTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5295,7 +5340,7 @@ ALTER TABLE ONLY "toms"."Lines"
 
 
 --
--- TOC entry 4196 (class 2606 OID 195226)
+-- TOC entry 4202 (class 2606 OID 212404)
 -- Name: ParkingTariffAreas ParkingTariffAreas_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5304,7 +5349,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4197 (class 2606 OID 195231)
+-- TOC entry 4203 (class 2606 OID 212409)
 -- Name: ParkingTariffAreas ParkingTariffAreas_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5313,7 +5358,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4198 (class 2606 OID 195236)
+-- TOC entry 4204 (class 2606 OID 212414)
 -- Name: ParkingTariffAreas ParkingTariffAreas_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5322,7 +5367,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4199 (class 2606 OID 195241)
+-- TOC entry 4205 (class 2606 OID 212419)
 -- Name: ParkingTariffAreas ParkingTariffAreas_MaxStayID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5331,7 +5376,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4200 (class 2606 OID 195246)
+-- TOC entry 4206 (class 2606 OID 212424)
 -- Name: ParkingTariffAreas ParkingTariffAreas_NoReturnID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5340,7 +5385,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4194 (class 2606 OID 204927)
+-- TOC entry 4207 (class 2606 OID 212429)
 -- Name: ParkingTariffAreas ParkingTariffAreas_RestrictionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5349,7 +5394,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4195 (class 2606 OID 195256)
+-- TOC entry 4208 (class 2606 OID 212434)
 -- Name: ParkingTariffAreas ParkingTariffAreas_TimePeriodID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5358,7 +5403,7 @@ ALTER TABLE ONLY "toms"."ParkingTariffAreas"
 
 
 --
--- TOC entry 4206 (class 2606 OID 195325)
+-- TOC entry 4209 (class 2606 OID 212439)
 -- Name: Proposals Proposals_ProposalStatusTypes_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5367,7 +5412,7 @@ ALTER TABLE ONLY "toms"."Proposals"
 
 
 --
--- TOC entry 4207 (class 2606 OID 195335)
+-- TOC entry 4218 (class 2606 OID 212444)
 -- Name: RestrictionsInProposals RestrictionsInProposals_ActionOnProposalAcceptance_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5376,7 +5421,7 @@ ALTER TABLE ONLY "toms"."RestrictionsInProposals"
 
 
 --
--- TOC entry 4208 (class 2606 OID 195340)
+-- TOC entry 4219 (class 2606 OID 212449)
 -- Name: RestrictionsInProposals RestrictionsInProposals_ProposalID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5385,7 +5430,7 @@ ALTER TABLE ONLY "toms"."RestrictionsInProposals"
 
 
 --
--- TOC entry 4209 (class 2606 OID 195345)
+-- TOC entry 4220 (class 2606 OID 212454)
 -- Name: RestrictionsInProposals RestrictionsInProposals_RestrictionTableID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5394,7 +5439,7 @@ ALTER TABLE ONLY "toms"."RestrictionsInProposals"
 
 
 --
--- TOC entry 4186 (class 2606 OID 195060)
+-- TOC entry 4210 (class 2606 OID 212459)
 -- Name: RestrictionPolygons RestrictionsPolygons_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5403,7 +5448,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4187 (class 2606 OID 195065)
+-- TOC entry 4211 (class 2606 OID 212464)
 -- Name: RestrictionPolygons RestrictionsPolygons_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5412,7 +5457,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4188 (class 2606 OID 195070)
+-- TOC entry 4212 (class 2606 OID 212469)
 -- Name: RestrictionPolygons RestrictionsPolygons_GeomShapeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5421,7 +5466,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4189 (class 2606 OID 195075)
+-- TOC entry 4213 (class 2606 OID 212474)
 -- Name: RestrictionPolygons RestrictionsPolygons_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5430,7 +5475,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4192 (class 2606 OID 195090)
+-- TOC entry 4214 (class 2606 OID 212479)
 -- Name: RestrictionPolygons RestrictionsPolygons_NoLoadingTimeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5439,7 +5484,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4193 (class 2606 OID 195095)
+-- TOC entry 4215 (class 2606 OID 212484)
 -- Name: RestrictionPolygons RestrictionsPolygons_NoWaitingTimeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5448,7 +5493,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4190 (class 2606 OID 195080)
+-- TOC entry 4216 (class 2606 OID 212489)
 -- Name: RestrictionPolygons RestrictionsPolygons_RestrictionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5457,7 +5502,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4191 (class 2606 OID 195085)
+-- TOC entry 4217 (class 2606 OID 212494)
 -- Name: RestrictionPolygons RestrictionsPolygons_TimePeriodID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5466,7 +5511,7 @@ ALTER TABLE ONLY "toms"."RestrictionPolygons"
 
 
 --
--- TOC entry 4214 (class 2606 OID 208192)
+-- TOC entry 4221 (class 2606 OID 212499)
 -- Name: Signs Signs_Compl_Signs_Faded_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5475,7 +5520,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4215 (class 2606 OID 208197)
+-- TOC entry 4222 (class 2606 OID 212504)
 -- Name: Signs Signs_Compl_Signs_Obscured_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5484,7 +5529,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4216 (class 2606 OID 208202)
+-- TOC entry 4223 (class 2606 OID 212509)
 -- Name: Signs Signs_Compl_Signs_TicketMachines_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5493,7 +5538,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4217 (class 2606 OID 208207)
+-- TOC entry 4224 (class 2606 OID 212514)
 -- Name: Signs Signs_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5502,7 +5547,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4218 (class 2606 OID 208212)
+-- TOC entry 4225 (class 2606 OID 212519)
 -- Name: Signs Signs_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5511,7 +5556,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4219 (class 2606 OID 208217)
+-- TOC entry 4226 (class 2606 OID 212524)
 -- Name: Signs Signs_MHTC_SignIlluminationTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5520,7 +5565,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4220 (class 2606 OID 208222)
+-- TOC entry 4227 (class 2606 OID 212529)
 -- Name: Signs Signs_SignConditionTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5529,7 +5574,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4221 (class 2606 OID 208227)
+-- TOC entry 4228 (class 2606 OID 212534)
 -- Name: Signs Signs_SignOrientationTypeID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5538,7 +5583,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4222 (class 2606 OID 208232)
+-- TOC entry 4229 (class 2606 OID 212539)
 -- Name: Signs Signs_SignTypes1_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5547,7 +5592,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4223 (class 2606 OID 208237)
+-- TOC entry 4230 (class 2606 OID 212544)
 -- Name: Signs Signs_SignTypes2_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5556,7 +5601,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4224 (class 2606 OID 208242)
+-- TOC entry 4231 (class 2606 OID 212549)
 -- Name: Signs Signs_SignTypes3_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5565,7 +5610,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4225 (class 2606 OID 208247)
+-- TOC entry 4232 (class 2606 OID 212554)
 -- Name: Signs Signs_SignTypes4_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5574,7 +5619,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4226 (class 2606 OID 208252)
+-- TOC entry 4233 (class 2606 OID 212559)
 -- Name: Signs Signs_Signs_Attachment_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5583,7 +5628,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4227 (class 2606 OID 208257)
+-- TOC entry 4234 (class 2606 OID 212564)
 -- Name: Signs Signs_Signs_Mount_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5592,7 +5637,7 @@ ALTER TABLE ONLY "toms"."Signs"
 
 
 --
--- TOC entry 4210 (class 2606 OID 195364)
+-- TOC entry 4235 (class 2606 OID 212569)
 -- Name: TilesInAcceptedProposals TilesInAcceptedProposals_ProposalID_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5601,7 +5646,7 @@ ALTER TABLE ONLY "toms"."TilesInAcceptedProposals"
 
 
 --
--- TOC entry 4211 (class 2606 OID 195369)
+-- TOC entry 4236 (class 2606 OID 212574)
 -- Name: TilesInAcceptedProposals TilesInAcceptedProposals_TileNr_fkey; Type: FK CONSTRAINT; Schema: toms; Owner: postgres
 --
 
@@ -5610,7 +5655,7 @@ ALTER TABLE ONLY "toms"."TilesInAcceptedProposals"
 
 
 --
--- TOC entry 4212 (class 2606 OID 204940)
+-- TOC entry 4237 (class 2606 OID 212579)
 -- Name: BayTypesInUse BayTypesInUse_GeomShapeGroupType_fkey; Type: FK CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5619,7 +5664,7 @@ ALTER TABLE ONLY "toms_lookups"."BayTypesInUse"
 
 
 --
--- TOC entry 4213 (class 2606 OID 204953)
+-- TOC entry 4238 (class 2606 OID 212584)
 -- Name: LineTypesInUse LineTypesInUse_GeomShapeGroupType_fkey; Type: FK CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5628,7 +5673,7 @@ ALTER TABLE ONLY "toms_lookups"."LineTypesInUse"
 
 
 --
--- TOC entry 4185 (class 2606 OID 195038)
+-- TOC entry 4239 (class 2606 OID 212589)
 -- Name: RestrictionPolygonTypesInUse RestrictionPolygonTypesInUse_GeomShapeGroupType_fkey; Type: FK CONSTRAINT; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5637,15 +5682,15 @@ ALTER TABLE ONLY "toms_lookups"."RestrictionPolygonTypesInUse"
 
 
 --
--- TOC entry 4395 (class 0 OID 195314)
--- Dependencies: 294
+-- TOC entry 4388 (class 0 OID 211848)
+-- Dependencies: 267
 -- Name: Proposals; Type: ROW SECURITY; Schema: toms; Owner: postgres
 --
 
 ALTER TABLE "toms"."Proposals" ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 4398 (class 3256 OID 208468)
+-- TOC entry 4391 (class 3256 OID 212638)
 -- Name: Proposals insertProposals; Type: POLICY; Schema: toms; Owner: postgres
 --
 
@@ -5653,7 +5698,7 @@ CREATE POLICY "insertProposals" ON "toms"."Proposals" FOR INSERT TO "toms_operat
 
 
 --
--- TOC entry 4400 (class 3256 OID 208470)
+-- TOC entry 4393 (class 3256 OID 212640)
 -- Name: Proposals insertProposals_admin; Type: POLICY; Schema: toms; Owner: postgres
 --
 
@@ -5661,7 +5706,7 @@ CREATE POLICY "insertProposals_admin" ON "toms"."Proposals" FOR INSERT TO "toms_
 
 
 --
--- TOC entry 4396 (class 3256 OID 208466)
+-- TOC entry 4389 (class 3256 OID 212636)
 -- Name: Proposals selectProposals; Type: POLICY; Schema: toms; Owner: postgres
 --
 
@@ -5669,7 +5714,7 @@ CREATE POLICY "selectProposals" ON "toms"."Proposals" FOR SELECT USING (true);
 
 
 --
--- TOC entry 4397 (class 3256 OID 208467)
+-- TOC entry 4390 (class 3256 OID 212637)
 -- Name: Proposals updateProposals; Type: POLICY; Schema: toms; Owner: postgres
 --
 
@@ -5677,7 +5722,7 @@ CREATE POLICY "updateProposals" ON "toms"."Proposals" FOR UPDATE TO "toms_operat
 
 
 --
--- TOC entry 4399 (class 3256 OID 208469)
+-- TOC entry 4392 (class 3256 OID 212639)
 -- Name: Proposals updateProposals_admin; Type: POLICY; Schema: toms; Owner: postgres
 --
 
@@ -5685,8 +5730,8 @@ CREATE POLICY "updateProposals_admin" ON "toms"."Proposals" FOR UPDATE TO "toms_
 
 
 --
--- TOC entry 4495 (class 0 OID 206111)
--- Dependencies: 321 4503
+-- TOC entry 4456 (class 0 OID 211908)
+-- Dependencies: 283 4496
 -- Name: BayTypesInUse_View; Type: MATERIALIZED VIEW DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5694,8 +5739,8 @@ REFRESH MATERIALIZED VIEW "toms_lookups"."BayTypesInUse_View";
 
 
 --
--- TOC entry 4496 (class 0 OID 206116)
--- Dependencies: 322 4503
+-- TOC entry 4461 (class 0 OID 211929)
+-- Dependencies: 288 4496
 -- Name: LineTypesInUse_View; Type: MATERIALIZED VIEW DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5703,8 +5748,8 @@ REFRESH MATERIALIZED VIEW "toms_lookups"."LineTypesInUse_View";
 
 
 --
--- TOC entry 4482 (class 0 OID 204919)
--- Dependencies: 308 4503
+-- TOC entry 4469 (class 0 OID 211967)
+-- Dependencies: 296 4496
 -- Name: RestrictionPolygonTypesInUse_View; Type: MATERIALIZED VIEW DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5712,8 +5757,8 @@ REFRESH MATERIALIZED VIEW "toms_lookups"."RestrictionPolygonTypesInUse_View";
 
 
 --
--- TOC entry 4481 (class 0 OID 204911)
--- Dependencies: 307 4503
+-- TOC entry 4476 (class 0 OID 211995)
+-- Dependencies: 303 4496
 -- Name: SignTypesInUse_View; Type: MATERIALIZED VIEW DATA; Schema: toms_lookups; Owner: postgres
 --
 
@@ -5721,15 +5766,15 @@ REFRESH MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View";
 
 
 --
--- TOC entry 4500 (class 0 OID 208425)
--- Dependencies: 326 4503
+-- TOC entry 4480 (class 0 OID 212013)
+-- Dependencies: 307 4496
 -- Name: TimePeriodsInUse_View; Type: MATERIALIZED VIEW DATA; Schema: toms_lookups; Owner: postgres
 --
 
 REFRESH MATERIALIZED VIEW "toms_lookups"."TimePeriodsInUse_View";
 
 
--- Completed on 2020-05-24 22:44:18
+-- Completed on 2020-05-25 22:40:47
 
 --
 -- PostgreSQL database dump complete
