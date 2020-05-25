@@ -606,14 +606,14 @@ class RestrictionTypeUtilsMixin():
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
-        currRestriction.setAttribute("CPZ", currentCPZ)
+        if currRestrictionLayer.name() != "Signs":
+            currRestriction.setAttribute("CPZ", currentCPZ)
 
         #currDate = self.proposalsManager.date()
 
         if currRestrictionLayer.name() == "Lines":
             currRestriction.setAttribute("RestrictionTypeID", 201)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
-
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
@@ -630,15 +630,13 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("NoReturnID", ptaNoReturnID)
             currRestriction.setAttribute("ParkingTariffArea", currentPTA)
 
-            #currRestriction.setAttribute("Bays_DateTime", currDate)
-
         elif currRestrictionLayer.name() == "Signs":
             currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
 
         elif currRestrictionLayer.name() == "RestrictionPolygons":
             currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
 
-        pass
+        return
 
     def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), level=Qgis.Info)
@@ -646,52 +644,23 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.geometry().length())
+
+            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                      currRestrictionLayer.fields().indexFromName("Length"), currRestriction.geometry().length())
-
-        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
-
-        currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
 
-        # Now need to clear some details
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRoadMarkingsFaded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRestrictionSignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_02"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_03"), None)
 
-        #currDate = self.proposalsManager.date()
-
-        if currRestrictionLayer.name() == "Lines":
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_DateTime"), currDate)
-            currRestriction.setAttribute("Lines_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
-            currRestriction.setAttribute("Surveyor", None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_PhotoTaken"), None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_02"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_03"), None)
-
-        elif currRestrictionLayer.name() == "Bays":
+        if currRestrictionLayer.name() == "Bays":
 
             currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
-
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ParkingTariffArea"), currentPTA)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_DateTime"), currDate)
-            currRestriction.setAttribute("Bays_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
-            currRestriction.setAttribute("Surveyor", None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_PhotoTaken"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_02"), None)
-
-        pass
 
         """
         def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):

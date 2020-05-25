@@ -239,7 +239,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QComboBox" name="BaysWordingID">
+          <widget class="QComboBox" name="AdditionalConditionID">
            <property name="currentIndex">
             <number>-1</number>
            </property>
@@ -259,7 +259,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Bays Wording:</string>
+            <string>Additional Condition:</string>
            </property>
           </widget>
          </item>
@@ -277,16 +277,6 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="1">
-          <widget class="QDateEdit" name="OpenDate">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="0">
           <widget class="QLabel" name="lbl_CPZ">
            <property name="text">
@@ -296,6 +286,13 @@
          </item>
          <item row="6" column="1">
           <widget class="QComboBox" name="CPZ">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QgsDateTimeEdit" name="OpenDate">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -330,7 +327,7 @@
          <item row="6" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Survey Date:</string>
+            <string>Last Update Date:</string>
            </property>
           </widget>
          </item>
@@ -344,7 +341,7 @@
          <item row="7" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Last User:</string>
+            <string>Last Changed By:</string>
            </property>
           </widget>
          </item>
@@ -541,7 +538,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="Photos_01">
+       <widget class="QWidget" name="Photo1">
         <attribute name="title">
          <string>Photo1</string>
         </attribute>
@@ -570,7 +567,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="Photos_2">
+       <widget class="QWidget" name="Photo2">
         <attribute name="title">
          <string>Photo2</string>
         </attribute>
@@ -604,78 +601,35 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="conformaceTab">
+       <widget class="QWidget" name="Photo3">
         <attribute name="title">
-         <string>Conformance</string>
+         <string>Photo3</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="QLabel" name="lbl_TimePeriod_2">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Fading:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="Compl_Bays_Faded"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lbl_MaxStay_2">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Sign issues:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="Compl_Bays_SignIssue"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Notes:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QTextEdit" name="Notes"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Photos taken:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QCheckBox" name="Bays_PhotoTaken">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QLabel" name="label_2">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>5</y>
+           <width>581</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>640</width>
+           <height>480</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Photo not found</string>
+         </property>
+        </widget>
        </widget>
       </widget>
      </item>
@@ -690,6 +644,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsDateTimeEdit</class>
+   <extends>QDateTimeEdit</extends>
+   <header>qgsdatetimeedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

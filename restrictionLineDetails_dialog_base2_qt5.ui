@@ -197,40 +197,40 @@
         <widget class="QComboBox" name="NoLoadingTimeID"/>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="lbl_OpenDate">
-         <property name="text">
-          <string>Effective Date:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QDateEdit" name="OpenDate_old">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
         <widget class="QLabel" name="lbl_CPZ">
          <property name="text">
           <string>CPZ:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QComboBox" name="CPZ">
          <property name="enabled">
           <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QgsDateTimeEdit" name="OpenDate">
          <property name="displayFormat">
           <string>dd-MMM-yyyy</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="AdditionalConditionID"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Additional Condition:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="lbl_OpenDate">
+         <property name="text">
+          <string>Effective Date:</string>
          </property>
         </widget>
        </item>
@@ -373,7 +373,7 @@
        <item row="5" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Survey Date:</string>
+          <string>Last Update Date:</string>
          </property>
         </widget>
        </item>
@@ -387,7 +387,7 @@
        <item row="6" column="0">
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Surveyor:</string>
+          <string>Last Change By:</string>
          </property>
         </widget>
        </item>
@@ -421,7 +421,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Photos_01">
+     <widget class="QWidget" name="Photo1">
       <attribute name="title">
        <string>Photo1</string>
       </attribute>
@@ -453,7 +453,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Photos_02">
+     <widget class="QWidget" name="Photo2">
       <attribute name="title">
        <string>Photo2</string>
       </attribute>
@@ -482,7 +482,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="Photo3">
       <attribute name="title">
        <string>Photo3</string>
       </attribute>
@@ -506,103 +506,6 @@
          </property>
          <property name="text">
           <string>Photo not found</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_6">
-      <attribute name="title">
-       <string>Conformance</string>
-      </attribute>
-      <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_TimePeriod_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Lines Fading:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="Compl_Lines_Faded"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lbl_TimePeriod_6">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Loading Marks Fading:</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="Compl_NoL_Faded"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="lbl_MaxStay_5">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Sign issues:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="Compl_Lines_SignIssue"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Notes:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QTextEdit" name="Notes"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Photos taken:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QCheckBox" name="Lines_PhotoTaken">
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>
