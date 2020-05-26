@@ -2,6 +2,8 @@
 -- CREATE ROLE toms_operator NOLOGIN;
 -- CREATE ROLE toms_public NOLOGIN;
 
+--CREATE USER "joe.bloggs" WITH PASSWORD 'password';  -- change user_name / password
+-- GRANT toms_operator TO "joe.bloggs"  -- can be one of the roles
 
 REVOKE ALL ON ALL TABLES IN SCHEMA addresses FROM toms_public, toms_operator, toms_admin;
 GRANT SELECT ON ALL TABLES IN SCHEMA addresses TO toms_public, toms_operator, toms_admin;
@@ -28,11 +30,6 @@ GRANT SELECT ON ALL TABLES IN SCHEMA local_authority TO toms_public, toms_operat
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
 
-REVOKE ALL ON ALL TABLES IN SCHEMA toms FROM toms_public, toms_operator, toms_admin;
-GRANT SELECT ON ALL TABLES IN SCHEMA toms TO toms_public, toms_operator, toms_admin;
-GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms TO toms_public, toms_operator, toms_admin;
-GRANT USAGE ON SCHEMA toms TO toms_public, toms_operator, toms_admin;
-
 REVOKE ALL ON ALL TABLES IN SCHEMA toms_lookups FROM toms_public, toms_operator, toms_admin;
 GRANT SELECT ON ALL TABLES IN SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
@@ -43,14 +40,23 @@ GRANT SELECT ON ALL TABLES IN SCHEMA topography TO toms_public, toms_operator, t
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA topography TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA topography TO toms_public, toms_operator, toms_admin;
 
+--- TOMs main tables
 
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Bays" TO toms_operator;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Lines" TO toms_operator;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Signs" TO toms_operator;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."RestrictionPolygons" TO toms_operator;
-GRANT SELECT, INSERT, UPDATE ON TABLE toms."Proposals" TO toms_operator;
-GRANT SELECT, INSERT, DELETE ON TABLE toms."RestrictionsInProposals" TO toms_operator;
+REVOKE ALL ON ALL TABLES IN SCHEMA toms FROM toms_public, toms_operator, toms_admin;
+GRANT SELECT ON ALL TABLES IN SCHEMA toms TO toms_public, toms_operator, toms_admin;
+GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms TO toms_public, toms_operator, toms_admin;
+GRANT USAGE ON SCHEMA toms TO toms_public, toms_operator, toms_admin;
 
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Bays" TO toms_operator, toms_admin;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Lines" TO toms_operator, toms_admin;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."Signs" TO toms_operator, toms_admin;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."RestrictionPolygons" TO toms_operator, toms_admin;
+GRANT SELECT, INSERT, DELETE ON TABLE toms."RestrictionsInProposals" TO toms_operator, toms_admin;
+GRANT SELECT, UPDATE ON TABLE toms."MapGrid" TO toms_operator, toms_admin;
+GRANT SELECT, INSERT ON TABLE toms."TilesInAcceptedProposals" TO toms_operator, toms_admin;
+GRANT SELECT, INSERT, UPDATE ON TABLE toms."Proposals" TO toms_operator, toms_admin;
+
+-- ALTER TABLE toms."Proposals" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE toms."Proposals" ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "updateProposals" ON toms."Proposals";
