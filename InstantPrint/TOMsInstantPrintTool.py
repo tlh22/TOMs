@@ -274,15 +274,21 @@ class TOMsInstantPrintTool(InstantPrintTool):
                                     self.tr("Could not find details for " + str(currTileNr)))
                 break
 
-            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) + " CurrRevisionNr: " + str(
-                tileWithDetails["CurrRevisionNr"]) + " RevisionDate: " + str(tileWithDetails["LastRevisionDate"])  +
-                                                                             " lastUpdateDate: " + currProposalOpenDate.toString('dd-MMM-yyyy'),
+            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) +
+                                      " CurrRevisionNr: " + #str(tileWithDetails["CurrRevisionNr"]) +
+                                            str(tileWithDetails.getRevisionNr_AtDate()) +
+                                      " RevisionDate: " + #str(tileWithDetails["LastRevisionDate"])  +
+                                            str(tileWithDetails.getLastRevisionDate_AtDate())  +
+                                      " lastUpdateDate: " + currProposalOpenDate.toString('dd-MMM-yyyy'),
                                      level=Qgis.Info)
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
-                composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"]))
+                """composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"]))
                 composerEffectiveDate.setText(
-                    '{date}'.format(date=tileWithDetails["LastRevisionDate"].toString('dd-MMM-yyyy')))
+                    '{date}'.format(date=tileWithDetails["LastRevisionDate"].toString('dd-MMM-yyyy')))"""
+                composerRevisionNr.setText(str(tileWithDetails.getRevisionNr_AtDate()))
+                composerEffectiveDate.setText(
+                    '{date}'.format(date=tileWithDetails.getLastRevisionDate_AtDate().toString('dd-MMM-yyyy')))
             else:
                 composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"] + 1))
                 # For the Proposal, use the current view date

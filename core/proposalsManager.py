@@ -258,3 +258,4 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             proposalsList.append([proposalDetails["ProposalID"], proposalDetails["ProposalTitle"], proposalDetails["ProposalStatusID"], proposalDetails["ProposalOpenDate"], proposalDetails])
 
         return proposalsList
+

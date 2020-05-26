@@ -786,10 +786,13 @@ class RestrictionTypeUtilsMixin():
         FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
         FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
 
-        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
-        if path_absolute == None:
+        photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
+        if photoPath == None:
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
             return
+
+        projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
+        path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
         layerName = currRestLayer.name()
 
@@ -905,7 +908,7 @@ class RestrictionTypeUtilsMixin():
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
-                                         'Are you you want to ACCEPT this proposal?. Accepting will make all the proposed changes permanent.',
+                                         'Do you want to ACCEPT this proposal?. Accepting will make all the proposed changes permanent.',
                                          QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 # open the proposal - and accept any other changes to the form
@@ -947,7 +950,7 @@ class RestrictionTypeUtilsMixin():
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
-                                         'Are you you want to REJECT this proposal?. Accepting will make all the proposed changes permanent.',
+                                         'Do you want to REJECT this proposal?. Accepting will make all the proposed changes permanent.',
                                          QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 # open the proposal - and accept any other changes to the form
