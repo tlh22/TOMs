@@ -119,9 +119,8 @@ class TOMsTile(QObject):
         self.lastRevisionDate_AtDate = value
 
     def setLastRevisionDate(self, value):
-        #self.thisTile[self.idxLastRevisionDate] = value
-        self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxLastRevisionDate, value)
-        #return self.thisTile.setAttribute("LastRevisionDate", value)
+        status = self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxLastRevisionDate, value)
+        return status
 
     def getTileRevisionNrAtDate(self, filterDate=None):
 
@@ -185,7 +184,8 @@ class TOMsTile(QObject):
 
         if not self.addRecordToTilesInAcceptedProposal(currProposal):
             return False
-
+        TOMsMessageLog.logMessage("In TOMsTile:updateTileDetailsOnProposalAcceptance... Success ...", level=Qgis.Info)
+        return True
 
     def updateTileRevisionNr(self, currProposal):
 
@@ -222,6 +222,7 @@ class TOMsTile(QObject):
 
     def addRecordToTilesInAcceptedProposal(self, currProposal):
         # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
+        TOMsMessageLog.logMessage("In TOMsTile:addRecordToTilesInAcceptedProposal...", level=Qgis.Info)
 
         newRecord = QgsFeature(self.tilesInAcceptedProposalsLayer.fields())
 

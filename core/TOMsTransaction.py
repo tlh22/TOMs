@@ -130,10 +130,10 @@ class TOMsTransaction(QObject):
                 self.currTransactionGroup.addLayer(layer)
                 TOMsMessageLog.logMessage("In createTransactionGroup. Adding " + str(layer.name()), level=Qgis.Info)
 
-                layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
-                layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
-                layer.editingStopped.connect(functools.partial(self.printMessage, layer, "editingStopped"))
-                layer.attributeValueChanged.connect(self.printAttribChanged)
+                #layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
+                #layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
+                #layer.editingStopped.connect(functools.partial(self.printMessage, layer, "editingStopped"))
+                #layer.attributeValueChanged.connect(self.printAttribChanged)
                 layer.raiseError.connect(functools.partial(self.printRaiseError, layer))
 
                 # layer.editCommandEnded.connect(functools.partial(self.printMessage, layer, "editCommandEnded"))
