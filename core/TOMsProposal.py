@@ -129,8 +129,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         return self.thisProposal.attribute("ProposalStatusID")
 
     def setProposalStatusID(self, value):
-        result = self.thisProposal.setAttribute("ProposalStatusID", value)   # this does not update. TODO: Understand why
-        result = self.proposalsLayer.changeAttributeValue(self.thisProposal.id(), "ProposalStatusID", value)   # this does update ??
+        #result = self.thisProposal.setAttribute("ProposalStatusID", value)   # this does not update. TODO: Understand why
+        result = self.proposalsLayer.changeAttributeValue(self.thisProposal.id(), self.idxProposalStatusID, value)   # this does update ??
         return result
 
     def getProposalOpenDate(self):
@@ -253,10 +253,10 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 currTileObject.setLastRevisionDate_AtDate(lastProposalOpendate)
 
                 if lastRevisionNr is not None:   # the assumption is that tiles without restrictions have a NULL revision number
-                    dictTilesInProposal[currTileObject.tileNr] = currTileObject
+                    dictTilesInProposal[currTileObject.tileNr()] = currTileObject
 
-        for tileNr, thisTile in dictTilesInProposal.items():
-            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(tileNr) + " RevisionNr: " + str(thisTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(thisTile.getLastRevisionDate_AtDate()), level=Qgis.Info)
+        for thisTileNr, thisTile in dictTilesInProposal.items():
+            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(thisTileNr) + " RevisionNr: " + str(thisTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(thisTile.getLastRevisionDate_AtDate()), level=Qgis.Info)
 
         return dictTilesInProposal
 
@@ -314,6 +314,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             # Now update Proposal
             if not self.setProposalStatusID(ProposalStatus.ACCEPTED):
                 return False
+
+            return True
 
     def rejectProposal(self):
 

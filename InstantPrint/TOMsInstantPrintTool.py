@@ -33,6 +33,7 @@ from qgis.gui import (
     QgisInterface, QgsMapTool, QgsRubberBand
     )
 import os
+from collections import OrderedDict
 
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
@@ -216,10 +217,10 @@ class TOMsInstantPrintTool(InstantPrintTool):
         firstTile = True
         for tile in self.tilesToPrint:
             if firstTile:
-                tileIDList = str(tile.attribute("id"))
+                tileIDList = str(tile)
                 firstTile = False
             else:
-                tileIDList = tileIDList + ',' + str(tile.attribute("id"))
+                tileIDList = tileIDList + ',' + str(tile)
 
         currLayoutAtlas.setFilterFeatures(True)
         currLayoutAtlas.setFilterExpression(' "id" in ({tileList})'.format(tileList=tileIDList))
@@ -283,14 +284,11 @@ class TOMsInstantPrintTool(InstantPrintTool):
                                      level=Qgis.Info)
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
-                """composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"]))
-                composerEffectiveDate.setText(
-                    '{date}'.format(date=tileWithDetails["LastRevisionDate"].toString('dd-MMM-yyyy')))"""
                 composerRevisionNr.setText(str(tileWithDetails.getRevisionNr_AtDate()))
                 composerEffectiveDate.setText(
                     '{date}'.format(date=tileWithDetails.getLastRevisionDate_AtDate().toString('dd-MMM-yyyy')))
             else:
-                composerRevisionNr.setText(str(tileWithDetails["CurrRevisionNr"] + 1))
+                composerRevisionNr.setText(str(tileWithDetails.getRevisionNr() + 1))
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
                     '{date}'.format(date=currProposalOpenDate.toString('dd-MMM-yyyy')))
@@ -376,14 +374,14 @@ class TOMsInstantPrintTool(InstantPrintTool):
         # set the dialog (somehow)
 
         tilesToPrint = []
-        idxMapTileId = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
+        #idxMapTileId = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
 
-        tileSet = set()
-        for tileNr, tile in tileDictionary.items():
-            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(tile["id"]) + " CurrRevisionNr: " + str(tile["CurrRevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
-            tileSet.add(tile)
+        #tileSet = set()
+        for currTileNr, currTile in tileDictionary.items():
+            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(currTileNr) + ":" +str(currTile.tileNr()) + " CurrRevisionNr: " + str(currTile.revisionNr()) + " RevisionDate: " + str(currTile.getRevisionNr_AtDate()), level=Qgis.Info)
+            #tileSet.add(tile)
 
-        self.tileListDialog = printListDialog(tileSet, idxMapTileId)
+        self.tileListDialog = printListDialog(tileDictionary)
 
         self.tileListDialog.show()
 
@@ -402,7 +400,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
 
 class printListDialog(printListDialog, QDialog):
-    def __init__(self, initValues, idxValue, parent=None):
+    def __init__(self, initValuesDict, parent=None):
         QDialog.__init__(self, parent)
 
         # initValues is set of features (in this case MapTile features); idxValue is the index to the set
@@ -411,9 +409,10 @@ class printListDialog(printListDialog, QDialog):
 
         TOMsMessageLog.logMessage("In printListDialog. Initiating ...",             level=Qgis.Info)
 
-        self.initValues = initValues
-        self.idxValue = idxValue
-        self.tilesToPrint = self.initValues.copy()
+        self.initValuesDict = initValuesDict # set
+
+        #self.idxValue = idxValue
+        self.tilesToPrint = self.initValuesDict.copy()
 
         self.LIST = self.findChild(QListWidget, "tileList")
         self.cbToggleTiles = self.findChild(QCheckBox, "cb_ToggleTiles")
@@ -442,27 +441,21 @@ class printListDialog(printListDialog, QDialog):
 
     def addFeatureToSet(self, valueToAdd):
 
-        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
-            attr = feature.attributes()
-            currValue = attr[self.idxValue]
-
-            if int(currValue) == int(valueToAdd):
-                self.tilesToPrint.add(feature)
+        for feature in sorted(self.initValuesDict):
+            if int(feature) == int(valueToAdd):
+                self.tilesToPrint[feature] = self.initValues[feature]
                 TOMsMessageLog.logMessage(
-                    "In TOMsTileListDialog. Adding: " + str(currValue) + " ; " + str(len(self.tilesToPrint)),
+                    "In TOMsTileListDialog. Adding: " + str(feature) + " ; " + str(len(self.tilesToPrint)),
                     level=Qgis.Info)
                 return
 
     def removedFeatureFromSet(self, valueToRemove):
 
-        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
-            attr = feature.attributes()
-            currValue = attr[self.idxValue]
-
-            if int(currValue) == int(valueToRemove):
-                self.tilesToPrint.remove(feature)
+        for feature in sorted(self.initValuesDict):
+            if int(feature) == int(valueToRemove):
+                del self.tilesToPrint[feature]
                 TOMsMessageLog.logMessage(
-                    "In TOMsTileListDialog. Removing: " + str(currValue) + " ; " + str(len(self.tilesToPrint)) ,
+                    "In TOMsTileListDialog. Removing: " + str(feature) + " ; " + str(len(self.tilesToPrint)) ,
                     level=Qgis.Info)
                 return
 
@@ -479,9 +472,6 @@ class printListDialog(printListDialog, QDialog):
                 # attr = feature.attributes()
                 element = QListWidgetItem(self.LIST.item(i).text())
                 self.LIST.item(i).setCheckState(Qt.Checked)
-                """TOMsMessageLog.logMessage(
-                    "In TOMsTileListDialog. In toggleValues. setting: " + str(self.LIST.item(i).text()),
-                    level=Qgis.Info)"""
 
         else:
 
@@ -497,17 +487,13 @@ class printListDialog(printListDialog, QDialog):
                                  level=Qgis.Info)
 
         self.LIST.clear()
+        #for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
 
-        for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
-            attr = feature.attributes()
-            value = attr[self.idxValue]
-            element = QListWidgetItem(str(value))
-            element.setData(Qt.UserRole, attr[self.idxValue])
+        for feature in sorted(self.initValuesDict):
+            element = QListWidgetItem(str(feature))
+            element.setData(Qt.UserRole, str(feature))
 
-            """TOMsMessageLog.logMessage("In populateTileListDialog. Set State for " + str(attr[self.idxValue]),
-                                     level=Qgis.Info)"""
-
-            self.tilesToPrint.add(feature)
+            #self.tilesToPrint.add(feature)
             element.setCheckState(Qt.Checked)
 
             self.LIST.addItem(element)
@@ -518,10 +504,8 @@ class printListDialog(printListDialog, QDialog):
         TOMsMessageLog.logMessage("In TOMsTileListDialog. In getValues. Len List = " + str(len(self.tilesToPrint)),
                                  level=Qgis.Info)
 
-        for feature in sorted(self.tilesToPrint, key=lambda f: f[self.idxValue]):
-            attr = feature.attributes()
-            currValue = attr[self.idxValue]
-            TOMsMessageLog.logMessage("In Choose tiles form ... Returning " + str(attr[self.idxValue]),
+        for feature in sorted(self.tilesToPrint):
+            TOMsMessageLog.logMessage("In Choose tiles form ... Returning " + str(feature),
                                      level=Qgis.Info)
 
         return self.tilesToPrint

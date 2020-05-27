@@ -126,9 +126,11 @@ class TOMsProposalElement(QObject):
 
                 dictTilesInRestriction[currTileNr] = currTile
 
-                TOMsMessageLog.logMessage(
+        TOMsMessageLog.logMessage(
                     "In getTilesForRestriction. len tileSet: " + str(len(dictTilesInRestriction)),
                     level=Qgis.Info)
+        for thisTile in dictTilesInRestriction:
+            TOMsMessageLog.logMessage('In getTilesForRestriction. tiles returned ... {}'.format(thisTile), level=Qgis.Info)
 
         return dictTilesInRestriction
 
