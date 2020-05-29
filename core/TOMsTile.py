@@ -20,22 +20,12 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from TOMs.core.TOMsMessageLog import (TOMsMessageLog)
-#from TOMs.core.TOMsProposal import (TOMsProposal)
+
 from qgis.core import (
     Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsFeatureRequest,
     QgsRectangle, QgsExpression, NULL
-)
-
-from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
-
-#from .TOMsProposalElement import *
-#from ..core.TOMsProposal import (TOMsProposal)
-
-from ..constants import (
-    ProposalStatus,
-    RestrictionAction
 )
 
 class TOMsTile(QObject):
@@ -78,7 +68,6 @@ class TOMsTile(QObject):
             request = QgsFeatureRequest().setFilterExpression(query)
             for tile in self.tilesLayer.getFeatures(request):
                 self.thisTile = tile  # make assumption that only one row
-                #self.thisTile.setFields(self.tileLayerFields)
                 TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile found ",
                                          level=Qgis.Info)
                 return True
@@ -93,15 +82,13 @@ class TOMsTile(QObject):
     def tileNr(self):
         return self.thisTileNr
 
-    def revisionNr(self):
+    def getCurrentRevisionNr(self):
         return self.thisTile.attribute("CurrRevisionNr")
 
     def setRevisionNr(self, value):
         TOMsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), level=Qgis.Info)
-        #self.thisTile[self.idxRevisionNr] = value
         status = self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxRevisionNr, value)
         return status
-        #return self.thisTile.setAttribute("RevisionNr", value)
 
     def getRevisionNr_AtDate(self):
         return self.revisionNr_AtDate
@@ -128,8 +115,7 @@ class TOMsTile(QObject):
 
         if filterDate is None:
             filterDate = self.proposalsManager.date()
-
-        #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
+        TOMsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate. Using {}".format(filterDate), level=Qgis.Info)
 
         queryString = "\"TileNr\" = " + str(self.thisTileNr)
 
@@ -138,8 +124,8 @@ class TOMsTile(QObject):
         expr = QgsExpression(queryString)
 
         # Grab the results from the layer
+        tileProposal = self.proposalsManager.cloneCurrentProposal()
         features = self.tilesInAcceptedProposalsLayer.getFeatures(QgsFeatureRequest(expr))
-        tileProposal = self.proposalsManager.currentProposalObject()
 
         for feature in sorted(features, key=lambda f: f[2], reverse=True):
             lastProposalID = feature["ProposalID"]
@@ -152,7 +138,6 @@ class TOMsTile(QObject):
                     level=Qgis.Info)
                 break
 
-            #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
             lastProposalOpendate = tileProposal.getProposalOpenDate()
 
             TOMsMessageLog.logMessage(
@@ -194,7 +179,7 @@ class TOMsTile(QObject):
         # This will update the revision number within "Tiles" and add a record to "TilesWithinAcceptedProposals"
 
         TOMsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.revisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), level=Qgis.Info)
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.getCurrentRevisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), level=Qgis.Info)
 
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
@@ -205,10 +190,10 @@ class TOMsTile(QObject):
             return False
         #lastRevisionNr, lastProposalOpendate = self.getTileRevisionNrAtDate(self.currProposal.getProposalOpenDate())
 
-        if self.revisionNr() is None or self.revisionNr() == NULL or self.revisionNr() == 0:
+        if self.getCurrentRevisionNr() is None or self.getCurrentRevisionNr() == NULL or self.getCurrentRevisionNr() == 0:
             self.revisionNrForProposal = 1
         else:
-            self.revisionNrForProposal = self.revisionNr() + 1
+            self.revisionNrForProposal = self.getCurrentRevisionNr() + 1
 
         TOMsMessageLog.logMessage(
             "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(self.revisionNrForProposal) + " revisionDate: " + str(currProposal.getProposalOpenDate()), level=Qgis.Info)

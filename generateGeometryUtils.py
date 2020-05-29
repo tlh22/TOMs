@@ -744,32 +744,7 @@ class generateGeometryUtils:
                 TOMsMessageLog.logMessage(
                     "In generateBayLabelLeader. label_X set for " + str(feature.attribute("GeometryID")), level=Qgis.Info)
 
-                """
-                # now generate line
-                points = []
-                pt1 = QgsPoint(feature.geometry().interpolate(length/2.0).asPoint())
-                points.append(pt1)
-                pt2 = QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))
-                points.append(pt2)
-
-                for i, pt in enumerate(points):
-                    TOMsMessageLog.logMessage(
-                        "In generateBayLabelLeader. pt: " + str(i) + "; " + pt.asWkt(), level=Qgis.Info)
-                    # + ":" + QgsWkbTypes.displayString(pt.wkbType())
-
-                lineGeom = QgsGeometry.fromPolyline(points)
-
-                TOMsMessageLog.logMessage(
-                    "In generateBayLabelLeader. line: " + lineGeom.asWkt() ,
-                    level=Qgis.Info)
-                
-                return lineGeom
-                """
                 return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().interpolate(length/2.0).asPoint()), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
-
-            pass
-
-        pass
 
         return None
 
@@ -795,23 +770,17 @@ class generateGeometryUtils:
                 # now generate line
                 return QgsGeometry.fromPolyline([QgsPoint(feature.geometry().nearestPoint().asPoint()), QgsPoint(feature.attribute("label_X"), feature.attribute("label_Y"))])
 
-            pass
-
-        pass
-
         return None
 
     @staticmethod
     def getMininumScaleForDisplay():
-        #TOMsMessageLog.logMessage("In getMininumScaleForDisplay", level=Qgis.Info)
 
         minScale = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('MinimumTextDisplayScale')
 
-        #TOMsMessageLog.logMessage("In getMininumScaleForDisplay. minScale(1): " + str(minScale), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getMininumScaleForDisplay. minScale(1): " + str(minScale), level=Qgis.Info)
 
         if minScale == None:
             minScale = 1250
-        #TOMsMessageLog.logMessage("In getMininumScaleForDisplay. minScale: " + str(minScale), level=Qgis.Info)
 
         return minScale
 
@@ -819,6 +788,12 @@ class generateGeometryUtils:
     def getWaitingLoadingRestrictionLabelText(feature):
 
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", level=Qgis.Info)
+
+        minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
+        currScale = float(iface.mapCanvas().scale())
+
+        if currScale > minScale:
+            return None, None
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
@@ -844,19 +819,17 @@ class generateGeometryUtils:
             if CPZWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
-        """if waitingTimeID == 1:  # 'At Any Time'
-            waitDesc = None
-
-        if loadingTimeID == 1:  # 'At Any Time'
-            loadDesc = None """
-
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
 
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
-        #TOMsMessageLog.logMessage("In getBayRestrictionLabelText", level=Qgis.Info)
+        minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
+        currScale = float(iface.mapCanvas().scale())
+
+        if currScale > minScale:
+            return None, None, None
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
