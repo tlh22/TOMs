@@ -33,7 +33,7 @@ from qgis.gui import (
     QgisInterface, QgsMapTool, QgsRubberBand
     )
 import os
-from collections import OrderedDict
+import re
 
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
@@ -152,6 +152,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     printProposal = TOMsProposal(self.proposalsManager, proposalNrForPrinting)
                     # self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
                     self.openDateForPrintProposal = printProposal.getProposalOpenDate()
+                    TOMsMessageLog.logMessage("In TOMsExport. Open date for printing is {}".format(self.openDateForPrintProposal), level=Qgis.Info)
                 else:
                     return
 
@@ -183,14 +184,24 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.TOMsSetAtlasValues(currPrintLayout)
 
-        currRevisionDate = self.proposalsManager.date()
+
+        if printProposalObject.thisProposalNr == 0:
+            formatted_currProposalTitle = "CurrentRestrictions_({date})".format(
+                date=self.proposalsManager.date().toString('yyyyMMMdd'))
+            currRevisionDate = self.proposalsManager.date()
+        else:
+            currProposalTitle = printProposalObject.getProposalTitle()
+            formatted_currProposalTitle = re.sub(r'[^\w]', '_', currProposalTitle)
+            currRevisionDate = printProposalObject.getProposalOpenDate()
+
+        currProposalOpenDate = currRevisionDate  # TODO:Need to check if this is needed ...
+
+        TOMsMessageLog.logMessage("In TOMsExportAtlas. printProposal:{}|".format(printProposalObject.thisProposalNr),
+                                  level=Qgis.Info)
 
         # get the map tiles that are affected by the Proposal
-        # self.getProposalTileList(currProposalID, currRevisionDate)
 
         proposalTileDictionaryForDate = printProposalObject.getProposalTileDictionaryForDate(currRevisionDate)
-        """self.tileSet = set(
-            proposalTileDictionaryForDate)"""  # TODO: Change around use of tileSet - also might be good to have a current proposal as an object in proposalManager...
 
         # Now check which tiles to use
         self.tilesToPrint = self.TOMsChooseTiles(proposalTileDictionaryForDate)
@@ -242,14 +253,6 @@ class TOMsInstantPrintTool(InstantPrintTool):
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Missing label in Layout"),
                                 self.tr("Missing label 'printTypeDetails'"))
 
-            # currProposalTitle, currProposalOpenDate = self.getProposalTitle(currProposalID)
-            #printProposal = printProposalObject
-        currProposalTitle = printProposalObject.getProposalTitle()
-        currProposalOpenDate = printProposalObject.getProposalOpenDate()
-
-        if printProposalObject.thisProposalNr == 0:
-            currProposalTitle = "CurrentRestrictions_({date})".format(
-                date=self.proposalsManager.date().toString('yyyyMMMdd'))
 
         TOMsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currLayoutAtlas.count()) + " items ....",
                                  level=Qgis.Info)
@@ -266,7 +269,6 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
             currLayoutAtlas.refreshCurrentFeature()
 
-            #tileWithDetails = self.tileFromTileSet(currTileNr)
             tileWithDetails = proposalTileDictionaryForDate[currTileNr]
 
             if tileWithDetails == None:
@@ -288,25 +290,36 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 composerEffectiveDate.setText(
                     '{date}'.format(date=tileWithDetails.getLastRevisionDate_AtDate().toString('dd-MMM-yyyy')))
             else:
-                composerRevisionNr.setText(str(tileWithDetails.getRevisionNr() + 1))
+                composerRevisionNr.setText(str(tileWithDetails.getCurrentRevisionNr() + 1))
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
                     '{date}'.format(date=currProposalOpenDate.toString('dd-MMM-yyyy')))
 
-            filename = currProposalTitle + "_" + str(
+            TOMsMessageLog.logMessage("In TOMsExportAtlas. status: {}; composerRevisionNr: {}; effectiveDate: {}".format(self.proposalForPrintingStatusText, composerRevisionNr.text(), composerEffectiveDate.text()),
+                                     level=Qgis.Info)
+
+
+            filename = formatted_currProposalTitle + "_" + str(
                 currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+
             outputFile = os.path.join(dirName, filename)
 
             exporter = QgsLayoutExporter(currLayoutAtlas.layout())
 
+            TOMsMessageLog.logMessage(
+                "In TOMsExportAtlas. outputfile: {}; type: {}".format(
+                    outputFile, self.dialogui.comboBox_fileformat.currentText().lower()),
+                level=Qgis.Info)
+
             if self.dialogui.comboBox_fileformat.currentText().lower() == u"pdf":
                 result = exporter.exportToPdf(outputFile, QgsLayoutExporter.PdfExportSettings())
-                # success = currLayoutAtlas.composition().exportAsPDF(outputFile)
+            elif self.dialogui.comboBox_fileformat.currentText().lower() == u"png":
+                result = exporter.exportToImage(outputFile, QgsLayoutExporter.ImageExportSettings())
+            elif self.dialogui.comboBox_fileformat.currentText().lower() == u"svg":
+                result = exporter.exportToSvg(outputFile, QgsLayoutExporter.SvgExportSettings())
             else:
-                result = exporter.exportToImage(outputFile, 'png', QgsLayoutExporter.ImageExportSettings())
-                """image = currLayoutAtlas.composition().printPageAsRaster(0)
-                if not image.isNull():
-                    success = image.save(outputFile)"""
+                QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
+                                    self.tr("No type choosen " + exporter.errorFile()))
 
             if result != QgsLayoutExporter.Success:
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
@@ -378,7 +391,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         #tileSet = set()
         for currTileNr, currTile in tileDictionary.items():
-            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(currTileNr) + ":" +str(currTile.tileNr()) + " CurrRevisionNr: " + str(currTile.revisionNr()) + " RevisionDate: " + str(currTile.getRevisionNr_AtDate()), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(currTileNr) + ":" +str(currTile.tileNr()) + " CurrRevisionNr: " + str(currTile.getCurrentRevisionNr()) + " RevisionDate: " + str(currTile.getRevisionNr_AtDate()), level=Qgis.Info)
             #tileSet.add(tile)
 
         self.tileListDialog = printListDialog(tileDictionary)
