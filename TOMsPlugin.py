@@ -92,6 +92,8 @@ class TOMs:
         # initialize plugin directory
         #self.plugin_dir = os.path.dirname(__file__)
 
+        # test
+
         # Declare instance attributes
         self.actions = []   # ?? check - assume it initialises array of actions
 
