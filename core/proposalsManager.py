@@ -29,7 +29,7 @@ from qgis.core import (
     QgsProject, QgsRectangle
 )
 
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
 from ..constants import (
     ProposalStatus,
@@ -71,7 +71,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         #ProposalTypeUtilsMixin.__init__(self)
 
         self.iface = iface
-        self.tableNames = TOMSLayers(self.iface)
+        self.tableNames = TOMsLayers(self.iface)
         #self.tableNames.TOMsLayersSet.connect(self.setRestrictionLayers)
 
         self.__date = QDate.currentDate()

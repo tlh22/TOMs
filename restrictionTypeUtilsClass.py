@@ -137,8 +137,7 @@ class TOMsParams(QObject):
     def setParam(self, param):
         return self.TOMsParamsDict.get(param)
 
-class TOMSLayers(QObject):
-
+class TOMsLayers(QObject):
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
     TOMsLayersSet = pyqtSignal()
@@ -785,6 +784,7 @@ class RestrictionTypeUtilsMixin():
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
                 TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
+
 
     def onSaveProposalFormDetails(self, currProposalRecord, currProposalObject, proposalsLayer, proposalsDialog, proposalTransaction):
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails.", level=Qgis.Info)
