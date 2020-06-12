@@ -33,7 +33,7 @@ ALTER TABLE public."Signs" SET SCHEMA toms;
 ALTER TABLE public."TilesInAcceptedProposals" SET SCHEMA toms;
 
 -- toms_lookups
-ALTER TABLE public."ActionOnProposalAcceptanceTypes"  SET SCHEMA toms_lookups;
+ALTER TABLE public."ActionOnProposalAcceptanceTypes" SET SCHEMA toms_lookups;
 ALTER TABLE "baysWordingTypes" RENAME TO "AdditionalConditionTypes";
 ALTER TABLE public."AdditionalConditionTypes" SET SCHEMA toms_lookups;
 -- TODO: rename columns, etc
@@ -49,7 +49,8 @@ ALTER TABLE public."SignTypes" SET SCHEMA toms_lookups;
 ALTER TABLE public."TimePeriods" SET SCHEMA toms_lookups;
 
 -- compliance lookups
-ALTER TABLE public."BayLinesFadedTypes"  SET SCHEMA compliance_lookups;
+ALTER TABLE public."BayLinesFadedTypes" RENAME TO "BaysLinesFadedTypes";
+ALTER TABLE public."BaysLinesFadedTypes"  SET SCHEMA compliance_lookups;
 ALTER TABLE public."BaysLines_SignIssueTypes"  SET SCHEMA compliance_lookups;
 ALTER TABLE public."SignAttachmentTypes"  SET SCHEMA compliance_lookups;
 ALTER TABLE public."SignFadedTypes"  SET SCHEMA compliance_lookups;
@@ -62,18 +63,18 @@ ALTER TABLE public."LookupCodeTransfers_Bays"  SET SCHEMA transfer;
 ALTER TABLE public."LookupCodeTransfers_Lines"  SET SCHEMA transfer;
 
 -- *** Create sequences
--- BayLinesFadedTypes_Code_seq
-CREATE SEQUENCE compliance_lookups."BayLinesFadedTypes_Code_seq"
+-- BaysLinesFadedTypes_Code_seq
+CREATE SEQUENCE compliance_lookups."BaysLinesFadedTypes_Code_seq"
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER SEQUENCE compliance_lookups."BayLinesFadedTypes_Code_seq"
+ALTER SEQUENCE compliance_lookups."BaysLinesFadedTypes_Code_seq"
     OWNER TO postgres;
 
-GRANT ALL ON SEQUENCE compliance_lookups."BayLinesFadedTypes_Code_seq" TO postgres;
+GRANT ALL ON SEQUENCE compliance_lookups."BaysLinesFadedTypes_Code_seq" TO postgres;
 
 -- BaysLines_SignIssueTypes_Code_seq
 CREATE SEQUENCE compliance_lookups."BaysLines_SignIssueTypes_Code_seq"
@@ -101,18 +102,18 @@ ALTER SEQUENCE compliance_lookups."ConditionTypes_Code_seq"
 
 GRANT ALL ON SEQUENCE compliance_lookups."ConditionTypes_Code_seq" TO postgres;
 
--- MHTC_CheckIssueType_Code_seq
-CREATE SEQUENCE compliance_lookups."MHTC_CheckIssueType_Code_seq"
+-- MHTC_CheckIssueTypes_Code_seq
+CREATE SEQUENCE compliance_lookups."MHTC_CheckIssueTypes_Code_seq"
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER SEQUENCE compliance_lookups."MHTC_CheckIssueType_Code_seq"
+ALTER SEQUENCE compliance_lookups."MHTC_CheckIssueTypes_Code_seq"
     OWNER TO postgres;
 
-GRANT ALL ON SEQUENCE compliance_lookups."MHTC_CheckIssueType_Code_seq" TO postgres;
+GRANT ALL ON SEQUENCE compliance_lookups."MHTC_CheckIssueTypes_Code_seq" TO postgres;
 
 -- MHTC_CheckStatus_Code_seq
 CREATE SEQUENCE compliance_lookups."MHTC_CheckStatus_Code_seq"
@@ -349,19 +350,6 @@ ALTER SEQUENCE toms."Signs_id_seq"
 
 GRANT ALL ON SEQUENCE toms."Signs_id_seq" TO postgres;
 
--- ActionOnProposalAcceptanceTypes_Code_seq
-CREATE SEQUENCE toms_lookups."ActionOnProposalAcceptanceTypes_Code_seq"
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE toms_lookups."ActionOnProposalAcceptanceTypes_Code_seq"
-    OWNER TO postgres;
-
-GRANT ALL ON SEQUENCE toms_lookups."ActionOnProposalAcceptanceTypes_Code_seq" TO postgres;
-
 -- AdditionalConditionTypes_Code_seq
 CREATE SEQUENCE toms_lookups."AdditionalConditionTypes_Code_seq"
     INCREMENT 1
@@ -546,27 +534,40 @@ GRANT ALL ON SEQUENCE topography.os_mastermap_topography_polygons_gid_seq TO pos
 
 -- *** Drop any fkeys that stop changes
 -- RestrictionsInProposals
+
 ALTER TABLE toms."RestrictionsInProposals" DROP CONSTRAINT "RestrictionsInProposals_ActionOnProposalAcceptance_fkey";
+ALTER TABLE toms."RestrictionsInProposals" DROP CONSTRAINT "RestrictionsInProposals_RestrictionTableID_fkey";
+ALTER TABLE toms."RestrictionsInProposals" DROP CONSTRAINT "RestrictionsInProposals_pk";
 
 -- *** Change any tables
--- BayLinesFadedTypes
-ALTER TABLE compliance_lookups."BayLinesFadedTypes" DROP COLUMN id;
-ALTER TABLE compliance_lookups."BayLinesFadedTypes" DROP COLUMN "Comment";
 
-ALTER TABLE compliance_lookups."BayLinesFadedTypes"
-    ALTER COLUMN "Code" SET DEFAULT nextval('compliance_lookups."BayLinesFadedTypes_Code_seq"'::regclass);
+-- BaysLinesFadedTypes
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes" DROP CONSTRAINT "BayLinesFadedTypes_pkey";
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes" DROP COLUMN id;
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes" DROP COLUMN "Comment";
 
-ALTER TABLE compliance_lookups."BayLinesFadedTypes"
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
+
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes"
+    ALTER COLUMN "Code" SET DEFAULT nextval('compliance_lookups."BaysLinesFadedTypes_Code_seq"'::regclass);
+
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes"
     ALTER COLUMN "Code" SET NOT NULL;
 
-ALTER TABLE compliance_lookups."BayLinesFadedTypes"
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
-ALTER TABLE compliance_lookups."BayLinesFadedTypes"
-    ADD CONSTRAINT "BayLinesFadedTypes_pkey" PRIMARY KEY ("Code");
+
+ALTER TABLE compliance_lookups."BaysLinesFadedTypes"
+    ADD CONSTRAINT "BaysLinesFadedTypes_pkey" PRIMARY KEY ("Code");
 
 -- BaysLines_SignIssueTypes
+ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes" DROP CONSTRAINT "BaysLines_SignIssueTypes_pkey";
 ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes" DROP COLUMN id;
 ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes" DROP COLUMN "Comment";
+
+ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
 
 ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
     ALTER COLUMN "Code" SET DEFAULT nextval('compliance_lookups."BaysLines_SignIssueTypes_Code_seq"'::regclass);
@@ -576,6 +577,7 @@ ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
 
 ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
+
 ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
     ADD CONSTRAINT "BaysLines_SignIssueTypes_pkey" PRIMARY KEY ("Code");
 
@@ -601,6 +603,9 @@ ALTER TABLE compliance_lookups."SignFadedTypes"
     ALTER COLUMN "Code" SET NOT NULL;
 
 ALTER TABLE compliance_lookups."SignFadedTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
+
+ALTER TABLE compliance_lookups."SignFadedTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
 ALTER TABLE compliance_lookups."SignFadedTypes"
     ADD CONSTRAINT "SignFadedTypes_Code_key" UNIQUE ("Code");
@@ -611,6 +616,9 @@ ALTER TABLE compliance_lookups."SignMountTypes"
 
 ALTER TABLE compliance_lookups."SignMountTypes"
     ALTER COLUMN "Code" SET NOT NULL;
+
+ALTER TABLE compliance_lookups."SignMountTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
 
 ALTER TABLE compliance_lookups."SignMountTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
@@ -625,6 +633,9 @@ ALTER TABLE compliance_lookups."SignObscurredTypes"
     ALTER COLUMN "Code" SET NOT NULL;
 
 ALTER TABLE compliance_lookups."SignObscurredTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
+
+ALTER TABLE compliance_lookups."SignObscurredTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
 ALTER TABLE compliance_lookups."SignObscurredTypes"
     ADD CONSTRAINT "SignObscurredTypes_Code_key" UNIQUE ("Code");
@@ -636,18 +647,30 @@ ALTER TABLE compliance_lookups."TicketMachineIssueTypes"
     ALTER COLUMN "Code" SET NOT NULL;
 
 ALTER TABLE compliance_lookups."TicketMachineIssueTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
+
+ALTER TABLE compliance_lookups."TicketMachineIssueTypes"
     ALTER COLUMN "Code" SET STORAGE PLAIN;
 ALTER TABLE compliance_lookups."TicketMachineIssueTypes"
     ADD CONSTRAINT "TicketMachineIssueTypes_Code_key" UNIQUE ("Code");
 
+-- AdditionalConditionTypes
+ALTER TABLE toms_lookups."AdditionalConditionTypes" DROP CONSTRAINT "baysWordingTypes_pkey";
+ALTER TABLE toms_lookups."AdditionalConditionTypes" DROP COLUMN id;
+
+ALTER TABLE toms_lookups."AdditionalConditionTypes"
+    ALTER COLUMN "Code" TYPE INT USING "Code"::integer;
+
+ALTER TABLE toms_lookups."AdditionalConditionTypes"
+    ADD CONSTRAINT "AdditionalConditionTypes_pkey" PRIMARY KEY ("Code");
+
 -- ActionOnProposalAcceptanceTypes
-ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes" DROP COLUMN id;
+ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes" DROP CONSTRAINT "ActionOnProposalAcceptanceTypes_pkey";
+ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes" RENAME COLUMN "id" TO "Code";
 
 ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes"
     ALTER COLUMN "Description" SET NOT NULL;
 
-ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes"
-    ADD COLUMN "Code" integer NOT NULL DEFAULT nextval('toms_lookups."ActionOnProposalAcceptanceTypes_Code_seq"'::regclass);
 ALTER TABLE toms_lookups."ActionOnProposalAcceptanceTypes"
     ADD CONSTRAINT "ActionOnProposalAcceptanceTypes_pkey" PRIMARY KEY ("Code");
 
@@ -881,6 +904,21 @@ TABLESPACE pg_default;
 
 ALTER TABLE compliance_lookups."ConditionTypes"
     OWNER to postgres;
+
+-- MHTC_CheckIssueTypes
+
+CREATE TABLE compliance_lookups."MHTC_CheckIssueTypes"
+(
+    "Code" integer NOT NULL DEFAULT nextval('compliance_lookups."MHTC_CheckIssueTypes_Code_seq"'::regclass),
+    "Description" character varying COLLATE pg_catalog."default",
+    CONSTRAINT "MHTC_CheckIssueType_pkey" PRIMARY KEY ("Code")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE compliance_lookups."MHTC_CheckIssueTypes"
+    OWNER to postgres;
+
 
 -- Drop any tables not required at this point
 DROP TABLE public."Proposals_withGeom" CASCADE;
@@ -1191,7 +1229,7 @@ ALTER TABLE topography.road_casement
 
 -- **** Create new trigger functions
 -- create_geometryid
-CREATE FUNCTION public.create_geometryid()
+CREATE FUNCTION toms.create_geometryid()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1224,10 +1262,11 @@ BEGIN
 END;
 $BODY$;
 
-ALTER FUNCTION public.create_geometryid()
+ALTER FUNCTION toms.create_geometryid()
     OWNER TO postgres;
 
-CREATE FUNCTION public.set_last_update_details()
+-- set_last_update_details
+CREATE FUNCTION toms.set_last_update_details()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1242,12 +1281,11 @@ AS $BODY$
     END;
 $BODY$;
 
--- set_last_update_details
-ALTER FUNCTION public.set_last_update_details()
+ALTER FUNCTION toms.set_last_update_details()
     OWNER TO postgres;
 
 -- set_restriction_length
-CREATE FUNCTION public.set_restriction_length()
+CREATE FUNCTION toms.set_restriction_length()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1261,12 +1299,14 @@ AS $BODY$
     END;
 $BODY$;
 
-ALTER FUNCTION public.set_restriction_length()
+ALTER FUNCTION toms.set_restriction_length()
     OWNER TO postgres;
 
 
 ---- *** Change structure of tables  ***
 -- Bays
+
+ALTER TABLE toms."Bays" DROP CONSTRAINT "Bays_pkey";
 
 ALTER TABLE toms."Bays" DROP COLUMN id;
 
@@ -1328,87 +1368,96 @@ ALTER TABLE toms."Bays"
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_GeometryID_key" UNIQUE ("GeometryID");
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_GeomShapeID"
     ON toms."Bays"("GeomShapeID");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_Bays_RestrictionTypeID"
     ON toms."Bays"("RestrictionTypeID");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_TimePeriodID"
     ON toms."Bays"("TimePeriodID");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_AdditionalConditionID_fkey" FOREIGN KEY ("AdditionalConditionID")
-    REFERENCES toms."AdditionalConditionTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."AdditionalConditionTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_AdditionalConditionID"
     ON toms."Bays"("AdditionalConditionID");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_ComplianceRestrictionSignIssue"
     ON toms."Bays"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded")
-    REFERENCES toms."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_ComplianceRoadMarkingsFaded"
     ON toms."Bays"("ComplianceRoadMarkingsFaded");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_MHTC_CheckIssueTypeID"
     ON toms."Bays"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_MaxStayID_fkey" FOREIGN KEY ("MaxStayID")
-    REFERENCES toms."LengthOfTime" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."LengthOfTime" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_MaxStayID"
     ON toms."Bays"("MaxStayID");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_NoReturnID_fkey" FOREIGN KEY ("NoReturnID")
-    REFERENCES toms."LengthOfTime" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."LengthOfTime" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+CREATE INDEX "idx_Bays_NoReturnID"
     ON toms."Bays"("NoReturnID");
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_PayTypeID_fkey" FOREIGN KEY ("PayTypeID")
-    REFERENCES toms."PaymentTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."PaymentTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Bays_PayTypeID"
     ON toms."Bays"("PayTypeID");
 
 CREATE TRIGGER create_geometryid_bays
     BEFORE INSERT
     ON toms."Bays"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.create_geometryid();
+    EXECUTE PROCEDURE toms.create_geometryid();
+
 CREATE TRIGGER "set_restriction_length_Bays"
     BEFORE INSERT OR UPDATE
     ON toms."Bays"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_restriction_length();
+    EXECUTE PROCEDURE toms.set_restriction_length();
+
 CREATE TRIGGER "set_last_update_details_Bays"
     BEFORE INSERT OR UPDATE
     ON toms."Bays"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_last_update_details();
-DROP TRIGGER update_leader ON toms."Bays";
+    EXECUTE PROCEDURE toms.set_last_update_details();
+
 
 -- *** ControlledParkingZones
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN gid;
@@ -1425,7 +1474,7 @@ ALTER TABLE toms."ControlledParkingZones" DROP COLUMN no_pub_spa;
 
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN no_res_spa;
 
-ALTER TABLE toms."ControlledParkingZones" RENAME COLUMN zone_no TO "CPZ";
+-- ALTER TABLE toms."ControlledParkingZones" RENAME COLUMN zone_no TO "CPZ";
 
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN type;
 
@@ -1500,44 +1549,50 @@ ALTER TABLE toms."ControlledParkingZones"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_GeometryID_key" UNIQUE ("GeometryID");
+
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ControlledParkingZones_ComplianceRestrictionSignIssue"
     ON toms."ControlledParkingZones"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded")
-    REFERENCES toms."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ControlledParkingZones_ComplianceRoadMarkingsFaded"
     ON toms."ControlledParkingZones"("ComplianceRoadMarkingsFaded");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ControlledParkingZones_MHTC_CheckIssueTypeID"
     ON toms."ControlledParkingZones"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
-    REFERENCES toms."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ControlledParkingZones_RestrictionTypeID"
     ON toms."ControlledParkingZones"("RestrictionTypeID");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_TimePeriodID_fkey" FOREIGN KEY ("TimePeriodID")
-    REFERENCES toms."TimePeriods" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ControlledParkingZones_TimePeriodID"
     ON toms."ControlledParkingZones"("TimePeriodID");
 
 CREATE TRIGGER "set_last_update_details_ControlledParkingZones"
@@ -1547,6 +1602,8 @@ CREATE TRIGGER "set_last_update_details_ControlledParkingZones"
     EXECUTE PROCEDURE toms.set_last_update_details();
 
 -- Lines
+
+ALTER TABLE toms."Lines" DROP CONSTRAINT "Lines_pkey";
 ALTER TABLE toms."Lines" DROP COLUMN id;
 
 ALTER TABLE toms."Lines" RENAME COLUMN "Length" TO "RestrictionLength";
@@ -1617,79 +1674,89 @@ ALTER TABLE toms."Lines"
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_GeometryID_key" UNIQUE ("GeometryID");
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_GeomShapeID"
     ON toms."Lines"("GeomShapeID");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_NoWaitingTimeID"
     ON toms."Lines"("NoWaitingTimeID");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_Lines_RestrictionTypeID"
     ON toms."Lines"("RestrictionTypeID");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_AdditionalConditionID_fkey" FOREIGN KEY ("AdditionalConditionID")
-    REFERENCES toms."AdditionalConditionTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."AdditionalConditionTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_AdditionalConditionID"
     ON toms."Lines"("AdditionalConditionID");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_ComplianceRestrictionSignIssue"
     ON toms."Lines"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded")
-    REFERENCES toms."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_ComplianceRoadMarkingsFaded"
     ON toms."Lines"("ComplianceRoadMarkingsFaded");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_MHTC_CheckIssueTypeID"
     ON toms."Lines"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_NoLoadingTimeID_fkey" FOREIGN KEY ("NoLoadingTimeID")
-    REFERENCES toms."TimePeriodsInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriodsInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_NoLoadingTimeID"
     ON toms."Lines"("NoLoadingTimeID");
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_UnacceptableTypeID_fkey" FOREIGN KEY ("UnacceptableTypeID")
-    REFERENCES toms."UnacceptableTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."UnacceptableTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Lines_UnacceptableTypeID"
     ON toms."Lines"("UnacceptableTypeID");
+
 DROP INDEX toms."Lines_EDI_180124_idx";
 
 CREATE TRIGGER "set_last_update_details_Lines"
     BEFORE INSERT OR UPDATE
     ON toms."Lines"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_last_update_details();
+    EXECUTE PROCEDURE toms.set_last_update_details();
+
 CREATE TRIGGER create_geometryid_lines
     BEFORE INSERT
     ON toms."Lines"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.create_geometryid();
+    EXECUTE PROCEDURE toms.create_geometryid();
+
 CREATE TRIGGER "set_restriction_length_Lines"
     BEFORE INSERT OR UPDATE
     ON toms."Lines"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_restriction_length();
+    EXECUTE PROCEDURE toms.set_restriction_length();
 
 -- MapGrid
 ALTER TABLE toms."MapGrid" RENAME COLUMN "RevisionNr" TO "CurrRevisionNr";
@@ -1805,67 +1872,77 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_GeometryID_key" UNIQUE ("GeometryID");
+
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_ComplianceRestrictionSignIssue"
     ON toms."ParkingTariffAreas"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded")
-    REFERENCES toms."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_ComplianceRoadMarkingsFaded"
     ON toms."ParkingTariffAreas"("ComplianceRoadMarkingsFaded");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_MHTC_CheckIssueTypeID"
     ON toms."ParkingTariffAreas"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_MaxStayID_fkey" FOREIGN KEY ("MaxStayID")
-    REFERENCES toms."LengthOfTime" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."LengthOfTime" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_MaxStayID"
     ON toms."ParkingTariffAreas"("MaxStayID");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_NoReturnID_fkey" FOREIGN KEY ("NoReturnID")
-    REFERENCES toms."LengthOfTime" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."LengthOfTime" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_NoReturnID"
     ON toms."ParkingTariffAreas"("NoReturnID");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
-    REFERENCES toms."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_RestrictionTypeID"
     ON toms."ParkingTariffAreas"("RestrictionTypeID");
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_TimePeriodID_fkey" FOREIGN KEY ("TimePeriodID")
-    REFERENCES toms."TimePeriods" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ParkingTariffAreas_TimePeriodID"
     ON toms."ParkingTariffAreas"("TimePeriodID");
+
+DROP INDEX toms."sidx_PTAs_180725_merged_10_geom";
+
 CREATE INDEX "sidx_ParkingTariffAreas_geom"
     ON toms."ParkingTariffAreas" USING gist
     (geom)
     TABLESPACE pg_default;
 
-DROP INDEX toms."sidx_PTAs_180725_merged_10_geom";
 CREATE TRIGGER "set_last_update_details_ParkingTariffAreas"
     BEFORE INSERT OR UPDATE
     ON toms."ParkingTariffAreas"
@@ -1886,10 +1963,11 @@ ALTER TABLE toms."Proposals" DROP CONSTRAINT "Proposals_ProposalStatusID_fkey";
 
 ALTER TABLE toms."Proposals"
     ADD CONSTRAINT "Proposals_ProposalStatusTypes_fkey" FOREIGN KEY ("ProposalStatusID")
-    REFERENCES toms."ProposalStatusTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."ProposalStatusTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_ProposalStatusID"
     ON toms."Proposals"("ProposalStatusID");
 
 -- RestrictionLayers
@@ -1904,6 +1982,9 @@ ALTER TABLE toms."RestrictionLayers"
     ADD CONSTRAINT "RestrictionLayers_id_key" UNIQUE ("Code");
 
 -- RestrictionPolygons
+ALTER TABLE toms."RestrictionPolygons"
+    DROP CONSTRAINT "restrictionsPolygons_pk";
+
 ALTER TABLE toms."RestrictionPolygons" DROP COLUMN id;
 
 ALTER TABLE toms."RestrictionPolygons" RENAME COLUMN "Polygons_Photos_01" TO "Photos_01";
@@ -1929,24 +2010,6 @@ ALTER TABLE toms."RestrictionPolygons"
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "Notes" character varying(254) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "Photos_01" character varying(255) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "Photos_02" character varying(255) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "Photos_03" character varying(255) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "label_X" double precision;
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "label_Y" double precision;
-
-ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "label_Rotation" double precision;
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "label_TextChanged" character varying(254) COLLATE pg_catalog."default";
@@ -1976,92 +2039,121 @@ ALTER TABLE toms."RestrictionPolygons"
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionPolygons_GeometryID_key" UNIQUE ("GeometryID");
+
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_ComplianceRestrictionSignIssue"
     ON toms."RestrictionPolygons"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded")
-    REFERENCES toms."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLinesFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_ComplianceRoadMarkingsFaded"
     ON toms."RestrictionPolygons"("ComplianceRoadMarkingsFaded");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_GeomShapeID_fkey" FOREIGN KEY ("GeomShapeID")
-    REFERENCES toms."RestrictionGeomShapeTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."RestrictionGeomShapeTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_GeomShapeID"
     ON toms."RestrictionPolygons"("GeomShapeID");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_MHTC_CheckIssueTypeID"
     ON toms."RestrictionPolygons"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_NoLoadingTimeID_fkey" FOREIGN KEY ("NoLoadingTimeID")
-    REFERENCES toms."TimePeriods" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_NoLoadingTimeID"
     ON toms."RestrictionPolygons"("NoLoadingTimeID");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_NoWaitingTimeID_fkey" FOREIGN KEY ("NoWaitingTimeID")
-    REFERENCES toms."TimePeriods" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_NoWaitingTimeID"
     ON toms."RestrictionPolygons"("NoWaitingTimeID");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
-    REFERENCES toms."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."RestrictionPolygonTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_RestrictionTypeID"
     ON toms."RestrictionPolygons"("RestrictionTypeID");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_TimePeriodID_fkey" FOREIGN KEY ("TimePeriodID")
-    REFERENCES toms."TimePeriods" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_RestrictionPolygons_TimePeriodID"
     ON toms."RestrictionPolygons"("TimePeriodID");
 
 CREATE TRIGGER create_geometryid_restrictionpolygons
     BEFORE INSERT
     ON toms."RestrictionPolygons"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.create_geometryid();
+    EXECUTE PROCEDURE toms.create_geometryid();
+
 CREATE TRIGGER "set_last_update_details_RestrictionPolygons"
     BEFORE INSERT OR UPDATE
     ON toms."RestrictionPolygons"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_last_update_details();
+    EXECUTE PROCEDURE toms.set_last_update_details();
 
 -- RestrictionsInProposals
-CREATE INDEX "None"
+ALTER TABLE toms."RestrictionsInProposals"
+    ADD CONSTRAINT "RestrictionsInProposals_ActionOnProposalAcceptance_fkey" FOREIGN KEY ("ActionOnProposalAcceptance")
+    REFERENCES toms_lookups."ActionOnProposalAcceptanceTypes" ("Code") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+ALTER TABLE toms."RestrictionsInProposals"
+    ADD CONSTRAINT "RestrictionsInProposals_RestrictionTableID_fkey" FOREIGN KEY ("RestrictionTableID")
+    REFERENCES toms."RestrictionLayers" ("Code") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+ALTER TABLE toms."RestrictionsInProposals"
+    ADD CONSTRAINT "RestrictionsInProposals_pk" PRIMARY KEY ("ProposalID", "RestrictionTableID", "RestrictionID");
+
+CREATE INDEX "idx_RestrictionsInProposals_ActionOnProposalAcceptance"
     ON toms."RestrictionsInProposals"("ActionOnProposalAcceptance");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_RestrictionsInProposals_ProposalID"
     ON toms."RestrictionsInProposals"("ProposalID");
 
-CREATE INDEX "None"
+CREATE INDEX "idx_RestrictionsInProposals_RestrictionTableID"
     ON toms."RestrictionsInProposals"("RestrictionTableID");
 
 -- Signs
+ALTER TABLE toms."Signs" ALTER COLUMN "GeometryID" DROP DEFAULT;
+
+ALTER TABLE toms."Signs" DROP CONSTRAINT "Signs_pkey";
+
 ALTER TABLE toms."Signs" DROP COLUMN id;
 
 ALTER TABLE toms."Signs" DROP COLUMN "Signs_Notes";
@@ -2129,122 +2221,139 @@ ALTER TABLE toms."Signs"
 
 ALTER TABLE toms."Signs"
     ADD COLUMN original_geom_wkt character varying(255) COLLATE pg_catalog."default";
+
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_pkey" PRIMARY KEY ("RestrictionID");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_GeometryID_key" UNIQUE ("GeometryID");
+
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Compl_Signs_Faded_fkey" FOREIGN KEY ("Compl_Signs_Faded")
-    REFERENCES toms."SignFadedTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignFadedTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Compl_Signs_Faded"
     ON toms."Signs"("Compl_Signs_Faded");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Compl_Signs_Obscured_fkey" FOREIGN KEY ("Compl_Signs_Obscured")
-    REFERENCES toms."SignObscurredTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignObscurredTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Compl_Signs_Obscured"
     ON toms."Signs"("Compl_Signs_Obscured");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Compl_Signs_TicketMachines_fkey" FOREIGN KEY ("Compl_Signs_TicketMachines")
-    REFERENCES toms."TicketMachineIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."TicketMachineIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Compl_Signs_TicketMachines"
     ON toms."Signs"("Compl_Signs_TicketMachines");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue")
-    REFERENCES toms."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."BaysLines_SignIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Signs_ComplianceRestrictionSignIssue"
     ON toms."Signs"("ComplianceRestrictionSignIssue");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES toms."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Signs_MHTC_CheckIssueTypeID"
     ON toms."Signs"("MHTC_CheckIssueTypeID");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_MHTC_SignIlluminationTypeID_fkey" FOREIGN KEY ("SignIlluminationTypeID")
-    REFERENCES toms."SignIlluminationTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignIlluminationTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignIlluminationTypeID"
     ON toms."Signs"("SignIlluminationTypeID");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignConditionTypeID_fkey" FOREIGN KEY ("SignConditionTypeID")
-    REFERENCES toms."SignConditionTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignConditionTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignConditionTypeID"
     ON toms."Signs"("SignConditionTypeID");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignOrientationTypeID_fkey" FOREIGN KEY ("SignOrientationTypeID")
-    REFERENCES toms."SignOrientationTypes" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."SignOrientationTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignOrientationTypeID"
     ON toms."Signs"("SignOrientationTypeID");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignTypes1_fkey" FOREIGN KEY ("SignType_1")
-    REFERENCES toms."SignTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."SignTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignType_1"
     ON toms."Signs"("SignType_1");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignTypes2_fkey" FOREIGN KEY ("SignType_2")
-    REFERENCES toms."SignTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."SignTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignType_2"
     ON toms."Signs"("SignType_2");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignTypes3_fkey" FOREIGN KEY ("SignType_3")
-    REFERENCES toms."SignTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."SignTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignType_3"
     ON toms."Signs"("SignType_3");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_SignTypes4_fkey" FOREIGN KEY ("SignType_4")
-    REFERENCES toms."SignTypesInUse" ("Code") MATCH SIMPLE
+    REFERENCES toms_lookups."SignTypesInUse" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_SignType_4"
     ON toms."Signs"("SignType_4");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Signs_Attachment_fkey" FOREIGN KEY ("Signs_Attachment")
-    REFERENCES toms."SignAttachmentTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignAttachmentTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Signs_Attachment"
     ON toms."Signs"("Signs_Attachment");
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Signs_Mount_fkey" FOREIGN KEY ("Signs_Mount")
-    REFERENCES toms."SignMountTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."SignMountTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+
+CREATE INDEX "idx_Signs_Mount"
     ON toms."Signs"("Signs_Mount");
+
 CREATE INDEX "sidx_Signs_geom"
     ON toms."Signs" USING gist
     (geom)
@@ -2255,12 +2364,13 @@ CREATE TRIGGER "set_last_update_details_Signs"
     BEFORE INSERT OR UPDATE
     ON toms."Signs"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.set_last_update_details();
+    EXECUTE PROCEDURE toms.set_last_update_details();
+
 CREATE TRIGGER create_geometryid_signs
     BEFORE INSERT
     ON toms."Signs"
     FOR EACH ROW
-    EXECUTE PROCEDURE public.create_geometryid();
+    EXECUTE PROCEDURE toms.create_geometryid();
 
 -- TilesInAcceptedProposals
 ALTER TABLE toms."TilesInAcceptedProposals"
@@ -2268,7 +2378,7 @@ ALTER TABLE toms."TilesInAcceptedProposals"
     REFERENCES toms."Proposals" ("ProposalID") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+CREATE INDEX "idx_ProposalID"
     ON toms."TilesInAcceptedProposals"("ProposalID");
 
 ALTER TABLE toms."TilesInAcceptedProposals"
@@ -2276,7 +2386,7 @@ ALTER TABLE toms."TilesInAcceptedProposals"
     REFERENCES toms."MapGrid" (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-CREATE INDEX "None"
+CREATE INDEX "idx_TileNr"
     ON toms."TilesInAcceptedProposals"("TileNr");
 
 -- ***
