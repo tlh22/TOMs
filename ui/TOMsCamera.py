@@ -80,8 +80,10 @@ class formCamera(QObject):
         self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
         self.FIELD = FIELD
 
-        # self.blockSignals(True)
         self.START_CAMERA_BUTTON.clicked.disconnect()
+        self.currButtonColour = self.START_CAMERA_BUTTON.palette().button().color()
+        self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: red;}')
+        self.START_CAMERA_BUTTON.setText('Close Camera')
         self.START_CAMERA_BUTTON.clicked.connect(self.endCamera)
 
         """ Camera code  """
@@ -110,6 +112,8 @@ class formCamera(QObject):
 
         self.TAKE_PHOTO_BUTTON.setEnabled(False)
         self.START_CAMERA_BUTTON.setChecked(False)
+        self.START_CAMERA_BUTTON.setText('Open Camera')
+        self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: green;}')
         self.TAKE_PHOTO_BUTTON.clicked.disconnect()
 
         self.START_CAMERA_BUTTON.clicked.disconnect()
@@ -118,6 +122,18 @@ class formCamera(QObject):
 
         if self.photoTaken == False:
             self.resetPhoto()
+
+    def closeCameraForm(self):
+
+        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Info)
+
+        self.camera.stopCamera()
+        self.camera.changePixmap.disconnect(self.displayFrame)
+        self.camera.closeCamera.disconnect(self.endCamera)
+
+        self.TAKE_PHOTO_BUTTON.clicked.disconnect()
+        self.START_CAMERA_BUTTON.clicked.disconnect()
+
 
     @pyqtSlot(str)
     def checkPhotoTaken(self, fileName):
