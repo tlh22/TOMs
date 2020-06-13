@@ -172,7 +172,7 @@ CREATE TABLE public."EDI_RC_with_USRN_StreetNames" (
 );
 
 
-ALTER TABLE public."EDI_RC_with_USRN_StreetNames" OWNER TO postgres;
+--ALTER TABLE public."EDI_RC_with_USRN_StreetNames" OWNER TO postgres;
 
 --
 -- Name: EDI_RC_with_USRN_StreetNames_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -563,14 +563,6 @@ ALTER TABLE ONLY public."EDI_AdoptedRoads" ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY public."EDI_AdoptedRoads_2" ALTER COLUMN id SET DEFAULT nextval('public."EDI_AdoptedRoads_2_id_seq"'::regclass);
-
-
---
--- Name: EDI_RC_with_USRN_StreetNames id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public."EDI_RC_with_USRN_StreetNames" ALTER COLUMN id SET DEFAULT nextval('public."EDI_RC_with_USRN_StreetNames_id_seq"'::regclass);
-
 
 --
 -- Name: ParkingTariffAreas id; Type: DEFAULT; Schema: public; Owner: postgres

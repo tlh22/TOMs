@@ -34,7 +34,7 @@
       <layer-tree-layer name="Signs" source="service='toms_EDI_VM_TEST_op' key='GeometryID' srid=27700 type=Point checkPrimaryKeyUnicity='1' table=&quot;public&quot;.&quot;Signs&quot; (geom) sql=" checked="Qt::Checked" providerKey="postgres" id="Signs20190906115517850" expanded="0" legend_exp="">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer name="ConstructionLines" source="memory?geometry=LineString&amp;crs=EPSG:27700&amp;uid={1af949d6-3bc9-480a-b72a-9813b7fda32e}" checked="Qt::Checked" providerKey="memory" id="ConstructionLines20181021235512146" expanded="1" legend_exp="">
+      <layer-tree-layer name="ConstructionLines" source="memory?geometry=LineString&amp;crs=EPSG:27700&amp;uid={ca5b5ca2-67ea-4d36-9830-4ae31215c73a}" checked="Qt::Checked" providerKey="memory" id="ConstructionLines20181021235512146" expanded="1" legend_exp="">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -47,7 +47,7 @@
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group name="Lookup Tables" checked="Qt::Checked" expanded="0">
+    <layer-tree-group name="Lookup Tables" checked="Qt::Checked" expanded="1">
       <customproperties/>
       <layer-tree-layer name="BayTypes" source="service='toms_EDI_VM_TEST_op' key='Code' checkPrimaryKeyUnicity='1' table=&quot;public&quot;.&quot;BayTypes&quot; sql=" checked="Qt::Checked" providerKey="postgres" id="BayTypes_9fcb2f7c_1149_4fec_b37a_f61828a184ca" expanded="1" legend_exp="">
         <customproperties/>
@@ -192,31 +192,31 @@
   </layer-tree-group>
   <snapping-settings mode="3" enabled="1" intersection-snapping="1" type="1" unit="2" tolerance="0">
     <individual-layer-settings>
+      <layer-setting enabled="1" type="1" units="2" id="edi_cartotext20190118103627714" tolerance="0"/>
       <layer-setting enabled="1" type="1" units="1" id="RestrictionPolygons20190906115446443" tolerance="10"/>
+      <layer-setting enabled="1" type="1" units="2" id="StreetGazetteerRecords_171231_USRN20190118103627517" tolerance="0"/>
+      <layer-setting enabled="1" type="1" units="1" id="ConstructionLines20181021235512146" tolerance="10"/>
+      <layer-setting enabled="1" type="1" units="2" id="city_of_edinburgh_area20190118103627734" tolerance="0"/>
+      <layer-setting enabled="1" type="1" units="1" id="Bays20190906115347986" tolerance="10"/>
+      <layer-setting enabled="1" type="1" units="2" id="Signs20190906115517850" tolerance="0"/>
+      <layer-setting enabled="1" type="1" units="2" id="StreetGazetteerRecords_171231_USRN_copy20190118103830332" tolerance="0"/>
+      <layer-setting enabled="0" type="1" units="2" id="MapGrid20181021150348408" tolerance="0"/>
+      <layer-setting enabled="1" type="2" units="1" id="EDI_RC_with_USRN_StreetNames20190118103627674" tolerance="10"/>
+      <layer-setting enabled="1" type="1" units="1" id="Lines20190906115422594" tolerance="10"/>
       <layer-setting enabled="1" type="1" units="2" id="edi_mm_copy20190118103643985" tolerance="0"/>
       <layer-setting enabled="0" type="1" units="1" id="ControlledParkingZones20181021150204260" tolerance="10"/>
-      <layer-setting enabled="0" type="1" units="2" id="MapGrid20181021150348408" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="2" id="city_of_edinburgh_area20190118103627734" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="1" id="Lines20190906115422594" tolerance="10"/>
-      <layer-setting enabled="1" type="1" units="2" id="edi_cartotext20190118103627714" tolerance="0"/>
-      <layer-setting enabled="1" type="2" units="1" id="EDI_RC_with_USRN_StreetNames20190118103627674" tolerance="10"/>
-      <layer-setting enabled="1" type="1" units="2" id="StreetGazetteerRecords_171231_USRN_copy20190118103830332" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="2" id="StreetGazetteerRecords_171231_USRN20190118103627517" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="1" id="Bays20190906115347986" tolerance="10"/>
       <layer-setting enabled="0" type="1" units="2" id="ParkingTariffAreas20181021150204193" tolerance="0"/>
       <layer-setting enabled="1" type="1" units="2" id="edi_mm20190118103627695" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="2" id="Signs20190906115517850" tolerance="0"/>
-      <layer-setting enabled="1" type="1" units="1" id="ConstructionLines20181021235512146" tolerance="10"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations/>
   <mapcanvas name="theMapCanvas" annotationsVisible="1">
     <units>meters</units>
     <extent>
-      <xmin>325358.31225652369903401</xmin>
-      <ymin>674041.83572727360296994</ymin>
-      <xmax>325593.2773710394394584</xmax>
-      <ymax>674263.70708921190816909</ymax>
+      <xmin>325472.16466926748398691</xmin>
+      <ymin>674060.56281168188434094</ymin>
+      <xmax>325589.64722652535419911</xmax>
+      <ymax>674171.49849265103694052</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -276,7 +276,7 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="false" name="Lookup Tables" checked="Qt::Checked">
+    <legendgroup open="true" name="Lookup Tables" checked="Qt::Checked">
       <legendlayer open="true" name="BayTypes" drawingOrder="-1" showFeatureCount="0" checked="Qt::Checked">
         <filegroup open="true" hidden="false">
           <legendlayerfile visible="1" layerid="BayTypes_9fcb2f7c_1149_4fec_b37a_f61828a184ca" isInOverview="0"/>
@@ -516,7 +516,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -778,7 +778,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -1075,7 +1075,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -5473,7 +5473,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -5629,7 +5629,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -5865,7 +5865,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -6345,12 +6345,12 @@ def my_form_open(dialog, layer, feature):
       <previewExpression>COALESCE( "gid", '&lt;NULL>' )</previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer type="vector" minScale="1e+06" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="0" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Line" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="LineString">
+    <maplayer type="vector" minScale="1e+06" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Line" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="LineString">
       <extent>
-        <xmin>325189.91104755201376975</xmin>
-        <ymin>673807.01477397698909044</ymin>
-        <xmax>325672.86304058600217104</xmax>
-        <ymax>674310.35554018698167056</ymax>
+        <xmin>304448.60999999998603016</xmin>
+        <ymin>655996.79000000096857548</ymin>
+        <xmax>335762.92000000097323209</xmax>
+        <ymax>681445.65400000300724059</ymax>
       </extent>
       <id>EDI_RC_with_USRN_StreetNames20190118103627674</id>
       <datasource>service='toms_EDI1_VM_op' key='id' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="public"."EDI_RC_with_USRN_StreetNames" (geom) sql=</datasource>
@@ -6378,15 +6378,6 @@ def my_form_open(dialog, layer, feature):
         <type></type>
         <title></title>
         <abstract></abstract>
-        <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
-        </contact>
         <links/>
         <fees></fees>
         <encoding></encoding>
@@ -6400,18 +6391,10 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent>
-          <spatial dimensions="2" maxy="0" minz="0" maxx="0" crs="" miny="0" minx="0" maxz="0"/>
-          <temporal>
-            <period>
-              <start></start>
-              <end></end>
-            </period>
-          </temporal>
-        </extent>
+        <extent/>
       </resourceMetadata>
       <provider encoding="UTF-8">postgres</provider>
       <vectorjoins/>
@@ -6439,7 +6422,7 @@ def my_form_open(dialog, layer, feature):
               <prop v="0" k="draw_inside_polygon"/>
               <prop v="bevel" k="joinstyle"/>
               <prop v="53,78,179,255" k="line_color"/>
-              <prop v="solid" k="line_style"/>
+              <prop v="no" k="line_style"/>
               <prop v="0.26" k="line_width"/>
               <prop v="MM" k="line_width_unit"/>
               <prop v="0" k="offset"/>
@@ -6462,10 +6445,6 @@ def my_form_open(dialog, layer, feature):
         <sizescale/>
       </renderer-v2>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>"StreetName"</value>
-        </property>
-        <property key="embeddedWidgets/count" value="0"/>
         <property key="variableNames"/>
         <property key="variableValues"/>
       </customproperties>
@@ -6473,12 +6452,12 @@ def my_form_open(dialog, layer, feature):
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
       <SingleCategoryDiagramRenderer diagramType="Histogram" attributeLegend="1">
-        <DiagramCategory labelPlacementMethod="XHeight" penColor="#000000" lineSizeType="MM" minScaleDenominator="-2.14748e+09" opacity="1" rotationOffset="270" penWidth="0" sizeType="MM" maxScaleDenominator="1e+08" lineSizeScale="3x:0,0,0,0,0,0" height="15" scaleDependency="Area" scaleBasedVisibility="0" width="15" enabled="0" diagramOrientation="Up" penAlpha="255" sizeScale="3x:0,0,0,0,0,0" backgroundAlpha="255" minimumSize="0" backgroundColor="#ffffff" barWidth="5">
+        <DiagramCategory labelPlacementMethod="XHeight" penColor="#000000" lineSizeType="MM" minScaleDenominator="inf" opacity="1" rotationOffset="270" penWidth="0" sizeType="MM" maxScaleDenominator="1e+08" lineSizeScale="3x:0,0,0,0,0,0" height="15" scaleDependency="Area" scaleBasedVisibility="0" width="15" enabled="0" diagramOrientation="Up" penAlpha="255" sizeScale="3x:0,0,0,0,0,0" backgroundAlpha="255" minimumSize="0" backgroundColor="#ffffff" barWidth="5">
           <fontProperties style="" description="Sans Serif,9,-1,5,50,0,0,0,0,0"/>
           <attribute label="" color="#000000" field=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings placement="2" linePlacementFlags="2" zIndex="0" showAll="1" priority="0" obstacle="0" dist="0">
+      <DiagramLayerSettings placement="2" linePlacementFlags="10" zIndex="0" showAll="1" priority="0" obstacle="0" dist="0">
         <properties>
           <Option type="Map">
             <Option name="name" type="QString" value=""/>
@@ -6630,9 +6609,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp="" field="Shape_Length" desc=""/>
       </constraintExpressions>
       <expressionfields/>
-      <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
-      </attributeactions>
+      <attributeactions/>
       <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
         <columns>
           <column name="id" type="field" width="-1" hidden="0"/>
@@ -6675,30 +6652,10 @@ def my_form_open(dialog, layer, feature):
 ]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
-      <editable>
-        <field name="ESUID" editable="1"/>
-        <field name="Locality" editable="1"/>
-        <field name="MidPt_ID" editable="1"/>
-        <field name="OBJECTID_1" editable="1"/>
-        <field name="Shape_Length" editable="1"/>
-        <field name="StreetName" editable="1"/>
-        <field name="Town" editable="1"/>
-        <field name="USRN" editable="1"/>
-        <field name="id" editable="1"/>
-      </editable>
-      <labelOnTop>
-        <field name="ESUID" labelOnTop="0"/>
-        <field name="Locality" labelOnTop="0"/>
-        <field name="MidPt_ID" labelOnTop="0"/>
-        <field name="OBJECTID_1" labelOnTop="0"/>
-        <field name="Shape_Length" labelOnTop="0"/>
-        <field name="StreetName" labelOnTop="0"/>
-        <field name="Town" labelOnTop="0"/>
-        <field name="USRN" labelOnTop="0"/>
-        <field name="id" labelOnTop="0"/>
-      </labelOnTop>
+      <editable/>
+      <labelOnTop/>
       <widgets/>
-      <previewExpression>StreetName</previewExpression>
+      <previewExpression>"StreetName"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
     <maplayer hasScaleBasedVisibilityFlag="1" refreshOnNotifyEnabled="0" type="raster" styleCategories="AllStyleCategories" refreshOnNotifyMessage="" maxScale="5001" autoRefreshTime="0" minScale="1e+07" autoRefreshEnabled="0">
@@ -6747,7 +6704,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -6825,7 +6782,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -7122,7 +7079,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -10068,7 +10025,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -10452,7 +10409,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -10556,7 +10513,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -11144,7 +11101,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -11286,7 +11243,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -11437,7 +11394,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -11684,7 +11641,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -11816,7 +11773,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -11975,7 +11932,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -13180,7 +13137,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -13327,7 +13284,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -13483,7 +13440,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -13639,7 +13596,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -13842,7 +13799,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -13984,7 +13941,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -14126,7 +14083,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -14268,7 +14225,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -14410,7 +14367,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -14567,7 +14524,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -15306,10 +15263,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer type="vector" minScale="5000" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Line" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiLineString">
       <extent>
-        <xmin>325193.90765382698737085</xmin>
-        <ymin>673811.01476493000518531</ymin>
-        <xmax>325668.86900406598579139</xmax>
-        <ymax>674306.36092344496864825</ymax>
+        <xmin>309599</xmin>
+        <ymin>662774</ymin>
+        <xmax>332733</xmax>
+        <ymax>679737</ymax>
       </extent>
       <id>StreetGazetteerRecords_171231_USRN20190118103627517</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiLineString checkPrimaryKeyUnicity='1' table="public"."StreetGazetteerRecords_171231_USRN" (geom) sql=</datasource>
@@ -15350,7 +15307,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -15453,9 +15410,6 @@ def my_form_open(dialog, layer, feature):
         </settings>
       </labeling>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>COALESCE( "Descriptor_", '&lt;NULL>' )</value>
-        </property>
         <property key="variableNames"/>
         <property key="variableValues"/>
       </customproperties>
@@ -16040,9 +15994,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp="" field="Shape_Leng" desc=""/>
       </constraintExpressions>
       <expressionfields/>
-      <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
-      </attributeactions>
+      <attributeactions/>
       <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
         <columns>
           <column name="id" type="field" width="-1" hidden="0"/>
@@ -16123,10 +16075,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer type="vector" minScale="5000" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Line" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiLineString">
       <extent>
-        <xmin>325193.90765382698737085</xmin>
-        <ymin>673811.01476493000518531</ymin>
-        <xmax>325668.86900406598579139</xmax>
-        <ymax>674306.36092344496864825</ymax>
+        <xmin>309599</xmin>
+        <ymin>662774</ymin>
+        <xmax>332733</xmax>
+        <ymax>679737</ymax>
       </extent>
       <id>StreetGazetteerRecords_171231_USRN_copy20190118103830332</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiLineString checkPrimaryKeyUnicity='1' table="public"."StreetGazetteerRecords_171231_USRN" (geom) sql=</datasource>
@@ -16167,7 +16119,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -16973,7 +16925,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -17101,7 +17053,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -17252,7 +17204,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -17445,7 +17397,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -17601,7 +17553,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -17743,7 +17695,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -17847,10 +17799,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer type="vector" minScale="1e+08" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Polygon" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiPolygon">
       <extent>
-        <xmin>325173.32108268502634019</xmin>
-        <ymin>673770.8000000009778887</ymin>
-        <xmax>326080.98305808898294345</xmax>
-        <ymax>674429.84875242505222559</ymax>
+        <xmin>309582.40000000002328306</xmin>
+        <ymin>659269</ymin>
+        <xmax>332969.73300000000745058</xmax>
+        <ymax>679812.75899999996181577</ymax>
       </extent>
       <id>city_of_edinburgh_area20190118103627734</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiPolygon checkPrimaryKeyUnicity='1' table="public"."city_of_edinburgh_area" (geom) sql=</datasource>
@@ -17891,7 +17843,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -18051,6 +18003,12 @@ def my_form_open(dialog, layer, feature):
       <mapTip></mapTip>
     </maplayer>
     <maplayer type="vector" minScale="2500" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Line" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiLineString">
+      <extent>
+        <xmin>305001.488599999982398</xmin>
+        <ymin>656977.35329999995883554</ymin>
+        <xmax>335029.43640000000596046</xmax>
+        <ymax>680995.11999999894760549</ymax>
+      </extent>
       <id>edi_cartotext20190118103627714</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiLineString checkPrimaryKeyUnicity='1' table="public"."edi_cartotext" (geom) sql=</datasource>
       <keywordList>
@@ -18090,7 +18048,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -19332,6 +19290,12 @@ def my_form_open(dialog, layer, feature):
       <mapTip></mapTip>
     </maplayer>
     <maplayer type="vector" minScale="5000" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Polygon" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiPolygon">
+      <extent>
+        <xmin>304268.5</xmin>
+        <ymin>654467.67099999997299165</ymin>
+        <xmax>337053.20000000001164153</xmax>
+        <ymax>681751.75</ymax>
+      </extent>
       <id>edi_mm20190118103627695</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiPolygon checkPrimaryKeyUnicity='1' table="public"."edi_mm" (geom) sql=</datasource>
       <keywordList>
@@ -19371,7 +19335,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -20023,6 +19987,12 @@ def my_form_open(dialog, layer, feature):
       <mapTip>fid</mapTip>
     </maplayer>
     <maplayer type="vector" minScale="5000" simplifyDrawingTol="1" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" refreshOnNotifyEnabled="0" geometry="Polygon" maxScale="0" autoRefreshEnabled="0" simplifyDrawingHints="1" readOnly="0" simplifyAlgorithm="0" simplifyMaxScale="1" wkbType="MultiPolygon">
+      <extent>
+        <xmin>304268.5</xmin>
+        <ymin>654467.67099999997299165</ymin>
+        <xmax>337053.20000000001164153</xmax>
+        <ymax>681751.75</ymax>
+      </extent>
       <id>edi_mm_copy20190118103643985</id>
       <datasource>service='toms_EDI1_VM_op' key='gid' srid=27700 type=MultiPolygon checkPrimaryKeyUnicity='1' table="public"."edi_mm" (geom) sql=</datasource>
       <keywordList>
@@ -20062,7 +20032,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -20801,7 +20771,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -21096,7 +21066,7 @@ def my_form_open(dialog, layer, feature):
         <value>0.25</value>
         <value>2.0</value>
         <value>0.5</value>
-        <value>0</value>
+        <value>34</value>
         <value>0.25</value>
         <value>1250</value>
         <value>../Photos</value>
