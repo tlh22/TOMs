@@ -48,6 +48,9 @@ CREATE SCHEMA "compliance_lookups";
 
 ALTER SCHEMA "compliance_lookups" OWNER TO "postgres";
 
+CREATE SCHEMA "export";
+ALTER SCHEMA "export" OWNER TO "postgres";
+
 --
 -- TOC entry 19 (class 2615 OID 220901)
 -- Name: highways_network; Type: SCHEMA; Schema: -; Owner: postgres
