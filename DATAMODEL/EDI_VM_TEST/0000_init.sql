@@ -199,19 +199,24 @@ ALTER SEQUENCE public."BayLinesFadedTypes_id_seq" OWNED BY public."BayLinesFaded
 -- Name: BayTypes; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
-CREATE MATERIALIZED VIEW public."BayTypes" AS
- SELECT "BayLineTypes"."Code",
-    "BayLineTypes"."Description"
-   FROM ( SELECT "BayLineTypes_1"."Code",
-            "BayLineTypes_1"."Description"
-            -- YOU MAY NEED TO ADAPT THIS
-           FROM public.dblink('dbname=MasterLookups options=-csearch_path='::text, 'SELECT "Code", "Description" FROM public."BayLineTypes"'::text) "BayLineTypes_1"("Code" integer, "Description" text)) "BayLineTypes",
-    public."BayLineTypesInUse" u
-  WHERE (("BayLineTypes"."Code" = u."Code") AND (u."Code" < 200))
-  WITH NO DATA;
+CREATE TABLE public."BayTypes"
+(
+    "Code" integer,
+    "Description" text COLLATE pg_catalog."default"
+)
 
+TABLESPACE pg_default;
 
-ALTER TABLE public."BayTypes" OWNER TO postgres;
+ALTER TABLE public."BayTypes"
+    OWNER to postgres;
+-- Index: BayTypes_key
+
+-- DROP INDEX public."BayTypes_key";
+
+CREATE UNIQUE INDEX "BayTypes_key"
+    ON public."BayTypes" USING btree
+    ("Code" ASC NULLS LAST)
+    TABLESPACE pg_default;
 
 --
 -- Name: Bays2_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -511,19 +516,24 @@ ALTER SEQUENCE public."LengthOfTime_id_seq" OWNED BY public."LengthOfTime".id;
 -- Name: LineTypes; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
-CREATE MATERIALIZED VIEW public."LineTypes" AS
- SELECT "BayLineTypes"."Code",
-    "BayLineTypes"."Description"
-   FROM ( SELECT "BayLineTypes_1"."Code",
-            "BayLineTypes_1"."Description"
-            -- YOU MAY NEED TO ADAPT THIS
-           FROM public.dblink('dbname=MasterLookups options=-csearch_path='::text, 'SELECT "Code", "Description" FROM public."BayLineTypes"'::text) "BayLineTypes_1"("Code" integer, "Description" text)) "BayLineTypes",
-    public."BayLineTypesInUse" u
-  WHERE (("BayLineTypes"."Code" = u."Code") AND (u."Code" > 200))
-  WITH NO DATA;
+CREATE TABLE public."LineTypes"
+(
+    "Code" integer,
+    "Description" text COLLATE pg_catalog."default"
+)
 
+TABLESPACE pg_default;
 
-ALTER TABLE public."LineTypes" OWNER TO postgres;
+ALTER TABLE public."LineTypes"
+    OWNER to postgres;
+-- Index: LineTypes_key
+
+-- DROP INDEX public."LineTypes_key";
+
+CREATE UNIQUE INDEX "LineTypes_key"
+    ON public."LineTypes" USING btree
+    ("Code" ASC NULLS LAST)
+    TABLESPACE pg_default;
 
 --
 -- Name: Lines2_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2326,14 +2336,14 @@ CREATE UNIQUE INDEX "BayLineTypes_key" ON public."BayLineTypes" USING btree ("Co
 -- Name: BayTypes_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX "BayTypes_key" ON public."BayTypes" USING btree ("Code");
+--CREATE UNIQUE INDEX "BayTypes_key" ON public."BayTypes" USING btree ("Code");
 
 
 --
 -- Name: LineTypes_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX "LineTypes_key" ON public."LineTypes" USING btree ("Code");
+--CREATE UNIQUE INDEX "LineTypes_key" ON public."LineTypes" USING btree ("Code");
 
 
 --
