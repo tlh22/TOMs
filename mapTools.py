@@ -281,13 +281,13 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
     def canvasMoveEvent(self, event):
 
-        TOMsMessageLog.logMessage(("In Info - canvasMoveEvent."), level=Qgis.Info)
+        # TOMsMessageLog.logMessage(("In Info - canvasMoveEvent."), level=Qgis.Info)
 
         # https://gis.stackexchange.com/questions/245280/display-raster-value-as-a-tooltip
 
         if self.canvas.underMouse():  # Only if mouse is over the map
             QToolTip.hideText()
-            self.timerMapTips.start(700)  # time in milliseconds
+            self.timerMapTips.start(400)  # time in milliseconds
 
     def showMapTip(self):
         self.timerMapTips.stop()

@@ -262,7 +262,7 @@ class RestrictionTypeUtilsMixin():
 
         #self.tableNames.getLayers()
         #super().__init__()
-        self.currTransaction = None
+        # self.currTransaction = None
         #self.proposalTransaction = QgsTransaction()
         #self.proposalPanel = None
 
@@ -751,7 +751,7 @@ class RestrictionTypeUtilsMixin():
         pass 
         """
 
-    def setupRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction, restrictionTransaction):
+    def setupRestrictionDialog(self, restrictionAttributeDialog, currRestrictionLayer, currRestriction, restrictionTransaction):
 
         #self.restrictionDialog = restrictionDialog
         #self.currRestrictionLayer = currRestrictionLayer
@@ -762,32 +762,37 @@ class RestrictionTypeUtilsMixin():
         self.origFeature = originalFeature()
         self.origFeature.setFeature(currRestriction)
 
-        if restrictionDialog is None:
+        attributeForm = restrictionAttributeDialog.attributeForm()
+
+        if restrictionAttributeDialog is None:
             TOMsMessageLog.logMessage(
                 "In setupRestrictionDialog. dialog not found",
                 level=Qgis.Info)
 
         #restrictionDialog.attributeForm().disconnectButtonBox()
-        button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
+        button_box = attributeForm.findChild(QDialogButtonBox, "button_box")
         # button_box = restrictionDialog.buttonBox()
 
         if button_box is None:
             TOMsMessageLog.logMessage(
                 "In setupRestrictionDialog. button box not found",
-                level=Qgis.Info)
-
+                level=Qgis.Critical)
+            reply = QMessageBox.information(None, "Error",
+                                        "In setupRestrictionDialog. button box not found",
+                                        QMessageBox.Ok)  # rollback all changes
+            return
         #button_box.accepted.disconnect(restrictionDialog.accept)
         #button_box.accepted.disconnect()
         button_box.accepted.connect(functools.partial(self.onSaveRestrictionDetails, currRestriction,
-                                      currRestrictionLayer, restrictionDialog, restrictionTransaction))
+                                      currRestrictionLayer, restrictionAttributeDialog, restrictionTransaction))
 
-        restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, currRestriction, currRestrictionLayer))
+        attributeForm.attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, currRestriction, currRestrictionLayer))
 
         #button_box.rejected.disconnect(restrictionDialog.reject)
         #button_box.rejected.disconnect()
-        button_box.rejected.connect(functools.partial(self.onRejectRestrictionDetailsFromForm, restrictionDialog, restrictionTransaction))
+        button_box.rejected.connect(functools.partial(self.onRejectRestrictionDetailsFromForm, restrictionAttributeDialog, restrictionTransaction))
 
-        self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)
+        self.photoDetails(restrictionAttributeDialog, currRestrictionLayer, currRestriction)  # TODO: version issue here. Code changed to meet different db version ...
 
         """def onSaveRestrictionDetailsFromForm(self):
         TOMsMessageLog.logMessage("In onSaveRestrictionDetailsFromForm", level=Qgis.Info)
@@ -846,13 +851,16 @@ class RestrictionTypeUtilsMixin():
 
         # Generate the full path to the file
 
-        """fileName1 = layerName + "_Photos_01"
+        fileName1 = layerName + "_Photos_01"
         fileName2 = layerName + "_Photos_02"
-        fileName3 = layerName + "_Photos_03"""""
+        fileName3 = layerName + "_Photos_03"
+        """fileName1 = "Photos_01"
+        fileName2 = "Photos_02"
+        fileName3 = "Photos_03"""
 
-        idx1 = currRestLayer.fields().indexFromName("Photos_01")
-        idx2 = currRestLayer.fields().indexFromName("Photos_02")
-        idx3 = currRestLayer.fields().indexFromName("Photos_03")
+        idx1 = currRestLayer.fields().indexFromName(fileName1)
+        idx2 = currRestLayer.fields().indexFromName(fileName2)
+        idx3 = currRestLayer.fields().indexFromName(fileName3)
 
         TOMsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
                                  level=Qgis.Info)

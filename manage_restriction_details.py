@@ -253,11 +253,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                     TOMsMessageLog.logMessage(
                         "In restrictionFormOpen. currRestrictionLayer: " + str(currRestrictionLayer.name()), level=Qgis.Info)
 
-                    dialog = self.iface.getFeatureForm(currRestrictionLayer, currRestriction)
+                    attributeDialog = self.iface.getFeatureForm(currRestrictionLayer, currRestriction)
 
-                    self.setupRestrictionDialog(dialog, currRestrictionLayer, currRestriction, self.restrictionTransaction)  # connects signals
+                    self.setupRestrictionDialog(attributeDialog, currRestrictionLayer, currRestriction, self.restrictionTransaction)  # connects signals
 
-                    dialog.show()
+                    attributeDialog.show()
 
                     #self.iface.openFeatureForm(self.currRestrictionLayer, self.currRestriction)
 
