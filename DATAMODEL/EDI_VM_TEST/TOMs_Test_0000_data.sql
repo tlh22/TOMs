@@ -29,6 +29,89 @@ INSERT INTO "public"."ActionOnProposalAcceptanceTypes" ("id", "Description") VAL
 
 
 --
+-- TOC entry 4042 (class 0 OID 274827)
+-- Dependencies: 281
+-- Data for Name: BayLineTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (102, 'Business Permit Holder Bays');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (106, 'Ambulance Bays');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (107, 'Bus Stop');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (114, 'Loading Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (121, 'Taxi Rank');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (122, 'Bus Stand');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (126, 'Limited Waiting');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (127, 'Free Bays (No Limited Waiting)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (109, 'Buses Only Bays');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (130, 'Private Parking/Residents only Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (132, 'Red Route Doctors only');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (202, 'No Waiting At Any Time (DYL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (203, 'Zig Zag - School');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (204, 'Zig Zag - Fire');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (205, 'Zig Zag - Police');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (206, 'Zig Zag - Ambulance');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (207, 'Zig Zag - Hospital');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (208, 'Zig Zag - Yellow (other)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (209, 'Crossing - Zebra');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (210, 'Crossing - Pelican');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (211, 'Crossing - Toucan');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (212, 'Crossing - Puffin');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (213, 'Crossing - Equestrian');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (214, 'Crossing - Signalised');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (215, 'Crossing - Unmarked and no signals');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (219, 'Private Road');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (216, 'Unmarked Area (Acceptable)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (220, 'Unmarked Area (Unacceptable)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (231, 'Resident Permit Holders (zone)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (108, 'Car Club bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (115, 'Loading Bay/Disabled Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (128, 'Loading Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (129, 'Limited Waiting Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (110, 'Disabled Blue Badge');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (111, 'Disabled bay - personalised');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (112, 'Diplomatic Only Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (113, 'Doctor bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (116, 'Cycle Hire bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (123, 'Mobile Library bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (124, 'Electric Vehicle Charging Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (101, 'Resident Permit Holder Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (104, 'Resident/Business Permit Holder Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (119, 'On-Carriageway Bicycle Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (120, 'Police bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (103, 'Pay & Display/Pay by Phone Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (105, 'Shared Use Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (125, 'Other Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (117, 'Motorcycle Permit Holders bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (131, 'Permit Holder Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (218, 'No Stopping At Any Time (DRL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (201, 'No Waiting (Acceptable) (SYL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (217, 'No Stopping (Acceptable) (SRL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (221, 'No Waiting (Unacceptable) (SYL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (222, 'No Stopping (Unacceptable) (SRL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (118, 'Solo Motorcycle bay (Visitors)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (160, 'Disabled Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (161, 'Bus Stop (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (162, 'Bus Stand (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (163, 'Coach Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (164, 'Taxi Rank (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (165, 'Private Parking/Visitor Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (166, 'Private Parking/Disabled Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (167, 'Accessible Permit Holder Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (133, 'Shared Use (Business Permit Holders)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (134, 'Shared Use (Permit Holders)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (135, 'Shared Use (Residential Permit Holders)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (140, 'Loading Bay/Disabled Bay');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (141, 'Loading Bay/Disabled Bay/Parking Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (142, 'Parking Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (143, 'Loading Bay/Parking Bay (Red Route)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (144, 'Rubbish Bin Bays');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (145, 'Disabled Blue Badge within Zone');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (223, 'Other Line');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (224, 'No waiting (SYL)');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (225, 'Unmarked kerb line');
+INSERT INTO "public"."BayLineTypes" ("Code", "Description") VALUES (146, 'Keep Clear (Other) area');
+
+--
 -- TOC entry 4265 (class 0 OID 270672)
 -- Dependencies: 214
 -- Data for Name: BayLineTypesInUse; Type: TABLE DATA; Schema: public; Owner: postgres

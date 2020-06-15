@@ -838,14 +838,28 @@ class RestrictionTypeUtilsMixin():
 
         TOMsMessageLog.logMessage("In photoDetails", level=Qgis.Info)
 
+        # sort out path for Photos
+        photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
+        if photoPath == None:
+            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
+            return
+
+        if os.path.isabs(photoPath):
+            path_absolute = photoPath
+        else:
+            projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
+            path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
+
+        TOMsMessageLog.logMessage("In photoDetails: photo path {}".format(path_absolute), level=Qgis.Info)
+
+        # check that the path exists
+        if not os.path.isdir(path_absolute):
+            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
+            return
+
         FIELD1 = dialog.findChild(QLabel, "Photo_Widget_01")
         FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
         FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
-
-        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
-        if path_absolute == None:
-            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
-            return
 
         layerName = currRestLayer.name()
 

@@ -123,21 +123,48 @@ ALTER TABLE public."BayLineTypesInUse" OWNER TO postgres;
 
 --
 -- Name: BayLineTypes; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
+-- **** Changed to table for convenience
 --
 
-CREATE MATERIALIZED VIEW public."BayLineTypes" AS
- SELECT "BayLineTypes"."Code",
-    "BayLineTypes"."Description"
-   FROM ( SELECT "BayLineTypes_1"."Code",
-            "BayLineTypes_1"."Description"
-            -- YOU MAY NEED TO ADAPT THIS
-           FROM public.dblink('dbname=MasterLookups options=-csearch_path='::text, 'SELECT "Code", "Description" FROM public."BayLineTypes"'::text) "BayLineTypes_1"("Code" integer, "Description" text)) "BayLineTypes",
-    public."BayLineTypesInUse" u
-  WHERE ("BayLineTypes"."Code" = u."Code")
-  WITH NO DATA;
+CREATE TABLE "public"."BayLineTypes" (
+    "Code" integer NOT NULL,
+    "Description" character varying(255) NOT NULL
+);
 
 
-ALTER TABLE public."BayLineTypes" OWNER TO postgres;
+ALTER TABLE "public"."BayLineTypes" OWNER TO "postgres";
+
+--
+-- TOC entry 282 (class 1259 OID 274830)
+-- Name: BayLineTypes_Code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE "public"."BayLineTypes_Code_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "public"."BayLineTypes_Code_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 4050 (class 0 OID 0)
+-- Dependencies: 282
+-- Name: BayLineTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE "public"."BayLineTypes_Code_seq" OWNED BY "public"."BayLineTypes"."Code";
+
+
+--
+-- TOC entry 3903 (class 2604 OID 275031)
+-- Name: BayLineTypes Code; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."BayLineTypes" ALTER COLUMN "Code" SET DEFAULT "nextval"('"public"."BayLineTypes_Code_seq"'::"regclass");
 
 --
 -- Name: BayLineTypesInUse_gid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -217,6 +244,9 @@ CREATE UNIQUE INDEX "BayTypes_key"
     ON public."BayTypes" USING btree
     ("Code" ASC NULLS LAST)
     TABLESPACE pg_default;
+
+ALTER TABLE ONLY "public"."BayLineTypes"
+    ADD CONSTRAINT "BayLineTypes_pkey" PRIMARY KEY ("Code");
 
 --
 -- Name: Bays2_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
