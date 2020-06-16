@@ -98,6 +98,11 @@ class TOMs:
         self.actions = []   # ?? check - assume it initialises array of actions
 
         # Set up local logging
+        loggingUtils = TOMsMessageLog()
+        loggingUtils.setLogFile()
+
+        TOMsMessageLog.logMessage("Finished init ...", level=Qgis.Warning)
+        # Set up local logging
         # Set up log file and collect any relevant messages
         """logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
 
@@ -110,7 +115,7 @@ class TOMs:
             QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs panel")
             #QgsApplication.instance().messageLog().messageReceived.connect(self.write_log_message)  # Not quite sure why this fails ...moved to TOMsMessageLog ..."""
 
-        TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)
+        #TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)
 
     def write_log_message(self, message, tag, level):
         TOMsMessageLog.logMessage("In write_log_message ... " + self.filename, level=Qgis.Info)
