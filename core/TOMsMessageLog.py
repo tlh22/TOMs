@@ -36,20 +36,25 @@ class TOMsMessageLog(QgsMessageLog):
     def __init__(self):
         super().__init__()
 
+    @staticmethod
     def logMessage(*args, **kwargs):
         # check to see if a logging level has been set
         def currentLoggingLevel():
-            """
-            Returns the current proposal
-            """
-            currLoggingLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
+            try:
+                currLoggingLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
+            except Exception as e:
+                QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... ", tag="TOMs Panel")
+
             if not currLoggingLevel:
                 currLoggingLevel = Qgis.Warning
             return int(currLoggingLevel)
 
         debug_level = currentLoggingLevel()
 
-        messageLevel = kwargs.get('level')
+        try:
+            messageLevel = kwargs.get('level')
+        except Exception as e:
+            QgsMessageLog.logMessage("Error in TOMsMessageLog level not found...", tag="TOMs Panel")
 
         #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
 
@@ -61,7 +66,10 @@ class TOMsMessageLog(QgsMessageLog):
 
     def setLogFile(self):
 
-        logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+        try:
+            logFilePath = os.environ.get('QGIS_LOGFILE_PATH')
+        except Exception as e:
+            QgsMessageLog.logMessage("Error in TOMsMessageLog. QGIS_LOGFILE_PATH not found ... ", tag="TOMs Panel")
 
         if logFilePath:
             QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs Panel", level=Qgis.Info)

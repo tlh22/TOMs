@@ -114,7 +114,7 @@ class TOMsParams(QObject):
                 currParam = None
                 try:
                     currParam = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(param)
-                except None:
+                except Exception as e:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
 
                 if len(str(currParam))>0:
