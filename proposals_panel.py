@@ -57,7 +57,7 @@ from .core.proposalsManager import *
 from .manage_restriction_details import manageRestrictionDetails
 from .search_bar import searchBar
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 

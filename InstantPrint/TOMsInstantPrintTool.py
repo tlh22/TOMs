@@ -35,7 +35,7 @@ from qgis.gui import (
 import os
 
 from .InstantPrintTool import InstantPrintTool
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .ui.accepted_Proposals_dialog import acceptedProposalsDialog
 from .ui.printList_dialog import printListDialog
 

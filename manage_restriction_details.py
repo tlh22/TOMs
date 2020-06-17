@@ -54,7 +54,7 @@ from .constants import (
     RestrictionAction
 )
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
 
 import functools

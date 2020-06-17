@@ -137,7 +137,7 @@ class TOMsParams(QObject):
     def setParam(self, param):
         return self.TOMsParamsDict.get(param)
 
-class TOMSLayers(QObject):
+class TOMsLayers(QObject):
 
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
