@@ -405,13 +405,13 @@ def prepareSignLine(feature, parent):
     try:
         newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
     except Exception as e:
-        QgsMessageLog.logMessage('prepareSignLine {}'.format(e), tag="TOMs panel")
+        QgsMessageLog.logMessage('prepareSignLine {}'.format(e), tag="TOMs Panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
             'prepareSignLine: error in expression function: {}{}'.format(exc_type, str(
                 repr(traceback.extract_tb(exc_traceback)))),
-            tag="TOMs panel")
-    #QgsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), tag="TOMs panel")
+            tag="TOMs Panel")
+    #QgsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), tag="TOMs Panel")
     return newLineGeom
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
@@ -422,28 +422,27 @@ def prepareSignIconLocation(signNr, feature, parent):
     try:
         newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
     except Exception as e:
-        QgsMessageLog.logMessage('prepareSignIconLocation {}'.format(e), tag="TOMs panel")
+        QgsMessageLog.logMessage('prepareSignIconLocation {}'.format(e), tag="TOMs Panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
-            'prepareSignLine: error in expression function: {}{}'.format(exc_type, str(
+            'prepareSignIconLocation: error in expression function: {}{}'.format(exc_type, str(
                 repr(traceback.extract_tb(exc_traceback)))),
-            tag="TOMs panel")
+            tag="TOMs Panel")
 
     return linePts[signNr-1].asWkt()
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
 def prepareSignIcon(signNr, feature, parent):
-	# Returns the text to label the feature
     iconNames = []
     try:
         iconNames = generateGeometryUtils.getSignIcons(feature)
     except Exception as e:
-        QgsMessageLog.logMessage('prepareSignIcon {}'.format(e), tag="TOMs panel")
+        QgsMessageLog.logMessage('prepareSignIcon {}'.format(e), tag="TOMs Panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
             'getSignIcon: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel")
+            tag="TOMs Panel")
     if len(iconNames) >= signNr:
         return iconNames[signNr-1]
     else:
@@ -455,12 +454,12 @@ def prepareSignOrientation(feature, parent):
     try:
         signOrientation = generateGeometryUtils.getSignOrientationList(feature)
     except Exception as e:
-        QgsMessageLog.logMessage('prepareSignOrientation {}'.format(e), tag="TOMs panel")
+        QgsMessageLog.logMessage('prepareSignOrientation {}'.format(e), tag="TOMs Panel")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         QgsMessageLog.logMessage(
-            'getSignIcon: error in expression function: ' + str(
+            'prepareSignOrientation: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            tag="TOMs panel")
+            tag="TOMs Panel")
     return signOrientation
 
 functions = [

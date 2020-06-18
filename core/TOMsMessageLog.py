@@ -57,7 +57,7 @@ class TOMsMessageLog(QgsMessageLog):
             QgsMessageLog.logMessage("Error in TOMsMessageLog level in message not found...{}".format(e), tag="TOMs Panel", level=Qgis.Info)
             messageLevel = Qgis.Info
 
-        QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
+        #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
 
         if messageLevel >= debug_level:
             QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
