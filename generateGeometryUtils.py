@@ -1143,7 +1143,7 @@ class generateGeometryUtils:
         # TODO: re-organise - currently also in TOMsSnapTrace ....
         # given a point, find the nearest point (within the tolerance) within the line layer
         # returns QgsPoint
-        #QgsMessageLog.logMessage("In findNearestPointL. Checking lineLayer: " + lineLayer.name(), tag="TOMs panel")
+        TOMsMessageLog.logMessage("In findNearestPointL. Checking lineLayer: {}: {}".format(lineLayer.name(), geometryIDs), level=Qgis.Info)
         searchRect = QgsRectangle(searchPt.x() - tolerance,
                                   searchPt.y() - tolerance,
                                   searchPt.x() + tolerance,
@@ -1158,7 +1158,8 @@ class generateGeometryUtils:
 
         # Loop through all features in the layer to find the closest feature
         for f in lineLayer.getFeatures(request):
-            if geometryIDs:
+            TOMsMessageLog.logMessage("In findNearestPointL: {}".format(f.id()), level=Qgis.Info)
+            if geometryIDs is not None:
                 #print ('***** currGeometryID: {}; GeometryID: {}'.format(currGeometryID, f.attribute("GeometryID")))
                 try:
                     testGeometryID = f.attribute("GeometryID")
@@ -1176,19 +1177,19 @@ class generateGeometryUtils:
                 closestPoint = closestPtOnFeature
                 closestFeature = f
 
-        #QgsMessageLog.logMessage("In findNearestPointL: shortestDistance: " + str(shortestDistance), tag="TOMs panel")
+        TOMsMessageLog.logMessage("In findNearestPointL: shortestDistance: " + str(shortestDistance), level=Qgis.Info)
 
         if shortestDistance < float("inf"):
             #nearestPoint = QgsFeature()
             # add the geometry to the feature,
             #nearestPoint.setGeometry(QgsGeometry(closestPtOnFeature))
-            #QgsMessageLog.logMessage("findNearestPointL: nearestPoint geom type: " + str(nearestPoint.wkbType()), tag="TOMs panel")
+            #TOMsMessageLog.logMessage("findNearestPointL: nearestPoint geom type: " + str(nearestPoint.wkbType()), tag="TOMs panel")
             return closestPoint, closestFeature   # returns a geometry
         else:
             return None, None
 
     def getLineOrientationAtPoint(point, lineFeature):
-        #QgsMessageLog.logMessage('getLineOrientationAtPoint ...', tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getLineOrientationAtPoint ...', level=Qgis.Info)
 
         lineGeom = lineFeature.geometry()
         distSquared, closestPt, vertexNrAfterPt, leftOf = lineGeom.closestSegmentWithContext(point)
@@ -1199,8 +1200,8 @@ class generateGeometryUtils:
         #orientationOppositeFeatureDirection = generateGeometryUtils.checkDegrees(orientationInFeatureDirection + 180)
         orientationOppositeFeatureDirection = math.degrees(QgsGeometryUtils.normalizedAngle(math.radians(orientationInFeatureDirection + 180.0)))
 
-        #QgsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), tag="TOMs2 panel")
-        #print('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), tag="TOMs2 panel")
+        #TOMsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
+        #print('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
 
         return orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection
 
@@ -1211,7 +1212,7 @@ class generateGeometryUtils:
         return lineGeom
 
     def getSignOrientation(ptFeature, lineLayer):
-
+        TOMsMessageLog.logMessage('In getSignOrientation ...', level=Qgis.Info)
         try:
             signOrientation = ptFeature.attribute("SignOrientation")
         except KeyError as e:
@@ -1220,11 +1221,11 @@ class generateGeometryUtils:
         try:
             signOriginalGeometry = ptFeature.attribute("original_geom_wkt")
         except KeyError as e:
-            QgsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', tag="TOMs2 panel")
+            TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Warning)
             return [None, None, None, None, None]
 
-        QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
-        QgsMessageLog.logMessage('getSignLine - signOriginalGeometry: {}'.format(signOriginalGeometry), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignOrientation - orientation: {}'.format(signOrientation), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignOrientation - signOriginalGeometry: {}'.format(signOriginalGeometry), level=Qgis.Info)
 
         lineGeom = None
         if signOrientation is None:
@@ -1235,16 +1236,19 @@ class generateGeometryUtils:
         #signPt = ptFeature.geometry().asPoint()
         signPt = QgsGeometry.fromWkt(signOriginalGeometry).asPoint()
         #print('signPt: {}'.format(signPt.asWkt()))
-        #QgsMessageLog.logMessage('getSignLine signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignOrientation signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), level=Qgis.Info)
+        TOMsMessageLog.logMessage(
+            'getSignOrientation lineLayer {}'.format(lineLayer.name()),
+            level=Qgis.Info)
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
-        #QgsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
 
         # Now generate a line in the appropriate direction
         if closestPoint:
             # get the orientation of the line feature
             (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection) = generateGeometryUtils.getLineOrientationAtPoint(
                 signPt, closestFeature)
-            #QgsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), tag="TOMs2 panel")
+            #TOMsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), level=Qgis.Info)
             #print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
 
             # make it match sign orientation
@@ -1259,7 +1263,7 @@ class generateGeometryUtils:
         except KeyError as e:
             return None
 
-        QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Info)
 
         lineGeom = None
         if signOrientation is None:
@@ -1272,9 +1276,9 @@ class generateGeometryUtils:
             # work out the length of the line based on the number of plates in the sign
             platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
             nrPlatesInSign = len(platesInSign)
-            #QgsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), tag="TOMs2 panel")
+            #TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
             lineLength = (nrPlatesInSign + 1) * distanceForIcons
-            #QgsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), tag="TOMs2 panel")
+            #TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
             print('getSignLine lineLength: {}'.format(lineLength))
 
             signPt = ptFeature.geometry().asPoint()
@@ -1290,11 +1294,11 @@ class generateGeometryUtils:
             else:
                 return None
 
-        #QgsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
         return lineGeom
 
     def getPlatesInSign(feature):
-        #QgsMessageLog.logMessage('getNrPlatesInSign ...', tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getNrPlatesInSign ...', level=Qgis.Info)
         finished = False
         platesInSign = []
         nrPlatesInSign = 0
@@ -1327,7 +1331,7 @@ class generateGeometryUtils:
 
     @staticmethod
     def getGeneratedSignLine(feature):
-        QgsMessageLog.logMessage('getGeneratedSignLine ...', tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getGeneratedSignLine ...', level=Qgis.Info)
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
         #distanceForIcons = 10
@@ -1336,14 +1340,19 @@ class generateGeometryUtils:
         #print ('nrPlates: {}'.format(nrPlatesInSign))
         lineGeom = generateGeometryUtils.getSignLine(feature, RoadCentreLineLayer, distanceForIcons)
         linePts = generateGeometryUtils.addPointsToSignLine(lineGeom, len(generateGeometryUtils.getPlatesInSign(feature)), distanceForIcons)
-        #QgsMessageLog.logMessage('lineGeom: {}'.format(lineGeom.asWkt()), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getGeneratedSignLine: lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
 
         return lineGeom, linePts
 
     @staticmethod
     def getSignIcons(ptFeature):
-        #QgsMessageLog.logMessage('getSignIcons ... ', tag="TOMs2 panel")
-        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('iconPath')
+        TOMsMessageLog.logMessage('getSignIcons ... ', level=Qgis.Info)
+        try:
+            path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('iconPath')
+        except Exception as e:
+            TOMsMessageLog.logMessage('getSignIcons: iconPath not found {}'.format(e), level=Qgis.Warning)
+            return None
+
         platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
         plateIconsInSign = []
         signTypesLayer = QgsProject.instance().mapLayersByName("SignTypes")[0]
@@ -1353,13 +1362,17 @@ class generateGeometryUtils:
                 icon = signTypeRow["Icon"]
                 path = os.path.join(path_absolute, icon)
                 plateIconsInSign.append(path)
-        #QgsMessageLog.logMessage('getSignIcons ... returning ... ', tag="TOMs2 panel")
+        #TOMsMessageLog.logMessage('getSignIcons ... returning ... ', level=Qgis.Info)
         return plateIconsInSign
 
     @staticmethod
     def getSignOrientationList(ptFeature):
-        #QgsMessageLog.logMessage('getSignOrientationList ...', tag="TOMs2 panel")
-        RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
+        TOMsMessageLog.logMessage('getSignOrientationList ...', level=Qgis.Info)
+        try:
+            RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
+        except Exception as e:
+            TOMsMessageLog.logMessage('getSignOrientationList: RoadCentreLine layer not found {}'.format(e), level=Qgis.Warning)
+            return None
 
         orientationList = generateGeometryUtils.getSignOrientation(ptFeature, RoadCentreLineLayer)
 
@@ -1375,7 +1388,7 @@ class generateGeometryUtils:
             featureSignOrientation = ptFeature.attribute("SignOrientation")
         except KeyError as e:
             return None
-        QgsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), tag="TOMs2 panel")
+        TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
         #return orientationList
         return newOrientationList[featureSignOrientation]
 

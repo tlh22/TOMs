@@ -46,20 +46,18 @@ class TOMsMessageLog(QgsMessageLog):
                 QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... {}".format(e), tag="TOMs Panel")
 
             if not currLoggingLevel:
-                currLoggingLevel = Qgis.Warning
+                currLoggingLevel = Qgis.Info
             return int(currLoggingLevel)
 
         debug_level = currentLoggingLevel()
 
         try:
-            messageLevel = kwargs.get('level')
+            messageLevel = int(kwargs.get('level'))
         except Exception as e:
-            QgsMessageLog.logMessage("Error in TOMsMessageLog level not found...{}".format(e), tag="TOMs Panel")
+            QgsMessageLog.logMessage("Error in TOMsMessageLog level in message not found...{}".format(e), tag="TOMs Panel", level=Qgis.Info)
+            messageLevel = Qgis.Info
 
         #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
-
-        if not messageLevel:
-            messageLevel = Qgis.Info
 
         if messageLevel >= debug_level:
             QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
