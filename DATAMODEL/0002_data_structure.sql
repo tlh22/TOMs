@@ -49,6 +49,16 @@ CREATE SCHEMA "compliance_lookups";
 ALTER SCHEMA "compliance_lookups" OWNER TO "postgres";
 
 --
+-- TOC entry 14 (class 2615 OID 220900)
+-- Name: export; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA "export";
+
+
+ALTER SCHEMA "export" OWNER TO "postgres";
+
+--
 -- TOC entry 19 (class 2615 OID 220901)
 -- Name: highways_network; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -193,39 +203,45 @@ ALTER FUNCTION "public"."create_geometryid"() OWNER TO "postgres";
 -- Name: set_last_update_details(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION "public"."set_last_update_details"() RETURNS "trigger"
-    LANGUAGE "plpgsql"
-    AS $$
+CREATE FUNCTION public.set_last_update_details()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
     BEGIN
 	    -- round to two decimal places
         NEW."LastUpdateDateTime" := now();
         NEW."LastUpdatePerson" := current_user;
-		
+
         RETURN NEW;
     END;
-$$;
+$BODY$;
 
-
-ALTER FUNCTION "public"."set_last_update_details"() OWNER TO "postgres";
+ALTER FUNCTION public.set_last_update_details()
+    OWNER TO postgres;
 
 --
 -- TOC entry 1074 (class 1255 OID 221976)
 -- Name: set_restriction_length(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION "public"."set_restriction_length"() RETURNS "trigger"
-    LANGUAGE "plpgsql"
-    AS $$
+CREATE FUNCTION public.set_restriction_length()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
     BEGIN
 	    -- round to two decimal places
         NEW."RestrictionLength" := ROUND(ST_Length (NEW."geom")::numeric,2);
 
         RETURN NEW;
     END;
-$$;
+$BODY$;
 
-
-ALTER FUNCTION "public"."set_restriction_length"() OWNER TO "postgres";
+ALTER FUNCTION public.set_restriction_length()
+    OWNER TO postgres;
 
 SET default_table_access_method = "heap";
 
@@ -723,10 +739,10 @@ ALTER TABLE "highways_network"."itn_roadcentreline" OWNER TO "postgres";
 
 --
 -- TOC entry 246 (class 1259 OID 222076)
--- Name: edi_itn_roadcentreline_gid_seq; Type: SEQUENCE; Schema: highways_network; Owner: postgres
+-- Name: itn_roadcentreline_gid_seq; Type: SEQUENCE; Schema: highways_network; Owner: postgres
 --
 
-CREATE SEQUENCE "highways_network"."edi_itn_roadcentreline_gid_seq"
+CREATE SEQUENCE "highways_network"."itn_roadcentreline_gid_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -734,15 +750,15 @@ CREATE SEQUENCE "highways_network"."edi_itn_roadcentreline_gid_seq"
     CACHE 1;
 
 
-ALTER TABLE "highways_network"."edi_itn_roadcentreline_gid_seq" OWNER TO "postgres";
+ALTER TABLE "highways_network"."itn_roadcentreline_gid_seq" OWNER TO "postgres";
 
 --
 -- TOC entry 4411 (class 0 OID 0)
 -- Dependencies: 246
--- Name: edi_itn_roadcentreline_gid_seq; Type: SEQUENCE OWNED BY; Schema: highways_network; Owner: postgres
+-- Name: itn_roadcentreline_gid_seq; Type: SEQUENCE OWNED BY; Schema: highways_network; Owner: postgres
 --
 
-ALTER SEQUENCE "highways_network"."edi_itn_roadcentreline_gid_seq" OWNED BY "highways_network"."itn_roadcentreline"."gid";
+ALTER SEQUENCE "highways_network"."itn_roadcentreline_gid_seq" OWNED BY "highways_network"."itn_roadcentreline"."gid";
 
 
 --
@@ -2109,7 +2125,7 @@ ALTER TABLE "topography"."os_mastermap_topography_text" OWNER TO "postgres";
 -- Name: edi_cartotext_gid_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
 --
 
-CREATE SEQUENCE "topography"."edi_cartotext_gid_seq"
+CREATE SEQUENCE "topography"."os_mastermap_topography_text_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2117,7 +2133,7 @@ CREATE SEQUENCE "topography"."edi_cartotext_gid_seq"
     CACHE 1;
 
 
-ALTER TABLE "topography"."edi_cartotext_gid_seq" OWNER TO "postgres";
+ALTER TABLE "topography"."os_mastermap_topography_text_seq" OWNER TO "postgres";
 
 --
 -- TOC entry 4431 (class 0 OID 0)
@@ -2125,7 +2141,7 @@ ALTER TABLE "topography"."edi_cartotext_gid_seq" OWNER TO "postgres";
 -- Name: edi_cartotext_gid_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
 --
 
-ALTER SEQUENCE "topography"."edi_cartotext_gid_seq" OWNED BY "topography"."os_mastermap_topography_text"."gid";
+ALTER SEQUENCE "topography"."os_mastermap_topography_text_seq" OWNED BY "topography"."os_mastermap_topography_text"."gid";
 
 
 --
@@ -2160,10 +2176,10 @@ ALTER TABLE "topography"."os_mastermap_topography_polygons" OWNER TO "postgres";
 
 --
 -- TOC entry 316 (class 1259 OID 222367)
--- Name: edi_mm_gid_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
+-- Name: os_mastermap_topography_polygons_seq; Type: SEQUENCE; Schema: topography; Owner: postgres
 --
 
-CREATE SEQUENCE "topography"."edi_mm_gid_seq"
+CREATE SEQUENCE "topography"."os_mastermap_topography_polygons_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2171,15 +2187,15 @@ CREATE SEQUENCE "topography"."edi_mm_gid_seq"
     CACHE 1;
 
 
-ALTER TABLE "topography"."edi_mm_gid_seq" OWNER TO "postgres";
+ALTER TABLE "topography"."os_mastermap_topography_polygons_seq" OWNER TO "postgres";
 
 --
 -- TOC entry 4432 (class 0 OID 0)
 -- Dependencies: 316
--- Name: edi_mm_gid_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
+-- Name: os_mastermap_topography_polygons_seq; Type: SEQUENCE OWNED BY; Schema: topography; Owner: postgres
 --
 
-ALTER SEQUENCE "topography"."edi_mm_gid_seq" OWNED BY "topography"."os_mastermap_topography_polygons"."gid";
+ALTER SEQUENCE "topography"."os_mastermap_topography_polygons_seq" OWNED BY "topography"."os_mastermap_topography_polygons"."gid";
 
 
 --
@@ -2393,7 +2409,7 @@ ALTER TABLE ONLY "compliance_lookups"."TicketMachineIssueTypes" ALTER COLUMN "id
 -- Name: itn_roadcentreline gid; Type: DEFAULT; Schema: highways_network; Owner: postgres
 --
 
-ALTER TABLE ONLY "highways_network"."itn_roadcentreline" ALTER COLUMN "gid" SET DEFAULT "nextval"('"highways_network"."edi_itn_roadcentreline_gid_seq"'::"regclass");
+ALTER TABLE ONLY "highways_network"."itn_roadcentreline" ALTER COLUMN "gid" SET DEFAULT "nextval"('"highways_network"."itn_roadcentreline_gid_seq"'::"regclass");
 
 
 --
@@ -2553,7 +2569,7 @@ ALTER TABLE ONLY "topography"."Corners" ALTER COLUMN "id" SET DEFAULT "nextval"(
 -- Name: os_mastermap_topography_polygons gid; Type: DEFAULT; Schema: topography; Owner: postgres
 --
 
-ALTER TABLE ONLY "topography"."os_mastermap_topography_polygons" ALTER COLUMN "gid" SET DEFAULT "nextval"('"topography"."edi_mm_gid_seq"'::"regclass");
+ALTER TABLE ONLY "topography"."os_mastermap_topography_polygons" ALTER COLUMN "gid" SET DEFAULT "nextval"('"topography"."os_mastermap_topography_polygons_seq"'::"regclass");
 
 
 --
@@ -2561,7 +2577,7 @@ ALTER TABLE ONLY "topography"."os_mastermap_topography_polygons" ALTER COLUMN "g
 -- Name: os_mastermap_topography_text gid; Type: DEFAULT; Schema: topography; Owner: postgres
 --
 
-ALTER TABLE ONLY "topography"."os_mastermap_topography_text" ALTER COLUMN "gid" SET DEFAULT "nextval"('"topography"."edi_cartotext_gid_seq"'::"regclass");
+ALTER TABLE ONLY "topography"."os_mastermap_topography_text" ALTER COLUMN "gid" SET DEFAULT "nextval"('"topography"."os_mastermap_topography_text_seq"'::"regclass");
 
 
 --
