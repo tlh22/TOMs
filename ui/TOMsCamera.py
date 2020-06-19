@@ -51,21 +51,24 @@ import time
 
 try:
     import cv2
+    cv2_available = True
 except ImportError:
     print('cv2 not available ...')
-    QgsMessageLog.logMessage("cv2 not available ...")
-
+    QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
+    cv2_available = False
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
+
 
 class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
 
-    def __init__(self, path_absolute, currFileName):
+    def __init__(self, path_absolute, currFileName, cameraNr):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
         self.camera = cvCamera()
+        self.cameraNr = cameraNr
 
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
@@ -98,7 +101,7 @@ class formCamera(QObject):
 
         TOMsMessageLog.logMessage("In formCamera::useCamera: starting camera ... ", level=Qgis.Info)
 
-        self.camera.startCamera()
+        self.camera.startCamera(self.cameraNr)
 
     def endCamera(self):
 
@@ -169,11 +172,11 @@ class cvCamera(QThread):
         TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
         self.cap.release()
 
-    def startCamera(self):
+    def startCamera(self, cameraNr):
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Info)
 
-        self.cap = cv2.VideoCapture(0)  # video capture source camera (Here webcam of laptop)
+        self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
 
         self.cap.set(3, 640)  # width=640
         self.cap.set(4, 480)  # height=480
