@@ -169,14 +169,17 @@ class cvCamera(QThread):
         QThread.__init__(self)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
         self.cap.release()
 
     def startCamera(self, cameraNr):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Warning)
 
         self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
+
+        if not self.cap.isOpened():
+            reply = QMessageBox.information(None, "Information", "Camera did not open ...", QMessageBox.Ok)
 
         self.cap.set(3, 640)  # width=640
         self.cap.set(4, 480)  # height=480
@@ -187,7 +190,7 @@ class cvCamera(QThread):
             # cv2.waitKey(1)
             time.sleep(0.1)  # QTimer::singleShot()
         else:
-            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Warning)
             self.closeCamera.emit()
 
     def getFrame(self):
@@ -210,7 +213,7 @@ class cvCamera(QThread):
 
         else:
 
-            TOMsMessageLog.logMessage("In cvCamera::useCamera: frame not returned ... ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In cvCamera::useCamera: frame not returned ... ", level=Qgis.Warning)
             self.closeCamera.emit()
 
     def takePhoto(self, path_absolute):
