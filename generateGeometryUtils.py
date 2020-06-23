@@ -139,7 +139,6 @@ class generateGeometryUtils:
         TOMsMessageLog.logMessage("In checkDegrees (1): newAz: " + str(newAz), level=Qgis.Info)"""
 
         newAz = math.degrees(QgsGeometryUtils().normalizedAngle(math.radians(Az)))
-
         #TOMsMessageLog.logMessage("In checkDegrees (2): newAz: " + str(newAz), level=Qgis.Info)
 
         return newAz
