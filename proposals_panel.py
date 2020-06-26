@@ -13,57 +13,42 @@
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction,
-    QDialogButtonBox,
-    QLabel,
-    QDockWidget
+    QDialogButtonBox
 )
 
 from qgis.PyQt.QtGui import (
-    QIcon,
-    QPixmap
+    QIcon
 )
 
 from qgis.PyQt.QtCore import (
-    QObject, QTimer, pyqtSignal,
-    QTranslator,
-    QSettings,
     QCoreApplication,
-    qVersion,
     Qt
 )
 # from qgis.PyQt import QtCore, QtGui, QtWidgets
 # from qgis.PyQt.QtGui import *
 # from qgis import core
-from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
-    QgsExpressionContextUtils,
-    QgsExpression,
-    QgsFeatureRequest,
     # QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry,
-    QgsTransaction, QgsTransactionGroup,
     QgsProject
 )
 
-import time
-import uuid
 import functools
 
-from .ProposalPanel_dockwidget import ProposalPanelDockWidget
+from TOMs.ui.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
-from .core.proposalsManager import *
+from TOMs.core.proposalsManager import *
 
-from .manage_restriction_details import manageRestrictionDetails
-from .search_bar import searchBar
+from TOMs.manage_restriction_details import manageRestrictionDetails
+from TOMs.search_bar import searchBar
 
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
+
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
-from .constants import (
-    ProposalStatus,
-    RestrictionAction
+from TOMs.constants import (
+    ProposalStatus
 )
 
 class proposalsPanel(RestrictionTypeUtilsMixin):

@@ -19,7 +19,7 @@
 
 import math
 import time
-
+import sys, traceback
 #from qgis.core import *
 #from qgis.gui import *
 
@@ -165,7 +165,7 @@ class MapToolMixin:
         for layerDetails in self.RestrictionLayers.getFeatures():
 
             # Exclude consideration of CPZs
-            if layerDetails.attribute("id") >= 6:  # CPZs
+            if layerDetails.attribute("Code") >= 6:  # CPZs
                 continue
 
             self.currLayer = RestrictionTypeUtilsMixin.getRestrictionsLayer (layerDetails)
@@ -362,10 +362,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
-            if layerDetails.attribute("id") >= 6:   # CPZs, PTAs
+            if layerDetails.attribute("Code") >= 6:   # CPZs, PTAs
                 continue
 
-            if layerDetails.attribute("id") == RestrictionLayers.BAYS:  # Bays
+            if layerDetails.attribute("Code") == RestrictionLayers.BAYS:  # Bays
                 tolerance = 2.0
             else:
                 tolerance = 0.5
@@ -385,8 +385,8 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             # Loop through all features in the layer to find the closest feature
             for f in self.currLayer.getFeatures(request):
 
-                if (layerDetails.attribute("id") == RestrictionLayers.BAYS or
-                    layerDetails.attribute("id") == RestrictionLayers.LINES):
+                if (layerDetails.attribute("Code") == RestrictionLayers.BAYS or
+                    layerDetails.attribute("Code") == RestrictionLayers.LINES):
                     context.setFeature(f)
                     expression1 = QgsExpression(
                         'generate_display_geometry ("GeometryID",  "GeomShapeID",  "AzimuthToRoadCentreLine",   @BayOffsetFromKerb, @BayWidth)')
@@ -396,10 +396,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                                              level=Qgis.Info)
                     if shapeGeom.intersects(searchRectA):
                         # Add any features that are found should be added to a list
-                        restrictionList.append((f,layerDetails.attribute("id"), self.currLayer))
+                        restrictionList.append((f,layerDetails.attribute("Code"), self.currLayer))
                     # layerList.append(self.currLayer)
                 else:
-                    restrictionList.append((f, layerDetails.attribute("id"), self.currLayer))
+                    restrictionList.append((f, layerDetails.attribute("Code"), self.currLayer))
 
         TOMsMessageLog.logMessage("In findNearestFeatureAt: nrFeatures: " + str(len(restrictionList)), level=Qgis.Info)
 
@@ -554,9 +554,10 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         snapping_layer3 = QgsSnappingUtils.LayerConfig(ConstructionLines, QgsPointLocator.Vertex and QgsPointLocator.Edge, 0.5,
                                                        QgsTolerance.LayerUnits)
         """
-        self.snappingConfig = QgsSnappingConfig()
+        self.snapper = canvas.snappingUtils()
+        self.snappingConfig = QgsSnappingConfig(QgsProject.instance())
 
-        #self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
+        #####self.snappingUtils.setLayers([snapping_layer1, snapping_layer2, snapping_layer3])
 
         self.snappingConfig.setMode(QgsSnappingConfig.AdvancedConfiguration)
 
@@ -716,7 +717,6 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
             if self.layer.name() == "ConstructionLines":
                 self.layer.addFeature(feature)
-                pass
             else:
 
                 # set any geometry related attributes ...
@@ -749,7 +749,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
                 newRestrictionID = str(uuid.uuid4())
                 feature[self.layer.fields().indexFromName("RestrictionID")] = newRestrictionID
-                self.layer.addFeature(feature)  # TH (added for v3)
+                #self.layer.addFeature(feature)  # TH (added for v3)
 
                 dialog = self.iface.getFeatureForm(self.layer, feature)
 
@@ -863,12 +863,8 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             return
             # take points from the rubber band and create a geometry
 
-        TOMsMessageLog.logMessage(("In SplitRestrictionTool. getPointsCaptured, layerType: " + str(self.layer.geometryType())), level=Qgis.Info)
-
-        # now split the restriction. (NB: THis is done at layer level
-
-
-
+        self.doSplitFeature(self.selectedRestriction, self.sketchPoints)
+        """
         self.layer.featureAdded.connect(self.splitFeatureAdded)
         self.layer.geometryChanged.connect(self.splitFeatureChanged)
 
@@ -881,17 +877,156 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         self.splitRestrictionChanged = False
 
         result = self.layer.splitFeatures(self.sketchPoints)
+        """
 
-        if result != 0:
+
+    def doSplitFeature(self, currRestriction, cutPointsList):
+
+        TOMsMessageLog.logMessage("In SplitRestrictionTool. doSplitFeature ...", level=Qgis.Info)
+
+        # now split the restriction.
+        originalGeometry = currRestriction.geometry()  # this will be amended ...
+        result, extraGeometriesList, topologyTestPointsList = originalGeometry.splitGeometry(
+            QgsGeometry.fromPolylineXY(cutPointsList).asPolyline(), True)
+
+        if result != QgsGeometry.OperationResult.Success:
             reply = QMessageBox.information(None, "Error",
                                             "Issue splitting feature. Status: " + str(result),
                                             QMessageBox.Ok)
             return
 
+        extraGeometriesList.append(originalGeometry)
         # if split, need to get parts and deal with appropriately
-        self.splitGeometryChanged()
+        for newGeometry in extraGeometriesList:
+            newRestriction = self.createNewSplitRestriction(currRestriction, newGeometry)
+            if newRestriction is None:
+                self.restrictionTransaction.rollBackTransactionGroup()
+                return
 
-    def splitFeatureAdded(self, fid):
+        result = self.updateOriginalSplitRestriction(currRestriction)  # now deal with the original feature
+        if result == False:
+            self.restrictionTransaction.rollBackTransactionGroup()
+            return
+
+        self.restrictionTransaction.commitTransactionGroup(self.layer)
+        # self.restrictionTransaction.deleteTransactionGroup()
+
+        self.origLayer.deselect(self.origFeature.getFeature().id())
+
+        self.shutDownSplitTool()
+
+        # Trying to unset map tool to force updates ...
+        # self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #currMapTool = self.iface.mapCanvas().mapTool()
+        #currAction = currMapTool.action()
+
+        #currMapToolAction = self.iface.mapCanvas().mapTool().action().setChecked(False)
+
+    def createNewSplitRestriction(self, currRestriction, newGeometry):
+
+        TOMsMessageLog.logMessage("In SplitRestrictionTool. addNewSplitfeature ... ", level=Qgis.Info)
+
+        # Now remove "GeometryID", "Opendate" and give the restriction a new "RestrictionID" - and add it to the proposal.
+        keyFields = ['RestrictionID', 'GeometryID', 'OpenDate', 'CloseDate']   # TODO: can we put this somewhere else
+        currFields = currRestriction.fields()
+        newRestriction = QgsFeature(currFields)
+
+        # set the attributes
+        for field in currFields:
+            if field.name() not in keyFields:
+                TOMsMessageLog.logMessage("In SplitRestrictionTool. addNewSplitfeature ... field: {}".format(field.name()), level=Qgis.Info)
+                try:
+                    result = newRestriction.setAttribute(field.name(), currRestriction.attribute(field.name()))
+                    if result == False:
+                        TOMsMessageLog.logMessage("In SplitRestrictionTool:createNewSplitRestriction: problem setting value for {}".format(field), level=Qgis.Warning)
+                        return None
+                except Exception:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    reply = QMessageBox.information(None, "Error",
+                                                    "SplitRestrictionTool:createNewSplitRestriction: Issue creating new feature after split. Status: " + str(repr(traceback.extract_tb(exc_traceback))),
+                                                    QMessageBox.Ok)
+                    return None
+
+        newRestrictionID = str(uuid.uuid4())
+        newRestriction.setAttribute("RestrictionID", newRestrictionID)  # TODO: Understand why the trigger is not able to generate this !!!!!?????
+        # set the geometry
+        result = newRestriction.setGeometry(newGeometry)
+
+        result = self.origLayer.addFeature(newRestriction)
+        if result == False:
+            self.restrictionTransaction.rollBackTransactionGroup()
+            return None
+
+        status = self.addRestrictionToProposal(newRestriction.attribute("RestrictionID"), self.getRestrictionLayerTableID(self.origLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          RestrictionAction.OPEN)  # close the original feature
+
+        return newRestriction
+
+    def updateOriginalSplitRestriction(self, changedRestriction):
+
+        TOMsMessageLog.logMessage(
+            "In SplitRestrictionTool:updateOriginalSplitRestriction ... ",
+            level=Qgis.Info)
+
+        """
+        # need to clone the original restriction and swap around the ids
+        originalRestriction = self.origFeature.getFeature()
+        originalRestrictionID = originalRestriction.attribute('RestrictionID')
+
+        # unset relevant fields and change RestrictionID
+        changedRestrictionID = str(uuid.uuid4())
+
+        #changedRestriction.setAttribute('RestrictionID', changedRestrictionID)
+        #changedRestriction.setAttribute('OpenDate', None)
+
+        self.origLayer.changeAttributeValue(changedRestriction.id(),
+                                            changedRestriction.fieldNameIndex('RestrictionID'),
+                                            changedRestrictionID)
+        self.origLayer.changeAttributeValue(changedRestriction.id(),
+                                            changedRestriction.fieldNameIndex('OpenDate'),
+                                            None)
+
+        TOMsMessageLog.logMessage(
+            "In SplitRestrictionTool:updateOriginalSplitRestriction ... changed feature changed to {}".format(changedRestrictionID),
+            level=Qgis.Info)
+        # now add originalRestriction to layer
+        result = self.origLayer.addFeature(originalRestriction)  # with the original ID
+        """
+        TOMsMessageLog.logMessage(
+            "In SplitRestrictionTool:updateOriginalSplitRestriction. currProposal: " + str(self.proposalsManager.currentProposal()),
+            level=Qgis.Info)
+
+        # When a geometry is changed; we need to check whether or not the feature is part of the current proposal
+
+        if not self.restrictionInProposal(changedRestriction.attribute('RestrictionID'),
+                                          self.getRestrictionLayerTableID(self.origLayer),
+                                          self.proposalsManager.currentProposal()):
+            TOMsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - adding details to RestrictionsInProposal",
+                                     level=Qgis.Info)
+            #  This one is not in the current Proposal, so now we need to:
+            #  - add the original details to RestrictionsInProposal
+
+            result = self.addRestrictionToProposal(changedRestriction.attribute('RestrictionID'),
+                                          self.getRestrictionLayerTableID(self.origLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          RestrictionAction.CLOSE)  # close the original feature
+            TOMsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - orignal feature CLOSED. {}".format(changedRestriction.attribute('RestrictionID')), level=Qgis.Info)
+
+        else:
+            result = self.deleteRestrictionInProposal(changedRestriction.attribute('RestrictionID'),
+                                          self.getRestrictionLayerTableID(self.origLayer),
+                                          self.proposalsManager.currentProposal())
+
+            TOMsMessageLog.logMessage(
+                "In SplitRestrictionTool:onGeometryChanged - changed feature already in RestrictionsInProposal. Now removed {}".format(changedRestriction.attribute('RestrictionID')),
+                level=Qgis.Info)
+
+        return result
+
+        # .. and commit ...
+
+        """def splitFeatureAdded(self, fid):
         TOMsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureAdded: " + str(fid), level=Qgis.Info)
         self.layer.featureAdded.disconnect(self.splitFeatureAdded)
         # Now remove "GeometryID", "Opendate" and give the restriction a new "RestrictionID" - and add it to the proposal.
@@ -928,9 +1063,9 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         self.proposalsManager.TOMsSplitRestrictionSaved.emit()
 
-    def splitFeatureChanged(self, fid, newGeom):
+        def splitFeatureChanged(self, fid, newGeom):
         TOMsMessageLog.logMessage("In SplitRestrictionTool. splitFeatureChanged: " + str(fid), level=Qgis.Info)
-        self.layer.geometryChanged.disconnect(self.splitFeatureChanged)
+        #self.layer.geometryChanged.disconnect(self.splitFeatureChanged)
 
         self.changedGeometry = QgsGeometry(newGeom)
 
@@ -940,10 +1075,11 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         TOMsMessageLog.logMessage("In SplitRestrictionTool. notified split changed ", level=Qgis.Info)
         self.splitRestrictionChanged = True
 
-    def notifySplitRestrictionSaved(self):
+        def notifySplitRestrictionSaved(self):
         # set flag to indicate that new restriction has been saved
         TOMsMessageLog.logMessage("In SplitRestrictionTool. notified split saved ", level=Qgis.Info)
         self.splitRestrictionSaved = True
+        """
 
     def keyPressEvent(self, event):
         if (event.key() == Qt.Key_Backspace) or (event.key() == Qt.Key_Delete) or (event.key() == Qt.Key_Escape):
@@ -951,8 +1087,8 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             pass
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             pass
-
-    def splitGeometryChanged(self):
+        """
+        def splitGeometryChanged(self):
         # Added by TH to deal with RestrictionsInProposals
         TOMsMessageLog.logMessage(
             "In SplitRestrictionTool:splitGeometryChanged ... ",
@@ -1043,7 +1179,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         # **** New
         return
 
-    def cloneChangeGeometry(self, currLayer, currRestriction, changedGeometry):
+        def cloneChangeGeometry(self, currLayer, currRestriction, changedGeometry):
 
         TOMsMessageLog.logMessage("In cloneChangeGeometryTool .... ", level=Qgis.Info)
 
@@ -1086,6 +1222,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         TOMsMessageLog.logMessage("In SplitRestrictionTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
 
         return newFeature
+        """
 
     def shutDownSplitTool(self):
 
@@ -1097,7 +1234,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         #self.proposalsManager.TOMsToolChanged.disconnect()
 
-        self.proposalsManager.TOMsSplitRestrictionSaved.disconnect()
+        #self.proposalsManager.TOMsSplitRestrictionSaved.disconnect()
 
         #currAction = self.iface.mapCanvas().mapTool().action()
         #currAction.setChecked(False)
@@ -1107,7 +1244,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         #NodeTool.deactivate()
 
-class originalFeature(object):
+class originalFeature(object):  # TODO: duplicated ...
     def __init__(self, feature=None):
         self.savedFeature = None
 

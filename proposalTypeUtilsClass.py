@@ -56,7 +56,7 @@ class ProposalTypeUtilsMixin():
         layerTypeList= []
         for layerType in self.RestrictionLayers.getFeatures():
 
-            layerID = layerType["id"]
+            layerID = layerType["Code"]
             layerName = layerType["RestrictionLayerName"]
 
             layerTypeList.append([layerID, layerName])
@@ -69,7 +69,7 @@ class ProposalTypeUtilsMixin():
 
         self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
-        request = QgsFeatureRequest().setFilterExpression('"id"={layerID}'.format(layerID=layerID))
+        request = QgsFeatureRequest().setFilterExpression('"Code"={layerID}'.format(layerID=layerID))
 
         for layer in self.RestrictionLayers.getFeatures(request):
             return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))

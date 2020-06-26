@@ -146,9 +146,9 @@ class searchBar():
         self.GazetteerLayer = QgsProject.instance().mapLayersByName("StreetGazetteerRecords")[0]
 
         for row in self.GazetteerLayer.getFeatures():
-            streetName = row.attribute("Descriptor_")
+            RoadName = row.attribute("RoadName")
             locality = row.attribute("Locality")
-            nameString = streetName
+            nameString = RoadName
             if locality:
                 nameString = nameString + ", " + locality
 
@@ -175,14 +175,14 @@ class searchBar():
 
         # Split out the components of the text
 
-        streetName, localityName = searchText.split(',')
-        #amendedStreetName = streetName.replace("'", "\'\'")
+        RoadName, localityName = searchText.split(',')
+        #amendedRoadName = RoadName.replace("'", "\'\'")
         #amendedLocalityName = localityName.replace("'", "\'\'")
-        TOMsMessageLog.logMessage("In doGoToItem: streetName: " + str(streetName.replace("'", "\'\'")) + " locality: + " + str(localityName.replace("'", "\'\'")), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In doGoToItem: RoadName: " + str(RoadName.replace("'", "\'\'")) + " locality: + " + str(localityName.replace("'", "\'\'")), level=Qgis.Info)
 
         # Now search for the street
 
-        queryString = "\"Descriptor_\" = \'" + streetName.replace("'", "\'\'") + "\'"
+        queryString = "\"RoadName\" = \'" + RoadName.replace("'", "\'\'") + "\'"
         if localityName:
             queryString = queryString + " AND \"Locality\" = \'" + localityName.replace("'", "\'\'").lstrip() + "\'"
 
