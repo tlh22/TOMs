@@ -428,6 +428,7 @@ def prepareSignIconLocation(signNr, feature, parent):
             'prepareSignIconLocation: error in expression function: {}{}'.format(exc_type, str(
                 repr(traceback.extract_tb(exc_traceback)))),
             tag="TOMs Panel")
+        return None
 
     return linePts[signNr-1].asWkt()
 

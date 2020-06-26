@@ -1209,7 +1209,8 @@ class generateGeometryUtils:
             'getSignOrientation lineLayer {}'.format(lineLayer.name()),
             level=Qgis.Info)
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
-        TOMsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
+        if closestPoint:
+            TOMsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
 
         # Now generate a line in the appropriate direction
         if closestPoint:
@@ -1247,7 +1248,7 @@ class generateGeometryUtils:
             #TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
             lineLength = (nrPlatesInSign + 1) * distanceForIcons
             #TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
-            print('getSignLine lineLength: {}'.format(lineLength))
+            #print('getSignLine lineLength: {}'.format(lineLength))
 
             signPt = ptFeature.geometry().asPoint()
             # generate lines
@@ -1262,7 +1263,9 @@ class generateGeometryUtils:
             else:
                 return None
 
-        TOMsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+        if lineGeom:
+            TOMsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+
         return lineGeom
 
     def getPlatesInSign(feature):
@@ -1308,7 +1311,10 @@ class generateGeometryUtils:
         #print ('nrPlates: {}'.format(nrPlatesInSign))
         lineGeom = generateGeometryUtils.getSignLine(feature, RoadCentreLineLayer, distanceForIcons)
         linePts = generateGeometryUtils.addPointsToSignLine(lineGeom, len(generateGeometryUtils.getPlatesInSign(feature)), distanceForIcons)
-        TOMsMessageLog.logMessage('getGeneratedSignLine: lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+        if lineGeom:
+            TOMsMessageLog.logMessage('getGeneratedSignLine: lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+        else:
+            TOMsMessageLog.logMessage('getGeneratedSignLine: no geometry ...', level=Qgis.Info)
 
         return lineGeom, linePts
 
