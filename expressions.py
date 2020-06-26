@@ -136,8 +136,9 @@ def generate_ZigZag(feature, parent):
 	# Determine road name from the kerb line layer
 
     try:
-        res = generateGeometryUtils.zigzag(feature, 2, 1)
-    except Exception:
+        #res = generateGeometryUtils.zigzag(feature, 2, 1)
+        res = ElementGeometryFactory.getElementGeometry(feature)
+    except:
         TOMsMessageLog.logMessage('generate_ZigZag', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -398,6 +399,69 @@ def getPTA(feature, parent):
 
     return ptaName
 
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def prepareSignLine(feature, parent):
+    newLineGeom = None
+    try:
+        newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
+    except Exception as e:
+        QgsMessageLog.logMessage('prepareSignLine {}'.format(e), tag="TOMs Panel")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        QgsMessageLog.logMessage(
+            'prepareSignLine: error in expression function: {}{}'.format(exc_type, str(
+                repr(traceback.extract_tb(exc_traceback)))),
+            tag="TOMs Panel")
+    #QgsMessageLog.logMessage("In getPTA: PTA " + str(ptaName), tag="TOMs Panel")
+    return newLineGeom
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def prepareSignIconLocation(signNr, feature, parent):
+
+    newLineGeom = None
+    linePts = []
+    try:
+        newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
+    except Exception as e:
+        QgsMessageLog.logMessage('prepareSignIconLocation {}'.format(e), tag="TOMs Panel")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        QgsMessageLog.logMessage(
+            'prepareSignIconLocation: error in expression function: {}{}'.format(exc_type, str(
+                repr(traceback.extract_tb(exc_traceback)))),
+            tag="TOMs Panel")
+
+    return linePts[signNr-1].asWkt()
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
+def prepareSignIcon(signNr, feature, parent):
+    iconNames = []
+    try:
+        iconNames = generateGeometryUtils.getSignIcons(feature)
+    except Exception as e:
+        QgsMessageLog.logMessage('prepareSignIcon {}'.format(e), tag="TOMs Panel")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        QgsMessageLog.logMessage(
+            'getSignIcon: error in expression function: ' + str(
+                repr(traceback.extract_tb(exc_traceback))),
+            tag="TOMs Panel")
+    if len(iconNames) >= signNr:
+        return iconNames[signNr-1]
+    else:
+        return None
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def prepareSignOrientation(feature, parent):
+    signOrientation = 0
+    try:
+        signOrientation = generateGeometryUtils.getSignOrientationList(feature)
+    except Exception as e:
+        QgsMessageLog.logMessage('prepareSignOrientation {}'.format(e), tag="TOMs Panel")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        QgsMessageLog.logMessage(
+            'prepareSignOrientation: error in expression function: ' + str(
+                repr(traceback.extract_tb(exc_traceback))),
+            tag="TOMs Panel")
+    return signOrientation
+
 functions = [
     generate_display_geometry,
     generateDisplayGeometry,
@@ -416,7 +480,10 @@ functions = [
     getBayNoReturnLabelText,
     getBayLabelText,
     getCPZ,
-    getPTA
+    getPTA, prepareSignLine,
+    prepareSignIconLocation,
+    prepareSignIcon, prepareSignOrientation
+
 ]
 
 def registerFunctions():

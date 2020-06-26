@@ -42,8 +42,9 @@ from TOMs.core.proposalsManager import *
 from TOMs.manage_restriction_details import manageRestrictionDetails
 from TOMs.search_bar import searchBar
 
-from TOMs.restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
-from TOMs.core.TOMsTransaction import (TOMsTransaction)
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
+from .core.TOMsTransaction import (TOMsTransaction)
+
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
 from TOMs.constants import (
