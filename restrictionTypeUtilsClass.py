@@ -92,7 +92,7 @@ class TOMsParams(QObject):
                           "LineOffsetFromKerb",
                           "CrossoverShapeWidth",
                           "PhotoPath",
-                          "MinimumTextDisplayScale"
+                          "MinimumTextDisplayScale",
                           "TOMsDebugLevel"
                         ]
 
@@ -100,7 +100,7 @@ class TOMsParams(QObject):
 
     def getParams(self):
 
-        TOMsMessageLog.logMessage("In TOMSLayers.getParams ...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsParams.getParams ...", level=Qgis.Info)
         found = True
 
         # Check for project being open
@@ -115,7 +115,7 @@ class TOMsParams(QObject):
             # TOMsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", level=Qgis.Info)
 
             for param in self.TOMsParamsList:
-                TOMsMessageLog.logMessage("In TOMSLayers.getParams ... getting " + str(param), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info)
 
                 """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
                     currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
@@ -127,7 +127,7 @@ class TOMsParams(QObject):
 
                 if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    TOMsMessageLog.logMessage("In TOMSLayers.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
+                    TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False
@@ -146,7 +146,6 @@ class TOMsParams(QObject):
         return self.TOMsParamsDict.get(param)
 
 class TOMsLayers(QObject):
-
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
     TOMsLayersSet = pyqtSignal()
@@ -238,26 +237,6 @@ class originalFeature(object):
                                  level=Qgis.Info)
         TOMsMessageLog.logMessage("In originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
                                  level=Qgis.Info)
-class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-class TOMsLogger(QgsMessageLog):
-    def __init__(self, message_level):
-        super().__init__()
-        self.message_level = message_level
-
-    def logMessage(self, message, tag, level):
-        if level >= self.message_level:
-            TOMsMessageLog.logMessage(message, tag, level)
-
-    def write_log_message(self, message, tag, level):
-        # filename = os.path.join('C:\Users\Tim\Documents\MHTC', 'qgis.log')
-        with open(self.filename, 'a') as logfile:
-            logfile.write('{dateDetails}:: {message}\n'.format(dateDetails= time.strftime("%Y%m%d:%H%M%S"), message=message))
 
 class RestrictionTypeUtilsMixin():
     #def __init__(self):
@@ -352,7 +331,7 @@ class RestrictionTypeUtilsMixin():
         RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
 
         idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName("RestrictionLayerName")
-        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("id")
+        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("Code")
 
         for layer in RestrictionsLayers.getFeatures():
             if layer[idxRestrictionsLayerID] == currRestrictionTableID:
@@ -374,7 +353,7 @@ class RestrictionTypeUtilsMixin():
 
         for layer in RestrictionsLayers.getFeatures():
             if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
-                layersTableID = layer.attribute("id")
+                layersTableID = layer.attribute("Code")
 
         TOMsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID),
                                  level=Qgis.Info)
@@ -398,7 +377,6 @@ class RestrictionTypeUtilsMixin():
 
         TOMsMessageLog.logMessage("In getRestriction: Restriction not found", level=Qgis.Info)
         return None
-
 
     def deleteRestrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         TOMsMessageLog.logMessage("In deleteRestrictionInProposal: " + str(currRestrictionID), level=Qgis.Info)
@@ -478,8 +456,8 @@ class RestrictionTypeUtilsMixin():
                         newRestrictionID),
                     level=Qgis.Info)
 
-                if currRestriction[idxRestrictionID] is None:
-                    # This is a feature that has just been created.
+                if currRestriction[idxOpenDate] is None:
+                    # This is a feature that has just been created, i.e., it is not currently part of the proposal and did not previously exist
 
                     # Not quite sure what is happening here but think the following:
                     #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
@@ -508,7 +486,8 @@ class RestrictionTypeUtilsMixin():
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
                         level=Qgis.Info)
-                    currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
+                    #currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
+                    currRestrictionLayer.addFeature(currRestriction)  # TH (added for v3)
 
                 else:
 
@@ -617,12 +596,9 @@ class RestrictionTypeUtilsMixin():
         status = dialog.close()
         currRestrictionLayer.removeSelection()
 
-        # reinstate Proposals Panel (if it needs it)
-        #if not self.proposalPanel:
         self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
 
         self.setupPanelTabs(self.iface, self.proposalPanel)
-        #self.setupPanelTabs(self.iface, self.dock)
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In setDefaultRestrictionDetails: ", level=Qgis.Info)
@@ -630,20 +606,18 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.geometry().length())
+            #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
         currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
-        currRestriction.setAttribute("CPZ", currentCPZ)
-
-        #currDate = self.proposalsManager.date()
+        if currRestrictionLayer.name() != "Signs":
+            currRestriction.setAttribute("CPZ", currentCPZ)
 
         if currRestrictionLayer.name() == "Lines":
             currRestriction.setAttribute("RestrictionTypeID", 201)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
-
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
-            currRestriction.setAttribute("Lines_DateTime", currDate)
+            #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
             currRestriction.setAttribute("RestrictionTypeID", 101)  # 28 = Permit Holders Bays (Bays)
@@ -652,13 +626,11 @@ class RestrictionTypeUtilsMixin():
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
 
-            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+            currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
-            currRestriction.setAttribute("NoReturnID", ptaNoReturnTimeID)
+            currRestriction.setAttribute("NoReturnID", ptaNoReturnID)
             currRestriction.setAttribute("ParkingTariffArea", currentPTA)
-
-            currRestriction.setAttribute("Bays_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Signs":
             currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
@@ -666,7 +638,7 @@ class RestrictionTypeUtilsMixin():
         elif currRestrictionLayer.name() == "RestrictionPolygons":
             currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
 
-        pass
+        return
 
     def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), level=Qgis.Info)
@@ -674,97 +646,24 @@ class RestrictionTypeUtilsMixin():
         generateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-            currRestriction.setAttribute("Length", currRestriction.geometry().length())
+
+            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                      currRestrictionLayer.fields().indexFromName("Length"), currRestriction.geometry().length())
-
-        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
-
-        currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
 
-        # Now need to clear some details
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRoadMarkingsFaded"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRestrictionSignIssue"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_01"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_02"), None)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Photos_03"), None)
 
-        #currDate = self.proposalsManager.date()
+        if currRestrictionLayer.name() == "Bays":
 
-        if currRestrictionLayer.name() == "Lines":
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_DateTime"), currDate)
-            currRestriction.setAttribute("Lines_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
-            currRestriction.setAttribute("Surveyor", None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_PhotoTaken"), None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Lines_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_02"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Lines_Photos_03"), None)
-
-        elif currRestrictionLayer.name() == "Bays":
-
-            currentPTA, ptaMaxStayID, ptaNoReturnTimeID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
-
+            currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ParkingTariffArea"), currentPTA)
 
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_DateTime"), currDate)
-            currRestriction.setAttribute("Bays_DateTime", currDate)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Surveyor"), None)
-            currRestriction.setAttribute("Surveyor", None)
-
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_PhotoTaken"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_Faded"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Compl_Bays_SignIssue"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_01"), None)
-            currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("Bays_Photos_02"), None)
-
-        pass
-
-        """
-        def updateRestriction(self, currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate):
-        # update the Open/Close date for the restriction
-        TOMsMessageLog.logMessage("In updateRestriction. layer: " + str(
-            currRestrictionLayer.name()) + " currRestId: " + currRestrictionID + " Opendate: " + str(
-            currProposalOpenDate), level=Qgis.Info)
-
-        # idxOpenDate = currRestrictionLayer.fields().indexFromName("OpenDate2")
-        # idxCloseDate = currRestrictionLayer.fields().indexFromName("CloseDate2")
-
-        # clear filter
-        currRestrictionLayer.setSubsetString("")
-
-        for currRestriction in currRestrictionLayer.getFeatures():
-            #TOMsMessageLog.logMessage("In updateRestriction. checkRestId: " + currRestriction.attribute("GeometryID"), level=Qgis.Info)
-
-            if currRestriction.attribute("RestrictionID") == currRestrictionID:
-                TOMsMessageLog.logMessage(
-                    "In updateRestriction. Action on: " + currRestrictionID + " Action: " + str(currAction),
-                    level=Qgis.Info)
-                if currAction == RestrictionAction.OPEN:  # Open
-                    statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                              currRestrictionLayer.fields().indexFromName("OpenDate"),
-                                                              currProposalOpenDate)
-                    TOMsMessageLog.logMessage(
-                        "In updateRestriction. " + currRestrictionID + " Opened", level=Qgis.Info)
-                else:  # Close
-                    statusUpd = currRestrictionLayer.changeAttributeValue(currRestriction.id(),
-                                                              currRestrictionLayer.fields().indexFromName("CloseDate"),
-                                                              currProposalOpenDate)
-                    TOMsMessageLog.logMessage(
-                        "In updateRestriction. " + currRestrictionID + " Closed", level=Qgis.Info)
-
-                return statusUpd
-
-        pass 
-        """
-
     def setupRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction, restrictionTransaction):
-
-        #self.restrictionDialog = restrictionDialog
-        #self.currRestrictionLayer = currRestrictionLayer
-        #self.currRestriction = currRestriction
-        #self.restrictionTransaction = restrictionTransaction
 
         # Create a copy of the feature
         self.origFeature = originalFeature()
@@ -775,45 +674,28 @@ class RestrictionTypeUtilsMixin():
                 "In setupRestrictionDialog. dialog not found",
                 level=Qgis.Warning)
 
-        #restrictionDialog.attributeForm().disconnectButtonBox()
         button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
-        # button_box = restrictionDialog.buttonBox()
 
         if button_box is None:
             TOMsMessageLog.logMessage(
                 "In setupRestrictionDialog. button box not found",
                 level=Qgis.Warning)
 
-        #button_box.accepted.disconnect(restrictionDialog.accept)
-        #button_box.accepted.disconnect()
         button_box.accepted.connect(functools.partial(self.onSaveRestrictionDetails, currRestriction,
                                       currRestrictionLayer, restrictionDialog, restrictionTransaction))
 
         restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, currRestriction, currRestrictionLayer))
 
-        #button_box.rejected.disconnect(restrictionDialog.reject)
-        #button_box.rejected.disconnect()
         button_box.rejected.connect(functools.partial(self.onRejectRestrictionDetailsFromForm, restrictionDialog, restrictionTransaction))
 
         self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)
 
-        """def onSaveRestrictionDetailsFromForm(self):
-        TOMsMessageLog.logMessage("In onSaveRestrictionDetailsFromForm", level=Qgis.Info)
-        self.onSaveRestrictionDetails(self.currRestriction,
-                                      self.currRestrictionLayer, self.restrictionDialog, self.restrictionTransaction)"""
-
     def onRejectRestrictionDetailsFromForm(self, restrictionDialog, restrictionTransaction):
         TOMsMessageLog.logMessage("In onRejectRestrictionDetailsFromForm", level=Qgis.Info)
-        #self.currRestrictionLayer.destroyEditCommand()
         restrictionDialog.reject()
-
-        #self.rollbackCurrentEdits()
         
         restrictionTransaction.rollBackTransactionGroup()
-        
-        # reinstate Proposals Panel (if it needs it)
 
-        #if not self.proposalPanel:
         self.proposalPanel = self.iface.mainWindow().findChild(QDockWidget, 'ProposalPanelDockWidgetBase')
 
         self.setupPanelTabs(self.iface, self.proposalPanel)
@@ -822,11 +704,9 @@ class RestrictionTypeUtilsMixin():
         TOMsMessageLog.logMessage(
             "In FormOpen:onAttributeChangedClass 2 - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), level=Qgis.Info)
 
-        # self.currRestriction.setAttribute(fieldName, value)
         try:
 
             currFeature[layer.fields().indexFromName(fieldName)] = value
-            #currFeature.setAttribute(layer.fields().indexFromName(fieldName), value)
 
         except:
 
@@ -845,18 +725,22 @@ class RestrictionTypeUtilsMixin():
         FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
         FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
 
-        path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
-        if path_absolute == None:
+        # sort out path for Photos
+        photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
+        if photoPath == None:
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
             return
 
-        layerName = currRestLayer.name()
+        if os.path.isabs(photoPath):
+            path_absolute = photoPath
+        else:
+            projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
+            path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
-        # Generate the full path to the file
-
-        """fileName1 = layerName + "_Photos_01"
-        fileName2 = layerName + "_Photos_02"
-        fileName3 = layerName + "_Photos_03"""""
+        # check that the path exists
+        if not os.path.isdir(path_absolute):
+            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
+            return
 
         idx1 = currRestLayer.fields().indexFromName("Photos_01")
         idx2 = currRestLayer.fields().indexFromName("Photos_02")
@@ -864,10 +748,6 @@ class RestrictionTypeUtilsMixin():
 
         TOMsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
                                  level=Qgis.Info)
-        # if currRestrictionFeature[idx1]:
-        # TOMsMessageLog.logMessage("In photoDetails. photo1: " + str(currRestrictionFeature[idx1]), level=Qgis.Info)
-        # TOMsMessageLog.logMessage("In photoDetails. photo2: " + str(currRestrictionFeature.attribute(idx2)), level=Qgis.Info)
-        # TOMsMessageLog.logMessage("In photoDetails. photo3: " + str(currRestrictionFeature.attribute(idx3)), level=Qgis.Info)
 
         if FIELD1:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
@@ -879,10 +759,7 @@ class RestrictionTypeUtilsMixin():
 
             TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
             pixmap1 = QPixmap(newPhotoFileName1)
-            if pixmap1.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
+            if not pixmap1.isNull():
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
                 TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
@@ -905,14 +782,9 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName2 = None
 
-            # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature[idx2]))
-            # newPhotoFileName2 = os.path.join(path_absolute, str(currRestrictionFeature.attribute(fileName2)))
             TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
             pixmap2 = QPixmap(newPhotoFileName2)
-            if pixmap2.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
+            if not pixmap2.isNull():
                 FIELD2.setPixmap(pixmap2)
                 FIELD2.setScaledContents(True)
                 TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
@@ -934,18 +806,12 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName3 = None
 
-            # newPhotoFileName3 = os.path.join(path_absolute, str(currRestrictionFeature[idx3]))
-            # newPhotoFileName3 = os.path.join(path_absolute,
-            #                                 str(currRestrictionFeature.attribute(fileName3)))
-            # newPhotoFileName3 = os.path.join(path_absolute, str(layerName + "_Photos_03"))
             pixmap3 = QPixmap(newPhotoFileName3)
-            if pixmap3.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
+            if not pixmap3.isNull():
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
                 TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
+
 
             if cv2_available:
                 START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
@@ -1108,10 +974,6 @@ class RestrictionTypeUtilsMixin():
     def onSaveProposalFormDetails(self, currProposalRecord, currProposalObject, proposalsLayer, proposalsDialog, proposalTransaction):
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails.", level=Qgis.Info)
 
-        #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
-        #TOMsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), level=Qgis.Info)
-
-        #self.Proposals = self.proposalsManager.tableNames.TOMsLayerDict.get("Proposals")
         self.Proposals = proposalsLayer
 
         # set up field indexes
@@ -1130,7 +992,6 @@ class RestrictionTypeUtilsMixin():
         newProposalOpenDate = currProposalRecord[idxProposalOpenDate]
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails. currProposalStatus = " + str(currProposalStatusID), level=Qgis.Info)
 
-        #updateStatus = False
         newProposal = False
         proposalAcceptedRejected = False
 
@@ -1139,40 +1000,24 @@ class RestrictionTypeUtilsMixin():
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
-                                         'Are you you want to ACCEPT this proposal?. Accepting will make all the proposed changes permanent.',
+                                         'Do you want to ACCEPT this proposal?. Accepting will make all the proposed changes permanent.',
                                          QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.Yes:
-                # open the proposal - and accept any other changes to the form
 
-                # currProposalID = currProposal[idxProposalID]
-
-                # TODO: Need to check that this is an authorised user
-
-                # Now close dialog
-                #updateStatus = proposalsDialog.accept()
-
-                #updateStatus = True
-
-                #if updateStatus == True:
-                #currProposalID = currProposalObject[idxProposalID]
-                #currOpenDate = currProposalObject[idxProposalOpenDate]
-                #updateStatus = self.acceptProposal(currProposalID, currOpenDate)
-
-                # just check that we have any updates
                 currProposalObject.setProposalOpenDate(newProposalOpenDate)
 
-                updateStatus = currProposalObject.acceptProposal()
-
-                TOMsMessageLog.logMessage(
-                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), level=Qgis.Info)
-
-                if updateStatus == True or updateStatus is None:
-                    status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
-                    updateStatus = proposalsDialog.attributeForm().save()
-                    proposalAcceptedRejected = True
-
-                else:
+                if not currProposalObject.acceptProposal():
+                    proposalTransaction.rollBackTransactionGroup()
                     proposalsDialog.reject()
+                    reply = QMessageBox.information(None, "Error", "Error in accepting proposal ...",
+                                                    QMessageBox.Ok)
+                    TOMsMessageLog.logMessage(
+                        "In onSaveProposalFormDetails. Error in transaction", level=Qgis.Info)
+                    return
+
+                updateStatus = proposalsDialog.attributeForm().save()
+                status = proposalsDialog.close()
+                proposalAcceptedRejected = True
 
             else:
                 proposalsDialog.reject()
@@ -1181,27 +1026,22 @@ class RestrictionTypeUtilsMixin():
 
             reply = QMessageBox.question(None, 'Confirm changes to Proposal',
                                          # How do you access the main window to make the popup ???
-                                         'Are you you want to REJECT this proposal?. Accepting will make all the proposed changes permanent.',
+                                         'Do you want to REJECT this proposal?. This will remove it from the Proposal list (although it will remain in the system).',
                                          QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.Yes:
-                # open the proposal - and accept any other changes to the form
 
-                # currProposalID = currProposal[idxProposalID]
+                if not currProposalObject.rejectProposal():
+                    proposalTransaction.rollBackTransactionGroup()
+                    proposalsDialog.reject()
+                    TOMsMessageLog.logMessage(
+                        "In onSaveProposalFormDetails. Error in transaction", level=Qgis.Info)
+                    return
 
-                # TODO: Need to check that this is an authorised user
-
-                updateStatus = currProposalObject.rejectProposal()
-
-                TOMsMessageLog.logMessage(
-                    "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus), level=Qgis.Info)
-
-                if updateStatus == True or updateStatus is None:
-                    status = self.Proposals.updateFeature(currProposalObject.getProposalRecord())
-                    updateStatus = proposalsDialog.attributeForm().save()
-                    proposalAcceptedRejected = True
+                updateStatus = proposalsDialog.attributeForm().save()
+                status = proposalsDialog.close()
+                proposalAcceptedRejected = True
 
             else:
-                # proposalsDialog.reject ((currProposal[idxProposalID]))
                 proposalsDialog.reject()
 
         else:
@@ -1209,8 +1049,6 @@ class RestrictionTypeUtilsMixin():
             TOMsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. currProposalID = " + str(currProposalID),
                 level=Qgis.Info)
-
-            # self.Proposals.updateFeature(currProposalObject.getProposalRecord())  # TH (added for v3)
             updateStatus = proposalsDialog.attributeForm().save()
 
             # anything else can be saved.
@@ -1222,61 +1060,36 @@ class RestrictionTypeUtilsMixin():
                 TOMsMessageLog.logMessage(
                     "In onSaveProposalFormDetails. New Proposal ... ", level=Qgis.Info)
 
-                # add geometry
-                #currProposal.setGeometry(QgsGeometry())
-
             else:
                 pass
                 # self.Proposals.updateFeature(currProposalObject.getProposalRecord())  # TH (added for v3)
 
-            """updateStatus = proposalsLayer.updateFeature(currProposal)
-
-            TOMsMessageLog.logMessage(
-                "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus),
-                level=Qgis.Info)
-            updateStatus = True"""
-
-            #proposalsDialog.accept()
             proposalsDialog.reject()
-
-            #saveStatus = proposalsDialog.attributeForm().save()
-            #TOMsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(currProposalObject.attributes()), level=Qgis.Info)
 
             TOMsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
                     proposalTransaction.currTransactionGroup.modified()),
             level=Qgis.Info)
+
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposalTitle) + " Status: " + str(currProposalStatusID), level=Qgis.Info)
 
-
-        # Make sure that the saving will not be executed immediately, but
-        # only when the event loop runs into the next iteration to avoid
-        # problems
-
         # Trying to unset map tool to force updates ...
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        #self.commitProposalChanges()
         proposalTransaction.commitTransactionGroup(self.Proposals)
-        #proposalTransaction.commitTransactionGroup(None)
-        #proposalTransaction.deleteTransactionGroup()
-        status = proposalsDialog.close()
 
-        #self.rollbackCurrentEdits()
+        status = proposalsDialog.close()
 
         # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
 
         if newProposal == True:
             TOMsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(currProposalID), level=Qgis.Info)
-            #self.proposalsManager.setCurrentProposal(currProposal[idxProposalID])
-            #ProposalTypeUtils.iface.proposalChanged.emit()
 
             for proposal in self.Proposals.getFeatures():
                 if proposal[idxProposalTitle] == currProposalTitle:
                     TOMsMessageLog.logMessage("In onSaveProposalFormDetails. newProposalID = " + str(proposal.id()),
                                              level=Qgis.Info)
                     newProposalID = proposal[idxProposalID]
-                    #self.proposalsManager.setCurrentProposal(proposal[idxProposalID])
 
             self.proposalsManager.newProposalCreated.emit(newProposalID)
 
@@ -1288,346 +1101,6 @@ class RestrictionTypeUtilsMixin():
         else:
 
             self.proposalsManager.newProposalCreated.emit(currProposalID)
-
-        """
-        def acceptProposal(self, currProposalID, currProposalOpenDate):
-            TOMsMessageLog.logMessage("In acceptProposal.", level=Qgis.Info)
-    
-            # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
-    
-            RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-            idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
-            idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
-            idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
-            idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
-    
-            # restrictionFound = False
-    
-            # not sure if there is better way to search for something, .e.g., using SQL ??
-    
-            statusUpd = True
-    
-            for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
-                if restrictionInProposal.attribute("ProposalID") == currProposalID:
-                    currRestrictionLayer = self.getRestrictionsLayerFromID(restrictionInProposal.attribute("RestrictionTableID"))
-                    currRestrictionID = restrictionInProposal.attribute("RestrictionID")
-                    currAction = restrictionInProposal.attribute("ActionOnProposalAcceptance")
-    
-                    #currRestrictionLayer.startEditing()
-    
-                    #if not currRestrictionLayer.isEditable():
-                    #    currRestrictionLayer.startEditing()
-    
-                    statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, currProposalOpenDate)
-    
-                    if statusUpd == False:
-                        reply = QMessageBox.information(None, "Error",
-                                                        "Changes to " + currRestrictionLayer.name() + " failed: " + str(
-                                                            currRestrictionLayer.commitErrors()), QMessageBox.Ok)
-                        return statusUpd
-    
-    
-            self.updateTileRevisionNrs(currProposalID)
-    
-            return statusUpd
-        """
-
-    def updateTileRevisionNrs(self, currProposalID):
-        TOMsMessageLog.logMessage("In updateTileRevisionNrs.", level=Qgis.Info)
-        # Increment the relevant tile numbers
-        tileProposal = TOMsProposal(self.proposalsManager, currProposalID)
-
-        # currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
-        currRevisionDate = tileProposal.getProposalOpenDate()
-
-        MapGridLayer = self.tableNames.setLayer("MapGrid")
-        TilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
-
-        # self.getProposalTileList(currProposalID, currRevisionDate)
-
-        dictTilesInProposal = tileProposal.getProposalTileDictionaryForDate(currRevisionDate)
-        currTile = TOMsTile(self.proposalsManager)
-        for tileNr, tile in dictTilesInProposal.items():
-            status = currTile.setTile(tileNr)
-            tileUpdateStatus = currTile.updateTileRevisionNr()
-
-
-        proposalTileListForDate = self.getProposalTileListForDate(currRevisionDate)
-
-        for tile in proposalTileListForDate:
-
-            #  TODO: Create a tile object and have increment method ...
-
-            currRevisionNr = tile["RevisionNr"]
-            TOMsMessageLog.logMessage("In updateTileRevisionNrs. tile" + str (tile["id"]) + " currRevNr: " + str(currRevisionNr), level=Qgis.Info)
-            if currRevisionNr is None:
-                MapGridLayer.changeAttributeValue(tile.id(),MapGridLayer.fields().indexFromName("RevisionNr"), 1)
-            else:
-                MapGridLayer.changeAttributeValue(tile.id(), MapGridLayer.fields().indexFromName("RevisionNr"), currRevisionNr + 1)
-                MapGridLayer.changeAttributeValue(tile.id(), MapGridLayer.fields().indexFromName("LastRevisionDate"), currRevisionDate)
-
-            # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
-
-            newRecord = QgsFeature(TilesInAcceptedProposalsLayer.fields())
-
-            idxProposalID = TilesInAcceptedProposalsLayer.fields().indexFromName("ProposalID")
-            idxTileNr = TilesInAcceptedProposalsLayer.fields().indexFromName("TileNr")
-            idxRevisionNr = TilesInAcceptedProposalsLayer.fields().indexFromName("RevisionNr")
-
-            newRecord[idxProposalID]= currProposalID
-            newRecord[idxTileNr]= tile["id"]
-            newRecord[idxRevisionNr]= currRevisionNr + 1
-            newRecord.setGeometry(QgsGeometry())
-
-            status = TilesInAcceptedProposalsLayer.addFeature(newRecord)
-
-            # TODO: Check return status from add
-
-    def getProposalTileList(self, listProposalID, currRevisionDate):
-
-        # returns list of tiles in the proposal and their current revision numbers
-        TOMsMessageLog.logMessage("In getProposalTileList. consider Proposal: " + str (listProposalID), level=Qgis.Info)
-        self.tileSet = set()
-
-        # Logic is:
-        #Loop through each map tile
-        #    Check whether or not there are any currently open restrictions within it
-
-        self.RestrictionsInProposals = self.tableNames.setLayer("RestrictionsInProposals")
-        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
-        self.tileLayer = self.tableNames.setLayer("MapGrid")
-
-        """if QgsProject.instance().mapLayersByName("RestrictionsInProposals"):
-            self.RestrictionsInProposals = \
-                QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                    ("Table RestrictionsInProposals is not present"))
-            # raise LayerNotPresent
-
-        if QgsProject.instance().mapLayersByName("RestrictionLayers"):
-            self.RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table RestrictionLayers is not present"))
-            return
-
-        if QgsProject.instance().mapLayersByName("MapGrid"):
-            self.tileLayer = QgsProject.instance().mapLayersByName("MapGrid")[0]
-        else:
-            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table MapGrid is not present"))
-            return"""
-
-        currProposalID = self.proposalsManager.currentProposal()
-
-        if listProposalID > 0:  # need to consider a proposal
-
-           # loop through all the layers that might have restrictions
-
-            listRestrictionLayers = self.RestrictionLayers.getFeatures()
-            # listRestrictionLayers2 = self.tableNames.RESTRICTIONLAYERS.getFeatures()
-
-            firstRestriction = True
-
-            self.proposalsManager.clearRestrictionFilters()
-
-            for currLayerDetails in listRestrictionLayers:
-
-                # get the layer from the name
-
-                currLayerID = currLayerDetails["id"]
-                currLayerName = currLayerDetails["RestrictionLayerName"]
-                TOMsMessageLog.logMessage(
-                    "In getProposalTileList. Considering layer: " + currLayerDetails["RestrictionLayerName"],
-                    level=Qgis.Info)
-
-                if QgsProject.instance().mapLayersByName(currLayerName):
-                    currRestrictionLayer = QgsProject.instance().mapLayersByName(currLayerName)[0]
-                else:
-                    QMessageBox.information(self.iface.mainWindow(), "ERROR",
-                                            ("Table " + currLayerName + " is not present"))
-                    return
-
-                # restrictionListForLayer = []
-                restrictionsString = ''
-                # firstRestriction = True
-
-                # get list of restrictions to open within proposal
-                # TODO: Include selection of only proposal and for the current restriction type
-
-                listRestrictionsInProposals = self.RestrictionsInProposals.getFeatures()
-
-                for row in listRestrictionsInProposals:
-
-                    proposalID = row["ProposalID"]
-                    restrictionTableID = row["RestrictionTableID"]
-
-                    # check to see if the current row is for the current proposal and for the correct proposedAction
-
-                    if proposalID == listProposalID:
-                        if restrictionTableID == currLayerID:
-
-                            currRestrictionID = str(row["RestrictionID"])
-
-                            if not firstRestriction:
-                                # restrictionsString = restrictionsString + ", '" + row["RestrictionID"] + "'"
-                                """TOMsMessageLog.logMessage(
-                                    "In getProposalTileList. A restrictionsString: " + restrictionsString,
-                                    level=Qgis.Info)"""
-                                currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID,
-                                                                                          currRestrictionLayer)
-                                if currRestriction:
-                                    # Now find the tile for the restriction
-                                    self.getTilesForRestriction(currRestriction, currRevisionDate)
-
-                                    # geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
-
-                            else:
-
-                                # restrictionsString = "'" + str(row["RestrictionID"]) + "'"
-
-                                currRestriction = self.getRestrictionBasedOnRestrictionID(currRestrictionID,
-                                                                                          currRestrictionLayer)
-                                if currRestriction:
-                                    # Now find the tile for the restriction
-                                    # geometryBoundingBox = currRestriction.geometry().boundingBox()
-                                    self.getTilesForRestriction(currRestriction, currRevisionDate)
-
-                                    firstRestriction = False
-
-                            pass
-
-                pass
-
-            self.proposalsManager.setCurrentProposal(currProposalID)
-
-        else:
-
-            # Deal with proposal 0, i.e., print of all current restrictions (for the current display date)
-
-            #tileList = self.tableNames.MapGrid().getFeatures
-            # Setup a request
-            queryString = "\"RevisionNr\" IS NOT NULL "
-
-            TOMsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), level=Qgis.Info)
-
-            expr = QgsExpression(queryString)
-
-            for tile in self.tileLayer.getFeatures(QgsFeatureRequest(expr)):
-
-                TOMsMessageLog.logMessage("In getProposalTileList (after fetch): " + str(tile["id"]) + " RevisionNr: " + str(
-                    tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
-
-                currRevisionNr = tile["RevisionNr"]
-                currLastRevisionDate = tile["LastRevisionDate"]
-
-                currTileNr = tile.attribute("id")
-
-                revisionNr, revisionDate = self.getTileRevisionNrAtDate(currTileNr, currRevisionDate)
-
-                TOMsMessageLog.logMessage(
-                    "In getProposalTileList (after getTileRevisionNrAtDate): " + str(tile["id"]) + " RevisionNr: " + str(
-                        revisionNr) + " RevisionDate: " + str(revisionDate), level=Qgis.Info)
-
-                if revisionNr >= 0:
-                    if revisionNr != tile.attribute("RevisionNr"):
-                        tile.setAttribute("RevisionNr", revisionNr)
-                    if revisionDate != tile.attribute("LastRevisionDate"):
-                        tile.setAttribute("LastRevisionDate", revisionDate)
-
-                    TOMsMessageLog.logMessage("In getProposalTileList (before write): " + str(tile["id"]) + " RevisionNr: " + str(
-                            tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
-
-                self.tileSet.add((tile))
-
-        TOMsMessageLog.logMessage("In getProposalTileList: finished adding ... ", level=Qgis.Info)
-
-        for tile in self.tileSet:
-            TOMsMessageLog.logMessage("In getProposalTileList: " + str(tile["id"]) + " RevisionNr: " + str(tile["RevisionNr"]) + " RevisionDate: " + str(tile["LastRevisionDate"]), level=Qgis.Info)
-
-        #sorted(list(set(output)))
-        #return self.tileList
-
-    """def getProposalTitle(self, proposalID):
-        # return the layer given the row in "RestrictionLayers"
-        TOMsMessageLog.logMessage("In getProposalTitle.", level=Qgis.Info)
-
-        #query2 = '"RestrictionID" = \'{restrictionid}\''.format(restrictionid=currRestrictionID)
-        idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
-        idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
-        queryString = "\"ProposalID\" = " + str(proposalID)
-
-        TOMsMessageLog.logMessage("In getRestriction: queryString: " + str(queryString), level=Qgis.Info)
-
-        expr = QgsExpression(queryString)
-
-        for feature in self.Proposals.getFeatures(QgsFeatureRequest(expr)):
-            return feature[idxProposalTitle], feature[idxProposalOpenDate]
-
-        TOMsMessageLog.logMessage("In getProposalTitle: Proposal not found", level=Qgis.Info)
-        return None, None"""
-
-    def getTilesForRestriction(self, currRestriction, filterDate):
-
-        # get the tile(s) for a given restriction
-
-        TOMsMessageLog.logMessage("In getTileForRestriction. ", level=Qgis.Info)
-
-        #a.geometry().intersects(f.geometry()):
-
-        #queryString2 = # bounding box of restriction
-        idxTileID = self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
-
-        for tile in self.tileLayer.getFeatures(QgsFeatureRequest().setFilterRect(currRestriction.geometry().boundingBox())):
-
-            if tile.geometry().intersects(currRestriction.geometry()):
-                # get revision number and add tile to list
-                #currRevisionNrForTile = self.getTileRevisionNr(tile)
-                TOMsMessageLog.logMessage("In getTileForRestriction. Tile: " + str(tile.attribute("id")) + "; " + str(tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")), level=Qgis.Info)
-
-                # check revision nr, etc
-                currTileNr = tile.attribute("id")
-                revisionNr, revisionDate = self.getTileRevisionNrAtDate(currTileNr, filterDate)
-
-                if revisionNr:
-
-                    if revisionNr != tile.attribute("RevisionNr"):
-                        tile.setAttribute("RevisionNr", revisionNr)
-                    if revisionDate != tile.attribute("LastRevisionDate"):
-                        tile.setAttribute("LastRevisionDate", revisionDate)
-
-                        """TOMsMessageLog.logMessage(
-                            "In getTileForRestriction. revised details: " + str(revisionNr) + "; " + str(revisionDate),
-                            level=Qgis.Info)"""
-
-                else:
-
-                    # if there is no RevisionNr for the tile, set it to 0. This should only be the case for proposals.
-
-                    tile.setAttribute("RevisionNr", 0)
-
-                #idxRevisionNr = self.tableNames.TILES_IN_ACCEPTED_PROPOSALS.fields().indexFromName("RevisionNr")
-
-                TOMsMessageLog.logMessage(
-                            "In getTileForRestriction: Tile: " + str(tile.attribute("id")) + "; " + str(
-                                tile.attribute("RevisionNr")) + "; " + str(tile.attribute("LastRevisionDate")) + "; " + str(idxTileID),
-                            level=Qgis.Info)
-
-                #self.tileSet.add((tile))
-                #self.addFeatureToSet(self.tileSet, tile, self.tableNames.MAP_GRID.fields().indexFromName("id"))
-
-                if self.checkFeatureInSet(self.tileSet, tile, self.tableNames.setLayer("MapGrid").fields().indexFromName("id")) == False:
-                    TOMsMessageLog.logMessage(
-                        "In addFeatureToSet. Adding: " + str(currTileNr) + " ; " + str(len(self.tileSet)),
-                        level=Qgis.Info)
-                    self.tileSet.add((tile))
-
-                TOMsMessageLog.logMessage(
-                            "In getTileForRestriction. len tileSet: " + str(len(self.tileSet)),
-                            level=Qgis.Info)
-
-                pass
-
-        pass
 
     def checkFeatureInSet(self, featureSet, currFeature, idxValue):
 
@@ -1646,105 +1119,6 @@ class RestrictionTypeUtilsMixin():
                 return found
 
         return found
-
-    def getTileRevisionNr(self, currTile):
-        # return the revision number for the tile
-        TOMsMessageLog.logMessage("In getRestriction.", level=Qgis.Info)
-
-        #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
-
-        queryString = "\"id\" = " + + str(currTile.attribute("id"))
-
-        TOMsMessageLog.logMessage("In getTileRevisionNr: queryString: " + str(queryString), level=Qgis.Info)
-
-        expr = QgsExpression(queryString)
-
-        for feature in self.tileLayer.getFeatures(QgsFeatureRequest(expr)):
-            currRevisionNr = feature["RevisionNr"]
-            return currRevisionNr
-
-        TOMsMessageLog.logMessage("In getTileRevisionNr: tile not found", level=Qgis.Info)
-        return None
-
-    def getTileRevisionNrAtDate(self, tileNr, filterDate):
-        # return the revision number for the tile
-        TOMsMessageLog.logMessage("In getTileRevisionNrAtDate.", level=Qgis.Info)
-
-        #query2 = '"tile" = \'{tileid}\''.format(tileid=currTile)
-
-        queryString = "\"TileNr\" = " + str(tileNr)
-
-        TOMsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
-
-        expr = QgsExpression(queryString)
-
-        """request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
-
-        request.setFilterExpression(
-                u"\"TileNr\" = {1}".format(str(currTile.attribute("id"))))"""
-
-        # Grab the results from the layer
-        features = self.tableNames.setLayer("TilesInAcceptedProposals").getFeatures(QgsFeatureRequest(expr))
-        tileProposal = TOMsProposal(self)
-
-        for feature in sorted(features, key=lambda f: f[2], reverse=True):
-            lastProposalID = feature["ProposalID"]
-            lastRevisionNr = feature["RevisionNr"]
-            #return currRevisionNr
-            #lastProposalTitle, lastProposalOpendate = self.getProposalTitle(lastProposalID)
-            tileProposal.setProposal(lastProposalID)
-
-            #lastProposalOpendate = self.proposalsManager.getProposalOpenDate(lastProposalID)
-            lastProposalOpendate = tileProposal.getProposalOpenDate()
-
-            TOMsMessageLog.logMessage(
-                "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                level=Qgis.Info)
-
-            TOMsMessageLog.logMessage(
-                "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
-                level=Qgis.Info)
-
-            if lastProposalOpendate <= filterDate:
-                TOMsMessageLog.logMessage(
-                    "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    level=Qgis.Info)
-                return lastRevisionNr, lastProposalOpendate
-
-        return None, None
-
-    def rejectProposal(self, currProposalID):
-        TOMsMessageLog.logMessage("In rejectProposal.", level=Qgis.Info)
-
-        # This is a "reset" so change all open/close dates back to null. **** Need to be careful if a restriction is in more than one proposal
-
-        # Now loop through all the items in restrictionsInProposals for this proposal and take appropriate action
-
-        RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName("RestrictionsInProposals")[0]
-        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName("ProposalID")
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionTableID")
-        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName("RestrictionID")
-        idxActionOnProposalAcceptance = RestrictionsInProposalsLayer.fields().indexFromName("ActionOnProposalAcceptance")
-
-        # restrictionFound = False
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
-            if restrictionInProposal.attribute("ProposalID") == currProposalID:
-                currRestrictionLayer = self.getRestrictionsLayerFromID(restrictionInProposal.attribute("RestrictionTableID"))
-                currRestrictionID = restrictionInProposal.attribute("RestrictionID")
-                currAction = restrictionInProposal.attribute("ActionOnProposalAcceptance")
-
-                #currRestrictionLayer.startEditing()
-                """if not currRestrictionLayer.isEditable():
-                    currRestrictionLayer.startEditing()"""
-
-                statusUpd = self.updateRestriction(currRestrictionLayer, currRestrictionID, currAction, None)
-
-            pass
-
-        pass
 
     def getLookupDescription(self, lookupLayer, code):
 

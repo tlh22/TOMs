@@ -39,7 +39,6 @@ from ..constants import (
 from ..core.TOMsProposal import (TOMsProposal)
 from .TOMsProposalElement import *
 
-@singleton
 class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QObject):
     """
     Manages what is currently shown to the user.
@@ -64,7 +63,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     """ signal will be emitted when TOMs tools are activated"""
     #TOMsStartupFailure = pyqtSignal()
     """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
-    TOMsSplitRestrictionSaved = pyqtSignal()
+    #TOMsSplitRestrictionSaved = pyqtSignal()
 
     def __init__(self, iface):
 
@@ -112,8 +111,13 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         """
         Returns the current proposal object
         """
-
         return self.currProposalObject
+
+    def cloneCurrentProposal(self):
+        """
+        Returns clone of current proposal object
+        """
+        return TOMsProposal(self, self.currentProposal)
 
     def setCurrentProposal(self, value):
         """
@@ -188,24 +192,16 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 layerFilterString = layerFilterString + ")"
 
             TOMsMessageLog.logMessage("In updateMapCanvas. Layer: " + layerName + " Date Filter: " + layerFilterString, level=Qgis.Info)
-            self.tableNames.setLayer(layerName).setSubsetString(layerFilterString)
-
-            """for (currRestrictionID, currRestriction) in self.__getCurrentRestrictionsForLayer(
-                    layerID):
-                TOMsMessageLog.logMessage(
-                    "In updateMapCanvas. Layer: " + layerName + " Factory RestrictionID: " + str(currRestrictionID), level=Qgis.Info)"""
-        pass
+            self.tableNames.setLayer(layerName).dataProvider().setSubsetString(layerFilterString)
 
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
         for (layerID, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage("Clearing filter for layer: " + layerName, level=Qgis.Info)
-            self.tableNames.setLayer(layerName).setSubsetString('')
+            self.tableNames.setLayer(layerName).dataProvider().setSubsetString('')
 
-        pass
-
-    def getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):
+    def getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):  # TODO: possibly better with Proposal
 
         if not dateString:
             dateString = self.date()
@@ -228,18 +224,10 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " restrictionID: " + str(currentRestrictionDetails["RestrictionID"]),
                 level=Qgis.Info)
             currRestriction = ProposalElementFactory.getProposalElement(self, layerID,
-                                                                        currentRestrictionDetails,
                                                                         currentRestrictionDetails["RestrictionID"])
             restrictionList.append([currentRestrictionDetails["RestrictionID"], currRestriction])
 
         return restrictionList
-
-    # @pyqtSlot()
-    #def setProposalDetails(self):
-    """ Needed because Proposal object can be created before layers details are set ... perhaps a sequencing issue here ... """
-    """TOMsMessageLog.logMessage("In proposalsManager. SetProposalDetails ... ", level=Qgis.Info)
-        self.setTOMsActivated = True
-        self.currProposalObject.setProposalsLayer()"""
 
     def getProposalsListWithStatus(self, proposalStatus=None):
 
@@ -258,3 +246,4 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             proposalsList.append([proposalDetails["ProposalID"], proposalDetails["ProposalTitle"], proposalDetails["ProposalStatusID"], proposalDetails["ProposalOpenDate"], proposalDetails])
 
         return proposalsList
+

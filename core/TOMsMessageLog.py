@@ -19,6 +19,10 @@
  *                                                                         *
  ***************************************************************************/
 """
+import time, datetime
+import functools
+import os.path
+import sys
 
 from qgis.core import (
     Qgis,
@@ -27,9 +31,6 @@ from qgis.core import (
     QgsProject,
     QgsApplication
 )
-
-import os.path
-import time, datetime
 
 class TOMsMessageLog(QgsMessageLog):
 
@@ -43,7 +44,9 @@ class TOMsMessageLog(QgsMessageLog):
             try:
                 currLoggingLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
             except Exception as e:
+
                 QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... {}".format(e), tag="TOMs Panel")
+
 
             if not currLoggingLevel:
                 currLoggingLevel = Qgis.Info
