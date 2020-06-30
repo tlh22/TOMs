@@ -2,7 +2,9 @@
 ###### **TOMs (Traffic Order Management System)**
 
 **Introduction**
+
 TOMs is a system for managing map based traffic orders. It is developed for use by local authorities in the UK - although the principles are applicable for any country.
+
 
 TOMs provides users with the facility to:
  - view the current and proposed restrictions as at a given date
@@ -10,7 +12,10 @@ TOMs provides users with the facility to:
  - print existing or proposed restriction details as at a given date
 
 **Concepts**
+
 TOMs has the following key concepts:
+
+
 a. Restriction. This is the lines and signs that exist on street. These are grouped into:
  - Bays
  - Lines
@@ -19,7 +24,6 @@ a. Restriction. This is the lines and signs that exist on street. These are grou
  - Zones such as Controlled Parking Zones (CPZs) and Parking Tariff Areas (PTAs)
 
 The geometry of a restriction is held against the kerbline. TOMs provides for a range of different styles for representing restrictions, e.g., bays may be displayed as lines or polygons.
-
 
 
 b. Proposal. This groups changes to restrictions and manages the acceptance process. Typcially, these would be put to public consultation. If they are accepted, the changes would be made together on a given date.
@@ -75,6 +79,7 @@ Contributions are welcome - whether it be coding, documenting or moral support!.
 On-going support has been provide by ProjectCentre Ltd. Guidance and advice has come from OpenGIS.ch.
 
 **License**  
+
 GNU GPLv3
 
 Git revision : $Format:%H$
