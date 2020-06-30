@@ -234,7 +234,7 @@ CREATE FUNCTION public.set_restriction_length()
 AS $BODY$
     BEGIN
 	    -- round to two decimal places
-        NEW."RestrictionLength" := ROUND(ST_Length (NEW."geom")::numeric,2);
+        NEW."RestrictionLength" := ROUND(public.ST_Length (NEW."geom")::numeric,2);
 
         RETURN NEW;
     END;
