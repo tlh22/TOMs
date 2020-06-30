@@ -1,22 +1,22 @@
 
 # **TOMs (Traffic Order Management System)**
 
-##**Table of Contents:**
-1. [Introduction](##Introduction)
-2. [Concepts](##Concepts)
-3. [Installation](##Installation)
+**Table of Contents:**
+1. [Introduction](##introduction)
+2. [Concepts](##concepts)
+3. [Installation](##installation)
 
     3.1 [QGIS](###QGIS)
     
     3.2 [postgresql](###postgresql)
     
-    3.3 [QGIS-Server](###QGIS-Server)
-4. [Usage](##Usage)
-5. [Contributing](##Contributing)
-6. [Credits](##Credits)
-6. [License](##License)
+    3.3 [QGIS-Server](###qgis-server)
+4. [Usage](##usage)
+5. [Contributing](##contributing)
+6. [Credits](##credits)
+6. [License](##license)
 
-## **Introduction** <a name="Introduction"></a>
+## **Introduction** <a name="introduction"></a>
 
 TOMs is a system for managing map based traffic orders. It is developed for use by local authorities in the UK - although the principles are applicable for any country.
 
@@ -26,7 +26,7 @@ TOMs provides users with the facility to:
  - manage restrictions, i.e., create, edit and delete restrictions
  - print existing or proposed restriction details as at a given date
 
-##**Concepts** <a name="Concepts"></a>
+##**Concepts** <a name="concepts"></a>
 
 TOMs has the following key concepts:
 
@@ -48,7 +48,7 @@ c. Open/Close date. This is the date at which a Proposal is accepted and changes
 d. Map Tiles. A map tile is versioned according to the open/close date for any restrictions it contains. 
 
 
-## **Installation** <a name="Installation"></a>
+## **Installation** <a name="installation"></a>
 
 ### **QGIS** <a name="QGIS"></a>
 
@@ -78,26 +78,26 @@ Users are then assigned to one of these roles. There are three users that have b
 
 The test project file is found within the QGIS folder. This project file uses a postgres service to access the database. (See https://www.postgresql.org/docs/9.1/libpq-pgservice.html)
 
-###**QGIS-Server** <a name="QGIS-Server"></a>
+###**QGIS-Server** <a name="qgis-server"></a>
 
 The test project file sets capabilities for WMS and WFS services.
 
 < Further details required here >
 
-##**Usage** <a name="Usage"></a>
+##**Usage** <a name="usage"></a>
 ## Video
 
 [![TOMs](https://img.youtube.com/vi/_sG7226QziE/0.jpg)](https://www.youtube.com/watch?v=_sG7226QziE)
 
 < This video was the original concept. More details required here >
 
-## **Contributing** <a name="Contributing"></a>
+## **Contributing** <a name="contributing"></a>
 Contributions are welcome - whether it be coding, documenting or moral support!. If you are willin/able to assist, please contact the developer(s) to discuss things further.
 
-## **Credits** <a name="Credits"></a>
+## **Credits** <a name="credits"></a>
 The development is carried out by MHTC Ltd. On-going support has been provided by ProjectCentre Ltd. Guidance and advice has been given by OpenGIS.ch.
 
-## **License** <a name="License"></a>
+## **License** <a name="license"></a>
 GNU GPLv3
 
 Git revision : $Format:%H$
