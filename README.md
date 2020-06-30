@@ -61,7 +61,7 @@ The current version of TOMs is available here - https://github.com/opengisch/TOM
 It relies on a connection to a postgres/postgis database. See below for details of the data structure.
 
 
-###**postgresql** <a name="postgresql"></a>
+### **postgresql** <a name="postgresql"></a>
 TOMs assumes a connection to a postgres database that has the postgis and uuid-ossp extensions installed. (The python extention will be in use soon). Installers for different platforms are available here - https://www.postgresql.org/download/.
 
 There are a series of scripts to create the database structure that are found in the DATAMODEL folder
@@ -80,14 +80,14 @@ Users are then assigned to one of these roles. There are three users that have b
 
 The test project file is found within the QGIS folder. This project file uses a postgres service to access the database. (See https://www.postgresql.org/docs/9.1/libpq-pgservice.html)
 
-###**QGIS-Server** <a name="qgis-server"></a>
+### **QGIS-Server** <a name="qgis-server"></a>
 
 The test project file sets capabilities for WMS and WFS services.
 
 < Further details required here >
 
-##**Usage** <a name="usage"></a>
-## Video
+## **Usage** <a name="usage"></a>
+### Video
 
 [![TOMs](https://img.youtube.com/vi/_sG7226QziE/0.jpg)](https://www.youtube.com/watch?v=_sG7226QziE)
 
