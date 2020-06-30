@@ -6,7 +6,7 @@
 2. [Concepts](##concepts)
 3. [Installation](##installation)
 
-    3.1 [QGIS](###QGIS)
+    3.1 [QGIS](###qgis)
     
     3.2 [postgresql](###postgresql)
     
@@ -16,7 +16,8 @@
 6. [Credits](##credits)
 6. [License](##license)
 
-## **Introduction** <a name="introduction"></a>
+<a name="introduction"/></a>
+## **Introduction** 
 
 TOMs is a system for managing map based traffic orders. It is developed for use by local authorities in the UK - although the principles are applicable for any country.
 
@@ -26,7 +27,8 @@ TOMs provides users with the facility to:
  - manage restrictions, i.e., create, edit and delete restrictions
  - print existing or proposed restriction details as at a given date
 
-##**Concepts** <a name="concepts"></a>
+<a name="concepts"></a>
+## **Concepts** 
 
 TOMs has the following key concepts:
 
@@ -47,10 +49,10 @@ c. Open/Close date. This is the date at which a Proposal is accepted and changes
 
 d. Map Tiles. A map tile is versioned according to the open/close date for any restrictions it contains. 
 
+<a name="installation"></a>
+## **Installation** 
 
-## **Installation** <a name="installation"></a>
-
-### **QGIS** <a name="QGIS"></a>
+### **QGIS** <a name="qgis"></a>
 
 TOMs is a python plugin that makes use of and extends tools within QGIS. TOMs follows the LTR (Long Term Release) of QGIS. 
 
