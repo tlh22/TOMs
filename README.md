@@ -1,7 +1,22 @@
 
-###### **TOMs (Traffic Order Management System)**
+# **TOMs (Traffic Order Management System)**
 
-**Introduction**
+##**Table of Contents:**
+1. [Introduction](##Introduction)
+2. [Concepts](##Concepts)
+3. [Installation](##Installation)
+
+    3.1 [QGIS](###QGIS)
+    
+    3.2 [postgresql](###postgresql)
+    
+    3.3 [QGIS-Server](###QGIS-Server)
+4. [Usage](##Usage)
+5. [Contributing](##Contributing)
+6. [Credits](##Credits)
+6. [License](##License)
+
+## **Introduction** <a name="Introduction"></a>
 
 TOMs is a system for managing map based traffic orders. It is developed for use by local authorities in the UK - although the principles are applicable for any country.
 
@@ -11,7 +26,7 @@ TOMs provides users with the facility to:
  - manage restrictions, i.e., create, edit and delete restrictions
  - print existing or proposed restriction details as at a given date
 
-**Concepts**
+##**Concepts** <a name="Concepts"></a>
 
 TOMs has the following key concepts:
 
@@ -32,54 +47,57 @@ c. Open/Close date. This is the date at which a Proposal is accepted and changes
 
 d. Map Tiles. A map tile is versioned according to the open/close date for any restrictions it contains. 
 
-**System structure**
-TOMs is a python plugin that makes use of and extends tools within QGIS.  
 
-It relies on a connection to a postgres/postgis database. Details of the data structure can be found in the wiki.
+## **Installation** <a name="Installation"></a>
+
+### **QGIS** <a name="QGIS"></a>
+
+TOMs is a python plugin that makes use of and extends tools within QGIS. TOMs follows the LTR (Long Term Release) of QGIS. 
+
+The current version of TOMs is available here - https://github.com/opengisch/TOMs/releases. As with any QGIS plugins, place the downloaded files into a folder that is accessible on PYTHONPATH. 
+
+It relies on a connection to a postgres/postgis database. See below for details of the data structure.
 
 
-**Installation**
-TOMs follows the LTR (Long Term Release) of QGIS. The current version is available here - https://github.com/opengisch/TOMs/releases. As with any plugins, place the downloaded files into a folder that is accessible on PYTHONPATH. 
-
-**Pre-requisites**
-TOMs assumes a connection to a postgres database with the postgis and uuid-ossp extensions. (The python extention will be in use soon). Installers for different platforms are available here - https://www.postgresql.org/download/.
+###**postgresql** <a name="postgresql"></a>
+TOMs assumes a connection to a postgres database that has the postgis and uuid-ossp extensions installed. (The python extention will be in use soon). Installers for different platforms are available here - https://www.postgresql.org/download/.
 
 There are a series of scripts to create the database structure that are found in the DATAMODEL folder
 
 Scripts for populating a test database can be found within the test/data folder.
  
 There are three roles within the test database
-•	toms_admin – with ability to accept/reject proposals, update restrictions in use …
-•	toms_operator – ability to create proposal and make changes within a proposal
-•	toms_public – read access
+- toms_admin – with ability to accept/reject proposals, update restrictions in use …
+- toms_operator – ability to create proposal and make changes within a proposal
+- toms_public – read access
 
-Users are then assigned to one of these roles. Typically user name are first_name.last_name, e.g., john.smith. There are three users that have been created for the test environment:
-•	test_toms_admin with password “password”
-•	test_toms_operator with password “password”
-•	test_toms_public with password “password”
+Users are then assigned to one of these roles. There are three users that have been created for the test environment:
+- test_toms_admin with password “password”
+- test_toms_operator with password “password”
+- test_toms_public with password “password”
 
 The test project file is found within the QGIS folder. This project file uses a postgres service to access the database. (See https://www.postgresql.org/docs/9.1/libpq-pgservice.html)
 
-**QGIS-Server**
-The test project file sets details for WMS and WFS services.
+###**QGIS-Server** <a name="QGIS-Server"></a>
+
+The test project file sets capabilities for WMS and WFS services.
 
 < Further details required here >
 
-**Usage**
+##**Usage** <a name="Usage"></a>
 ## Video
 
 [![TOMs](https://img.youtube.com/vi/_sG7226QziE/0.jpg)](https://www.youtube.com/watch?v=_sG7226QziE)
 
 < This video was the original concept. More details required here >
 
-**Contributing**
+## **Contributing** <a name="Contributing"></a>
 Contributions are welcome - whether it be coding, documenting or moral support!. If you are willin/able to assist, please contact the developer(s) to discuss things further.
 
-**Credits**
-On-going support has been provide by ProjectCentre Ltd. Guidance and advice has come from OpenGIS.ch.
+## **Credits** <a name="Credits"></a>
+The development is carried out by MHTC Ltd. On-going support has been provided by ProjectCentre Ltd. Guidance and advice has been given by OpenGIS.ch.
 
-**License**  
-
+## **License** <a name="License"></a>
 GNU GPLv3
 
 Git revision : $Format:%H$
