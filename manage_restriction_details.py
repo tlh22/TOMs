@@ -41,6 +41,7 @@ from qgis.core import (
     QgsFeature,
     QgsGeometry
 )
+from qgis.gui import QgsMapToolPan
 
 import os
 
@@ -58,6 +59,8 @@ from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
 
 import functools
+
+
 
 class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
@@ -123,6 +126,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                self.iface.mainWindow())
         self.actionSplitRestriction.setCheckable(True)
 
+        self.actionEditLabels = QAction(QIcon(""),
+                               QCoreApplication.translate("MyPlugin", "Manage Labels"),
+                               self.iface.mainWindow())
+        self.actionEditLabels.setCheckable(True)
+
         self.actionCreateConstructionLine = QAction(QIcon(":/plugins/TOMs/resources/CreateConstructionLine.svg"),
                                QCoreApplication.translate("MyPlugin", "Create construction line"),
                                self.iface.mainWindow())
@@ -139,6 +147,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.TOMsToolbar.addAction(self.actionRemoveRestriction)
         self.TOMsToolbar.addAction(self.actionEditRestriction)
         self.TOMsToolbar.addAction(self.actionSplitRestriction)
+        self.TOMsToolbar.addAction(self.actionEditLabels)
         self.TOMsToolbar.addAction(self.actionCreateConstructionLine)
 
         # Connect action signals to slots
@@ -151,6 +160,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionRemoveRestriction.triggered.connect(self.doRemoveRestriction)
         self.actionEditRestriction.triggered.connect(self.doEditRestriction)
         self.actionSplitRestriction.triggered.connect(self.doSplitRestriction)
+        self.actionEditLabels.triggered.connect(self.doEditLabels)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
 
         pass
@@ -168,6 +178,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionRemoveRestriction.setEnabled(True)
         self.actionEditRestriction.setEnabled(True)
         self.actionSplitRestriction.setEnabled(True)
+        self.actionEditLabels.setEnabled(True)
         self.actionCreateConstructionLine.setEnabled(True)
 
         # print tool
@@ -200,6 +211,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionRemoveRestriction.setEnabled(False)
         self.actionEditRestriction.setEnabled(False)
         self.actionSplitRestriction.setEnabled(False)
+        self.actionEditLabels.setEnabled(False)
         self.actionCreateConstructionLine.setEnabled(False)
 
         # print tool
@@ -398,7 +410,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 TOMsMessageLog.logMessage("In doCreateLineRestriction - tool deactivated", level=Qgis.Info)
 
-                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.iface.mapCanvas().setMapTool(QgsMapToolPan(self.iface.mapCanvas()))
                 self.mapTool = None
                 self.actionCreateLineRestriction.setChecked(False)
 
@@ -745,6 +757,109 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doEditRestriction - leaving", level=Qgis.Info)
 
         pass
+
+
+    def doEditLabels(self):
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        # We start by unsetting all tools
+        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+        self.mapTool = None
+        self.actionEditLabels.setChecked(False)
+
+        self._currently_editted_label_layers = []
+
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
+        # Get the active layer
+        currRestrictionLayer = self.iface.activeLayer()
+
+        if not (currProposalID > 0):
+            alert_box("Changes to current data are not allowed. Changes are made via Proposals")
+            return
+
+        if not currRestrictionLayer or currRestrictionLayer.selectedFeatureCount() == 0:
+            alert_box("Select restriction for edit")
+            return
+
+        # get the corresponding label layer
+        if currRestrictionLayer.name() == 'Bays':
+            label_layers_names = ['Bays.label_pos']
+        if currRestrictionLayer.name() == 'Lines':
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
+        if currRestrictionLayer.name() == 'Signs':
+            label_layers_names = []
+        if currRestrictionLayer.name() == 'RestrictionPolygons':
+            label_layers_names = ['RestrictionPolygons.label_pos']
+        if currRestrictionLayer.name() == 'CPZs':
+            label_layers_names = []
+        if currRestrictionLayer.name() == 'ControlledParkingZones.label_pos':
+            label_layers_names = ['ParkingTariffAreas', 'ParkingTariffAreas.label_pos']
+
+        if len(label_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
+
+        # get the selected features on the restriction layer
+        # unfortunately, ids of two layers reprenseting the same tables do not seem to be identical
+        # so we need to do this little dance...
+        pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
+        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+        pk_attr_idx = pk_attrs_idxs[0]
+        pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
+        selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
+        selected_expression = '"{}" IN ({})'.format(pk_attr, selected_pks)
+
+        # we keep the bouding box for zooming
+        box = currRestrictionLayer.boundingBoxOfSelected()
+
+        for label_layers_name in label_layers_names:
+
+            # get the label layer
+            label_layer = QgsProject.instance().mapLayersByName(label_layers_name)[0]
+
+            # keep track of the layer to commit changes when vertex tool disabled
+            self._currently_editted_label_layers.append(label_layer)
+
+            # reselect the same feature on the label layer
+            label_layer.selectByExpression(selected_expression)
+
+            # add the selection to the boudingbox (for zooming)
+            box.combineExtentWith(label_layer.boundingBoxOfSelected())
+
+            # toggle edit mode
+            label_layer.startEditing()
+
+        # enable the vertex tool
+        self.iface.actionVertexTool().trigger()
+        self.mapTool = self.iface.mapCanvas().mapTool()
+        self.mapTool.deactivated.connect(self.stopEditLabels)
+        self.actionEditLabels.setChecked(True)
+
+        # zoom to the bouding box
+        box.scale(1.5)
+        self.iface.mapCanvas().setExtent(box)
+        self.iface.mapCanvas().refresh()
+
+
+    def stopEditLabels(self):
+        # commit and cleanup after vertex tool stopped
+        for layer in self._currently_editted_label_layers:
+            layer.commitChanges()
+        self._currently_editted_label_layers = []
+        self.actionEditLabels.setChecked(False)
+        try:
+            self.mapTool.deactivated.disconnect(self.stopEditLabels)
+        except TypeError:
+            pass
+        if self.mapTool:
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+
 
     def doSplitRestriction(self):
 
