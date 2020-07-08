@@ -1,0 +1,3 @@
+CREATE ROLE toms_admin NOLOGIN;
+CREATE ROLE toms_operator NOLOGIN;
+CREATE ROLE toms_public NOLOGIN;

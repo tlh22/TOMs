@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  postgis:
+    build:
+      context: .
+      dockerfile: dockerfile-toms-test-postgis
+    hostname: toms_postgis2
+    environment:
+      - POSTGRES_PASSWORD=postgis
+      - POSTGRES_DBNAME=gis
+    volumes:
+      - "pg_data_toms_test:/var/lib/postgresql"
+      - /home/QGIS/plugins/TOMs/DATAMODEL:/docker-entrypoint-initdb.d
+      - /home/QGIS/plugins/TOMs/test/data:/docker-entrypoint-initdb.d
+    ports:
+      - 5435:5432
+
+  qgisserver:
+    image: openquake/qgis-server:ltr
+    hostname: qgis-server1
+    environment:
+      - PGSERVICEFILE=/io/pg_service/.pg_service.conf
+    volumes:
+      # Wherever you want to mount your data from
+      - /home/tim/qgis_server/data:/io/data
+      - /home/QGIS/plugins:/io/plugins
+      - /home/QGIS/resources:/var/lib/qgis/.local/share/QGIS/QGIS3/profiles/default/svg
+    ports:
+      - 8011:80
+
+volumes:
+  pg_data_toms_test:
