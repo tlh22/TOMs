@@ -10,10 +10,11 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgis
       - POSTGRES_DBNAME=gis
+      - ALLOW_IP_RANGE=0.0.0.0/0
     volumes:
-      - "pg_data_toms_test:/var/lib/postgresql"
-      - /home/QGIS/plugins/TOMs/DATAMODEL:/docker-entrypoint-initdb.d
-      - /home/QGIS/plugins/TOMs/test/data:/docker-entrypoint-initdb.d
+      - ../DATAMODEL:/io/DATAMODEL
+      - ../test/data:/io/test/data
+      - ../DOCKER/toms_test_db_init_scripts:/docker-entrypoint-initdb.d
     ports:
       - 5435:5432
 
@@ -23,12 +24,10 @@ services:
     environment:
       - PGSERVICEFILE=/io/pg_service/.pg_service.conf
     volumes:
-      # Wherever you want to mount your data from
-      - /home/tim/qgis_server/data:/io/data
-      - /home/QGIS/plugins:/io/plugins
-      - /home/QGIS/resources:/var/lib/qgis/.local/share/QGIS/QGIS3/profiles/default/svg
+    volumes:
+      - ../DOCKER/pg_service:/io/pg_service
+      - ../QGIS:/io/data
+      - ../..:/io/plugins
+      - ../QGIS/svg:/var/lib/qgis/.local/share/QGIS/QGIS3/profiles/default/svg
     ports:
       - 8011:80
-
-volumes:
-  pg_data_toms_test:
