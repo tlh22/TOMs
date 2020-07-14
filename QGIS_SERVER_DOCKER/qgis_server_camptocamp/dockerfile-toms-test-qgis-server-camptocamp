@@ -1,0 +1,2 @@
+FROM camptocamp/qgis-server:3.10
+RUN mkdir /io  # not needed to openquake image - but needed for any others
