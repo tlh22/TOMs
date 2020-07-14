@@ -13,19 +13,33 @@ services:
     volumes:
       - ../DATAMODEL:/io/DATAMODEL
       - ../test/data:/io/test/data
-      - ../DOCKER/toms_test_db_init_scripts:/docker-entrypoint-initdb.d
+      - ../DOCKER/postgis/toms_test_db_init_scripts:/docker-entrypoint-initdb.d
     ports:
-      - 5435:5432
+      - 5432:5432
+    networks:
+      toms-net:
+        aliases:
+          - toms_postgis
 
-  qgisserver:
-    image: openquake/qgis-server:ltr
+  qgis-server:
+    build:
+      context: .
+      dockerfile: dockerfile-toms-test-qgis-server
     hostname: qgis-server
     environment:
       - PGSERVICEFILE=/io/pg_service/.pg_service.conf
     volumes:
       - ../DOCKER/pg_service:/io/pg_service
+      - ../DOCKER/qgis_server/nginx/qgis-server-nginx.conf:/etc/nginx/nginx.conf
       - ../QGIS:/io/data
       - ../..:/io/plugins
       - ../QGIS/svg:/var/lib/qgis/.local/share/QGIS/QGIS3/profiles/default/svg
     ports:
       - 8011:80
+    networks:
+      toms-net:
+        aliases:
+          - qgis-server
+
+networks:
+  toms-net:
