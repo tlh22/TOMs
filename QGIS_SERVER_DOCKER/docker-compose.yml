@@ -5,7 +5,7 @@ services:
   postgis:
     build:
       context: .
-      dockerfile: dockerfile-toms-test-postgis
+      dockerfile: ./postgis/dockerfile-toms-test-postgis
     environment:
       - POSTGRES_PASSWORD=postgis
       - POSTGRES_DBNAME=gis
@@ -24,7 +24,7 @@ services:
   qgis-server:
     build:
       context: .
-      dockerfile: dockerfile-toms-test-qgis-server
+      dockerfile: ./qgis_server/dockerfile-toms-test-qgis-server
     hostname: qgis-server
     environment:
       - PGSERVICEFILE=/io/pg_service/.pg_service.conf
