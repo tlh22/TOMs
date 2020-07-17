@@ -737,6 +737,7 @@ class RestrictionTypeUtilsMixin():
             projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
             path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
+        TOMsMessageLog.logMessage("In photoDetails. path_absolute: {}".format(path_absolute), level=Qgis.Warning)
         # check that the path exists
         if not os.path.isdir(path_absolute):
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
