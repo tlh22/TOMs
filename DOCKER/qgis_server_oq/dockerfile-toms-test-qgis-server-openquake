@@ -1,0 +1,2 @@
+FROM openquake/qgis-server:ltr
+# RUN mkdir /io  # not needed to openquake image - but needed for any others

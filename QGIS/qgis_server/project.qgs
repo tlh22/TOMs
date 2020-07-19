@@ -1,0 +1,3278 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.10.7-A Coruña" projectname="">
+  <homePath path=""/>
+  <title></title>
+  <autotransaction active="0"/>
+  <evaluateDefaultValues active="0"/>
+  <trust active="0"/>
+  <projectCrs>
+    <spatialrefsys>
+      <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+      <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+      <srsid>2437</srsid>
+      <srid>27700</srid>
+      <authid>EPSG:27700</authid>
+      <description>OSGB 1936 / British National Grid</description>
+      <projectionacronym>tmerc</projectionacronym>
+      <ellipsoidacronym>airy</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </projectCrs>
+  <layer-tree-group>
+    <customproperties/>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='id' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table=&quot;topography&quot;.&quot;road_casement&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="road_casement" id="road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='gid' srid=27700 type=MultiLineString checkPrimaryKeyUnicity='1' table=&quot;highways_network&quot;.&quot;itn_roadcentreline&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="itn_roadcentreline" id="itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='id' srid=27700 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;MapGrid&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="MapGrid" id="MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;RestrictionPolygons&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="RestrictionPolygons" id="RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=Point checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Signs&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="Signs" id="Signs_2ab5de69_1846_4169_af6a_34a1d12316e8">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Lines&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="Lines" id="Lines_ab5c6a24_3001_4bc5_8210_72319ad38758">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer checked="Qt::Checked" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Bays&quot; (geom) sql=" expanded="1" legend_exp="" providerKey="postgres" name="Bays" id="Bays_8347797a_86ec_443d_8201_5aaa889465b2">
+      <customproperties/>
+    </layer-tree-layer>
+    <custom-order enabled="0">
+      <item>Bays_8347797a_86ec_443d_8201_5aaa889465b2</item>
+      <item>Lines_ab5c6a24_3001_4bc5_8210_72319ad38758</item>
+      <item>Signs_2ab5de69_1846_4169_af6a_34a1d12316e8</item>
+      <item>RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310</item>
+      <item>MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c</item>
+      <item>itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e</item>
+      <item>road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc</item>
+    </custom-order>
+  </layer-tree-group>
+  <snapping-settings mode="2" enabled="0" unit="1" type="1" tolerance="12" intersection-snapping="0">
+    <individual-layer-settings>
+      <layer-setting enabled="0" id="itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="Lines_ab5c6a24_3001_4bc5_8210_72319ad38758" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="Signs_2ab5de69_1846_4169_af6a_34a1d12316e8" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c" units="1" type="1" tolerance="12"/>
+      <layer-setting enabled="0" id="Bays_8347797a_86ec_443d_8201_5aaa889465b2" units="1" type="1" tolerance="12"/>
+    </individual-layer-settings>
+  </snapping-settings>
+  <relations/>
+  <mapcanvas name="theMapCanvas" annotationsVisible="1">
+    <units>meters</units>
+    <extent>
+      <xmin>325070</xmin>
+      <ymin>673631.25</ymin>
+      <xmax>326330</xmax>
+      <ymax>674418.75</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+        <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+        <srsid>2437</srsid>
+        <srid>27700</srid>
+        <authid>EPSG:27700</authid>
+        <description>OSGB 1936 / British National Grid</description>
+        <projectionacronym>tmerc</projectionacronym>
+        <ellipsoidacronym>airy</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
+  <legend updateDrawingOrder="true">
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="road_casement" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="itn_roadcentreline" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="MapGrid" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="RestrictionPolygons" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="Signs" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="Signs_2ab5de69_1846_4169_af6a_34a1d12316e8" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="Lines" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="Lines_ab5c6a24_3001_4bc5_8210_72319ad38758" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer checked="Qt::Checked" showFeatureCount="0" open="true" name="Bays" drawingOrder="-1">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="Bays_8347797a_86ec_443d_8201_5aaa889465b2" visible="1"/>
+      </filegroup>
+    </legendlayer>
+  </legend>
+  <mapViewDocks/>
+  <mapViewDocks3D/>
+  <mapcanvas name="mAreaCanvas" annotationsVisible="1">
+    <units>degrees</units>
+    <extent>
+      <xmin>0</xmin>
+      <ymin>0</ymin>
+      <xmax>0</xmax>
+      <ymax>0</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
+  <mapcanvas name="mAreaCanvas" annotationsVisible="1">
+    <units>degrees</units>
+    <extent>
+      <xmin>0</xmin>
+      <ymin>0</ymin>
+      <xmax>0</xmax>
+      <ymax>0</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
+  <mapcanvas name="mAreaCanvas" annotationsVisible="1">
+    <units>degrees</units>
+    <extent>
+      <xmin>0</xmin>
+      <ymin>0</ymin>
+      <xmax>0</xmax>
+      <ymax>0</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
+  <projectlayers>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="LineString" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Line" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325307.46348890999797732</xmin>
+        <ymin>674069.62309453205671161</ymin>
+        <xmax>325531.23978844902012497</xmax>
+        <ymax>674238.30758396896999329</ymax>
+      </extent>
+      <id>Bays_8347797a_86ec_443d_8201_5aaa889465b2</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="toms"."Bays" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Bays</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="line">
+            <layer enabled="1" pass="0" class="SimpleLine" locked="0">
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="125,139,143,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="RestrictionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeometryID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RestrictionLength">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RestrictionTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeomShapeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="AzimuthToRoadCentreLine">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Notes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_01">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_02">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_03">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_X">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Y">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_TextChanged">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="OpenDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CloseDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CPZ">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="BayOrientation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NrBays">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="TimePeriodID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="PayTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MaxStayID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NoReturnID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ParkingTariffArea">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="AdditionalConditionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRoadMarkingsFaded">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRestrictionSignIssue">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckIssueTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="RestrictionID"/>
+        <alias name="" index="1" field="GeometryID"/>
+        <alias name="" index="2" field="RestrictionLength"/>
+        <alias name="" index="3" field="RestrictionTypeID"/>
+        <alias name="" index="4" field="GeomShapeID"/>
+        <alias name="" index="5" field="AzimuthToRoadCentreLine"/>
+        <alias name="" index="6" field="Notes"/>
+        <alias name="" index="7" field="Photos_01"/>
+        <alias name="" index="8" field="Photos_02"/>
+        <alias name="" index="9" field="Photos_03"/>
+        <alias name="" index="10" field="RoadName"/>
+        <alias name="" index="11" field="USRN"/>
+        <alias name="" index="12" field="label_X"/>
+        <alias name="" index="13" field="label_Y"/>
+        <alias name="" index="14" field="label_Rotation"/>
+        <alias name="" index="15" field="label_TextChanged"/>
+        <alias name="" index="16" field="OpenDate"/>
+        <alias name="" index="17" field="CloseDate"/>
+        <alias name="" index="18" field="CPZ"/>
+        <alias name="" index="19" field="LastUpdateDateTime"/>
+        <alias name="" index="20" field="LastUpdatePerson"/>
+        <alias name="" index="21" field="BayOrientation"/>
+        <alias name="" index="22" field="NrBays"/>
+        <alias name="" index="23" field="TimePeriodID"/>
+        <alias name="" index="24" field="PayTypeID"/>
+        <alias name="" index="25" field="MaxStayID"/>
+        <alias name="" index="26" field="NoReturnID"/>
+        <alias name="" index="27" field="ParkingTariffArea"/>
+        <alias name="" index="28" field="AdditionalConditionID"/>
+        <alias name="" index="29" field="ComplianceRoadMarkingsFaded"/>
+        <alias name="" index="30" field="ComplianceRestrictionSignIssue"/>
+        <alias name="" index="31" field="ComplianceNotes"/>
+        <alias name="" index="32" field="MHTC_CheckIssueTypeID"/>
+        <alias name="" index="33" field="MHTC_CheckNotes"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="RestrictionID"/>
+        <default expression="" applyOnUpdate="0" field="GeometryID"/>
+        <default expression="" applyOnUpdate="0" field="RestrictionLength"/>
+        <default expression="" applyOnUpdate="0" field="RestrictionTypeID"/>
+        <default expression="" applyOnUpdate="0" field="GeomShapeID"/>
+        <default expression="" applyOnUpdate="0" field="AzimuthToRoadCentreLine"/>
+        <default expression="" applyOnUpdate="0" field="Notes"/>
+        <default expression="" applyOnUpdate="0" field="Photos_01"/>
+        <default expression="" applyOnUpdate="0" field="Photos_02"/>
+        <default expression="" applyOnUpdate="0" field="Photos_03"/>
+        <default expression="" applyOnUpdate="0" field="RoadName"/>
+        <default expression="" applyOnUpdate="0" field="USRN"/>
+        <default expression="" applyOnUpdate="0" field="label_X"/>
+        <default expression="" applyOnUpdate="0" field="label_Y"/>
+        <default expression="" applyOnUpdate="0" field="label_Rotation"/>
+        <default expression="" applyOnUpdate="0" field="label_TextChanged"/>
+        <default expression="" applyOnUpdate="0" field="OpenDate"/>
+        <default expression="" applyOnUpdate="0" field="CloseDate"/>
+        <default expression="" applyOnUpdate="0" field="CPZ"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdateDateTime"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdatePerson"/>
+        <default expression="" applyOnUpdate="0" field="BayOrientation"/>
+        <default expression="" applyOnUpdate="0" field="NrBays"/>
+        <default expression="" applyOnUpdate="0" field="TimePeriodID"/>
+        <default expression="" applyOnUpdate="0" field="PayTypeID"/>
+        <default expression="" applyOnUpdate="0" field="MaxStayID"/>
+        <default expression="" applyOnUpdate="0" field="NoReturnID"/>
+        <default expression="" applyOnUpdate="0" field="ParkingTariffArea"/>
+        <default expression="" applyOnUpdate="0" field="AdditionalConditionID"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRoadMarkingsFaded"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRestrictionSignIssue"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceNotes"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckIssueTypeID"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckNotes"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="RestrictionID"/>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="GeometryID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="RestrictionLength"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="RestrictionTypeID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="GeomShapeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="AzimuthToRoadCentreLine"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Notes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_01"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_02"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_03"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RoadName"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="USRN"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_X"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Y"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Rotation"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_TextChanged"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="OpenDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CloseDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CPZ"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdateDateTime"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdatePerson"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="BayOrientation"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="NrBays"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="TimePeriodID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="PayTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MaxStayID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="NoReturnID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ParkingTariffArea"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="AdditionalConditionID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRoadMarkingsFaded"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRestrictionSignIssue"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceNotes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckIssueTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckNotes"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="RestrictionID"/>
+        <constraint desc="" exp="" field="GeometryID"/>
+        <constraint desc="" exp="" field="RestrictionLength"/>
+        <constraint desc="" exp="" field="RestrictionTypeID"/>
+        <constraint desc="" exp="" field="GeomShapeID"/>
+        <constraint desc="" exp="" field="AzimuthToRoadCentreLine"/>
+        <constraint desc="" exp="" field="Notes"/>
+        <constraint desc="" exp="" field="Photos_01"/>
+        <constraint desc="" exp="" field="Photos_02"/>
+        <constraint desc="" exp="" field="Photos_03"/>
+        <constraint desc="" exp="" field="RoadName"/>
+        <constraint desc="" exp="" field="USRN"/>
+        <constraint desc="" exp="" field="label_X"/>
+        <constraint desc="" exp="" field="label_Y"/>
+        <constraint desc="" exp="" field="label_Rotation"/>
+        <constraint desc="" exp="" field="label_TextChanged"/>
+        <constraint desc="" exp="" field="OpenDate"/>
+        <constraint desc="" exp="" field="CloseDate"/>
+        <constraint desc="" exp="" field="CPZ"/>
+        <constraint desc="" exp="" field="LastUpdateDateTime"/>
+        <constraint desc="" exp="" field="LastUpdatePerson"/>
+        <constraint desc="" exp="" field="BayOrientation"/>
+        <constraint desc="" exp="" field="NrBays"/>
+        <constraint desc="" exp="" field="TimePeriodID"/>
+        <constraint desc="" exp="" field="PayTypeID"/>
+        <constraint desc="" exp="" field="MaxStayID"/>
+        <constraint desc="" exp="" field="NoReturnID"/>
+        <constraint desc="" exp="" field="ParkingTariffArea"/>
+        <constraint desc="" exp="" field="AdditionalConditionID"/>
+        <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"/>
+        <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"/>
+        <constraint desc="" exp="" field="ComplianceNotes"/>
+        <constraint desc="" exp="" field="MHTC_CheckIssueTypeID"/>
+        <constraint desc="" exp="" field="MHTC_CheckNotes"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="LineString" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Line" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325297.83373605302767828</xmin>
+        <ymin>674052.17559704300947487</ymin>
+        <xmax>325526.89700618502683938</xmax>
+        <ymax>674246.15543018595781177</ymax>
+      </extent>
+      <id>Lines_ab5c6a24_3001_4bc5_8210_72319ad38758</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="toms"."Lines" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Lines</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="line">
+            <layer enabled="1" pass="0" class="SimpleLine" locked="0">
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="133,182,111,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="RestrictionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeometryID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RestrictionLength">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RestrictionTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeomShapeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="AzimuthToRoadCentreLine">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Notes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_01">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_02">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_03">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_X">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Y">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_TextChanged">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="OpenDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CloseDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CPZ">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NoWaitingTimeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NoLoadingTimeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="UnacceptableTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="AdditionalConditionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ParkingTariffArea">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="labelLoading_X">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="labelLoading_Y">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="labelLoading_Rotation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRoadMarkingsFaded">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRestrictionSignIssue">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckIssueTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="RestrictionID"/>
+        <alias name="" index="1" field="GeometryID"/>
+        <alias name="" index="2" field="RestrictionLength"/>
+        <alias name="" index="3" field="RestrictionTypeID"/>
+        <alias name="" index="4" field="GeomShapeID"/>
+        <alias name="" index="5" field="AzimuthToRoadCentreLine"/>
+        <alias name="" index="6" field="Notes"/>
+        <alias name="" index="7" field="Photos_01"/>
+        <alias name="" index="8" field="Photos_02"/>
+        <alias name="" index="9" field="Photos_03"/>
+        <alias name="" index="10" field="RoadName"/>
+        <alias name="" index="11" field="USRN"/>
+        <alias name="" index="12" field="label_X"/>
+        <alias name="" index="13" field="label_Y"/>
+        <alias name="" index="14" field="label_Rotation"/>
+        <alias name="" index="15" field="label_TextChanged"/>
+        <alias name="" index="16" field="OpenDate"/>
+        <alias name="" index="17" field="CloseDate"/>
+        <alias name="" index="18" field="CPZ"/>
+        <alias name="" index="19" field="LastUpdateDateTime"/>
+        <alias name="" index="20" field="LastUpdatePerson"/>
+        <alias name="" index="21" field="NoWaitingTimeID"/>
+        <alias name="" index="22" field="NoLoadingTimeID"/>
+        <alias name="" index="23" field="UnacceptableTypeID"/>
+        <alias name="" index="24" field="AdditionalConditionID"/>
+        <alias name="" index="25" field="ParkingTariffArea"/>
+        <alias name="" index="26" field="labelLoading_X"/>
+        <alias name="" index="27" field="labelLoading_Y"/>
+        <alias name="" index="28" field="labelLoading_Rotation"/>
+        <alias name="" index="29" field="ComplianceRoadMarkingsFaded"/>
+        <alias name="" index="30" field="ComplianceRestrictionSignIssue"/>
+        <alias name="" index="31" field="ComplianceNotes"/>
+        <alias name="" index="32" field="MHTC_CheckIssueTypeID"/>
+        <alias name="" index="33" field="MHTC_CheckNotes"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="RestrictionID"/>
+        <default expression="" applyOnUpdate="0" field="GeometryID"/>
+        <default expression="" applyOnUpdate="0" field="RestrictionLength"/>
+        <default expression="" applyOnUpdate="0" field="RestrictionTypeID"/>
+        <default expression="" applyOnUpdate="0" field="GeomShapeID"/>
+        <default expression="" applyOnUpdate="0" field="AzimuthToRoadCentreLine"/>
+        <default expression="" applyOnUpdate="0" field="Notes"/>
+        <default expression="" applyOnUpdate="0" field="Photos_01"/>
+        <default expression="" applyOnUpdate="0" field="Photos_02"/>
+        <default expression="" applyOnUpdate="0" field="Photos_03"/>
+        <default expression="" applyOnUpdate="0" field="RoadName"/>
+        <default expression="" applyOnUpdate="0" field="USRN"/>
+        <default expression="" applyOnUpdate="0" field="label_X"/>
+        <default expression="" applyOnUpdate="0" field="label_Y"/>
+        <default expression="" applyOnUpdate="0" field="label_Rotation"/>
+        <default expression="" applyOnUpdate="0" field="label_TextChanged"/>
+        <default expression="" applyOnUpdate="0" field="OpenDate"/>
+        <default expression="" applyOnUpdate="0" field="CloseDate"/>
+        <default expression="" applyOnUpdate="0" field="CPZ"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdateDateTime"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdatePerson"/>
+        <default expression="" applyOnUpdate="0" field="NoWaitingTimeID"/>
+        <default expression="" applyOnUpdate="0" field="NoLoadingTimeID"/>
+        <default expression="" applyOnUpdate="0" field="UnacceptableTypeID"/>
+        <default expression="" applyOnUpdate="0" field="AdditionalConditionID"/>
+        <default expression="" applyOnUpdate="0" field="ParkingTariffArea"/>
+        <default expression="" applyOnUpdate="0" field="labelLoading_X"/>
+        <default expression="" applyOnUpdate="0" field="labelLoading_Y"/>
+        <default expression="" applyOnUpdate="0" field="labelLoading_Rotation"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRoadMarkingsFaded"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRestrictionSignIssue"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceNotes"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckIssueTypeID"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckNotes"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="RestrictionID"/>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="GeometryID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="RestrictionLength"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="RestrictionTypeID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="GeomShapeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="AzimuthToRoadCentreLine"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Notes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_01"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_02"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_03"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RoadName"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="USRN"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_X"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Y"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Rotation"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_TextChanged"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="OpenDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CloseDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CPZ"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdateDateTime"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdatePerson"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="NoWaitingTimeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="NoLoadingTimeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="UnacceptableTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="AdditionalConditionID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ParkingTariffArea"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="labelLoading_X"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="labelLoading_Y"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="labelLoading_Rotation"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRoadMarkingsFaded"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRestrictionSignIssue"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceNotes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckIssueTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckNotes"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="RestrictionID"/>
+        <constraint desc="" exp="" field="GeometryID"/>
+        <constraint desc="" exp="" field="RestrictionLength"/>
+        <constraint desc="" exp="" field="RestrictionTypeID"/>
+        <constraint desc="" exp="" field="GeomShapeID"/>
+        <constraint desc="" exp="" field="AzimuthToRoadCentreLine"/>
+        <constraint desc="" exp="" field="Notes"/>
+        <constraint desc="" exp="" field="Photos_01"/>
+        <constraint desc="" exp="" field="Photos_02"/>
+        <constraint desc="" exp="" field="Photos_03"/>
+        <constraint desc="" exp="" field="RoadName"/>
+        <constraint desc="" exp="" field="USRN"/>
+        <constraint desc="" exp="" field="label_X"/>
+        <constraint desc="" exp="" field="label_Y"/>
+        <constraint desc="" exp="" field="label_Rotation"/>
+        <constraint desc="" exp="" field="label_TextChanged"/>
+        <constraint desc="" exp="" field="OpenDate"/>
+        <constraint desc="" exp="" field="CloseDate"/>
+        <constraint desc="" exp="" field="CPZ"/>
+        <constraint desc="" exp="" field="LastUpdateDateTime"/>
+        <constraint desc="" exp="" field="LastUpdatePerson"/>
+        <constraint desc="" exp="" field="NoWaitingTimeID"/>
+        <constraint desc="" exp="" field="NoLoadingTimeID"/>
+        <constraint desc="" exp="" field="UnacceptableTypeID"/>
+        <constraint desc="" exp="" field="AdditionalConditionID"/>
+        <constraint desc="" exp="" field="ParkingTariffArea"/>
+        <constraint desc="" exp="" field="labelLoading_X"/>
+        <constraint desc="" exp="" field="labelLoading_Y"/>
+        <constraint desc="" exp="" field="labelLoading_Rotation"/>
+        <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"/>
+        <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"/>
+        <constraint desc="" exp="" field="ComplianceNotes"/>
+        <constraint desc="" exp="" field="MHTC_CheckIssueTypeID"/>
+        <constraint desc="" exp="" field="MHTC_CheckNotes"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="MultiPolygon" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Polygon" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325100</xmin>
+        <ymin>673650</ymin>
+        <xmax>326300</xmax>
+        <ymax>674400</ymax>
+      </extent>
+      <id>MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='id' srid=27700 type=MultiPolygon checkPrimaryKeyUnicity='1' table="toms"."MapGrid" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>MapGrid</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="fill">
+            <layer enabled="1" pass="0" class="SimpleFill" locked="0">
+              <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+              <prop v="114,155,111,255" k="color"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="0,0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="35,35,35,255" k="outline_color"/>
+              <prop v="solid" k="outline_style"/>
+              <prop v="0.26" k="outline_width"/>
+              <prop v="MM" k="outline_width_unit"/>
+              <prop v="solid" k="style"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="id">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="mapsheetname">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="x_min">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="x_max">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="y_min">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="y_max">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CurrRevisionNr">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastRevisionDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="id"/>
+        <alias name="" index="1" field="mapsheetname"/>
+        <alias name="" index="2" field="x_min"/>
+        <alias name="" index="3" field="x_max"/>
+        <alias name="" index="4" field="y_min"/>
+        <alias name="" index="5" field="y_max"/>
+        <alias name="" index="6" field="CurrRevisionNr"/>
+        <alias name="" index="7" field="LastRevisionDate"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="id"/>
+        <default expression="" applyOnUpdate="0" field="mapsheetname"/>
+        <default expression="" applyOnUpdate="0" field="x_min"/>
+        <default expression="" applyOnUpdate="0" field="x_max"/>
+        <default expression="" applyOnUpdate="0" field="y_min"/>
+        <default expression="" applyOnUpdate="0" field="y_max"/>
+        <default expression="" applyOnUpdate="0" field="CurrRevisionNr"/>
+        <default expression="" applyOnUpdate="0" field="LastRevisionDate"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="id"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="mapsheetname"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="x_min"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="x_max"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="y_min"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="y_max"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CurrRevisionNr"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="LastRevisionDate"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="mapsheetname"/>
+        <constraint desc="" exp="" field="x_min"/>
+        <constraint desc="" exp="" field="x_max"/>
+        <constraint desc="" exp="" field="y_min"/>
+        <constraint desc="" exp="" field="y_max"/>
+        <constraint desc="" exp="" field="CurrRevisionNr"/>
+        <constraint desc="" exp="" field="LastRevisionDate"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="Polygon" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Polygon" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325363.79318102501565591</xmin>
+        <ymin>673951.6316974590299651</ymin>
+        <xmax>325553.6263619419769384</xmax>
+        <ymax>674012.41199675400275737</ymax>
+      </extent>
+      <id>RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=Polygon checkPrimaryKeyUnicity='1' table="toms"."RestrictionPolygons" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>RestrictionPolygons</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="fill">
+            <layer enabled="1" pass="0" class="SimpleFill" locked="0">
+              <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+              <prop v="213,180,60,255" k="color"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="0,0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="35,35,35,255" k="outline_color"/>
+              <prop v="solid" k="outline_style"/>
+              <prop v="0.26" k="outline_width"/>
+              <prop v="MM" k="outline_width_unit"/>
+              <prop v="solid" k="style"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="RestrictionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeometryID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RestrictionTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeomShapeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Notes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_01">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_02">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_03">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_X">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Y">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="label_TextChanged">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="OpenDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CloseDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Orientation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LabelText">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NoWaitingTimeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="NoLoadingTimeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="TimePeriodID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="AreaPermitCode">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CPZ">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRoadMarkingsFaded">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRestrictionSignIssue">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckIssueTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="RestrictionID"/>
+        <alias name="" index="1" field="GeometryID"/>
+        <alias name="" index="2" field="RestrictionTypeID"/>
+        <alias name="" index="3" field="GeomShapeID"/>
+        <alias name="" index="4" field="Notes"/>
+        <alias name="" index="5" field="Photos_01"/>
+        <alias name="" index="6" field="Photos_02"/>
+        <alias name="" index="7" field="Photos_03"/>
+        <alias name="" index="8" field="RoadName"/>
+        <alias name="" index="9" field="USRN"/>
+        <alias name="" index="10" field="label_X"/>
+        <alias name="" index="11" field="label_Y"/>
+        <alias name="" index="12" field="label_Rotation"/>
+        <alias name="" index="13" field="label_TextChanged"/>
+        <alias name="" index="14" field="OpenDate"/>
+        <alias name="" index="15" field="CloseDate"/>
+        <alias name="" index="16" field="LastUpdateDateTime"/>
+        <alias name="" index="17" field="LastUpdatePerson"/>
+        <alias name="" index="18" field="Orientation"/>
+        <alias name="" index="19" field="LabelText"/>
+        <alias name="" index="20" field="NoWaitingTimeID"/>
+        <alias name="" index="21" field="NoLoadingTimeID"/>
+        <alias name="" index="22" field="TimePeriodID"/>
+        <alias name="" index="23" field="AreaPermitCode"/>
+        <alias name="" index="24" field="CPZ"/>
+        <alias name="" index="25" field="ComplianceRoadMarkingsFaded"/>
+        <alias name="" index="26" field="ComplianceRestrictionSignIssue"/>
+        <alias name="" index="27" field="ComplianceNotes"/>
+        <alias name="" index="28" field="MHTC_CheckIssueTypeID"/>
+        <alias name="" index="29" field="MHTC_CheckNotes"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="RestrictionID"/>
+        <default expression="" applyOnUpdate="0" field="GeometryID"/>
+        <default expression="" applyOnUpdate="0" field="RestrictionTypeID"/>
+        <default expression="" applyOnUpdate="0" field="GeomShapeID"/>
+        <default expression="" applyOnUpdate="0" field="Notes"/>
+        <default expression="" applyOnUpdate="0" field="Photos_01"/>
+        <default expression="" applyOnUpdate="0" field="Photos_02"/>
+        <default expression="" applyOnUpdate="0" field="Photos_03"/>
+        <default expression="" applyOnUpdate="0" field="RoadName"/>
+        <default expression="" applyOnUpdate="0" field="USRN"/>
+        <default expression="" applyOnUpdate="0" field="label_X"/>
+        <default expression="" applyOnUpdate="0" field="label_Y"/>
+        <default expression="" applyOnUpdate="0" field="label_Rotation"/>
+        <default expression="" applyOnUpdate="0" field="label_TextChanged"/>
+        <default expression="" applyOnUpdate="0" field="OpenDate"/>
+        <default expression="" applyOnUpdate="0" field="CloseDate"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdateDateTime"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdatePerson"/>
+        <default expression="" applyOnUpdate="0" field="Orientation"/>
+        <default expression="" applyOnUpdate="0" field="LabelText"/>
+        <default expression="" applyOnUpdate="0" field="NoWaitingTimeID"/>
+        <default expression="" applyOnUpdate="0" field="NoLoadingTimeID"/>
+        <default expression="" applyOnUpdate="0" field="TimePeriodID"/>
+        <default expression="" applyOnUpdate="0" field="AreaPermitCode"/>
+        <default expression="" applyOnUpdate="0" field="CPZ"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRoadMarkingsFaded"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRestrictionSignIssue"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceNotes"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckIssueTypeID"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckNotes"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="RestrictionID"/>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="GeometryID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="RestrictionTypeID"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="GeomShapeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Notes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_01"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_02"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_03"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RoadName"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="USRN"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_X"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Y"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_Rotation"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="label_TextChanged"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="OpenDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CloseDate"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdateDateTime"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdatePerson"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Orientation"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="LabelText"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="NoWaitingTimeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="NoLoadingTimeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="TimePeriodID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="AreaPermitCode"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CPZ"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRoadMarkingsFaded"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRestrictionSignIssue"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceNotes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckIssueTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckNotes"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="RestrictionID"/>
+        <constraint desc="" exp="" field="GeometryID"/>
+        <constraint desc="" exp="" field="RestrictionTypeID"/>
+        <constraint desc="" exp="" field="GeomShapeID"/>
+        <constraint desc="" exp="" field="Notes"/>
+        <constraint desc="" exp="" field="Photos_01"/>
+        <constraint desc="" exp="" field="Photos_02"/>
+        <constraint desc="" exp="" field="Photos_03"/>
+        <constraint desc="" exp="" field="RoadName"/>
+        <constraint desc="" exp="" field="USRN"/>
+        <constraint desc="" exp="" field="label_X"/>
+        <constraint desc="" exp="" field="label_Y"/>
+        <constraint desc="" exp="" field="label_Rotation"/>
+        <constraint desc="" exp="" field="label_TextChanged"/>
+        <constraint desc="" exp="" field="OpenDate"/>
+        <constraint desc="" exp="" field="CloseDate"/>
+        <constraint desc="" exp="" field="LastUpdateDateTime"/>
+        <constraint desc="" exp="" field="LastUpdatePerson"/>
+        <constraint desc="" exp="" field="Orientation"/>
+        <constraint desc="" exp="" field="LabelText"/>
+        <constraint desc="" exp="" field="NoWaitingTimeID"/>
+        <constraint desc="" exp="" field="NoLoadingTimeID"/>
+        <constraint desc="" exp="" field="TimePeriodID"/>
+        <constraint desc="" exp="" field="AreaPermitCode"/>
+        <constraint desc="" exp="" field="CPZ"/>
+        <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"/>
+        <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"/>
+        <constraint desc="" exp="" field="ComplianceNotes"/>
+        <constraint desc="" exp="" field="MHTC_CheckIssueTypeID"/>
+        <constraint desc="" exp="" field="MHTC_CheckNotes"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="Point" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Point" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325501.13168565899832174</xmin>
+        <ymin>674186.22327527101151645</ymin>
+        <xmax>325501.13168565899832174</xmax>
+        <ymax>674186.22327527101151645</ymax>
+      </extent>
+      <id>Signs_2ab5de69_1846_4169_af6a_34a1d12316e8</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=Point checkPrimaryKeyUnicity='1' table="toms"."Signs" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Signs</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="marker">
+            <layer enabled="1" pass="0" class="SimpleMarker" locked="0">
+              <prop v="0" k="angle"/>
+              <prop v="164,113,88,255" k="color"/>
+              <prop v="1" k="horizontal_anchor_point"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="circle" k="name"/>
+              <prop v="0,0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="35,35,35,255" k="outline_color"/>
+              <prop v="solid" k="outline_style"/>
+              <prop v="0" k="outline_width"/>
+              <prop v="3x:0,0,0,0,0,0" k="outline_width_map_unit_scale"/>
+              <prop v="MM" k="outline_width_unit"/>
+              <prop v="diameter" k="scale_method"/>
+              <prop v="2" k="size"/>
+              <prop v="3x:0,0,0,0,0,0" k="size_map_unit_scale"/>
+              <prop v="MM" k="size_unit"/>
+              <prop v="1" k="vertical_anchor_point"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="RestrictionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="GeometryID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_01">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_02">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_03">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Notes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="OpenDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="CloseDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LastUpdatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignType_1">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignType_2">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignType_3">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignType_4">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Photos_04">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignOrientationTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Signs_Mount">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Signs_Attachment">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Signs_Faded">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Signs_Obscured">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Sign_Direction">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Signs_Obsolete">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Signs_OtherOptions">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Compl_Signs_TicketMachines">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="TicketMachine_Nr">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RingoPresent">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignIlluminationTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignConditionTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceRestrictionSignIssue">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ComplianceNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckIssueTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="MHTC_CheckNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SignAddress">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="original_geom_wkt">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="RestrictionID"/>
+        <alias name="" index="1" field="GeometryID"/>
+        <alias name="" index="2" field="Photos_01"/>
+        <alias name="" index="3" field="Photos_02"/>
+        <alias name="" index="4" field="Photos_03"/>
+        <alias name="" index="5" field="Notes"/>
+        <alias name="" index="6" field="RoadName"/>
+        <alias name="" index="7" field="USRN"/>
+        <alias name="" index="8" field="OpenDate"/>
+        <alias name="" index="9" field="CloseDate"/>
+        <alias name="" index="10" field="LastUpdateDateTime"/>
+        <alias name="" index="11" field="LastUpdatePerson"/>
+        <alias name="" index="12" field="SignType_1"/>
+        <alias name="" index="13" field="SignType_2"/>
+        <alias name="" index="14" field="SignType_3"/>
+        <alias name="" index="15" field="SignType_4"/>
+        <alias name="" index="16" field="Photos_04"/>
+        <alias name="" index="17" field="SignOrientationTypeID"/>
+        <alias name="" index="18" field="Signs_Mount"/>
+        <alias name="" index="19" field="Signs_Attachment"/>
+        <alias name="" index="20" field="Compl_Signs_Faded"/>
+        <alias name="" index="21" field="Compl_Signs_Obscured"/>
+        <alias name="" index="22" field="Compl_Sign_Direction"/>
+        <alias name="" index="23" field="Compl_Signs_Obsolete"/>
+        <alias name="" index="24" field="Compl_Signs_OtherOptions"/>
+        <alias name="" index="25" field="Compl_Signs_TicketMachines"/>
+        <alias name="" index="26" field="TicketMachine_Nr"/>
+        <alias name="" index="27" field="RingoPresent"/>
+        <alias name="" index="28" field="SignIlluminationTypeID"/>
+        <alias name="" index="29" field="SignConditionTypeID"/>
+        <alias name="" index="30" field="ComplianceRestrictionSignIssue"/>
+        <alias name="" index="31" field="ComplianceNotes"/>
+        <alias name="" index="32" field="MHTC_CheckIssueTypeID"/>
+        <alias name="" index="33" field="MHTC_CheckNotes"/>
+        <alias name="" index="34" field="SignAddress"/>
+        <alias name="" index="35" field="original_geom_wkt"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="RestrictionID"/>
+        <default expression="" applyOnUpdate="0" field="GeometryID"/>
+        <default expression="" applyOnUpdate="0" field="Photos_01"/>
+        <default expression="" applyOnUpdate="0" field="Photos_02"/>
+        <default expression="" applyOnUpdate="0" field="Photos_03"/>
+        <default expression="" applyOnUpdate="0" field="Notes"/>
+        <default expression="" applyOnUpdate="0" field="RoadName"/>
+        <default expression="" applyOnUpdate="0" field="USRN"/>
+        <default expression="" applyOnUpdate="0" field="OpenDate"/>
+        <default expression="" applyOnUpdate="0" field="CloseDate"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdateDateTime"/>
+        <default expression="" applyOnUpdate="0" field="LastUpdatePerson"/>
+        <default expression="" applyOnUpdate="0" field="SignType_1"/>
+        <default expression="" applyOnUpdate="0" field="SignType_2"/>
+        <default expression="" applyOnUpdate="0" field="SignType_3"/>
+        <default expression="" applyOnUpdate="0" field="SignType_4"/>
+        <default expression="" applyOnUpdate="0" field="Photos_04"/>
+        <default expression="" applyOnUpdate="0" field="SignOrientationTypeID"/>
+        <default expression="" applyOnUpdate="0" field="Signs_Mount"/>
+        <default expression="" applyOnUpdate="0" field="Signs_Attachment"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Signs_Faded"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Signs_Obscured"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Sign_Direction"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Signs_Obsolete"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Signs_OtherOptions"/>
+        <default expression="" applyOnUpdate="0" field="Compl_Signs_TicketMachines"/>
+        <default expression="" applyOnUpdate="0" field="TicketMachine_Nr"/>
+        <default expression="" applyOnUpdate="0" field="RingoPresent"/>
+        <default expression="" applyOnUpdate="0" field="SignIlluminationTypeID"/>
+        <default expression="" applyOnUpdate="0" field="SignConditionTypeID"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceRestrictionSignIssue"/>
+        <default expression="" applyOnUpdate="0" field="ComplianceNotes"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckIssueTypeID"/>
+        <default expression="" applyOnUpdate="0" field="MHTC_CheckNotes"/>
+        <default expression="" applyOnUpdate="0" field="SignAddress"/>
+        <default expression="" applyOnUpdate="0" field="original_geom_wkt"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="RestrictionID"/>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="GeometryID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_01"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_02"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_03"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Notes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RoadName"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="USRN"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="OpenDate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="CloseDate"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdateDateTime"/>
+        <constraint constraints="1" exp_strength="0" notnull_strength="1" unique_strength="0" field="LastUpdatePerson"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignType_1"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignType_2"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignType_3"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignType_4"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Photos_04"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignOrientationTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Signs_Mount"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Signs_Attachment"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Signs_Faded"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Signs_Obscured"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Sign_Direction"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Signs_Obsolete"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Signs_OtherOptions"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Compl_Signs_TicketMachines"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="TicketMachine_Nr"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RingoPresent"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignIlluminationTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignConditionTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceRestrictionSignIssue"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ComplianceNotes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckIssueTypeID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="MHTC_CheckNotes"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SignAddress"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="original_geom_wkt"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="RestrictionID"/>
+        <constraint desc="" exp="" field="GeometryID"/>
+        <constraint desc="" exp="" field="Photos_01"/>
+        <constraint desc="" exp="" field="Photos_02"/>
+        <constraint desc="" exp="" field="Photos_03"/>
+        <constraint desc="" exp="" field="Notes"/>
+        <constraint desc="" exp="" field="RoadName"/>
+        <constraint desc="" exp="" field="USRN"/>
+        <constraint desc="" exp="" field="OpenDate"/>
+        <constraint desc="" exp="" field="CloseDate"/>
+        <constraint desc="" exp="" field="LastUpdateDateTime"/>
+        <constraint desc="" exp="" field="LastUpdatePerson"/>
+        <constraint desc="" exp="" field="SignType_1"/>
+        <constraint desc="" exp="" field="SignType_2"/>
+        <constraint desc="" exp="" field="SignType_3"/>
+        <constraint desc="" exp="" field="SignType_4"/>
+        <constraint desc="" exp="" field="Photos_04"/>
+        <constraint desc="" exp="" field="SignOrientationTypeID"/>
+        <constraint desc="" exp="" field="Signs_Mount"/>
+        <constraint desc="" exp="" field="Signs_Attachment"/>
+        <constraint desc="" exp="" field="Compl_Signs_Faded"/>
+        <constraint desc="" exp="" field="Compl_Signs_Obscured"/>
+        <constraint desc="" exp="" field="Compl_Sign_Direction"/>
+        <constraint desc="" exp="" field="Compl_Signs_Obsolete"/>
+        <constraint desc="" exp="" field="Compl_Signs_OtherOptions"/>
+        <constraint desc="" exp="" field="Compl_Signs_TicketMachines"/>
+        <constraint desc="" exp="" field="TicketMachine_Nr"/>
+        <constraint desc="" exp="" field="RingoPresent"/>
+        <constraint desc="" exp="" field="SignIlluminationTypeID"/>
+        <constraint desc="" exp="" field="SignConditionTypeID"/>
+        <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"/>
+        <constraint desc="" exp="" field="ComplianceNotes"/>
+        <constraint desc="" exp="" field="MHTC_CheckIssueTypeID"/>
+        <constraint desc="" exp="" field="MHTC_CheckNotes"/>
+        <constraint desc="" exp="" field="SignAddress"/>
+        <constraint desc="" exp="" field="original_geom_wkt"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="MultiLineString" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Line" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325193.90765382698737085</xmin>
+        <ymin>673811.01476493000518531</ymin>
+        <xmax>325668.86900406598579139</xmax>
+        <ymax>674306.36092344496864825</ymax>
+      </extent>
+      <id>itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='gid' srid=27700 type=MultiLineString checkPrimaryKeyUnicity='1' table="highways_network"."itn_roadcentreline" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>itn_roadcentreline</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="line">
+            <layer enabled="1" pass="0" class="SimpleLine" locked="0">
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="243,166,178,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="gid">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="toid">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="version">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="verdate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="theme">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="descgroup">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="descterm">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="change">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="topoarea">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="nature">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lnklength">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node1">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node1grade">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node1gra_1">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node2">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node2grade">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="node2gra_1">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="loaddate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="objectid">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="shape_leng">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="gid"/>
+        <alias name="" index="1" field="toid"/>
+        <alias name="" index="2" field="version"/>
+        <alias name="" index="3" field="verdate"/>
+        <alias name="" index="4" field="theme"/>
+        <alias name="" index="5" field="descgroup"/>
+        <alias name="" index="6" field="descterm"/>
+        <alias name="" index="7" field="change"/>
+        <alias name="" index="8" field="topoarea"/>
+        <alias name="" index="9" field="nature"/>
+        <alias name="" index="10" field="lnklength"/>
+        <alias name="" index="11" field="node1"/>
+        <alias name="" index="12" field="node1grade"/>
+        <alias name="" index="13" field="node1gra_1"/>
+        <alias name="" index="14" field="node2"/>
+        <alias name="" index="15" field="node2grade"/>
+        <alias name="" index="16" field="node2gra_1"/>
+        <alias name="" index="17" field="loaddate"/>
+        <alias name="" index="18" field="objectid"/>
+        <alias name="" index="19" field="shape_leng"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="gid"/>
+        <default expression="" applyOnUpdate="0" field="toid"/>
+        <default expression="" applyOnUpdate="0" field="version"/>
+        <default expression="" applyOnUpdate="0" field="verdate"/>
+        <default expression="" applyOnUpdate="0" field="theme"/>
+        <default expression="" applyOnUpdate="0" field="descgroup"/>
+        <default expression="" applyOnUpdate="0" field="descterm"/>
+        <default expression="" applyOnUpdate="0" field="change"/>
+        <default expression="" applyOnUpdate="0" field="topoarea"/>
+        <default expression="" applyOnUpdate="0" field="nature"/>
+        <default expression="" applyOnUpdate="0" field="lnklength"/>
+        <default expression="" applyOnUpdate="0" field="node1"/>
+        <default expression="" applyOnUpdate="0" field="node1grade"/>
+        <default expression="" applyOnUpdate="0" field="node1gra_1"/>
+        <default expression="" applyOnUpdate="0" field="node2"/>
+        <default expression="" applyOnUpdate="0" field="node2grade"/>
+        <default expression="" applyOnUpdate="0" field="node2gra_1"/>
+        <default expression="" applyOnUpdate="0" field="loaddate"/>
+        <default expression="" applyOnUpdate="0" field="objectid"/>
+        <default expression="" applyOnUpdate="0" field="shape_leng"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="gid"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="toid"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="version"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="verdate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="theme"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="descgroup"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="descterm"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="change"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="topoarea"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="nature"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="lnklength"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node1"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node1grade"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node1gra_1"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node2"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node2grade"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="node2gra_1"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="loaddate"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="objectid"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="shape_leng"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="gid"/>
+        <constraint desc="" exp="" field="toid"/>
+        <constraint desc="" exp="" field="version"/>
+        <constraint desc="" exp="" field="verdate"/>
+        <constraint desc="" exp="" field="theme"/>
+        <constraint desc="" exp="" field="descgroup"/>
+        <constraint desc="" exp="" field="descterm"/>
+        <constraint desc="" exp="" field="change"/>
+        <constraint desc="" exp="" field="topoarea"/>
+        <constraint desc="" exp="" field="nature"/>
+        <constraint desc="" exp="" field="lnklength"/>
+        <constraint desc="" exp="" field="node1"/>
+        <constraint desc="" exp="" field="node1grade"/>
+        <constraint desc="" exp="" field="node1gra_1"/>
+        <constraint desc="" exp="" field="node2"/>
+        <constraint desc="" exp="" field="node2grade"/>
+        <constraint desc="" exp="" field="node2gra_1"/>
+        <constraint desc="" exp="" field="loaddate"/>
+        <constraint desc="" exp="" field="objectid"/>
+        <constraint desc="" exp="" field="shape_leng"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="0" minScale="1e+08" simplifyDrawingTol="1" readOnly="0" wkbType="LineString" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" type="vector" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" maxScale="0" geometry="Line" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyMessage="" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325189.91104755201376975</xmin>
+        <ymin>673807.01477397698909044</ymin>
+        <xmax>325672.86304058600217104</xmax>
+        <ymax>674310.35554018698167056</ymax>
+      </extent>
+      <id>road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='id' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="topography"."road_casement" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>road_casement</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>airy</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["OSGB 1936 / British National Grid",GEOGCS["OSGB 1936",DATUM["OSGB_1936",SPHEROID["Airy 1830",6377563.396,299.3249646,AUTHORITY["EPSG","7001"]],TOWGS84[446.448,-125.157,542.06,0.15,0.247,0.842,-20.489],AUTHORITY["EPSG","6277"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4277"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",49],PARAMETER["central_meridian",-2],PARAMETER["scale_factor",0.9996012717],PARAMETER["false_easting",400000],PARAMETER["false_northing",-100000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","27700"]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>airy</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 enableorderby="0" type="singleSymbol" symbollevels="0" forceraster="0">
+        <symbols>
+          <symbol name="0" clip_to_extent="1" alpha="1" force_rhr="0" type="line">
+            <layer enabled="1" pass="0" class="SimpleLine" locked="0">
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="141,90,153,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option value="" name="name" type="QString"/>
+                  <Option name="properties"/>
+                  <Option value="collection" name="type" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks type="StringList">
+          <Option value="" type="QString"/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="id">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="ESUID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Locality">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Town">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="Az">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="StartStreet">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="EndStreet">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SideOfStreet">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias name="" index="0" field="id"/>
+        <alias name="" index="1" field="RoadName"/>
+        <alias name="" index="2" field="ESUID"/>
+        <alias name="" index="3" field="USRN"/>
+        <alias name="" index="4" field="Locality"/>
+        <alias name="" index="5" field="Town"/>
+        <alias name="" index="6" field="Az"/>
+        <alias name="" index="7" field="StartStreet"/>
+        <alias name="" index="8" field="EndStreet"/>
+        <alias name="" index="9" field="SideOfStreet"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="id"/>
+        <default expression="" applyOnUpdate="0" field="RoadName"/>
+        <default expression="" applyOnUpdate="0" field="ESUID"/>
+        <default expression="" applyOnUpdate="0" field="USRN"/>
+        <default expression="" applyOnUpdate="0" field="Locality"/>
+        <default expression="" applyOnUpdate="0" field="Town"/>
+        <default expression="" applyOnUpdate="0" field="Az"/>
+        <default expression="" applyOnUpdate="0" field="StartStreet"/>
+        <default expression="" applyOnUpdate="0" field="EndStreet"/>
+        <default expression="" applyOnUpdate="0" field="SideOfStreet"/>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" notnull_strength="1" unique_strength="1" field="id"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="RoadName"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="ESUID"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="USRN"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Locality"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Town"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="Az"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="StartStreet"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="EndStreet"/>
+        <constraint constraints="0" exp_strength="0" notnull_strength="0" unique_strength="0" field="SideOfStreet"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="RoadName"/>
+        <constraint desc="" exp="" field="ESUID"/>
+        <constraint desc="" exp="" field="USRN"/>
+        <constraint desc="" exp="" field="Locality"/>
+        <constraint desc="" exp="" field="Town"/>
+        <constraint desc="" exp="" field="Az"/>
+        <constraint desc="" exp="" field="StartStreet"/>
+        <constraint desc="" exp="" field="EndStreet"/>
+        <constraint desc="" exp="" field="SideOfStreet"/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
+      </attributeactions>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+  </projectlayers>
+  <layerorder>
+    <layer id="Bays_8347797a_86ec_443d_8201_5aaa889465b2"/>
+    <layer id="Lines_ab5c6a24_3001_4bc5_8210_72319ad38758"/>
+    <layer id="Signs_2ab5de69_1846_4169_af6a_34a1d12316e8"/>
+    <layer id="RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310"/>
+    <layer id="MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c"/>
+    <layer id="itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e"/>
+    <layer id="road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc"/>
+  </layerorder>
+  <properties>
+    <DefaultStyles>
+      <ColorRamp type="QString"></ColorRamp>
+      <Fill type="QString"></Fill>
+      <Line type="QString"></Line>
+      <Marker type="QString"></Marker>
+      <Opacity type="double">1</Opacity>
+      <RandomColors type="bool">true</RandomColors>
+    </DefaultStyles>
+    <Gui>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+    </Gui>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
+    <Macros>
+      <pythonCode type="QString"></pythonCode>
+    </Macros>
+    <Measure>
+      <Ellipsoid type="QString">airy</Ellipsoid>
+    </Measure>
+    <Measurement>
+      <AreaUnits type="QString">m2</AreaUnits>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+    </Measurement>
+    <PAL>
+      <CandidatesLine type="int">50</CandidatesLine>
+      <CandidatesPoint type="int">16</CandidatesPoint>
+      <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <DrawUnplaced type="bool">false</DrawUnplaced>
+      <SearchMethod type="int">0</SearchMethod>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+      <TextFormat type="int">0</TextFormat>
+      <UnplacedColor type="QString">255,0,0,255</UnplacedColor>
+    </PAL>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
+    <PositionPrecision>
+      <Automatic type="bool">true</Automatic>
+      <DecimalPlaces type="int">2</DecimalPlaces>
+      <DegreeFormat type="QString">MU</DegreeFormat>
+    </PositionPrecision>
+    <SpatialRefSys>
+      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+    </SpatialRefSys>
+    <WCSLayers type="QStringList"/>
+    <WCSUrl type="QString"></WCSUrl>
+    <WFSLayers type="QStringList">
+      <value>Bays_8347797a_86ec_443d_8201_5aaa889465b2</value>
+      <value>Lines_ab5c6a24_3001_4bc5_8210_72319ad38758</value>
+      <value>MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c</value>
+      <value>RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310</value>
+      <value>Signs_2ab5de69_1846_4169_af6a_34a1d12316e8</value>
+      <value>itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e</value>
+      <value>road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc</value>
+    </WFSLayers>
+    <WFSLayersPrecision>
+      <Bays_8347797a_86ec_443d_8201_5aaa889465b2 type="int">8</Bays_8347797a_86ec_443d_8201_5aaa889465b2>
+      <Lines_ab5c6a24_3001_4bc5_8210_72319ad38758 type="int">8</Lines_ab5c6a24_3001_4bc5_8210_72319ad38758>
+      <MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c type="int">8</MapGrid_e22fdd5e_e3e1_4bd8_b594_c619bb63309c>
+      <RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310 type="int">8</RestrictionPolygons_9cecc4ed_f447_4fc4_904d_519410f5c310>
+      <Signs_2ab5de69_1846_4169_af6a_34a1d12316e8 type="int">8</Signs_2ab5de69_1846_4169_af6a_34a1d12316e8>
+      <itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e type="int">8</itn_roadcentreline_33396a94_417b_473d_a1c3_6c22991daf3e>
+      <road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc type="int">8</road_casement_1ecb2ae2_f72e_479c_8c3b_39833d4aaabc>
+    </WFSLayersPrecision>
+    <WFSTLayers>
+      <Delete type="QStringList">
+        <value>Bays_8347797a_86ec_443d_8201_5aaa889465b2</value>
+      </Delete>
+      <Insert type="QStringList">
+        <value>Bays_8347797a_86ec_443d_8201_5aaa889465b2</value>
+      </Insert>
+      <Update type="QStringList">
+        <value>Bays_8347797a_86ec_443d_8201_5aaa889465b2</value>
+      </Update>
+    </WFSTLayers>
+    <WFSUrl type="QString"></WFSUrl>
+    <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+    <WMSContactMail type="QString"></WMSContactMail>
+    <WMSContactOrganization type="QString"></WMSContactOrganization>
+    <WMSContactPerson type="QString"></WMSContactPerson>
+    <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSContactPosition type="QString"></WMSContactPosition>
+    <WMSCrsList type="QStringList">
+      <value>EPSG:27700</value>
+    </WMSCrsList>
+    <WMSDefaultMapUnitsPerMm type="double">1</WMSDefaultMapUnitsPerMm>
+    <WMSFees type="QString">conditions unknown</WMSFees>
+    <WMSImageQuality type="int">90</WMSImageQuality>
+    <WMSKeywordList type="QStringList">
+      <value></value>
+    </WMSKeywordList>
+    <WMSMaxAtlasFeatures type="int">1</WMSMaxAtlasFeatures>
+    <WMSOnlineResource type="QString"></WMSOnlineResource>
+    <WMSPrecision type="QString">8</WMSPrecision>
+    <WMSRootName type="QString">Test</WMSRootName>
+    <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
+    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+    <WMSServiceTitle type="QString">Test</WMSServiceTitle>
+    <WMSTileBuffer type="int">0</WMSTileBuffer>
+    <WMSUrl type="QString"></WMSUrl>
+    <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
+    <WMTSGrids>
+      <CRS type="QStringList"/>
+      <Config type="QStringList"/>
+    </WMTSGrids>
+    <WMTSJpegLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSJpegLayers>
+    <WMTSLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSLayers>
+    <WMTSMinScale type="int">5000</WMTSMinScale>
+    <WMTSPngLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSPngLayers>
+    <WMTSUrl type="QString"></WMTSUrl>
+  </properties>
+  <visibility-presets/>
+  <transformContext>
+    <srcDest sourceTransform="+nadgrids=OSTN15_NTv2_OSGBtoETRS.gsb" dest="EPSG:4326" source="EPSG:27700" destTransform=""/>
+    <srcDest sourceTransform="" dest="EPSG:27700" source="EPSG:3857" destTransform="+towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489"/>
+    <srcDest sourceTransform="" dest="EPSG:27700" source="EPSG:4326" destTransform="+nadgrids=OSTN15_NTv2_OSGBtoETRS.gsb"/>
+  </transformContext>
+  <projectMetadata>
+    <identifier></identifier>
+    <parentidentifier></parentidentifier>
+    <language></language>
+    <type></type>
+    <title></title>
+    <abstract></abstract>
+    <contact>
+      <name></name>
+      <organization></organization>
+      <position></position>
+      <voice></voice>
+      <fax></fax>
+      <email></email>
+      <role></role>
+    </contact>
+    <links/>
+    <author></author>
+    <creation>2020-07-18T15:10:16</creation>
+  </projectMetadata>
+  <Annotations/>
+  <Layouts/>
+  <Bookmarks/>
+  <ProjectViewSettings UseProjectScales="0">
+    <Scales/>
+  </ProjectViewSettings>
+</qgis>
