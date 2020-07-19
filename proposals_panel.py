@@ -13,7 +13,7 @@
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction,
-    QDialogButtonBox
+    QDialogButtonBox, QToolButton
 )
 
 from qgis.PyQt.QtGui import (
@@ -41,6 +41,7 @@ from TOMs.core.proposalsManager import *
 
 from TOMs.manage_restriction_details import manageRestrictionDetails
 from TOMs.search_bar import searchBar
+from TOMs.InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
 
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
@@ -77,11 +78,35 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # Now set up the toolbar
 
         self.RestrictionTools = manageRestrictionDetails(self.iface, self.TOMsToolBar, self.proposalsManager)
-        self.RestrictionTools.disableTOMsToolbarItems()
+
         self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
+
+        # Add print to the search toolbar
+
+        self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
+
+        # Add in details of the Instant Print plugin
+        self.toolButton = QToolButton(self.iface.mainWindow())
+        self.toolButton.setIcon(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"))
+        self.toolButton.setCheckable(True)
+        self.printButtonAction = self.TOMsToolBar.addWidget(self.toolButton)
+
+        self.toolButton.toggled.connect(self.__enablePrintTool)
+        self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
+
         self.searchBar.disableSearchBar()
+        # print tool
+        self.toolButton.setEnabled(False)
+        self.RestrictionTools.disableTOMsToolbarItems()
 
         TOMsMessageLog.logMessage("Finished proposalsPanel init ...", level=Qgis.Warning)
+
+    def __enablePrintTool(self, active):
+        self.tool.setEnabled(active)
+
+    def __onPrintToolSet(self, tool):
+        if tool != self.tool:
+            self.toolButton.setChecked(False)
 
     def onInitProposalsPanel(self):
         """Filter main layer based on date and state options"""
@@ -173,6 +198,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
         self.searchBar.enableSearchBar()
+        # print tool
+        self.toolButton.setEnabled(True)
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
@@ -202,6 +229,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.RestrictionTools.disableTOMsToolbarItems()
         self.searchBar.disableSearchBar()
+        # print tool
+        self.toolButton.setEnabled(False)
 
         self.actionProposalsPanel.setChecked(False)
 
