@@ -169,6 +169,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionSplitRestriction.setEnabled(True)
         self.actionCreateConstructionLine.setEnabled(True)
 
+        # print tool
+        #self.toolButton.setEnabled(True)
+
         # set up a Transaction object
         # self.tableNames = TOMSLayers(self.iface)
         # self.tableNames.getLayers()
@@ -197,6 +200,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionEditRestriction.setEnabled(False)
         self.actionSplitRestriction.setEnabled(False)
         self.actionCreateConstructionLine.setEnabled(False)
+
+        # print tool
+        #self.toolButton.setEnabled(False)
 
         pass
 

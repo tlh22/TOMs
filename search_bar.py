@@ -58,7 +58,7 @@ class searchBar():
         self.TOMsSearchBar = TOMsSearchBar
         self.proposalsManager = proposalsManager
 
-        self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
+        #self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
 
         self.initSearchBar()
 
@@ -88,23 +88,23 @@ class searchBar():
         self.actionGoToItem.setCheckable(True)
 
         # Add in details of the Instant Print plugin
-        self.toolButton = QToolButton(self.iface.mainWindow())
+        """self.toolButton = QToolButton(self.iface.mainWindow())
         self.toolButton.setIcon(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"))
         #self.toolButton.setToolTip(self.tr("Instant Print"))
         self.toolButton.setCheckable(True)
-        self.printButtonAction = self.TOMsSearchBar.addWidget(self.toolButton)
+        self.printButtonAction = self.TOMsSearchBar.addWidget(self.toolButton)"""
 
         """self.actionInstantPrint = QAction(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"),
                                           QCoreApplication.translate("Print", "Print"), self.iface.mainWindow())"""
 
-        self.toolButton.toggled.connect(self.__enablePrintTool)
-        self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
+        #self.toolButton.toggled.connect(self.__enablePrintTool)
+        #self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
 
     def enableSearchBar(self):
         TOMsMessageLog.logMessage("In enableSearchBar", level=Qgis.Info)
 
         self.actionGoToItem.setEnabled(True)
-        self.toolButton.setEnabled(True)
+        #self.toolButton.setEnabled(True)
         self.searchTextbox.textChanged.connect(self.doLookupItem)
 
     def disableSearchBar(self):
@@ -112,7 +112,7 @@ class searchBar():
 
         self.initialPass = True
         self.actionGoToItem.setEnabled(False)
-        self.toolButton.setEnabled(False)
+        #self.toolButton.setEnabled(False)
         self.searchTextbox.textChanged.disconnect(self.doLookupItem)
 
     def doLookupItem(self):
@@ -197,15 +197,15 @@ class searchBar():
         iface.mapCanvas().refresh()"""
 
     def unload(self):
-        self.tool.setEnabled(False)
-        self.tool = None
-        self.iface.TOMsSearchBar().removeAction(self.printButtonAction)
+        #self.tool.setEnabled(False)
+        #self.tool = None
+        #self.iface.TOMsSearchBar().removeAction(self.printButtonAction)
         self.iface.TOMsSearchBar().removeAction(self.actionGoToItem)
 
-    def __enablePrintTool(self, active):
+    """def __enablePrintTool(self, active):
         self.tool.setEnabled(active)
 
     def __onPrintToolSet(self, tool):
         if tool != self.tool:
-            self.toolButton.setChecked(False)
+            self.toolButton.setChecked(False)"""
 
