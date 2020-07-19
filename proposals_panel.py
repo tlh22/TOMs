@@ -79,7 +79,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.RestrictionTools = manageRestrictionDetails(self.iface, self.TOMsToolBar, self.proposalsManager)
 
-        self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
+        #self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
+        self.searchBar = searchBar(self.iface, self.TOMsToolBar)
 
         # Add print to the search toolbar
 

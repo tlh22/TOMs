@@ -82,7 +82,7 @@ class searchBar():
         self.searchTextbox.textChanged.connect(self.doLookupItem)
 
         self.actionGoToItem = QAction(QIcon(":/plugins/TOMs/resources/magnifyingGlass.png"),
-                                            QCoreApplication.translate("MyPlugin", "Start TOMs"), self.iface.mainWindow())
+                                            QCoreApplication.translate("MyPlugin", "Lookup"), self.iface.mainWindow())
         self.TOMsSearchBar.addAction(self.actionGoToItem)
         self.actionGoToItem.triggered.connect(self.doGoToItem)
         self.actionGoToItem.setCheckable(True)
