@@ -58,18 +58,32 @@ WHERE "label_X" IS NOT NULL AND "label_Y" IS NOT NULL;
 -- Remove obsolete fields
 ALTER TABLE toms."Lines" DROP COLUMN "label_X";
 ALTER TABLE toms."Lines" DROP COLUMN "label_Y";
-ALTER TABLE toms."Lines" DROP COLUMN "label_Rotation";
+-- ALTER TABLE toms."Lines" DROP COLUMN "label_Rotation";
 ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_X";
 ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_Y";
-ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_Rotation";
+-- ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_Rotation";
 ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_X";
 ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_Y";
-ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_Rotation";
+-- ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_Rotation";
 ALTER TABLE toms."Bays" DROP COLUMN "label_X";
 ALTER TABLE toms."Bays" DROP COLUMN "label_Y";
-ALTER TABLE toms."Bays" DROP COLUMN "label_Rotation";
+-- ALTER TABLE toms."Bays" DROP COLUMN "label_Rotation";
 
-CREATE OR REPLACE FUNCTION restriction_mngmt() RETURNS trigger AS /*"""*/ $$
+
+-- Create geometry function that returns attachment points of labels
+CREATE OR REPLACE FUNCTION toms.midpoint_or_centroid(geom geometry) RETURNS geometry AS $$
+    BEGIN
+        RETURN CASE
+            WHEN ST_GeometryType(geom) = 'ST_LineString' THEN ST_LineInterpolatePoint(geom, 0.5)
+            WHEN ST_GeometryType(geom) = 'ST_Polygon' THEN ST_PointOnSurface(geom)
+            ELSE ST_Centroid(geom)
+        END;
+    END;
+$$ LANGUAGE plpgsql;
+
+
+-- Create the main function to manage restrictions label geometries
+CREATE FUNCTION toms."labelling_for_restrictions"() RETURNS trigger AS /*"""*/ $$
 
 import plpy
 
@@ -87,14 +101,17 @@ def ensure_labels_points(main_geom, label_geom):
     if label_geom is None:
         plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p", ['text'])
         label_geom = plpy.execute(plan, [label_geom])[0]["p"]
-
-    # TODO : make the position automatically update if it wasn't moved
-    # for lines, this could be done by computing ST_DIFFERENCE(label_pos, OLD["geom"])
-    # but let's keep it simple for now...
+    else:
+        # We remove multipoints that have not been moved from the calculated position
+        # so they will still be attached on the geometry
+        old_label_geom = ensure_labels_points(OLD["geom"], None)
+        plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
+        results = plpy.execute(plan, [label_geom, old_label_geom])
+        label_geom = results[0]['g']
 
     # We select all sheets that intersect with the feature but not with the label
     # multipoints to obtain all sheets that miss a label point
-    plan = plpy.prepare('SELECT geom FROM "toms"."MapGrid" WHERE ST_Intersects(geom, $1::geometry) AND NOT ST_Intersects(geom, $2::geometry)', ['text', 'text'])
+    plan = plpy.prepare('SELECT geom FROM toms."MapGrid" WHERE ST_Intersects(geom, $1::geometry) AND NOT ST_Intersects(geom, $2::geometry)', ['text', 'text'])
     results = plpy.execute(plan, [main_geom, label_geom])
     sheets_geoms = [r['geom'] for r in results]
 
@@ -109,7 +126,7 @@ def ensure_labels_points(main_geom, label_geom):
 
         # get the center (if a line) or the centroid (if not a line)
         # TODO : manage edge case when a feature exits and re-enterds a sheet (we get a MultiLineString, and should return center point of each instead of centroid)
-        plan = plpy.prepare("SELECT CASE WHEN ST_GeometryType($1::geometry) = 'ST_LineString' THEN ST_LineInterpolatePoint($1::geometry, 0.5) WHEN ST_GeometryType($1::geometry) = 'ST_Polygon' THEN ST_PointOnSurface($1::geometry) ELSE ST_Centroid($1::geometry) END as p", ['text'])
+        plan = plpy.prepare("SELECT toms.midpoint_or_centroid($1::geometry) as p", ['text'])
         point = plpy.execute(plan, [intersection])[0]["p"]
 
         # we collect that point into label_pos
@@ -128,14 +145,14 @@ def update_leader_lines(main_geom, label_geom):
     plan = plpy.prepare('''
         SELECT ST_Collect(ST_MakeLine(p1, p2)) as p
         FROM ( 
-            SELECT ST_Centroid(ST_Intersection(geom, $1::geometry)) as p1, mg.id
-            FROM "toms"."MapGrid" mg
+            SELECT toms.midpoint_or_centroid(ST_Intersection(geom, $1::geometry)) as p1, mg.id
+            FROM toms."MapGrid" mg
             WHERE ST_Intersects(mg.geom, $1::geometry)
         ) as sub1
         JOIN (
             SELECT mg.id, lblpos.geom as p2
             FROM ST_Dump($2::geometry) lblpos
-            JOIN "toms"."MapGrid" mg
+            JOIN toms."MapGrid" mg
             ON ST_Intersects(mg.geom, lblpos.geom)
         ) as sub2 ON sub2.id = sub1.id
     ''', ['text', 'text'])
@@ -157,17 +174,16 @@ $$ LANGUAGE plpython3u;
 /*"""*/
 
 -- Create the triggers
--- insert
-CREATE TRIGGER insert_mngmt BEFORE INSERT ON toms."Bays" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER insert_mngmt BEFORE INSERT ON toms."Lines" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER insert_mngmt BEFORE INSERT ON toms."RestrictionPolygons" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER insert_mngmt BEFORE INSERT ON toms."ControlledParkingZones" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER insert_mngmt BEFORE INSERT ON toms."ParkingTariffAreas" FOR EACH ROW EXECUTE PROCEDURE restriction_mngmt();
--- update
-CREATE TRIGGER update_mngmt BEFORE UPDATE ON toms."Bays" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER update_mngmt BEFORE UPDATE ON toms."Lines" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) OR NOT ST_Equals(OLD.label_loading_pos, NEW.label_loading_pos) ) EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER update_mngmt BEFORE UPDATE ON toms."RestrictionPolygons" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER update_mngmt BEFORE UPDATE ON toms."ControlledParkingZones" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
-CREATE TRIGGER update_mngmt BEFORE UPDATE ON toms."ParkingTariffAreas" FOR EACH ROW WHEN ( NOT ST_Equals(OLD.geom, NEW.geom) OR NOT ST_Equals(OLD.label_pos, NEW.label_pos) ) EXECUTE PROCEDURE restriction_mngmt();
+CREATE TRIGGER insert_mngmt BEFORE INSERT OR UPDATE ON toms."Bays" FOR EACH ROW EXECUTE PROCEDURE toms."labelling_for_restrictions"();
+CREATE TRIGGER insert_mngmt BEFORE INSERT OR UPDATE ON toms."Lines" FOR EACH ROW EXECUTE PROCEDURE toms."labelling_for_restrictions"();
+CREATE TRIGGER insert_mngmt BEFORE INSERT OR UPDATE ON toms."RestrictionPolygons" FOR EACH ROW EXECUTE PROCEDURE toms."labelling_for_restrictions"();
+CREATE TRIGGER insert_mngmt BEFORE INSERT OR UPDATE ON toms."ControlledParkingZones" FOR EACH ROW EXECUTE PROCEDURE toms."labelling_for_restrictions"();
+CREATE TRIGGER insert_mngmt BEFORE INSERT OR UPDATE ON toms."ParkingTariffAreas" FOR EACH ROW EXECUTE PROCEDURE toms."labelling_for_restrictions"();
 
+-- Run the trigger once to populate leaders
+UPDATE toms."Bays" SET label_pos = label_pos;
+UPDATE toms."Lines" SET label_pos = label_pos;
+UPDATE toms."RestrictionPolygons" SET label_pos = label_pos;
+UPDATE toms."ControlledParkingZones" SET label_pos = label_pos;
+UPDATE toms."ParkingTariffAreas" SET label_pos = label_pos;
 /*"""*/

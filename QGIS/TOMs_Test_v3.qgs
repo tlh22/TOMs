@@ -54,7 +54,7 @@
       <layer-tree-layer checked="Qt::Checked" expanded="0" id="Signs_a1a7e14e_f007_4a30_b4c0_73442dc935ad" legend_exp="" name="Signs" providerKey="postgres" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=Point checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Signs&quot; (geom) sql=&quot;OpenDate&quot; &lt;= to_date('28-05-2020', 'dd-MM-yyyy') AND ((&quot;CloseDate&quot; > to_date('28-05-2020', 'dd-MM-yyyy')  OR &quot;CloseDate&quot; IS NULL))">
         <customproperties></customproperties>
       </layer-tree-layer>
-      <layer-tree-layer checked="Qt::Checked" expanded="1" id="ConstructionLines20181021235512146" legend_exp="" name="ConstructionLines" providerKey="memory" source="memory?geometry=LineString&amp;crs=EPSG:27700&amp;uid={b72c4b7c-fe86-4c1b-b387-3c960629cf17}">
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="ConstructionLines20181021235512146" legend_exp="" name="ConstructionLines" providerKey="memory" source="memory?geometry=LineString&amp;crs=EPSG:27700&amp;uid={90818a5b-daa9-4e83-8556-61598cec5be6}">
         <customproperties></customproperties>
       </layer-tree-layer>
     </layer-tree-group>
@@ -211,36 +211,36 @@
   </layer-tree-group>
   <snapping-settings enabled="1" intersection-snapping="1" mode="3" tolerance="0" type="1" unit="2">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="Bays_label_pos_57a22fda_45cd_4db0_be7c_c363c1cef6f6" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="RestrictionPolygons_26fa3c39_effc_4090_81a5_f356b77d34c6" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="Lines_4b4d54e3_2912_4f40_a661_97bf2c490d55" tolerance="12" type="2" units="1"></layer-setting>
-      <layer-setting enabled="1" id="ControlledParkingZones_d7063bde_3dfb_4091_a922_ee02ae116b16" tolerance="12" type="2" units="1"></layer-setting>
-      <layer-setting enabled="0" id="Lines_label_pos_ddad5b0d_94ab_4b5c_b937_e8c93b4e5ff0" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="ConstructionLines20181021235512146" tolerance="10" type="1" units="1"></layer-setting>
-      <layer-setting enabled="0" id="ParkingTariffAreas_label_pos_9c1d1f8f_a2b8_424c_b7c4_aa485ef9f4c3" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="SiteArea_69ae02e3_73f7_4923_9100_e30e88c1a412" tolerance="12" type="2" units="1"></layer-setting>
+      <layer-setting enabled="0" id="StreetGazetteerRecords_da4400e5_68e5_4db5_8ead_3b64e366b34c" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="Lines_label_loading_pos_66a80b44_f6b1_462d_a904_0b8dc020648c" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="1" id="Bays_6edf2e11_0109_4240_80e2_f97f527961cf" tolerance="12" type="2" units="1"></layer-setting>
       <layer-setting enabled="0" id="MapGrid_37f28763_d778_45ca_bd8e_589913b5573b" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="0" id="os_mastermap_topography_text_0616ea6f_f369_44a9_8660_43dca4b6ec99" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="itn_roadcentreline_c561fabe_5278_4061_aacf_66e69b479a44" tolerance="12" type="2" units="1"></layer-setting>
-      <layer-setting enabled="0" id="ControlledParkingZones_label_pos_ecd3d04d_1858_4017_9055_9374dd1ca48d" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="1" id="ParkingTariffAreas_c692c9bf_bfaa_45ec_8803_e301b206c7cc" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="RestrictionPolygons_label_pos_8943bdb9_3b41_4004_89c2_91e5ac09c9f1" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="1" id="road_casement_c6f69622_2084_44e3_9b54_4167ddbce6e8" tolerance="12" type="2" units="1"></layer-setting>
+      <layer-setting enabled="0" id="os_mastermap_topography_text_0616ea6f_f369_44a9_8660_43dca4b6ec99" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="ControlledParkingZones_label_pos_ecd3d04d_1858_4017_9055_9374dd1ca48d" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="ControlledParkingZones_d7063bde_3dfb_4091_a922_ee02ae116b16" tolerance="12" type="2" units="1"></layer-setting>
       <layer-setting enabled="0" id="Signs_a1a7e14e_f007_4a30_b4c0_73442dc935ad" tolerance="12" type="1" units="1"></layer-setting>
-      <layer-setting enabled="0" id="StreetGazetteerRecords_da4400e5_68e5_4db5_8ead_3b64e366b34c" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="Lines_label_pos_ddad5b0d_94ab_4b5c_b937_e8c93b4e5ff0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="os_mastermap_topography_polygons_2a171b39_d6bb_4789_8e77_ae7ccc1eb814" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="ConstructionLines20181021235512146" tolerance="10" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="ParkingTariffAreas_c692c9bf_bfaa_45ec_8803_e301b206c7cc" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="RestrictionPolygons_26fa3c39_effc_4090_81a5_f356b77d34c6" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="itn_roadcentreline_c561fabe_5278_4061_aacf_66e69b479a44" tolerance="12" type="2" units="1"></layer-setting>
+      <layer-setting enabled="1" id="Lines_4b4d54e3_2912_4f40_a661_97bf2c490d55" tolerance="12" type="2" units="1"></layer-setting>
+      <layer-setting enabled="0" id="Bays_label_pos_57a22fda_45cd_4db0_be7c_c363c1cef6f6" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="1" id="SiteArea_69ae02e3_73f7_4923_9100_e30e88c1a412" tolerance="12" type="2" units="1"></layer-setting>
+      <layer-setting enabled="0" id="ParkingTariffAreas_label_pos_9c1d1f8f_a2b8_424c_b7c4_aa485ef9f4c3" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
   <relations></relations>
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>325268.3120048800483346</xmin>
-      <ymin>674052.17559704300947487</ymin>
-      <xmax>325337.16271380451507866</xmax>
-      <ymax>674193.17609451548196375</ymax>
+      <xmin>325337.34798836836125702</xmin>
+      <ymin>674053.27208708669058979</ymin>
+      <xmax>325376.67696612037252635</xmax>
+      <ymax>674194.27258455916307867</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -536,7 +536,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -559,7 +559,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -662,7 +662,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -685,7 +685,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -788,7 +788,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -811,7 +811,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -920,7 +920,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -943,7 +943,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -1052,7 +1052,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -1084,7 +1084,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -3171,7 +3171,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3266,7 +3266,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3361,7 +3361,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3456,7 +3456,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3551,7 +3551,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3646,7 +3646,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -3741,7 +3741,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -4057,6 +4057,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -4325,27 +4332,28 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="9" name=""></alias>
         <alias field="RoadName" index="10" name=""></alias>
         <alias field="USRN" index="11" name=""></alias>
-        <alias field="label_TextChanged" index="12" name=""></alias>
-        <alias field="OpenDate" index="13" name=""></alias>
-        <alias field="CloseDate" index="14" name=""></alias>
-        <alias field="CPZ" index="15" name=""></alias>
-        <alias field="LastUpdateDateTime" index="16" name=""></alias>
-        <alias field="LastUpdatePerson" index="17" name=""></alias>
-        <alias field="BayOrientation" index="18" name=""></alias>
-        <alias field="NrBays" index="19" name=""></alias>
-        <alias field="TimePeriodID" index="20" name=""></alias>
-        <alias field="PayTypeID" index="21" name=""></alias>
-        <alias field="MaxStayID" index="22" name=""></alias>
-        <alias field="NoReturnID" index="23" name=""></alias>
-        <alias field="ParkingTariffArea" index="24" name=""></alias>
-        <alias field="AdditionalConditionID" index="25" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="26" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="27" name=""></alias>
-        <alias field="ComplianceNotes" index="28" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="29" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="30" name=""></alias>
-        <alias field="label_pos" index="31" name=""></alias>
-        <alias field="label_ldr" index="32" name=""></alias>
+        <alias field="label_Rotation" index="12" name=""></alias>
+        <alias field="label_TextChanged" index="13" name=""></alias>
+        <alias field="OpenDate" index="14" name=""></alias>
+        <alias field="CloseDate" index="15" name=""></alias>
+        <alias field="CPZ" index="16" name=""></alias>
+        <alias field="LastUpdateDateTime" index="17" name=""></alias>
+        <alias field="LastUpdatePerson" index="18" name=""></alias>
+        <alias field="BayOrientation" index="19" name=""></alias>
+        <alias field="NrBays" index="20" name=""></alias>
+        <alias field="TimePeriodID" index="21" name=""></alias>
+        <alias field="PayTypeID" index="22" name=""></alias>
+        <alias field="MaxStayID" index="23" name=""></alias>
+        <alias field="NoReturnID" index="24" name=""></alias>
+        <alias field="ParkingTariffArea" index="25" name=""></alias>
+        <alias field="AdditionalConditionID" index="26" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="27" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="28" name=""></alias>
+        <alias field="ComplianceNotes" index="29" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="30" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="31" name=""></alias>
+        <alias field="label_pos" index="32" name=""></alias>
+        <alias field="label_ldr" index="33" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -4362,6 +4370,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -4397,6 +4406,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -4432,6 +4442,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -4907,6 +4918,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -5062,26 +5080,27 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="10" name=""></alias>
         <alias field="RoadName" index="11" name=""></alias>
         <alias field="USRN" index="12" name=""></alias>
-        <alias field="label_TextChanged" index="13" name=""></alias>
-        <alias field="OpenDate" index="14" name=""></alias>
-        <alias field="CloseDate" index="15" name=""></alias>
-        <alias field="CPZ" index="16" name=""></alias>
-        <alias field="LastUpdateDateTime" index="17" name=""></alias>
-        <alias field="LastUpdatePerson" index="18" name=""></alias>
-        <alias field="BayOrientation" index="19" name=""></alias>
-        <alias field="NrBays" index="20" name=""></alias>
-        <alias field="TimePeriodID" index="21" name=""></alias>
-        <alias field="PayTypeID" index="22" name=""></alias>
-        <alias field="MaxStayID" index="23" name=""></alias>
-        <alias field="NoReturnID" index="24" name=""></alias>
-        <alias field="ParkingTariffArea" index="25" name=""></alias>
-        <alias field="AdditionalConditionID" index="26" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="27" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="28" name=""></alias>
-        <alias field="ComplianceNotes" index="29" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="30" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="31" name=""></alias>
-        <alias field="label_ldr" index="32" name=""></alias>
+        <alias field="label_Rotation" index="13" name=""></alias>
+        <alias field="label_TextChanged" index="14" name=""></alias>
+        <alias field="OpenDate" index="15" name=""></alias>
+        <alias field="CloseDate" index="16" name=""></alias>
+        <alias field="CPZ" index="17" name=""></alias>
+        <alias field="LastUpdateDateTime" index="18" name=""></alias>
+        <alias field="LastUpdatePerson" index="19" name=""></alias>
+        <alias field="BayOrientation" index="20" name=""></alias>
+        <alias field="NrBays" index="21" name=""></alias>
+        <alias field="TimePeriodID" index="22" name=""></alias>
+        <alias field="PayTypeID" index="23" name=""></alias>
+        <alias field="MaxStayID" index="24" name=""></alias>
+        <alias field="NoReturnID" index="25" name=""></alias>
+        <alias field="ParkingTariffArea" index="26" name=""></alias>
+        <alias field="AdditionalConditionID" index="27" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="28" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="29" name=""></alias>
+        <alias field="ComplianceNotes" index="30" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="31" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="32" name=""></alias>
+        <alias field="label_ldr" index="33" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -5099,6 +5118,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -5134,6 +5154,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -5169,6 +5190,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -5371,7 +5393,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -5558,7 +5580,7 @@ def my_form_open(dialog, layer, feature):
       <extent>
         <xmin>325292.90713012602645904</xmin>
         <ymin>673873.54978878097608685</ymin>
-        <xmax>325599.67229668801883236</xmax>
+        <xmax>325578.5209273700020276</xmax>
         <ymax>674251.08569603995420039</ymax>
       </extent>
       <id>ControlledParkingZones_d7063bde_3dfb_4091_a922_ee02ae116b16</id>
@@ -5730,7 +5752,7 @@ def my_form_open(dialog, layer, feature):
               </Option>
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -6253,10 +6275,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="MultiPoint">
       <extent>
-        <xmin>325412.21040974999777973</xmin>
+        <xmin>325411.07967782998457551</xmin>
         <ymin>673892.37011610495392233</ymin>
-        <xmax>325533.82946257700677961</xmax>
-        <ymax>674147.27123088494408876</ymax>
+        <xmax>325528.22586285101715475</xmax>
+        <ymax>674205.07013475196436048</ymax>
       </extent>
       <id>ControlledParkingZones_label_pos_ecd3d04d_1858_4017_9055_9374dd1ca48d</id>
       <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=MultiPoint checkPrimaryKeyUnicity='1' table="toms"."ControlledParkingZones" (label_pos) sql=TRUE</datasource>
@@ -6824,7 +6846,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -6847,7 +6869,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -6968,7 +6990,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -7023,7 +7045,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -7046,7 +7068,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -7160,7 +7182,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -7192,7 +7214,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -7359,7 +7381,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -7382,7 +7404,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -7474,10 +7496,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Line" hasScaleBasedVisibilityFlag="1" labelsEnabled="1" maxScale="0" minScale="5000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="LineString">
       <extent>
-        <xmin>325297.83373605302767828</xmin>
-        <ymin>674052.17559704300947487</ymin>
+        <xmin>325127.84605810901848599</xmin>
+        <ymin>674040.31726027396507561</ymin>
         <xmax>325526.89700618502683938</xmax>
-        <ymax>674281.47156403702683747</ymax>
+        <ymax>674246.15543018595781177</ymax>
       </extent>
       <id>Lines_4b4d54e3_2912_4f40_a661_97bf2c490d55</id>
       <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="toms"."Lines" (geom) sql="RestrictionID"  IN ('d4cd82f8-2a72-4232-9a0c-a27392348174','af46bcf3-5758-4f84-85bf-7800a562c8ae') OR ("OpenDate" &lt;= to_date('28-05-2020', 'dd-MM-yyyy') AND (("CloseDate" &gt; to_date('28-05-2020', 'dd-MM-yyyy')  OR "CloseDate" IS NULL) AND "RestrictionID" NOT IN ('362db835-a235-49fa-8f90-2c37955fde39')))</datasource>
@@ -8295,8 +8317,8 @@ def my_form_open(dialog, layer, feature):
         </symbols>
       </renderer-v2>
       <labeling type="rule-based">
-        <rules key="{e2d49219-2bbd-4e34-9c06-40992036993c}">
-          <rule description="Waiting Restrictions" filter=" &quot;RestrictionTypeID&quot; IN (201, 221, 224)" key="{0a7caa4b-8458-4a74-b592-22962383ca42}">
+        <rules key="{6d3c9783-fe51-4dd3-b226-acb669ea6bf6}">
+          <rule description="Waiting Restrictions" filter=" &quot;RestrictionTypeID&quot; IN (201, 221, 224)" key="{2c4fadc8-222b-4d02-8215-57400a61ce36}">
             <settings calloutType="simple">
               <text-style blendMode="0" fieldName=" getWaitingRestrictionLabelText() " fontCapitals="0" fontFamily="MS Shell Dlg 2" fontItalic="0" fontKerning="1" fontLetterSpacing="0" fontSize="7.5" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSizeUnit="Point" fontStrikeout="0" fontUnderline="0" fontWeight="50" fontWordSpacing="0" isExpression="1" multilineHeight="1" namedStyle="Regular" previewBkgrdColor="255,255,255,255" textColor="0,0,0,255" textOpacity="1" textOrientation="horizontal" useSubstitutions="0">
                 <text-buffer bufferBlendMode="0" bufferColor="255,255,255,255" bufferDraw="0" bufferJoinStyle="128" bufferNoFill="0" bufferOpacity="1" bufferSize="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM"></text-buffer>
@@ -8350,7 +8372,7 @@ def my_form_open(dialog, layer, feature):
                   <Option name="properties" type="Map">
                     <Option name="LabelRotation" type="Map">
                       <Option name="active" type="bool" value="true"></Option>
-                      <Option name="expression" type="QString" value="360 - (&quot;labelRotation&quot;)"></Option>
+                      <Option name="expression" type="QString" value="360 - (&quot;label_Rotation&quot;)"></Option>
                       <Option name="type" type="int" value="3"></Option>
                     </Option>
                     <Option name="PositionX" type="Map">
@@ -8377,7 +8399,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -8391,7 +8413,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule description="Loading Restrictions" filter=" &quot;RestrictionTypeID&quot; IN (201, 202, 221, 224) AND  &quot;NoLoadingTimeID&quot; IS NOT NULL AND  &quot;NoLoadingTimeID&quot; > 1" key="{60c13350-0da7-4ab1-aa00-10d2659cd6b0}">
+          <rule description="Loading Restrictions" filter=" &quot;RestrictionTypeID&quot; IN (201, 202, 221, 224) AND  &quot;NoLoadingTimeID&quot; IS NOT NULL AND  &quot;NoLoadingTimeID&quot; > 1" key="{a44a78a7-8860-4f9d-b040-c67b692367b0}">
             <settings calloutType="simple">
               <text-style blendMode="0" fieldName="getLoadingRestrictionLabelText() " fontCapitals="0" fontFamily="MS Shell Dlg 2" fontItalic="0" fontKerning="1" fontLetterSpacing="0" fontSize="7.5" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSizeUnit="Point" fontStrikeout="0" fontUnderline="0" fontWeight="50" fontWordSpacing="0" isExpression="1" multilineHeight="1" namedStyle="Regular" previewBkgrdColor="255,255,255,255" textColor="0,0,0,255" textOpacity="1" textOrientation="horizontal" useSubstitutions="0">
                 <text-buffer bufferBlendMode="0" bufferColor="255,255,255,255" bufferDraw="0" bufferJoinStyle="128" bufferNoFill="0" bufferOpacity="1" bufferSize="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM"></text-buffer>
@@ -8445,7 +8467,7 @@ def my_form_open(dialog, layer, feature):
                   <Option name="properties" type="Map">
                     <Option name="LabelRotation" type="Map">
                       <Option name="active" type="bool" value="true"></Option>
-                      <Option name="expression" type="QString" value="360 - (&quot;labelLoadingRotation&quot;)"></Option>
+                      <Option name="expression" type="QString" value="360 - (&quot;labelLoading_Rotation&quot;)"></Option>
                       <Option name="type" type="int" value="3"></Option>
                     </Option>
                     <Option name="PositionX" type="Map">
@@ -8472,7 +8494,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -8489,7 +8511,9 @@ def my_form_open(dialog, layer, feature):
         </rules>
       </labeling>
       <customproperties>
-        <property key="dualview/previewExpressions" value="COALESCE(&quot;OBJECTID&quot;, '&lt;NULL>')"></property>
+        <property key="dualview/previewExpressions">
+          <value>COALESCE("OBJECTID", '&lt;NULL&gt;')</value>
+        </property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="labeling/addDirectionSymbol" value="false"></property>
         <property key="labeling/angleOffset" value="0"></property>
@@ -8808,6 +8832,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="TextEdit">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -8983,6 +9014,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="labelLoading_Rotation">
+          <editWidget type="TextEdit">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="ComplianceRoadMarkingsFaded">
           <editWidget type="Range">
             <config>
@@ -9067,26 +9105,28 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="9" name=""></alias>
         <alias field="RoadName" index="10" name=""></alias>
         <alias field="USRN" index="11" name=""></alias>
-        <alias field="label_TextChanged" index="12" name=""></alias>
-        <alias field="OpenDate" index="13" name=""></alias>
-        <alias field="CloseDate" index="14" name=""></alias>
-        <alias field="CPZ" index="15" name=""></alias>
-        <alias field="LastUpdateDateTime" index="16" name=""></alias>
-        <alias field="LastUpdatePerson" index="17" name=""></alias>
-        <alias field="NoWaitingTimeID" index="18" name=""></alias>
-        <alias field="NoLoadingTimeID" index="19" name=""></alias>
-        <alias field="UnacceptableTypeID" index="20" name=""></alias>
-        <alias field="AdditionalConditionID" index="21" name=""></alias>
-        <alias field="ParkingTariffArea" index="22" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="23" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="24" name=""></alias>
-        <alias field="ComplianceNotes" index="25" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="26" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="27" name=""></alias>
-        <alias field="label_pos" index="28" name=""></alias>
-        <alias field="label_ldr" index="29" name=""></alias>
-        <alias field="label_loading_pos" index="30" name=""></alias>
-        <alias field="label_loading_ldr" index="31" name=""></alias>
+        <alias field="label_Rotation" index="12" name=""></alias>
+        <alias field="label_TextChanged" index="13" name=""></alias>
+        <alias field="OpenDate" index="14" name=""></alias>
+        <alias field="CloseDate" index="15" name=""></alias>
+        <alias field="CPZ" index="16" name=""></alias>
+        <alias field="LastUpdateDateTime" index="17" name=""></alias>
+        <alias field="LastUpdatePerson" index="18" name=""></alias>
+        <alias field="NoWaitingTimeID" index="19" name=""></alias>
+        <alias field="NoLoadingTimeID" index="20" name=""></alias>
+        <alias field="UnacceptableTypeID" index="21" name=""></alias>
+        <alias field="AdditionalConditionID" index="22" name=""></alias>
+        <alias field="ParkingTariffArea" index="23" name=""></alias>
+        <alias field="labelLoading_Rotation" index="24" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="25" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="26" name=""></alias>
+        <alias field="ComplianceNotes" index="27" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="28" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="29" name=""></alias>
+        <alias field="label_pos" index="30" name=""></alias>
+        <alias field="label_ldr" index="31" name=""></alias>
+        <alias field="label_loading_pos" index="32" name=""></alias>
+        <alias field="label_loading_ldr" index="33" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -9103,6 +9143,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -9114,6 +9155,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="UnacceptableTypeID"></default>
         <default applyOnUpdate="0" expression="" field="AdditionalConditionID"></default>
         <default applyOnUpdate="0" expression="" field="ParkingTariffArea"></default>
+        <default applyOnUpdate="0" expression="" field="labelLoading_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRoadMarkingsFaded"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRestrictionSignIssue"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceNotes"></default>
@@ -9137,6 +9179,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -9148,6 +9191,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="UnacceptableTypeID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="AdditionalConditionID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ParkingTariffArea" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="labelLoading_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRoadMarkingsFaded" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRestrictionSignIssue" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceNotes" notnull_strength="0" unique_strength="0"></constraint>
@@ -9171,6 +9215,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -9182,6 +9227,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="UnacceptableTypeID"></constraint>
         <constraint desc="" exp="" field="AdditionalConditionID"></constraint>
         <constraint desc="" exp="" field="ParkingTariffArea"></constraint>
+        <constraint desc="" exp="" field="labelLoading_Rotation"></constraint>
         <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"></constraint>
         <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"></constraint>
         <constraint desc="" exp="" field="ComplianceNotes"></constraint>
@@ -9231,6 +9277,8 @@ def my_form_open(dialog, layer, feature):
           <column hidden="0" name="label_loading_pos" type="field" width="-1"></column>
           <column hidden="0" name="label_ldr" type="field" width="-1"></column>
           <column hidden="0" name="label_loading_ldr" type="field" width="-1"></column>
+          <column hidden="0" name="label_Rotation" type="field" width="247"></column>
+          <column hidden="0" name="labelLoading_Rotation" type="field" width="-1"></column>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -9391,10 +9439,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="MultiPoint">
       <extent>
-        <xmin>325268.31200487999012694</xmin>
+        <xmin>325142.13781931699486449</xmin>
         <ymin>674068.92166054004337639</ymin>
         <xmax>325531.58157050801673904</xmax>
-        <ymax>674279.82864015398081392</ymax>
+        <ymax>674232.78106565296184272</ymax>
       </extent>
       <id>Lines_label_loading_pos_66a80b44_f6b1_462d_a904_0b8dc020648c</id>
       <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=MultiPoint checkPrimaryKeyUnicity='1' table="toms"."Lines" (label_loading_pos) sql=TRUE</datasource>
@@ -9626,6 +9674,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -9703,6 +9758,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="labelLoading_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="ComplianceRoadMarkingsFaded">
           <editWidget type="Range">
             <config>
@@ -9774,25 +9836,27 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="10" name=""></alias>
         <alias field="RoadName" index="11" name=""></alias>
         <alias field="USRN" index="12" name=""></alias>
-        <alias field="label_TextChanged" index="13" name=""></alias>
-        <alias field="OpenDate" index="14" name=""></alias>
-        <alias field="CloseDate" index="15" name=""></alias>
-        <alias field="CPZ" index="16" name=""></alias>
-        <alias field="LastUpdateDateTime" index="17" name=""></alias>
-        <alias field="LastUpdatePerson" index="18" name=""></alias>
-        <alias field="NoWaitingTimeID" index="19" name=""></alias>
-        <alias field="NoLoadingTimeID" index="20" name=""></alias>
-        <alias field="UnacceptableTypeID" index="21" name=""></alias>
-        <alias field="AdditionalConditionID" index="22" name=""></alias>
-        <alias field="ParkingTariffArea" index="23" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="24" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="25" name=""></alias>
-        <alias field="ComplianceNotes" index="26" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="27" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="28" name=""></alias>
-        <alias field="label_pos" index="29" name=""></alias>
-        <alias field="label_ldr" index="30" name=""></alias>
-        <alias field="label_loading_ldr" index="31" name=""></alias>
+        <alias field="label_Rotation" index="13" name=""></alias>
+        <alias field="label_TextChanged" index="14" name=""></alias>
+        <alias field="OpenDate" index="15" name=""></alias>
+        <alias field="CloseDate" index="16" name=""></alias>
+        <alias field="CPZ" index="17" name=""></alias>
+        <alias field="LastUpdateDateTime" index="18" name=""></alias>
+        <alias field="LastUpdatePerson" index="19" name=""></alias>
+        <alias field="NoWaitingTimeID" index="20" name=""></alias>
+        <alias field="NoLoadingTimeID" index="21" name=""></alias>
+        <alias field="UnacceptableTypeID" index="22" name=""></alias>
+        <alias field="AdditionalConditionID" index="23" name=""></alias>
+        <alias field="ParkingTariffArea" index="24" name=""></alias>
+        <alias field="labelLoading_Rotation" index="25" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="26" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="27" name=""></alias>
+        <alias field="ComplianceNotes" index="28" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="29" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="30" name=""></alias>
+        <alias field="label_pos" index="31" name=""></alias>
+        <alias field="label_ldr" index="32" name=""></alias>
+        <alias field="label_loading_ldr" index="33" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -9810,6 +9874,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -9821,6 +9886,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="UnacceptableTypeID"></default>
         <default applyOnUpdate="0" expression="" field="AdditionalConditionID"></default>
         <default applyOnUpdate="0" expression="" field="ParkingTariffArea"></default>
+        <default applyOnUpdate="0" expression="" field="labelLoading_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRoadMarkingsFaded"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRestrictionSignIssue"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceNotes"></default>
@@ -9844,6 +9910,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -9855,6 +9922,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="UnacceptableTypeID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="AdditionalConditionID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ParkingTariffArea" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="labelLoading_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRoadMarkingsFaded" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRestrictionSignIssue" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceNotes" notnull_strength="0" unique_strength="0"></constraint>
@@ -9878,6 +9946,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -9889,6 +9958,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="UnacceptableTypeID"></constraint>
         <constraint desc="" exp="" field="AdditionalConditionID"></constraint>
         <constraint desc="" exp="" field="ParkingTariffArea"></constraint>
+        <constraint desc="" exp="" field="labelLoading_Rotation"></constraint>
         <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"></constraint>
         <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"></constraint>
         <constraint desc="" exp="" field="ComplianceNotes"></constraint>
@@ -10041,10 +10111,10 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="MultiPoint">
       <extent>
-        <xmin>325328.00619012099923566</xmin>
+        <xmin>325142.13781931699486449</xmin>
         <ymin>674068.92166054004337639</ymin>
         <xmax>325531.37597616098355502</xmax>
-        <ymax>674279.82864015398081392</ymax>
+        <ymax>674232.78106565296184272</ymax>
       </extent>
       <id>Lines_label_pos_ddad5b0d_94ab_4b5c_b937_e8c93b4e5ff0</id>
       <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=MultiPoint checkPrimaryKeyUnicity='1' table="toms"."Lines" (label_pos) sql="RestrictionID"  IN ('0c14a6e4-c250-4cd4-bc83-1afcbaf64e8d') OR ("OpenDate" &lt;= to_date('06-07-2020', 'dd-MM-yyyy') AND (("CloseDate" &gt; to_date('06-07-2020', 'dd-MM-yyyy')  OR "CloseDate" IS NULL)))</datasource>
@@ -10276,6 +10346,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -10353,6 +10430,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="labelLoading_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="ComplianceRoadMarkingsFaded">
           <editWidget type="Range">
             <config>
@@ -10424,25 +10508,27 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="10" name=""></alias>
         <alias field="RoadName" index="11" name=""></alias>
         <alias field="USRN" index="12" name=""></alias>
-        <alias field="label_TextChanged" index="13" name=""></alias>
-        <alias field="OpenDate" index="14" name=""></alias>
-        <alias field="CloseDate" index="15" name=""></alias>
-        <alias field="CPZ" index="16" name=""></alias>
-        <alias field="LastUpdateDateTime" index="17" name=""></alias>
-        <alias field="LastUpdatePerson" index="18" name=""></alias>
-        <alias field="NoWaitingTimeID" index="19" name=""></alias>
-        <alias field="NoLoadingTimeID" index="20" name=""></alias>
-        <alias field="UnacceptableTypeID" index="21" name=""></alias>
-        <alias field="AdditionalConditionID" index="22" name=""></alias>
-        <alias field="ParkingTariffArea" index="23" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="24" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="25" name=""></alias>
-        <alias field="ComplianceNotes" index="26" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="27" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="28" name=""></alias>
-        <alias field="label_ldr" index="29" name=""></alias>
-        <alias field="label_loading_pos" index="30" name=""></alias>
-        <alias field="label_loading_ldr" index="31" name=""></alias>
+        <alias field="label_Rotation" index="13" name=""></alias>
+        <alias field="label_TextChanged" index="14" name=""></alias>
+        <alias field="OpenDate" index="15" name=""></alias>
+        <alias field="CloseDate" index="16" name=""></alias>
+        <alias field="CPZ" index="17" name=""></alias>
+        <alias field="LastUpdateDateTime" index="18" name=""></alias>
+        <alias field="LastUpdatePerson" index="19" name=""></alias>
+        <alias field="NoWaitingTimeID" index="20" name=""></alias>
+        <alias field="NoLoadingTimeID" index="21" name=""></alias>
+        <alias field="UnacceptableTypeID" index="22" name=""></alias>
+        <alias field="AdditionalConditionID" index="23" name=""></alias>
+        <alias field="ParkingTariffArea" index="24" name=""></alias>
+        <alias field="labelLoading_Rotation" index="25" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="26" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="27" name=""></alias>
+        <alias field="ComplianceNotes" index="28" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="29" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="30" name=""></alias>
+        <alias field="label_ldr" index="31" name=""></alias>
+        <alias field="label_loading_pos" index="32" name=""></alias>
+        <alias field="label_loading_ldr" index="33" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -10460,6 +10546,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -10471,6 +10558,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="UnacceptableTypeID"></default>
         <default applyOnUpdate="0" expression="" field="AdditionalConditionID"></default>
         <default applyOnUpdate="0" expression="" field="ParkingTariffArea"></default>
+        <default applyOnUpdate="0" expression="" field="labelLoading_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRoadMarkingsFaded"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceRestrictionSignIssue"></default>
         <default applyOnUpdate="0" expression="" field="ComplianceNotes"></default>
@@ -10494,6 +10582,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -10505,6 +10594,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="UnacceptableTypeID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="AdditionalConditionID" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ParkingTariffArea" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="labelLoading_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRoadMarkingsFaded" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceRestrictionSignIssue" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="ComplianceNotes" notnull_strength="0" unique_strength="0"></constraint>
@@ -10528,6 +10618,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -10539,6 +10630,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="UnacceptableTypeID"></constraint>
         <constraint desc="" exp="" field="AdditionalConditionID"></constraint>
         <constraint desc="" exp="" field="ParkingTariffArea"></constraint>
+        <constraint desc="" exp="" field="labelLoading_Rotation"></constraint>
         <constraint desc="" exp="" field="ComplianceRoadMarkingsFaded"></constraint>
         <constraint desc="" exp="" field="ComplianceRestrictionSignIssue"></constraint>
         <constraint desc="" exp="" field="ComplianceNotes"></constraint>
@@ -10818,7 +10910,7 @@ def my_form_open(dialog, layer, feature):
               </Option>
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -11083,7 +11175,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -11308,7 +11400,7 @@ def my_form_open(dialog, layer, feature):
               </Option>
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -11871,8 +11963,8 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="MultiPoint">
       <extent>
-        <xmin>325509.42544098297366872</xmin>
-        <ymin>674083.45278578298166394</ymin>
+        <xmin>325492.42649876000359654</xmin>
+        <ymin>674078.38465047394856811</ymin>
         <xmax>325509.42544098297366872</xmax>
         <ymax>674083.45278578298166394</ymax>
       </extent>
@@ -12464,7 +12556,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -12487,7 +12579,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -12590,7 +12682,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -12613,7 +12705,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -12716,7 +12808,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -12748,7 +12840,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -12977,7 +13069,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -13000,7 +13092,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -13109,7 +13201,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -13132,7 +13224,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -13235,7 +13327,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -13267,7 +13359,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -13423,7 +13515,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -13446,7 +13538,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -13549,7 +13641,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -13572,7 +13664,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -14007,7 +14099,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -14102,7 +14194,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -14197,7 +14289,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -14292,7 +14384,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -14587,6 +14679,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -14813,25 +14912,26 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="7" name=""></alias>
         <alias field="RoadName" index="8" name=""></alias>
         <alias field="USRN" index="9" name=""></alias>
-        <alias field="label_TextChanged" index="10" name=""></alias>
-        <alias field="OpenDate" index="11" name=""></alias>
-        <alias field="CloseDate" index="12" name=""></alias>
-        <alias field="LastUpdateDateTime" index="13" name=""></alias>
-        <alias field="LastUpdatePerson" index="14" name=""></alias>
-        <alias field="Orientation" index="15" name=""></alias>
-        <alias field="LabelText" index="16" name=""></alias>
-        <alias field="NoWaitingTimeID" index="17" name=""></alias>
-        <alias field="NoLoadingTimeID" index="18" name=""></alias>
-        <alias field="TimePeriodID" index="19" name=""></alias>
-        <alias field="AreaPermitCode" index="20" name=""></alias>
-        <alias field="CPZ" index="21" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="22" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="23" name=""></alias>
-        <alias field="ComplianceNotes" index="24" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="25" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="26" name=""></alias>
-        <alias field="label_pos" index="27" name=""></alias>
-        <alias field="label_ldr" index="28" name=""></alias>
+        <alias field="label_Rotation" index="10" name=""></alias>
+        <alias field="label_TextChanged" index="11" name=""></alias>
+        <alias field="OpenDate" index="12" name=""></alias>
+        <alias field="CloseDate" index="13" name=""></alias>
+        <alias field="LastUpdateDateTime" index="14" name=""></alias>
+        <alias field="LastUpdatePerson" index="15" name=""></alias>
+        <alias field="Orientation" index="16" name=""></alias>
+        <alias field="LabelText" index="17" name=""></alias>
+        <alias field="NoWaitingTimeID" index="18" name=""></alias>
+        <alias field="NoLoadingTimeID" index="19" name=""></alias>
+        <alias field="TimePeriodID" index="20" name=""></alias>
+        <alias field="AreaPermitCode" index="21" name=""></alias>
+        <alias field="CPZ" index="22" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="23" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="24" name=""></alias>
+        <alias field="ComplianceNotes" index="25" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="26" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="27" name=""></alias>
+        <alias field="label_pos" index="28" name=""></alias>
+        <alias field="label_ldr" index="29" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -14846,6 +14946,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -14877,6 +14978,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -14908,6 +15010,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -15081,8 +15184,8 @@ def my_form_open(dialog, layer, feature):
       <extent>
         <xmin>325445.43238237901823595</xmin>
         <ymin>673978.15892640000674874</ymin>
-        <xmax>325445.43238237901823595</xmax>
-        <ymax>673978.15892640000674874</ymax>
+        <xmax>325526.89023363398155198</xmax>
+        <ymax>674001.27683861902914941</ymax>
       </extent>
       <id>RestrictionPolygons_label_pos_8943bdb9_3b41_4004_89c2_91e5ac09c9f1</id>
       <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=MultiPoint checkPrimaryKeyUnicity='1' table="toms"."RestrictionPolygons" (label_pos) sql=TRUE</datasource>
@@ -15283,6 +15386,13 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
+        <field name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
         <field name="label_TextChanged">
           <editWidget type="TextEdit">
             <config>
@@ -15422,24 +15532,25 @@ def my_form_open(dialog, layer, feature):
         <alias field="Photos_03" index="8" name=""></alias>
         <alias field="RoadName" index="9" name=""></alias>
         <alias field="USRN" index="10" name=""></alias>
-        <alias field="label_TextChanged" index="11" name=""></alias>
-        <alias field="OpenDate" index="12" name=""></alias>
-        <alias field="CloseDate" index="13" name=""></alias>
-        <alias field="LastUpdateDateTime" index="14" name=""></alias>
-        <alias field="LastUpdatePerson" index="15" name=""></alias>
-        <alias field="Orientation" index="16" name=""></alias>
-        <alias field="LabelText" index="17" name=""></alias>
-        <alias field="NoWaitingTimeID" index="18" name=""></alias>
-        <alias field="NoLoadingTimeID" index="19" name=""></alias>
-        <alias field="TimePeriodID" index="20" name=""></alias>
-        <alias field="AreaPermitCode" index="21" name=""></alias>
-        <alias field="CPZ" index="22" name=""></alias>
-        <alias field="ComplianceRoadMarkingsFaded" index="23" name=""></alias>
-        <alias field="ComplianceRestrictionSignIssue" index="24" name=""></alias>
-        <alias field="ComplianceNotes" index="25" name=""></alias>
-        <alias field="MHTC_CheckIssueTypeID" index="26" name=""></alias>
-        <alias field="MHTC_CheckNotes" index="27" name=""></alias>
-        <alias field="label_ldr" index="28" name=""></alias>
+        <alias field="label_Rotation" index="11" name=""></alias>
+        <alias field="label_TextChanged" index="12" name=""></alias>
+        <alias field="OpenDate" index="13" name=""></alias>
+        <alias field="CloseDate" index="14" name=""></alias>
+        <alias field="LastUpdateDateTime" index="15" name=""></alias>
+        <alias field="LastUpdatePerson" index="16" name=""></alias>
+        <alias field="Orientation" index="17" name=""></alias>
+        <alias field="LabelText" index="18" name=""></alias>
+        <alias field="NoWaitingTimeID" index="19" name=""></alias>
+        <alias field="NoLoadingTimeID" index="20" name=""></alias>
+        <alias field="TimePeriodID" index="21" name=""></alias>
+        <alias field="AreaPermitCode" index="22" name=""></alias>
+        <alias field="CPZ" index="23" name=""></alias>
+        <alias field="ComplianceRoadMarkingsFaded" index="24" name=""></alias>
+        <alias field="ComplianceRestrictionSignIssue" index="25" name=""></alias>
+        <alias field="ComplianceNotes" index="26" name=""></alias>
+        <alias field="MHTC_CheckIssueTypeID" index="27" name=""></alias>
+        <alias field="MHTC_CheckNotes" index="28" name=""></alias>
+        <alias field="label_ldr" index="29" name=""></alias>
       </aliases>
       <excludeAttributesWMS></excludeAttributesWMS>
       <excludeAttributesWFS></excludeAttributesWFS>
@@ -15455,6 +15566,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" expression="" field="Photos_03"></default>
         <default applyOnUpdate="0" expression="" field="RoadName"></default>
         <default applyOnUpdate="0" expression="" field="USRN"></default>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"></default>
         <default applyOnUpdate="0" expression="" field="label_TextChanged"></default>
         <default applyOnUpdate="0" expression="" field="OpenDate"></default>
         <default applyOnUpdate="0" expression="" field="CloseDate"></default>
@@ -15486,6 +15598,7 @@ def my_form_open(dialog, layer, feature):
         <constraint constraints="0" exp_strength="0" field="Photos_03" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="RoadName" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="USRN" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_Rotation" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_TextChanged" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="OpenDate" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="CloseDate" notnull_strength="0" unique_strength="0"></constraint>
@@ -15517,6 +15630,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" exp="" field="Photos_03"></constraint>
         <constraint desc="" exp="" field="RoadName"></constraint>
         <constraint desc="" exp="" field="USRN"></constraint>
+        <constraint desc="" exp="" field="label_Rotation"></constraint>
         <constraint desc="" exp="" field="label_TextChanged"></constraint>
         <constraint desc="" exp="" field="OpenDate"></constraint>
         <constraint desc="" exp="" field="CloseDate"></constraint>
@@ -15694,7 +15808,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -15726,7 +15840,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -15933,7 +16047,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>false</geographicflag>
+          <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -15956,7 +16070,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -16065,7 +16179,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -16088,7 +16202,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -16185,7 +16299,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -16208,7 +16322,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -16311,7 +16425,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -16334,7 +16448,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -17787,7 +17901,7 @@ def my_form_open(dialog, layer, feature):
               </Option>
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -18117,7 +18231,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -18149,7 +18263,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
@@ -18316,7 +18430,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -18339,7 +18453,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -18460,7 +18574,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -18483,7 +18597,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -18580,7 +18694,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -18603,7 +18717,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
@@ -18888,7 +19002,7 @@ def my_form_open(dialog, layer, feature):
               </Option>
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -20689,7 +20803,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -20760,7 +20874,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -20831,7 +20945,7 @@ def my_form_open(dialog, layer, feature):
                   </Option>
                   <Option name="drawToAllParts" type="bool" value="false"></Option>
                   <Option name="enabled" type="QString" value="0"></Option>
-                  <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; alpha=&quot;1&quot; type=&quot;line&quot;>&lt;layer locked=&quot;0&quot; enabled=&quot;1&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+                  <Option name="lineSymbol" type="QString" value="&lt;symbol clip_to_extent=&quot;1&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; name=&quot;symbol&quot; type=&quot;line&quot;>&lt;layer class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
                   <Option name="minLength" type="double" value="0"></Option>
                   <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                   <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -22127,6 +22241,22 @@ def my_form_open(dialog, layer, feature):
         </LayoutItem>
         <GuideCollection visible="1"></GuideCollection>
       </PageCollection>
+      <LayoutItem background="false" blendMode="0" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" halign="4" htmlState="0" id="" itemRotation="0" labelText="N" marginX="0" marginY="0" opacity="1" outlineWidthM="0.3,mm" position="341.73,270.784,mm" positionLock="false" positionOnPage="341.73,270.784,mm" referencePoint="0" size="7.98785,5.84838,mm" templateUuid="{6c705ec8-b7e2-47fb-ac95-872eabc77ded}" type="65641" uuid="{6c705ec8-b7e2-47fb-ac95-872eabc77ded}" valign="32" visibility="1" zValue="27">
+        <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
+        <BackgroundColor alpha="255" blue="255" green="255" red="255"></BackgroundColor>
+        <LayoutObject>
+          <dataDefinedProperties>
+            <Option type="Map">
+              <Option name="name" type="QString" value=""></Option>
+              <Option name="properties"></Option>
+              <Option name="type" type="QString" value="collection"></Option>
+            </Option>
+          </dataDefinedProperties>
+          <customproperties></customproperties>
+        </LayoutObject>
+        <LabelFont description="MS Shell Dlg 2,12,-1,5,75,0,0,0,0,0,Bold" style="Bold"></LabelFont>
+        <FontColor alpha="255" blue="0" green="0" red="0"></FontColor>
+      </LayoutItem>
       <LayoutItem background="false" blendMode="0" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" halign="4" htmlState="0" id="" itemRotation="0" labelText="Local authority logo" marginX="0" marginY="0" opacity="1" outlineWidthM="0.3,mm" position="4.85,269.878,mm" positionLock="false" positionOnPage="4.85,269.878,mm" referencePoint="0" size="60.7701,22.2551,mm" templateUuid="{1daeef21-8877-45b0-a333-ebd6eba6979a}" type="65641" uuid="{1daeef21-8877-45b0-a333-ebd6eba6979a}" valign="128" visibility="1" zValue="27">
         <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
         <BackgroundColor alpha="255" blue="255" green="255" red="255"></BackgroundColor>
@@ -22143,9 +22273,9 @@ def my_form_open(dialog, layer, feature):
         <LabelFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""></LabelFont>
         <FontColor alpha="255" blue="0" green="0" red="0"></FontColor>
       </LayoutItem>
-      <LayoutItem background="false" blendMode="0" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" halign="4" htmlState="0" id="" itemRotation="0" labelText="N" marginX="0" marginY="0" opacity="1" outlineWidthM="0.3,mm" position="341.73,270.784,mm" positionLock="false" positionOnPage="341.73,270.784,mm" referencePoint="0" size="7.98785,5.84838,mm" templateUuid="{6c705ec8-b7e2-47fb-ac95-872eabc77ded}" type="65641" uuid="{6c705ec8-b7e2-47fb-ac95-872eabc77ded}" valign="32" visibility="1" zValue="27">
+      <LayoutItem background="false" blendMode="0" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" halign="4" htmlState="0" id="" itemRotation="90" labelText="[%CASE WHEN &#xA;(&quot;id&quot;/58)=0&#xA;THEN &#xA;'NA'&#xA;ELSE&#xA;&quot;id&quot;+1&#xA;END%]" marginX="0" marginY="0" opacity="1" outlineWidthM="0.3,mm" position="414.537,141.432,mm" positionLock="false" positionOnPage="414.537,141.432,mm" referencePoint="0" size="11.7265,4.76683,mm" templateUuid="{4fa3de2c-1010-4188-b900-ed05cbfce9ad}" type="65641" uuid="{4fa3de2c-1010-4188-b900-ed05cbfce9ad}" valign="128" visibility="1" zValue="26">
         <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
-        <BackgroundColor alpha="255" blue="255" green="255" red="255"></BackgroundColor>
+        <BackgroundColor alpha="255" blue="175" green="175" red="175"></BackgroundColor>
         <LayoutObject>
           <dataDefinedProperties>
             <Option type="Map">
@@ -22156,8 +22286,8 @@ def my_form_open(dialog, layer, feature):
           </dataDefinedProperties>
           <customproperties></customproperties>
         </LayoutObject>
-        <LabelFont description="MS Shell Dlg 2,12,-1,5,75,0,0,0,0,0,Bold" style="Bold"></LabelFont>
-        <FontColor alpha="255" blue="0" green="0" red="0"></FontColor>
+        <LabelFont description="Sans Serif,10,-1,5,75,0,0,0,0,0" style=""></LabelFont>
+        <FontColor alpha="255" blue="255" green="255" red="255"></FontColor>
       </LayoutItem>
       <LayoutItem arrowHeadFillColor="0,0,0,255" arrowHeadOutlineColor="0,0,0,255" arrowHeadWidth="4" background="false" blendMode="0" endMarkerFile="" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" id="" itemRotation="0" markerMode="1" opacity="1" outlineWidth="1" outlineWidthM="0.3,mm" position="345.583,278.686,mm" positionLock="false" positionOnPage="345.583,278.686,mm" referencePoint="0" size="0,11.1104,mm" startMarkerFile="" startMarkerMode="0" templateUuid="{f0d60ef8-265b-4392-bd31-117cd1ccf85b}" type="65645" uuid="{f0d60ef8-265b-4392-bd31-117cd1ccf85b}" visibility="1" zValue="26">
         <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
@@ -22203,22 +22333,6 @@ def my_form_open(dialog, layer, feature):
           <node x="0" y="11.1104"></node>
           <node x="0" y="0"></node>
         </nodes>
-      </LayoutItem>
-      <LayoutItem background="false" blendMode="0" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" halign="4" htmlState="0" id="" itemRotation="90" labelText="[%CASE WHEN &#xA;(&quot;id&quot;/58)=0&#xA;THEN &#xA;'NA'&#xA;ELSE&#xA;&quot;id&quot;+1&#xA;END%]" marginX="0" marginY="0" opacity="1" outlineWidthM="0.3,mm" position="414.537,141.432,mm" positionLock="false" positionOnPage="414.537,141.432,mm" referencePoint="0" size="11.7265,4.76683,mm" templateUuid="{4fa3de2c-1010-4188-b900-ed05cbfce9ad}" type="65641" uuid="{4fa3de2c-1010-4188-b900-ed05cbfce9ad}" valign="128" visibility="1" zValue="26">
-        <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
-        <BackgroundColor alpha="255" blue="175" green="175" red="175"></BackgroundColor>
-        <LayoutObject>
-          <dataDefinedProperties>
-            <Option type="Map">
-              <Option name="name" type="QString" value=""></Option>
-              <Option name="properties"></Option>
-              <Option name="type" type="QString" value="collection"></Option>
-            </Option>
-          </dataDefinedProperties>
-          <customproperties></customproperties>
-        </LayoutObject>
-        <LabelFont description="Sans Serif,10,-1,5,75,0,0,0,0,0" style=""></LabelFont>
-        <FontColor alpha="255" blue="255" green="255" red="255"></FontColor>
       </LayoutItem>
       <LayoutItem background="false" blendMode="0" cornerRadiusMeasure="0,mm" excludeFromExports="0" frame="false" frameJoinStyle="miter" groupUuid="" id="" itemRotation="90" opacity="1" outlineWidthM="0.3,mm" position="415.706,126.216,mm" positionLock="false" positionOnPage="415.706,126.216,mm" referencePoint="0" shapeType="2" size="42.4705,5.33761,mm" templateUuid="{db61a7cd-aec7-428b-b4f3-ec5930f4067c}" type="65643" uuid="{db61a7cd-aec7-428b-b4f3-ec5930f4067c}" visibility="1" zValue="25">
         <FrameColor alpha="255" blue="0" green="0" red="0"></FrameColor>
