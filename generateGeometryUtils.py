@@ -941,7 +941,7 @@ class generateGeometryUtils:
 
             currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
-            #TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
 
             return currentCPZ, cpzWaitingTimeID
 
@@ -1182,7 +1182,7 @@ class generateGeometryUtils:
     def getSignOrientation(ptFeature, lineLayer):
         TOMsMessageLog.logMessage('In getSignOrientation ...', level=Qgis.Info)
         try:
-            signOrientation = ptFeature.attribute("SignOrientation")
+            signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
             return [None, None, None, None, None]
 
@@ -1204,13 +1204,13 @@ class generateGeometryUtils:
         #signPt = ptFeature.geometry().asPoint()
         signPt = QgsGeometry.fromWkt(signOriginalGeometry).asPoint()
         #print('signPt: {}'.format(signPt.asWkt()))
-        TOMsMessageLog.logMessage('getSignOrientation signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage('getSignOrientation signPt: {}'.format(signPt.asWkt()), level=Qgis.Info)
         TOMsMessageLog.logMessage(
             'getSignOrientation lineLayer {}'.format(lineLayer.name()),
             level=Qgis.Info)
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
         if closestPoint:
-            TOMsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine closestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
 
         # Now generate a line in the appropriate direction
         if closestPoint:
@@ -1228,8 +1228,9 @@ class generateGeometryUtils:
     def getSignLine(ptFeature, lineLayer, distanceForIcons):
 
         try:
-            signOrientation = ptFeature.attribute("SignOrientation")
+            signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
+            TOMsMessageLog.logMessage('getSignLine - SignOrientationTypeID not found: {}'.format(signOrientation), level=Qgis.Warning)
             return None
 
         TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Info)
@@ -1334,6 +1335,9 @@ class generateGeometryUtils:
             signTypeRow = generateGeometryUtils.getLookupRow(signTypesLayer, plateType)
             if signTypeRow:
                 icon = signTypeRow["Icon"]
+                TOMsMessageLog.logMessage('getSignIcons: icon {}'.format(icon), level=Qgis.Info)
+                if not icon:
+                    continue
                 path = os.path.join(path_absolute, icon)
                 plateIconsInSign.append(path)
         #TOMsMessageLog.logMessage('getSignIcons ... returning ... ', level=Qgis.Info)
