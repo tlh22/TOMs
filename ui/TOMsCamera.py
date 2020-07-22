@@ -169,12 +169,12 @@ class cvCamera(QThread):
         QThread.__init__(self)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
         self.cap.release()
 
     def startCamera(self, cameraNr):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Info)
 
         self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
 
@@ -190,7 +190,7 @@ class cvCamera(QThread):
             # cv2.waitKey(1)
             time.sleep(0.1)  # QTimer::singleShot()
         else:
-            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Info)
             self.closeCamera.emit()
 
     def getFrame(self):
