@@ -197,9 +197,33 @@ class TOMsLayers(QObject):
 
         else:
 
+            formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
+
+            if not formPath:
+                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
+
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
+                    # set paths for forms
+                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
+                    ui_path = layerEditFormConfig.uiForm()
+                    TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
+                                              level=Qgis.Info)
+                    if len(formPath)>0 and len(ui_path)>0:
+                        path_absolute = os.path.abspath(os.path.join(formPath, ui_path))
+                        if not os.path.isfile(path_absolute):
+                            TOMsMessageLog.logMessage("In TOMsLayers:getLayers.form path not found for layer {} ...".format(layer),
+                                                      level=Qgis.Warning)
+                        else:
+                            TOMsMessageLog.logMessage("In TOMsLayers:getLayers.setting new path for form {} ...".format(path_absolute),
+                                                      level=Qgis.Info)
+                            layerEditFormConfig.setUiForm(path_absolute)
+                            self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
+
+                            # TODO: may need to reinstate original values here - so save them somewhere useful
+
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table " + layer + " is not present"))
                     found = False
