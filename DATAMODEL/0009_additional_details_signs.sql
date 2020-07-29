@@ -27,4 +27,12 @@ CREATE TRIGGER set_original_geometry_signs
     EXECUTE PROCEDURE public.set_original_geometry();
 
 ALTER TABLE toms."Signs"
+    RENAME "Signs_Attachment" TO "SignsAttachmentTypeID";
+
+ALTER TABLE toms."Signs"
     ADD COLUMN "AssetReference" character varying(255);
+
+ALTER TABLE toms."Lines"
+    ADD COLUMN "ComplianceLoadingMarkingsFaded" integer;
+ALTER TABLE ONLY "toms"."Lines"
+    ADD CONSTRAINT "Lines_ComplianceLoadingMarkingsFaded_fkey" FOREIGN KEY ("ComplianceLoadingMarkingsFaded") REFERENCES compliance_lookups."RestrictionRoadMarkingsFadedTypes" ("Code");
