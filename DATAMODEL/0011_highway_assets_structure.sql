@@ -1152,6 +1152,7 @@ CREATE TRIGGER "set_last_update_details_Benches" BEFORE INSERT OR UPDATE ON "hig
 
 CREATE TRIGGER "set_last_update_details_Bins" BEFORE INSERT OR UPDATE ON "highway_assets"."Bins" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 
+CREATE TRIGGER "set_last_update_details_Bollards" BEFORE INSERT OR UPDATE ON "highway_assets"."Bollards" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 
 --
 -- TOC entry 4375 (class 2620 OID 508582)

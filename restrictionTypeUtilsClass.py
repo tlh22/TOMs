@@ -51,6 +51,7 @@ from qgis.gui import *
 import functools
 import time
 import os
+from pathlib import Path
 
 from .constants import (
     ProposalStatus,
@@ -216,7 +217,9 @@ class TOMsLayers(QObject):
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
                                               level=Qgis.Info)
                     if len(formPath)>0 and len(ui_path)>0:
-                        path_absolute = os.path.abspath(os.path.join(formPath, ui_path))
+                        # try to get basename - doesn't seem to work on Linux
+                        #base_ui_path = os.path.basename(ui_path)
+                        path_absolute = os.path.abspath(os.path.join(formPath, os.path.basename(ui_path)))
                         if not os.path.isfile(path_absolute):
                             TOMsMessageLog.logMessage("In TOMsLayers:getLayers.form path not found for layer {} ...".format(layer),
                                                       level=Qgis.Warning)

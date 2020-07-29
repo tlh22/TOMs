@@ -7,6 +7,24 @@ ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
 ALTER TABLE compliance_lookups."MHTC_CheckIssueType"
     RENAME TO "MHTC_CheckIssueTypes";
 
+-- Restructure compliance_lookups."SignAttachmentTypes" - remove id
+ALTER TABLE compliance_lookups."SignAttachmentTypes" DROP COLUMN id;
+ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ADD PRIMARY KEY ("Code");
+
+CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
+    INCREMENT 1
+    START 10
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
+    OWNER TO postgres;
+
+ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ALTER COLUMN "Code" SET DEFAULT nextval('compliance_lookups."SignAttachmentTypes_Code_seq"'::regclass);
+
 -- Add view for gazetteer lookup
 CREATE MATERIALIZED VIEW local_authority."StreetGazetteerView"
 TABLESPACE pg_default
