@@ -197,7 +197,11 @@ class TOMsLayers(QObject):
 
         else:
 
-            formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            try:
+                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            except:
+                formPath = None
+
             TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
 
             if not formPath:
