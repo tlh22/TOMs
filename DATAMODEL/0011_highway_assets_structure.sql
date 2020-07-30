@@ -29,7 +29,7 @@ CREATE SCHEMA "highway_assets";
 ALTER SCHEMA "highway_assets" OWNER TO "postgres";
 
 
-CREATE FUNCTION public.create_geometryid_highway_assets()
+CREATE OR REPLACE FUNCTION public.create_geometryid_highway_assets()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -42,7 +42,7 @@ BEGIN
 	CASE TG_TABLE_NAME
 	WHEN 'Benches' THEN
 			SELECT concat('BE_', to_char(nextval('highway_assets."Benches_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
-	WHEN 'Benches' THEN
+	WHEN 'Bins' THEN
 			SELECT concat('BI_', to_char(nextval('highway_assets."Bins_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 	WHEN 'Bollards' THEN
 		   SELECT concat('BO_', to_char(nextval('highway_assets."Bollards_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
