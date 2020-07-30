@@ -17,3 +17,12 @@ ALTER TABLE local_authority."ISL_Electrical_Items"
     ALTER COLUMN "AssetConditionTypeID" SET NOT NULL;
 
 ALTER TABLE local_authority."ISL_Electrical_Items" ENABLE TRIGGER "set_last_update_details_ISL_Electrical_Items";
+
+ALTER TABLE highway_assets."CommunicationCabinets"
+    ALTER COLUMN "CommunicationCabinetTypeID" DROP NOT NULL;
+
+ALTER TABLE highway_assets."VehicleBarriers"
+    ALTER COLUMN "VehicleBarrierTypeID" DROP NOT NULL;
+
+ALTER TABLE highway_assets."UnidentifiedStaticObjects"
+    ADD PRIMARY KEY ("RestrictionID");

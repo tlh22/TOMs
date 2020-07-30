@@ -17,7 +17,8 @@ from qgis.PyQt.QtWidgets import (
     QAction,
     QDialogButtonBox,
     QLabel,
-    QDockWidget
+    QDockWidget,
+    QPushButton
 )
 
 from qgis.PyQt.QtGui import (
@@ -203,7 +204,7 @@ class TOMsLayers(QObject):
             except:
                 formPath = None
 
-            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Warning)
 
             if not formPath:
                 TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
@@ -215,7 +216,7 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Info)
+                                              level=Qgis.Warning)
                     if len(formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
@@ -225,7 +226,7 @@ class TOMsLayers(QObject):
                                                       level=Qgis.Warning)
                         else:
                             TOMsMessageLog.logMessage("In TOMsLayers:getLayers.setting new path for form {} ...".format(path_absolute),
-                                                      level=Qgis.Info)
+                                                      level=Qgis.Warning)
                             layerEditFormConfig.setUiForm(path_absolute)
                             self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
 
@@ -241,9 +242,60 @@ class TOMsLayers(QObject):
         if found == False:
             self.TOMsLayersNotFound.emit()
         else:
+            project = QgsProject.instance()
+            project.write()
             self.TOMsLayersSet.emit()
 
         return
+
+    def removePathFromLayerForms(self):
+
+        TOMsMessageLog.logMessage("In TOMSLayers.removePathFromLayerForms ...", level=Qgis.Info)
+        found = True
+
+        # Check for project being open
+        project = QgsProject.instance()
+
+        if len(project.fileName()) == 0:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
+            found = False
+
+        else:
+
+            try:
+                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            except:
+                formPath = None
+
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Warning)
+
+            if not formPath:
+                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
+
+            for layer in self.TOMsLayerList:
+                if QgsProject.instance().mapLayersByName(layer):
+                    self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
+                    # set paths for forms
+                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
+                    ui_path = layerEditFormConfig.uiForm()
+                    TOMsMessageLog.logMessage("In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(layer, ui_path),
+                                              level=Qgis.Warning)
+                    if len(formPath)>0 and len(ui_path)>0:
+                        # try to get basename - doesn't seem to work on Linux
+                        #base_ui_path = os.path.basename(ui_path)
+                        formName = os.path.basename(ui_path)
+                        layerEditFormConfig.setUiForm(formName)
+                        self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
+
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table " + layer + " is not present"))
+                    found = False
+                    break
+
+            project = QgsProject.instance()
+            project.write()
+
+            # TODO: need to deal with any errors arising ...
 
     def setLayer(self, layer):
         return self.TOMsLayerDict.get(layer)
@@ -789,12 +841,12 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName1 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
             pixmap1 = QPixmap(newPhotoFileName1)
             if not pixmap1.isNull():
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
 
             if cv2_available:
                 START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
@@ -814,12 +866,12 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName2 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
             pixmap2 = QPixmap(newPhotoFileName2)
             if not pixmap2.isNull():
                 FIELD2.setPixmap(pixmap2)
                 FIELD2.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
 
             if cv2_available:
                 START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
@@ -842,7 +894,7 @@ class RestrictionTypeUtilsMixin():
             if not pixmap3.isNull():
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Warning)
 
 
             if cv2_available:
