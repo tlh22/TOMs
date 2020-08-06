@@ -5,14 +5,14 @@
 -- Dumped from database version 12.2
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-08-06 08:01:13
+-- Started on 2020-07-03 20:12:48
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
---SELECT pg_catalog.set_config('search_path', '', false);
+-- SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
@@ -34,7 +34,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "public";
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
-CREATE OR REPLACE FUNCTION public.create_geometryid()
+CREATE FUNCTION public.create_geometryid2()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -67,11 +67,6 @@ BEGIN
 		   SELECT concat('D_', to_char(nextval('moving_traffic."SpecialDesignations_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
 	WHEN 'TurnRestrictions' THEN
 		   SELECT concat('V_', to_char(nextval('moving_traffic."TurnRestrictions_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'CarriagewayMarkings' THEN
-		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'MHTC_RoadLinks' THEN
-		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-
 	ELSE
 	    nextSeqVal = 'U';
 	END CASE;
@@ -82,11 +77,12 @@ BEGIN
 END;
 $BODY$;
 
-ALTER FUNCTION public.create_geometryid()
+ALTER FUNCTION public.create_geometryid2()
     OWNER TO postgres;
 
+
 --
--- TOC entry 26 (class 2615 OID 515531)
+-- TOC entry 15 (class 2615 OID 350398)
 -- Name: moving_traffic_lookups; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -96,7 +92,7 @@ CREATE SCHEMA "moving_traffic_lookups";
 ALTER SCHEMA "moving_traffic_lookups" OWNER TO "postgres";
 
 --
--- TOC entry 2063 (class 1247 OID 515533)
+-- TOC entry 1804 (class 1247 OID 352558)
 -- Name: accessRestrictionValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -113,7 +109,7 @@ CREATE TYPE "moving_traffic_lookups"."accessRestrictionValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."accessRestrictionValue" OWNER TO "postgres";
 
 --
--- TOC entry 2066 (class 1247 OID 515546)
+-- TOC entry 1810 (class 1247 OID 352572)
 -- Name: cycleFacilityValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -129,7 +125,7 @@ CREATE TYPE "moving_traffic_lookups"."cycleFacilityValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."cycleFacilityValue" OWNER TO "postgres";
 
 --
--- TOC entry 2069 (class 1247 OID 515558)
+-- TOC entry 1835 (class 1247 OID 367039)
 -- Name: dedicationValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -149,7 +145,7 @@ CREATE TYPE "moving_traffic_lookups"."dedicationValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."dedicationValue" OWNER TO "postgres";
 
 --
--- TOC entry 2072 (class 1247 OID 515578)
+-- TOC entry 1807 (class 1247 OID 352550)
 -- Name: linkDirectionValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -163,7 +159,7 @@ CREATE TYPE "moving_traffic_lookups"."linkDirectionValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."linkDirectionValue" OWNER TO "postgres";
 
 --
--- TOC entry 2075 (class 1247 OID 515586)
+-- TOC entry 1801 (class 1247 OID 352390)
 -- Name: loadTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -179,7 +175,7 @@ CREATE TYPE "moving_traffic_lookups"."loadTypeValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."loadTypeValue" OWNER TO "postgres";
 
 --
--- TOC entry 2078 (class 1247 OID 515598)
+-- TOC entry 1820 (class 1247 OID 366861)
 -- Name: restrictionTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -197,7 +193,7 @@ CREATE TYPE "moving_traffic_lookups"."restrictionTypeValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."restrictionTypeValue" OWNER TO "postgres";
 
 --
--- TOC entry 2081 (class 1247 OID 515614)
+-- TOC entry 1844 (class 1247 OID 367162)
 -- Name: specialDesignationTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -211,7 +207,7 @@ CREATE TYPE "moving_traffic_lookups"."specialDesignationTypeValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."specialDesignationTypeValue" OWNER TO "postgres";
 
 --
--- TOC entry 2084 (class 1247 OID 515622)
+-- TOC entry 1823 (class 1247 OID 366876)
 -- Name: structureTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -238,7 +234,7 @@ CREATE TYPE "moving_traffic_lookups"."structureTypeValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."structureTypeValue" OWNER TO "postgres";
 
 --
--- TOC entry 2087 (class 1247 OID 515656)
+-- TOC entry 1829 (class 1247 OID 366986)
 -- Name: turnRestrictionValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -253,7 +249,7 @@ CREATE TYPE "moving_traffic_lookups"."turnRestrictionValue" AS ENUM (
 ALTER TYPE "moving_traffic_lookups"."turnRestrictionValue" OWNER TO "postgres";
 
 --
--- TOC entry 2090 (class 1247 OID 515666)
+-- TOC entry 1798 (class 1247 OID 352402)
 -- Name: useTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -273,22 +269,21 @@ CREATE TYPE "moving_traffic_lookups"."useTypeValue" AS ENUM (
     'Official Business',
     'Paying',
     'Pedestrians',
-    'peermit Hodlers',
+    'Permit Holders',
     'Public Transport',
     'Residents',
     'School Buses',
     'Service Vehicles',
     'Taxis',
     'Through Traffic',
-    'Works Traffic',
-    'Permit Holders'
+    'Works Traffic'
 );
 
 
 ALTER TYPE "moving_traffic_lookups"."useTypeValue" OWNER TO "postgres";
 
 --
--- TOC entry 2093 (class 1247 OID 515714)
+-- TOC entry 1813 (class 1247 OID 352450)
 -- Name: vehicleTypeValue; Type: TYPE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -337,7 +332,7 @@ SET default_tablespace = '';
 SET default_table_access_method = "heap";
 
 --
--- TOC entry 460 (class 1259 OID 515783)
+-- TOC entry 325 (class 1259 OID 350401)
 -- Name: AccessRestrictionValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -350,7 +345,7 @@ CREATE TABLE "moving_traffic_lookups"."AccessRestrictionValues" (
 ALTER TABLE "moving_traffic_lookups"."AccessRestrictionValues" OWNER TO "postgres";
 
 --
--- TOC entry 461 (class 1259 OID 515789)
+-- TOC entry 336 (class 1259 OID 350568)
 -- Name: AccessRestrictionValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -366,8 +361,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."AccessRestrictionValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."AccessRestrictionValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4692 (class 0 OID 0)
--- Dependencies: 461
+-- TOC entry 4227 (class 0 OID 0)
+-- Dependencies: 336
 -- Name: AccessRestrictionValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -375,74 +370,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."AccessRestrictionValues_Code_seq" OWNED
 
 
 --
--- TOC entry 501 (class 1259 OID 516435)
--- Name: CarriagewayMarkingTypes; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
---
-
-CREATE TABLE "moving_traffic_lookups"."CarriagewayMarkingTypes" (
-    "Code" integer NOT NULL,
-    "Description" character varying NOT NULL,
-    "Icon" character varying
-);
-
-
-ALTER TABLE "moving_traffic_lookups"."CarriagewayMarkingTypes" OWNER TO "postgres";
-
---
--- TOC entry 502 (class 1259 OID 516441)
--- Name: CarriagewayMarkingTypesInUse; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
---
-
-CREATE TABLE "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" (
-    "Code" integer NOT NULL
-);
-
-
-ALTER TABLE "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" OWNER TO "postgres";
-
---
--- TOC entry 503 (class 1259 OID 516446)
--- Name: CarriagewayMarkingTypesInUse_View; Type: MATERIALIZED VIEW; Schema: moving_traffic_lookups; Owner: postgres
---
-
-CREATE MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View" AS
- SELECT "CarriagewayMarkingTypesInUse"."Code",
-    "CarriagewayMarkingTypes"."Description"
-   FROM "moving_traffic_lookups"."CarriagewayMarkingTypesInUse",
-    "moving_traffic_lookups"."CarriagewayMarkingTypes"
-  WHERE ("CarriagewayMarkingTypesInUse"."Code" = "CarriagewayMarkingTypes"."Code")
-  WITH NO DATA;
-
-
-ALTER TABLE "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View" OWNER TO "postgres";
-
---
--- TOC entry 504 (class 1259 OID 516454)
--- Name: CarriagewayMarkingTypes_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
---
-
-CREATE SEQUENCE "moving_traffic_lookups"."CarriagewayMarkingTypes_Code_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE "moving_traffic_lookups"."CarriagewayMarkingTypes_Code_seq" OWNER TO "postgres";
-
---
--- TOC entry 4697 (class 0 OID 0)
--- Dependencies: 504
--- Name: CarriagewayMarkingTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
---
-
-ALTER SEQUENCE "moving_traffic_lookups"."CarriagewayMarkingTypes_Code_seq" OWNED BY "moving_traffic_lookups"."CarriagewayMarkingTypes"."Code";
-
-
---
--- TOC entry 462 (class 1259 OID 515791)
+-- TOC entry 326 (class 1259 OID 350414)
 -- Name: CycleFacilityValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -455,7 +383,7 @@ CREATE TABLE "moving_traffic_lookups"."CycleFacilityValues" (
 ALTER TABLE "moving_traffic_lookups"."CycleFacilityValues" OWNER TO "postgres";
 
 --
--- TOC entry 463 (class 1259 OID 515794)
+-- TOC entry 337 (class 1259 OID 350570)
 -- Name: CycleFacilityValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -471,8 +399,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."CycleFacilityValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."CycleFacilityValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4700 (class 0 OID 0)
--- Dependencies: 463
+-- TOC entry 4228 (class 0 OID 0)
+-- Dependencies: 337
 -- Name: CycleFacilityValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -480,7 +408,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."CycleFacilityValues_Code_seq" OWNED BY 
 
 
 --
--- TOC entry 464 (class 1259 OID 515796)
+-- TOC entry 327 (class 1259 OID 350422)
 -- Name: DedicationValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -493,7 +421,7 @@ CREATE TABLE "moving_traffic_lookups"."DedicationValues" (
 ALTER TABLE "moving_traffic_lookups"."DedicationValues" OWNER TO "postgres";
 
 --
--- TOC entry 465 (class 1259 OID 515799)
+-- TOC entry 338 (class 1259 OID 350572)
 -- Name: DedicationValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -509,8 +437,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."DedicationValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."DedicationValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4703 (class 0 OID 0)
--- Dependencies: 465
+-- TOC entry 4229 (class 0 OID 0)
+-- Dependencies: 338
 -- Name: DedicationValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -518,7 +446,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."DedicationValues_Code_seq" OWNED BY "mo
 
 
 --
--- TOC entry 466 (class 1259 OID 515801)
+-- TOC entry 328 (class 1259 OID 350430)
 -- Name: LinkDirectionValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -531,7 +459,7 @@ CREATE TABLE "moving_traffic_lookups"."LinkDirectionValues" (
 ALTER TABLE "moving_traffic_lookups"."LinkDirectionValues" OWNER TO "postgres";
 
 --
--- TOC entry 467 (class 1259 OID 515804)
+-- TOC entry 339 (class 1259 OID 350574)
 -- Name: LinkDirectionValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -547,8 +475,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."LinkDirectionValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."LinkDirectionValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4706 (class 0 OID 0)
--- Dependencies: 467
+-- TOC entry 4230 (class 0 OID 0)
+-- Dependencies: 339
 -- Name: LinkDirectionValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -556,7 +484,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."LinkDirectionValues_Code_seq" OWNED BY 
 
 
 --
--- TOC entry 468 (class 1259 OID 515806)
+-- TOC entry 329 (class 1259 OID 350438)
 -- Name: RestrictionTypeValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -569,7 +497,7 @@ CREATE TABLE "moving_traffic_lookups"."RestrictionTypeValues" (
 ALTER TABLE "moving_traffic_lookups"."RestrictionTypeValues" OWNER TO "postgres";
 
 --
--- TOC entry 469 (class 1259 OID 515809)
+-- TOC entry 340 (class 1259 OID 350576)
 -- Name: RestrictionTypeValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -585,8 +513,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."RestrictionTypeValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."RestrictionTypeValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4709 (class 0 OID 0)
--- Dependencies: 469
+-- TOC entry 4231 (class 0 OID 0)
+-- Dependencies: 340
 -- Name: RestrictionTypeValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -594,7 +522,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."RestrictionTypeValues_Code_seq" OWNED B
 
 
 --
--- TOC entry 470 (class 1259 OID 515811)
+-- TOC entry 331 (class 1259 OID 350470)
 -- Name: SpecialDesignationTypes; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -607,7 +535,7 @@ CREATE TABLE "moving_traffic_lookups"."SpecialDesignationTypes" (
 ALTER TABLE "moving_traffic_lookups"."SpecialDesignationTypes" OWNER TO "postgres";
 
 --
--- TOC entry 471 (class 1259 OID 515817)
+-- TOC entry 330 (class 1259 OID 350468)
 -- Name: SpecialDesignationTypes_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -623,8 +551,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."SpecialDesignationTypes_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."SpecialDesignationTypes_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4712 (class 0 OID 0)
--- Dependencies: 471
+-- TOC entry 4232 (class 0 OID 0)
+-- Dependencies: 330
 -- Name: SpecialDesignationTypes_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -632,7 +560,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."SpecialDesignationTypes_Code_seq" OWNED
 
 
 --
--- TOC entry 472 (class 1259 OID 515819)
+-- TOC entry 332 (class 1259 OID 350476)
 -- Name: SpeedLimitValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -645,7 +573,7 @@ CREATE TABLE "moving_traffic_lookups"."SpeedLimitValues" (
 ALTER TABLE "moving_traffic_lookups"."SpeedLimitValues" OWNER TO "postgres";
 
 --
--- TOC entry 473 (class 1259 OID 515825)
+-- TOC entry 341 (class 1259 OID 350578)
 -- Name: SpeedLimitValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -661,8 +589,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."SpeedLimitValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."SpeedLimitValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4715 (class 0 OID 0)
--- Dependencies: 473
+-- TOC entry 4233 (class 0 OID 0)
+-- Dependencies: 341
 -- Name: SpeedLimitValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -670,7 +598,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."SpeedLimitValues_Code_seq" OWNED BY "mo
 
 
 --
--- TOC entry 474 (class 1259 OID 515827)
+-- TOC entry 333 (class 1259 OID 350486)
 -- Name: StructureTypeValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -683,7 +611,7 @@ CREATE TABLE "moving_traffic_lookups"."StructureTypeValues" (
 ALTER TABLE "moving_traffic_lookups"."StructureTypeValues" OWNER TO "postgres";
 
 --
--- TOC entry 475 (class 1259 OID 515830)
+-- TOC entry 342 (class 1259 OID 350580)
 -- Name: StructureTypeValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -699,8 +627,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."StructureTypeValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."StructureTypeValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4718 (class 0 OID 0)
--- Dependencies: 475
+-- TOC entry 4234 (class 0 OID 0)
+-- Dependencies: 342
 -- Name: StructureTypeValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -708,7 +636,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."StructureTypeValues_Code_seq" OWNED BY 
 
 
 --
--- TOC entry 476 (class 1259 OID 515832)
+-- TOC entry 334 (class 1259 OID 350494)
 -- Name: TurnRestrictionValues; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -721,7 +649,7 @@ CREATE TABLE "moving_traffic_lookups"."TurnRestrictionValues" (
 ALTER TABLE "moving_traffic_lookups"."TurnRestrictionValues" OWNER TO "postgres";
 
 --
--- TOC entry 477 (class 1259 OID 515835)
+-- TOC entry 343 (class 1259 OID 350582)
 -- Name: TurnRestrictionValues_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -737,8 +665,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."TurnRestrictionValues_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."TurnRestrictionValues_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4721 (class 0 OID 0)
--- Dependencies: 477
+-- TOC entry 4235 (class 0 OID 0)
+-- Dependencies: 343
 -- Name: TurnRestrictionValues_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -746,7 +674,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."TurnRestrictionValues_Code_seq" OWNED B
 
 
 --
--- TOC entry 478 (class 1259 OID 515837)
+-- TOC entry 335 (class 1259 OID 350502)
 -- Name: VehicleQualifiers; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -759,7 +687,7 @@ CREATE TABLE "moving_traffic_lookups"."VehicleQualifiers" (
 ALTER TABLE "moving_traffic_lookups"."VehicleQualifiers" OWNER TO "postgres";
 
 --
--- TOC entry 479 (class 1259 OID 515840)
+-- TOC entry 344 (class 1259 OID 350584)
 -- Name: VehicleQualifiers_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -775,8 +703,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."VehicleQualifiers_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."VehicleQualifiers_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4724 (class 0 OID 0)
--- Dependencies: 479
+-- TOC entry 4236 (class 0 OID 0)
+-- Dependencies: 344
 -- Name: VehicleQualifiers_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -784,13 +712,13 @@ ALTER SEQUENCE "moving_traffic_lookups"."VehicleQualifiers_Code_seq" OWNED BY "m
 
 
 --
--- TOC entry 480 (class 1259 OID 515842)
+-- TOC entry 345 (class 1259 OID 352519)
 -- Name: vehicleQualifiers; Type: TABLE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
 CREATE TABLE "moving_traffic_lookups"."vehicleQualifiers" (
     "Code" integer NOT NULL,
-    "Description" character varying(255) NOT NULL,
+    "Description" character varying(255),
     "vehicle" "moving_traffic_lookups"."vehicleTypeValue"[],
     "use" "moving_traffic_lookups"."useTypeValue"[],
     "load" "moving_traffic_lookups"."loadTypeValue"[]
@@ -800,7 +728,7 @@ CREATE TABLE "moving_traffic_lookups"."vehicleQualifiers" (
 ALTER TABLE "moving_traffic_lookups"."vehicleQualifiers" OWNER TO "postgres";
 
 --
--- TOC entry 481 (class 1259 OID 515848)
+-- TOC entry 346 (class 1259 OID 352525)
 -- Name: vehicleQualifiers_Code_seq; Type: SEQUENCE; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -816,8 +744,8 @@ CREATE SEQUENCE "moving_traffic_lookups"."vehicleQualifiers_Code_seq"
 ALTER TABLE "moving_traffic_lookups"."vehicleQualifiers_Code_seq" OWNER TO "postgres";
 
 --
--- TOC entry 4727 (class 0 OID 0)
--- Dependencies: 481
+-- TOC entry 4237 (class 0 OID 0)
+-- Dependencies: 346
 -- Name: vehicleQualifiers_Code_seq; Type: SEQUENCE OWNED BY; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -825,15 +753,7 @@ ALTER SEQUENCE "moving_traffic_lookups"."vehicleQualifiers_Code_seq" OWNED BY "m
 
 
 --
--- TOC entry 4497 (class 2604 OID 516524)
--- Name: CarriagewayMarkingTypes Code; Type: DEFAULT; Schema: moving_traffic_lookups; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic_lookups"."CarriagewayMarkingTypes" ALTER COLUMN "Code" SET DEFAULT "nextval"('"moving_traffic_lookups"."CarriagewayMarkingTypes_Code_seq"'::"regclass");
-
-
---
--- TOC entry 4495 (class 2604 OID 515850)
+-- TOC entry 4040 (class 2604 OID 350473)
 -- Name: SpecialDesignationTypes Code; Type: DEFAULT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -841,7 +761,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."SpecialDesignationTypes" ALTER COLUMN
 
 
 --
--- TOC entry 4496 (class 2604 OID 515851)
+-- TOC entry 4041 (class 2604 OID 352527)
 -- Name: vehicleQualifiers Code; Type: DEFAULT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -849,7 +769,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."vehicleQualifiers" ALTER COLUMN "Code
 
 
 --
--- TOC entry 4499 (class 2606 OID 515853)
+-- TOC entry 4043 (class 2606 OID 350548)
 -- Name: AccessRestrictionValues AccessRestrictionValue_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -858,7 +778,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."AccessRestrictionValues"
 
 
 --
--- TOC entry 4501 (class 2606 OID 515855)
+-- TOC entry 4045 (class 2606 OID 350525)
 -- Name: AccessRestrictionValues AccessRestrictionValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -867,16 +787,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."AccessRestrictionValues"
 
 
 --
--- TOC entry 4543 (class 2606 OID 516523)
--- Name: CarriagewayMarkingTypes CarriagewayMarkingTypes_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic_lookups"."CarriagewayMarkingTypes"
-    ADD CONSTRAINT "CarriagewayMarkingTypes_pkey" PRIMARY KEY ("Code");
-
-
---
--- TOC entry 4503 (class 2606 OID 515857)
+-- TOC entry 4047 (class 2606 OID 350527)
 -- Name: CycleFacilityValues CycleFacilityValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -885,7 +796,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."CycleFacilityValues"
 
 
 --
--- TOC entry 4505 (class 2606 OID 515859)
+-- TOC entry 4049 (class 2606 OID 350509)
 -- Name: CycleFacilityValues CycleFacilityValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -894,7 +805,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."CycleFacilityValues"
 
 
 --
--- TOC entry 4507 (class 2606 OID 515861)
+-- TOC entry 4051 (class 2606 OID 350529)
 -- Name: DedicationValues DedicationValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -903,7 +814,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."DedicationValues"
 
 
 --
--- TOC entry 4509 (class 2606 OID 515863)
+-- TOC entry 4053 (class 2606 OID 350511)
 -- Name: DedicationValues DedicationValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -912,7 +823,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."DedicationValues"
 
 
 --
--- TOC entry 4511 (class 2606 OID 515865)
+-- TOC entry 4055 (class 2606 OID 350531)
 -- Name: LinkDirectionValues LinkDirectionValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -921,7 +832,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."LinkDirectionValues"
 
 
 --
--- TOC entry 4513 (class 2606 OID 515867)
+-- TOC entry 4057 (class 2606 OID 350513)
 -- Name: LinkDirectionValues LinkDirectionValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -930,7 +841,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."LinkDirectionValues"
 
 
 --
--- TOC entry 4515 (class 2606 OID 515869)
+-- TOC entry 4059 (class 2606 OID 350533)
 -- Name: RestrictionTypeValues RestrictionTypeValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -939,7 +850,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."RestrictionTypeValues"
 
 
 --
--- TOC entry 4517 (class 2606 OID 515871)
+-- TOC entry 4061 (class 2606 OID 350515)
 -- Name: RestrictionTypeValues RestrictionTypeValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -948,16 +859,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."RestrictionTypeValues"
 
 
 --
--- TOC entry 4545 (class 2606 OID 516445)
--- Name: CarriagewayMarkingTypesInUse SignTypesInUse_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic_lookups"."CarriagewayMarkingTypesInUse"
-    ADD CONSTRAINT "SignTypesInUse_pkey" PRIMARY KEY ("Code");
-
-
---
--- TOC entry 4519 (class 2606 OID 515873)
+-- TOC entry 4063 (class 2606 OID 350538)
 -- Name: SpecialDesignationTypes SpecialDesignationTypes_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -966,7 +868,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."SpecialDesignationTypes"
 
 
 --
--- TOC entry 4521 (class 2606 OID 515875)
+-- TOC entry 4065 (class 2606 OID 350475)
 -- Name: SpecialDesignationTypes SpecialDesignationTypes_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -975,7 +877,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."SpecialDesignationTypes"
 
 
 --
--- TOC entry 4523 (class 2606 OID 515877)
+-- TOC entry 4067 (class 2606 OID 350540)
 -- Name: SpeedLimitValues SpeedLimitValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -984,7 +886,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."SpeedLimitValues"
 
 
 --
--- TOC entry 4525 (class 2606 OID 515879)
+-- TOC entry 4069 (class 2606 OID 350559)
 -- Name: SpeedLimitValues SpeedLimitValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -993,7 +895,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."SpeedLimitValues"
 
 
 --
--- TOC entry 4527 (class 2606 OID 515881)
+-- TOC entry 4071 (class 2606 OID 350542)
 -- Name: StructureTypeValues StructureTypeValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1002,7 +904,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."StructureTypeValues"
 
 
 --
--- TOC entry 4529 (class 2606 OID 515883)
+-- TOC entry 4073 (class 2606 OID 350519)
 -- Name: StructureTypeValues StructureTypeValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1011,7 +913,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."StructureTypeValues"
 
 
 --
--- TOC entry 4531 (class 2606 OID 515885)
+-- TOC entry 4075 (class 2606 OID 350544)
 -- Name: TurnRestrictionValues TurnRestrictionValues_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1020,7 +922,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."TurnRestrictionValues"
 
 
 --
--- TOC entry 4533 (class 2606 OID 515887)
+-- TOC entry 4077 (class 2606 OID 350521)
 -- Name: TurnRestrictionValues TurnRestrictionValues_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1029,7 +931,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."TurnRestrictionValues"
 
 
 --
--- TOC entry 4535 (class 2606 OID 515889)
+-- TOC entry 4079 (class 2606 OID 350546)
 -- Name: VehicleQualifiers VehicleQualifiers_Description_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1038,7 +940,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."VehicleQualifiers"
 
 
 --
--- TOC entry 4537 (class 2606 OID 515891)
+-- TOC entry 4081 (class 2606 OID 350523)
 -- Name: VehicleQualifiers VehicleQualifiers_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1047,7 +949,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."VehicleQualifiers"
 
 
 --
--- TOC entry 4539 (class 2606 OID 515893)
+-- TOC entry 4083 (class 2606 OID 352529)
 -- Name: vehicleQualifiers vehicleQualifiers_pkey; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1056,7 +958,7 @@ ALTER TABLE ONLY "moving_traffic_lookups"."vehicleQualifiers"
 
 
 --
--- TOC entry 4541 (class 2606 OID 515895)
+-- TOC entry 4085 (class 2606 OID 352531)
 -- Name: vehicleQualifiers vehicleQualifiers_vehicle_use_load_key; Type: CONSTRAINT; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -1065,28 +967,26 @@ ALTER TABLE ONLY "moving_traffic_lookups"."vehicleQualifiers"
 
 
 --
--- TOC entry 4546 (class 1259 OID 516453)
--- Name: CarriagewayMarkingTypesInUse_View_View_key; Type: INDEX; Schema: moving_traffic_lookups; Owner: postgres
+-- TOC entry 355 (class 1259 OID 371810)
+-- Name: MHTC_RoadLinks; Type: TABLE; Schema: highways_network; Owner: postgres
 --
 
-CREATE UNIQUE INDEX "CarriagewayMarkingTypesInUse_View_View_key" ON "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View" USING "btree" ("Code");
+CREATE TABLE "highways_network"."MHTC_RoadLinks" (
+    "id" integer NOT NULL,
+    "notes" character varying(255),
+    "geom" "public"."geometry"(LineString,27700)
+);
+
+
+ALTER TABLE "highways_network"."MHTC_RoadLinks" OWNER TO "postgres";
 
 --
--- TOC entry 22 (class 2615 OID 515904)
--- Name: moving_traffic; Type: SCHEMA; Schema: -; Owner: postgres
+-- TOC entry 354 (class 1259 OID 371808)
+-- Name: MHTC_RoadLinks_id_seq; Type: SEQUENCE; Schema: highways_network; Owner: postgres
 --
 
-CREATE SCHEMA "moving_traffic";
-
-
-ALTER SCHEMA "moving_traffic" OWNER TO "postgres";
-
---
--- TOC entry 484 (class 1259 OID 515905)
--- Name: AccessRestrictions_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE SEQUENCE "moving_traffic"."AccessRestrictions_id_seq"
+CREATE SEQUENCE "highways_network"."MHTC_RoadLinks_id_seq"
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1094,20 +994,125 @@ CREATE SEQUENCE "moving_traffic"."AccessRestrictions_id_seq"
     CACHE 1;
 
 
-ALTER TABLE "moving_traffic"."AccessRestrictions_id_seq" OWNER TO "postgres";
+ALTER TABLE "highways_network"."MHTC_RoadLinks_id_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 4169 (class 0 OID 0)
+-- Dependencies: 354
+-- Name: MHTC_RoadLinks_id_seq; Type: SEQUENCE OWNED BY; Schema: highways_network; Owner: postgres
+--
+
+ALTER SEQUENCE "highways_network"."MHTC_RoadLinks_id_seq" OWNED BY "highways_network"."MHTC_RoadLinks"."id";
+
+
+--
+-- TOC entry 8 (class 2615 OID 350397)
+-- Name: moving_traffic; Type: SCHEMA; Schema: -; Owner: tim.hancock
+--
+
+CREATE SCHEMA "moving_traffic";
+
+
+ALTER SCHEMA "moving_traffic" OWNER TO "tim.hancock";
+
+--
+-- TOC entry 356 (class 1259 OID 371820)
+-- Name: AccessRestriction_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE SEQUENCE "moving_traffic"."AccessRestriction_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "moving_traffic"."AccessRestriction_id_seq" OWNER TO "postgres";
 
 SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
 
 --
--- TOC entry 485 (class 1259 OID 515907)
+-- TOC entry 347 (class 1259 OID 352593)
 -- Name: Restrictions; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
 CREATE TABLE "moving_traffic"."Restrictions" (
     "RestrictionID" "uuid" NOT NULL,
+    --"NetworkReferenceID" "uuid" NOT NULL,
     "GeometryID" character varying(12) NOT NULL,
+    "Notes" character varying(254),
+    "Photos_01" character varying(255),
+    "Photos_02" character varying(255),
+    "Photos_03" character varying(255),
+    "RoadName" character varying(254),
+    "USRN" character varying(254),
+    "label_X" double precision,
+    "label_Y" double precision,
+    "label_Rotation" double precision,
+    "label_TextChanged" character varying(254),
+    "OpenDate" "date",
+    "CloseDate" "date",
+    "LastUpdateDateTime" timestamp without time zone NOT NULL,
+    "LastUpdatePerson" character varying(255) NOT NULL,
+    "MHTC_CheckIssueTypeID" integer,
+    "MHTC_CheckNotes" character varying(254)
+
+);
+
+
+ALTER TABLE "moving_traffic"."Restrictions" OWNER TO "postgres";
+
+--
+-- TOC entry 351 (class 1259 OID 367090)
+-- Name: AccessRestrictions; Type: TABLE; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE TABLE "moving_traffic"."AccessRestrictions" (
+    "restriction" "moving_traffic_lookups"."accessRestrictionValue" NOT NULL,
+    "timeInterval" integer,
+    "trafficSigns" character varying(255),
+    "exemption" integer,
+    "inclusion" integer,
+
+    "ComplianceRoadMarkingsFaded" integer,
+    "ComplianceRestrictionSignIssue" integer,
+    "ComplianceNotes" character varying(254)
+
+     "mt_capture_geom" "public"."geometry"(Point,27700)
+
+    --"GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."AccessRestriction_id_seq"'::"regclass"), '000000000'::"text"))
+)
+INHERITS ("moving_traffic"."Restrictions")
+INHERITS (moving_traffic."SimpleLinearReference");
+
+ALTER TABLE "moving_traffic"."AccessRestrictions" OWNER TO "postgres";
+
+--
+-- TOC entry 357 (class 1259 OID 371832)
+-- Name: HighwayDedications_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE SEQUENCE "moving_traffic"."HighwayDedications_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "moving_traffic"."HighwayDedications_id_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 352 (class 1259 OID 367128)
+-- Name: HighwayDedications; Type: TABLE; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE TABLE "moving_traffic"."HighwayDedications" (
+    "dedication" "moving_traffic_lookups"."dedicationValue" NOT NULL,
+    "timeInterval" integer,
     "Notes" character varying(254),
     "Photos_01" character varying(255),
     "Photos_02" character varying(255),
@@ -1126,89 +1131,8 @@ CREATE TABLE "moving_traffic"."Restrictions" (
     "ComplianceRestrictionSignIssue" integer,
     "ComplianceNotes" character varying(254),
     "MHTC_CheckIssueTypeID" integer,
-    "MHTC_CheckNotes" character varying(254)
-);
-
-
-ALTER TABLE "moving_traffic"."Restrictions" OWNER TO "postgres";
-
---
--- TOC entry 487 (class 1259 OID 515932)
--- Name: AccessRestrictions; Type: TABLE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TABLE "moving_traffic"."AccessRestrictions" (
-    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."AccessRestrictions_id_seq"'::"regclass"), '000000000'::"text")),
-    "restriction" "moving_traffic_lookups"."accessRestrictionValue" NOT NULL,
-    "timeInterval" integer,
-    "trafficSigns" character varying(255),
-    "exemption" integer,
-    "inclusion" integer,
-    "mt_capture_geom" "public"."geometry"(Point,27700)
-)
-INHERITS ("moving_traffic"."Restrictions");
-
-
-ALTER TABLE "moving_traffic"."AccessRestrictions" OWNER TO "postgres";
-
---
--- TOC entry 507 (class 1259 OID 516613)
--- Name: CarriagewayMarkings; Type: TABLE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TABLE "moving_traffic"."CarriagewayMarkings" (
-    "CarriagewayMarkingType_1" integer NOT NULL,
-    "CarriagewayMarkingType_2" integer,
-    "CarriagewayMarkingType_3" integer,
-    "CarriagewayMarkingType_4" integer,
-    "geom" "public"."geometry"(Point,27700)
-)
-INHERITS ("moving_traffic"."Restrictions");
-
-
-ALTER TABLE "moving_traffic"."CarriagewayMarkings" OWNER TO "postgres";
-
---
--- TOC entry 505 (class 1259 OID 516456)
--- Name: CarriagewayMarkings_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE SEQUENCE "moving_traffic"."CarriagewayMarkings_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE "moving_traffic"."CarriagewayMarkings_id_seq" OWNER TO "postgres";
-
---
--- TOC entry 488 (class 1259 OID 515939)
--- Name: HighwayDedications_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE SEQUENCE "moving_traffic"."HighwayDedications_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE "moving_traffic"."HighwayDedications_id_seq" OWNER TO "postgres";
-
---
--- TOC entry 489 (class 1259 OID 515941)
--- Name: HighwayDedications; Type: TABLE; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TABLE "moving_traffic"."HighwayDedications" (
-    "GeometryID" character varying(12) DEFAULT ('H_'::"text" || "to_char"("nextval"('"moving_traffic"."HighwayDedications_id_seq"'::"regclass"), '000000000'::"text")),
-    "dedication" "moving_traffic_lookups"."dedicationValue" NOT NULL,
-    "timeInterval" integer,
-    "mt_capture_geom" "public"."geometry"(LineString,27700)
+    "MHTC_CheckNotes" character varying(254),
+    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."HighwayDedications_id_seq"'::"regclass"), '000000000'::"text"))
 )
 INHERITS ("moving_traffic"."Restrictions");
 
@@ -1216,7 +1140,7 @@ INHERITS ("moving_traffic"."Restrictions");
 ALTER TABLE "moving_traffic"."HighwayDedications" OWNER TO "postgres";
 
 --
--- TOC entry 486 (class 1259 OID 515929)
+-- TOC entry 348 (class 1259 OID 366789)
 -- Name: NetworkReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1228,7 +1152,7 @@ CREATE TABLE "moving_traffic"."NetworkReference" (
 ALTER TABLE "moving_traffic"."NetworkReference" OWNER TO "postgres";
 
 --
--- TOC entry 490 (class 1259 OID 515948)
+-- TOC entry 361 (class 1259 OID 371967)
 -- Name: LinkReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1243,7 +1167,7 @@ INHERITS ("moving_traffic"."NetworkReference");
 ALTER TABLE "moving_traffic"."LinkReference" OWNER TO "postgres";
 
 --
--- TOC entry 491 (class 1259 OID 515951)
+-- TOC entry 362 (class 1259 OID 371977)
 -- Name: SimpleLinearReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1258,7 +1182,7 @@ INHERITS ("moving_traffic"."LinkReference");
 ALTER TABLE "moving_traffic"."SimpleLinearReference" OWNER TO "postgres";
 
 --
--- TOC entry 492 (class 1259 OID 515954)
+-- TOC entry 363 (class 1259 OID 371984)
 -- Name: LinearReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1272,7 +1196,7 @@ INHERITS ("moving_traffic"."SimpleLinearReference");
 ALTER TABLE "moving_traffic"."LinearReference" OWNER TO "postgres";
 
 --
--- TOC entry 493 (class 1259 OID 515960)
+-- TOC entry 364 (class 1259 OID 371992)
 -- Name: NodeReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1285,7 +1209,7 @@ INHERITS ("moving_traffic"."NetworkReference");
 ALTER TABLE "moving_traffic"."NodeReference" OWNER TO "postgres";
 
 --
--- TOC entry 494 (class 1259 OID 515963)
+-- TOC entry 365 (class 1259 OID 372000)
 -- Name: SimplePointReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1299,7 +1223,7 @@ INHERITS ("moving_traffic"."LinkReference");
 ALTER TABLE "moving_traffic"."SimplePointReference" OWNER TO "postgres";
 
 --
--- TOC entry 495 (class 1259 OID 515966)
+-- TOC entry 366 (class 1259 OID 372005)
 -- Name: PointReference; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1312,7 +1236,7 @@ INHERITS ("moving_traffic"."SimplePointReference");
 ALTER TABLE "moving_traffic"."PointReference" OWNER TO "postgres";
 
 --
--- TOC entry 496 (class 1259 OID 515972)
+-- TOC entry 358 (class 1259 OID 371844)
 -- Name: RestrictionsForVehicles_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1327,19 +1251,37 @@ CREATE SEQUENCE "moving_traffic"."RestrictionsForVehicles_id_seq"
 ALTER TABLE "moving_traffic"."RestrictionsForVehicles_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 497 (class 1259 OID 515974)
+-- TOC entry 349 (class 1259 OID 366947)
 -- Name: RestrictionsForVehicles; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
 CREATE TABLE "moving_traffic"."RestrictionsForVehicles" (
-    "GeometryID" character varying(12) DEFAULT ('R_'::"text" || "to_char"("nextval"('"moving_traffic"."RestrictionsForVehicles_id_seq"'::"regclass"), '000000000'::"text")),
     "restrictionType" "moving_traffic_lookups"."restrictionTypeValue" NOT NULL,
     "measure" double precision NOT NULL,
     "measure2" double precision,
     "inclusion" integer,
     "exemption" integer,
     "structure" "moving_traffic_lookups"."structureTypeValue",
-    "mt_capture_geom" "public"."geometry"(Point,27700)
+    "Notes" character varying(254),
+    "Photos_01" character varying(255),
+    "Photos_02" character varying(255),
+    "Photos_03" character varying(255),
+    "RoadName" character varying(254),
+    "USRN" character varying(254),
+    "label_X" double precision,
+    "label_Y" double precision,
+    "label_Rotation" double precision,
+    "label_TextChanged" character varying(254),
+    "OpenDate" "date",
+    "CloseDate" "date",
+    "LastUpdateDateTime" timestamp without time zone NOT NULL,
+    "LastUpdatePerson" character varying(255) NOT NULL,
+    "ComplianceRoadMarkingsFaded" integer,
+    "ComplianceRestrictionSignIssue" integer,
+    "ComplianceNotes" character varying(254),
+    "MHTC_CheckIssueTypeID" integer,
+    "MHTC_CheckNotes" character varying(254),
+    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."RestrictionsForVehicles_id_seq"'::"regclass"), '000000000'::"text"))
 )
 INHERITS ("moving_traffic"."Restrictions");
 
@@ -1347,7 +1289,7 @@ INHERITS ("moving_traffic"."Restrictions");
 ALTER TABLE "moving_traffic"."RestrictionsForVehicles" OWNER TO "postgres";
 
 --
--- TOC entry 498 (class 1259 OID 515981)
+-- TOC entry 359 (class 1259 OID 371856)
 -- Name: SpecialDesignations_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1362,16 +1304,35 @@ CREATE SEQUENCE "moving_traffic"."SpecialDesignations_id_seq"
 ALTER TABLE "moving_traffic"."SpecialDesignations_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 499 (class 1259 OID 515983)
+-- TOC entry 353 (class 1259 OID 367202)
 -- Name: SpecialDesignations; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
 CREATE TABLE "moving_traffic"."SpecialDesignations" (
-    "GeometryID" character varying(12) DEFAULT ('D_'::"text" || "to_char"("nextval"('"moving_traffic"."SpecialDesignations_id_seq"'::"regclass"), '000000000'::"text")),
     "designation" "moving_traffic_lookups"."specialDesignationTypeValue" NOT NULL,
     "timeInterval" integer,
+    "applicableDirection" integer NOT NULL,
     "lane" integer,
-    "mt_capture_geom" "public"."geometry"(LineString,27700)
+    "Notes" character varying(254),
+    "Photos_01" character varying(255),
+    "Photos_02" character varying(255),
+    "Photos_03" character varying(255),
+    "RoadName" character varying(254),
+    "USRN" character varying(254),
+    "label_X" double precision,
+    "label_Y" double precision,
+    "label_Rotation" double precision,
+    "label_TextChanged" character varying(254),
+    "OpenDate" "date",
+    "CloseDate" "date",
+    "LastUpdateDateTime" timestamp without time zone NOT NULL,
+    "LastUpdatePerson" character varying(255) NOT NULL,
+    "ComplianceRoadMarkingsFaded" integer,
+    "ComplianceRestrictionSignIssue" integer,
+    "ComplianceNotes" character varying(254),
+    "MHTC_CheckIssueTypeID" integer,
+    "MHTC_CheckNotes" character varying(254),
+    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."SpecialDesignations_id_seq"'::"regclass"), '000000000'::"text"))
 )
 INHERITS ("moving_traffic"."Restrictions");
 
@@ -1379,7 +1340,7 @@ INHERITS ("moving_traffic"."Restrictions");
 ALTER TABLE "moving_traffic"."SpecialDesignations" OWNER TO "postgres";
 
 --
--- TOC entry 500 (class 1259 OID 515990)
+-- TOC entry 360 (class 1259 OID 371868)
 -- Name: TurnRestrictions_id_seq; Type: SEQUENCE; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1394,17 +1355,35 @@ CREATE SEQUENCE "moving_traffic"."TurnRestrictions_id_seq"
 ALTER TABLE "moving_traffic"."TurnRestrictions_id_seq" OWNER TO "postgres";
 
 --
--- TOC entry 506 (class 1259 OID 516552)
+-- TOC entry 350 (class 1259 OID 366995)
 -- Name: TurnRestrictions; Type: TABLE; Schema: moving_traffic; Owner: postgres
 --
 
 CREATE TABLE "moving_traffic"."TurnRestrictions" (
-    "GeometryID" character varying(12) DEFAULT ('V_'::"text" || "to_char"("nextval"('"moving_traffic"."TurnRestrictions_id_seq"'::"regclass"), '000000000'::"text")),
-    "restrictionType" "moving_traffic_lookups"."turnRestrictionValue" NOT NULL,
+    "restriction" "moving_traffic_lookups"."turnRestrictionValue" NOT NULL,
     "inclusion" integer,
     "exemption" integer,
     "timeInterval" integer,
-    "mt_capture_geom" "public"."geometry"(LineString,27700)
+    "Notes" character varying(254),
+    "Photos_01" character varying(255),
+    "Photos_02" character varying(255),
+    "Photos_03" character varying(255),
+    "RoadName" character varying(254),
+    "USRN" character varying(254),
+    "label_X" double precision,
+    "label_Y" double precision,
+    "label_Rotation" double precision,
+    "label_TextChanged" character varying(254),
+    "OpenDate" "date",
+    "CloseDate" "date",
+    "LastUpdateDateTime" timestamp without time zone NOT NULL,
+    "LastUpdatePerson" character varying(255) NOT NULL,
+    "ComplianceRoadMarkingsFaded" integer,
+    "ComplianceRestrictionSignIssue" integer,
+    "ComplianceNotes" character varying(254),
+    "MHTC_CheckIssueTypeID" integer,
+    "MHTC_CheckNotes" character varying(254),
+    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."TurnRestrictions_id_seq"'::"regclass"), '000000000'::"text"))
 )
 INHERITS ("moving_traffic"."Restrictions");
 
@@ -1412,34 +1391,25 @@ INHERITS ("moving_traffic"."Restrictions");
 ALTER TABLE "moving_traffic"."TurnRestrictions" OWNER TO "postgres";
 
 --
--- TOC entry 4494 (class 2606 OID 516000)
+-- TOC entry 4076 (class 2606 OID 367097)
 -- Name: AccessRestrictions AccessRestrictions_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
-    ADD CONSTRAINT "AccessRestrictions_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "AccessRestrictions_pkey" PRIMARY KEY ("RestrictionID") INCLUDE ("NetworkReferenceID");
 
 
 --
--- TOC entry 4516 (class 2606 OID 516620)
--- Name: CarriagewayMarkings CarriagewayMarkings_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_pkey" PRIMARY KEY ("RestrictionID");
-
-
---
--- TOC entry 4496 (class 2606 OID 516002)
+-- TOC entry 4078 (class 2606 OID 367135)
 -- Name: HighwayDedications HighwayDedications_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
-    ADD CONSTRAINT "HighwayDedications_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "HighwayDedications_pkey" PRIMARY KEY ("RestrictionID") INCLUDE ("NetworkReferenceID");
 
 
 --
--- TOC entry 4504 (class 2606 OID 516004)
+-- TOC entry 4088 (class 2606 OID 371991)
 -- Name: LinearReference LinearReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1448,7 +1418,7 @@ ALTER TABLE ONLY "moving_traffic"."LinearReference"
 
 
 --
--- TOC entry 4498 (class 2606 OID 516006)
+-- TOC entry 4082 (class 2606 OID 371971)
 -- Name: LinkReference LinkReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1457,7 +1427,7 @@ ALTER TABLE ONLY "moving_traffic"."LinkReference"
 
 
 --
--- TOC entry 4492 (class 2606 OID 516008)
+-- TOC entry 4070 (class 2606 OID 366793)
 -- Name: NetworkReference NetworkReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1466,7 +1436,7 @@ ALTER TABLE ONLY "moving_traffic"."NetworkReference"
 
 
 --
--- TOC entry 4508 (class 2606 OID 516010)
+-- TOC entry 4092 (class 2606 OID 372012)
 -- Name: PointReference PointReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1475,16 +1445,16 @@ ALTER TABLE ONLY "moving_traffic"."PointReference"
 
 
 --
--- TOC entry 4510 (class 2606 OID 516012)
+-- TOC entry 4072 (class 2606 OID 366954)
 -- Name: RestrictionsForVehicles RestrictionForVehicles_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
-    ADD CONSTRAINT "RestrictionForVehicles_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "RestrictionForVehicles_pkey" PRIMARY KEY ("RestrictionID") INCLUDE ("NetworkReferenceID");
 
 
 --
--- TOC entry 4490 (class 2606 OID 516014)
+-- TOC entry 4068 (class 2606 OID 371882)
 -- Name: Restrictions Restrictions_GeometryID_key; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1493,7 +1463,7 @@ ALTER TABLE ONLY "moving_traffic"."Restrictions"
 
 
 --
--- TOC entry 4500 (class 2606 OID 516016)
+-- TOC entry 4084 (class 2606 OID 371983)
 -- Name: SimpleLinearReference SimpleLinearReference_NetworkReferenceID_linkReference_key; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1502,7 +1472,7 @@ ALTER TABLE ONLY "moving_traffic"."SimpleLinearReference"
 
 
 --
--- TOC entry 4502 (class 2606 OID 516018)
+-- TOC entry 4086 (class 2606 OID 371981)
 -- Name: SimpleLinearReference SimpleLinearReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1511,7 +1481,7 @@ ALTER TABLE ONLY "moving_traffic"."SimpleLinearReference"
 
 
 --
--- TOC entry 4506 (class 2606 OID 516020)
+-- TOC entry 4090 (class 2606 OID 372004)
 -- Name: SimplePointReference SimplePointReference_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1520,121 +1490,132 @@ ALTER TABLE ONLY "moving_traffic"."SimplePointReference"
 
 
 --
--- TOC entry 4512 (class 2606 OID 516022)
+-- TOC entry 4080 (class 2606 OID 367209)
 -- Name: SpecialDesignations SpecialDesignations_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
-    ADD CONSTRAINT "SpecialDesignations_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "SpecialDesignations_pkey" PRIMARY KEY ("RestrictionID") INCLUDE ("NetworkReferenceID");
 
 
 --
--- TOC entry 4514 (class 2606 OID 516560)
+-- TOC entry 4074 (class 2606 OID 367002)
 -- Name: TurnRestrictions TurnRestrictions_pkey; Type: CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
-    ADD CONSTRAINT "TurnRestrictions_pkey" PRIMARY KEY ("RestrictionID");
+    ADD CONSTRAINT "TurnRestrictions_pkey" PRIMARY KEY ("RestrictionID") INCLUDE ("NetworkReferenceID");
 
 
 --
--- TOC entry 4538 (class 2620 OID 516025)
+-- TOC entry 4130 (class 2620 OID 371883)
 -- Name: AccessRestrictions create_geometryid_access_restrictions; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "create_geometryid_access_restrictions" BEFORE INSERT ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
+CREATE TRIGGER "create_geometryid_access_restrictions" BEFORE INSERT ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid2"();
 
 
 --
--- TOC entry 4548 (class 2620 OID 516646)
--- Name: CarriagewayMarkings create_geometryid_carriageway_markings; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TRIGGER "create_geometryid_carriageway_markings" BEFORE INSERT ON "moving_traffic"."CarriagewayMarkings" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
-
-
---
--- TOC entry 4540 (class 2620 OID 516026)
+-- TOC entry 4132 (class 2620 OID 371888)
 -- Name: HighwayDedications create_geometryid_highway_dedications; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "create_geometryid_highway_dedications" BEFORE INSERT ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
+CREATE TRIGGER "create_geometryid_highway_dedications" BEFORE INSERT ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid2"();
 
 
 --
--- TOC entry 4542 (class 2620 OID 516027)
+-- TOC entry 4126 (class 2620 OID 371885)
 -- Name: RestrictionsForVehicles create_geometryid_restrictions_for_vehicles; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "create_geometryid_restrictions_for_vehicles" BEFORE INSERT ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
+CREATE TRIGGER "create_geometryid_restrictions_for_vehicles" BEFORE INSERT ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid2"();
 
 
 --
--- TOC entry 4544 (class 2620 OID 516028)
+-- TOC entry 4133 (class 2620 OID 371886)
 -- Name: SpecialDesignations create_geometryid_special_designations; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "create_geometryid_special_designations" BEFORE INSERT ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
+CREATE TRIGGER "create_geometryid_special_designations" BEFORE INSERT ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid2"();
 
 
 --
--- TOC entry 4546 (class 2620 OID 516561)
+-- TOC entry 4128 (class 2620 OID 371887)
 -- Name: TurnRestrictions create_geometryid_turn_restrictions; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "create_geometryid_turn_restrictions" BEFORE INSERT ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
+CREATE TRIGGER "create_geometryid_turn_restrictions" BEFORE INSERT ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid2"();
 
 
 --
--- TOC entry 4539 (class 2620 OID 516544)
--- Name: AccessRestrictions set_last_update_details_access_restrictions; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4129 (class 2620 OID 371819)
+-- Name: AccessRestrictions set_last_update_details_AccessRestriction; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "set_last_update_details_access_restrictions" BEFORE INSERT OR UPDATE ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
-
-
---
--- TOC entry 4549 (class 2620 OID 516647)
--- Name: CarriagewayMarkings set_last_update_details_carriageway_markings; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TRIGGER "set_last_update_details_carriageway_markings" BEFORE INSERT OR UPDATE ON "moving_traffic"."CarriagewayMarkings" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+CREATE TRIGGER "set_last_update_details_AccessRestriction" BEFORE INSERT OR UPDATE ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 
 
 --
--- TOC entry 4541 (class 2620 OID 516543)
--- Name: HighwayDedications set_last_update_details_highway_dedications; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4131 (class 2620 OID 371831)
+-- Name: HighwayDedications set_last_update_details_HighwayDedications; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "set_last_update_details_highway_dedications" BEFORE INSERT OR UPDATE ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
-
-
---
--- TOC entry 4543 (class 2620 OID 516542)
--- Name: RestrictionsForVehicles set_last_update_details_restrictions_for_vehicles; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TRIGGER "set_last_update_details_restrictions_for_vehicles" BEFORE INSERT OR UPDATE ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+CREATE TRIGGER "set_last_update_details_HighwayDedications" BEFORE INSERT OR UPDATE ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 
 
 --
--- TOC entry 4545 (class 2620 OID 516541)
--- Name: SpecialDesignations set_last_update_details_special_designations; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4125 (class 2620 OID 371843)
+-- Name: RestrictionsForVehicles set_last_update_details_RestrictionsForVehicles; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
 --
 
-CREATE TRIGGER "set_last_update_details_special_designations" BEFORE INSERT OR UPDATE ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
-
-
---
--- TOC entry 4547 (class 2620 OID 516562)
--- Name: TurnRestrictions set_last_update_details_turn_restrictions; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
---
-
-CREATE TRIGGER "set_last_update_details_turn_restrictions" BEFORE INSERT OR UPDATE ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+CREATE TRIGGER "set_last_update_details_RestrictionsForVehicles" BEFORE INSERT OR UPDATE ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 
 
 --
--- TOC entry 4520 (class 2606 OID 516030)
+-- TOC entry 4134 (class 2620 OID 371855)
+-- Name: SpecialDesignations set_last_update_details_SpecialDesignations; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE TRIGGER "set_last_update_details_SpecialDesignations" BEFORE INSERT OR UPDATE ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
+
+--
+-- TOC entry 4127 (class 2620 OID 371867)
+-- Name: TurnRestrictions set_last_update_details_TurnRestrictions; Type: TRIGGER; Schema: moving_traffic; Owner: postgres
+--
+
+CREATE TRIGGER "set_last_update_details_TurnRestrictions" BEFORE INSERT OR UPDATE ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
+
+--
+-- TOC entry 4106 (class 2606 OID 367098)
+-- Name: AccessRestrictions AccessRestrictions_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
+    ADD CONSTRAINT "AccessRestrictions_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
+
+
+--
+-- TOC entry 4107 (class 2606 OID 367103)
+-- Name: AccessRestrictions AccessRestrictions_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
+    ADD CONSTRAINT "AccessRestrictions_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+
+
+--
+-- TOC entry 4108 (class 2606 OID 367108)
+-- Name: AccessRestrictions AccessRestrictions_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
+    ADD CONSTRAINT "AccessRestrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+
+
+--
+-- TOC entry 4109 (class 2606 OID 367113)
 -- Name: AccessRestrictions AccessRestrictions_exemption_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1643,7 +1624,7 @@ ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
 
 
 --
--- TOC entry 4521 (class 2606 OID 516035)
+-- TOC entry 4110 (class 2606 OID 367118)
 -- Name: AccessRestrictions AccessRestrictions_inclusion_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1652,7 +1633,7 @@ ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
 
 
 --
--- TOC entry 4522 (class 2606 OID 516040)
+-- TOC entry 4111 (class 2606 OID 367123)
 -- Name: AccessRestrictions AccessRestrictions_timeInterval_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1661,52 +1642,43 @@ ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
 
 
 --
--- TOC entry 4533 (class 2606 OID 516621)
--- Name: CarriagewayMarkings CarriagewayMarkings_CarriagewayMarkingTypes2_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4114 (class 2606 OID 367146)
+-- Name: HighwayDedications HighwayDedications_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_CarriagewayMarkingTypes2_fkey" FOREIGN KEY ("CarriagewayMarkingType_2") REFERENCES "moving_traffic_lookups"."CarriagewayMarkingTypesInUse"("Code");
-
-
---
--- TOC entry 4534 (class 2606 OID 516626)
--- Name: CarriagewayMarkings CarriagewayMarkings_CarriagewayMarkingTypes3_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_CarriagewayMarkingTypes3_fkey" FOREIGN KEY ("CarriagewayMarkingType_3") REFERENCES "moving_traffic_lookups"."CarriagewayMarkingTypesInUse"("Code");
+ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
+    ADD CONSTRAINT "HighwayDedications_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
 
 
 --
--- TOC entry 4535 (class 2606 OID 516631)
--- Name: CarriagewayMarkings CarriagewayMarkings_CarriagewayMarkingTypes4_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4115 (class 2606 OID 367151)
+-- Name: HighwayDedications HighwayDedications_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_CarriagewayMarkingTypes4_fkey" FOREIGN KEY ("CarriagewayMarkingType_4") REFERENCES "moving_traffic_lookups"."CarriagewayMarkingTypesInUse"("Code");
-
-
---
--- TOC entry 4536 (class 2606 OID 516636)
--- Name: CarriagewayMarkings CarriagewayMarkings_CarriagewayMarkingsTypes1_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_CarriagewayMarkingsTypes1_fkey" FOREIGN KEY ("CarriagewayMarkingType_1") REFERENCES "moving_traffic_lookups"."CarriagewayMarkingTypesInUse"("Code");
+ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
+    ADD CONSTRAINT "HighwayDedications_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
 
 
 --
--- TOC entry 4537 (class 2606 OID 516641)
--- Name: CarriagewayMarkings CarriagewayMarkings_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4116 (class 2606 OID 367156)
+-- Name: HighwayDedications HighwayDedications_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
-ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
-    ADD CONSTRAINT "CarriagewayMarkings_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
+    ADD CONSTRAINT "HighwayDedications_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 
 --
--- TOC entry 4523 (class 2606 OID 516045)
+-- TOC entry 4112 (class 2606 OID 367136)
+-- Name: HighwayDedications HighwayDedications_NetworkRestrictionID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
+    ADD CONSTRAINT "HighwayDedications_NetworkRestrictionID_fkey" FOREIGN KEY ("NetworkReferenceID") REFERENCES "moving_traffic"."NetworkReference"("NetworkReferenceID");
+
+
+--
+-- TOC entry 4113 (class 2606 OID 367141)
 -- Name: HighwayDedications HighwayDedications_timeInterval_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1715,7 +1687,7 @@ ALTER TABLE ONLY "moving_traffic"."HighwayDedications"
 
 
 --
--- TOC entry 4526 (class 2606 OID 516050)
+-- TOC entry 4124 (class 2606 OID 372013)
 -- Name: PointReference PointReference_linkReference_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1724,7 +1696,43 @@ ALTER TABLE ONLY "moving_traffic"."PointReference"
 
 
 --
--- TOC entry 4527 (class 2606 OID 516055)
+-- TOC entry 4093 (class 2606 OID 366955)
+-- Name: RestrictionsForVehicles RestrictionForVehicles_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
+    ADD CONSTRAINT "RestrictionForVehicles_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
+
+
+--
+-- TOC entry 4094 (class 2606 OID 366960)
+-- Name: RestrictionsForVehicles RestrictionForVehicles_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
+    ADD CONSTRAINT "RestrictionForVehicles_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+
+
+--
+-- TOC entry 4095 (class 2606 OID 366965)
+-- Name: RestrictionsForVehicles RestrictionForVehicles_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
+    ADD CONSTRAINT "RestrictionForVehicles_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+
+
+--
+-- TOC entry 4096 (class 2606 OID 366970)
+-- Name: RestrictionsForVehicles RestrictionForVehicles_NetworkReferenceID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
+    ADD CONSTRAINT "RestrictionForVehicles_NetworkReferenceID_fkey" FOREIGN KEY ("NetworkReferenceID") REFERENCES "moving_traffic"."NetworkReference"("NetworkReferenceID");
+
+
+--
+-- TOC entry 4097 (class 2606 OID 366975)
 -- Name: RestrictionsForVehicles RestrictionForVehicles_exemption_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1733,7 +1741,7 @@ ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
 
 
 --
--- TOC entry 4528 (class 2606 OID 516060)
+-- TOC entry 4098 (class 2606 OID 366980)
 -- Name: RestrictionsForVehicles RestrictionForVehicles_inclusion_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1742,34 +1750,43 @@ ALTER TABLE ONLY "moving_traffic"."RestrictionsForVehicles"
 
 
 --
--- TOC entry 4517 (class 2606 OID 515914)
--- Name: Restrictions Restrictions_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4117 (class 2606 OID 367210)
+-- Name: SpecialDesignations SpecialDesignations_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
-ALTER TABLE ONLY "moving_traffic"."Restrictions"
-    ADD CONSTRAINT "Restrictions_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
-
-
---
--- TOC entry 4518 (class 2606 OID 515919)
--- Name: Restrictions Restrictions_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
---
-
-ALTER TABLE ONLY "moving_traffic"."Restrictions"
-    ADD CONSTRAINT "Restrictions_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
+    ADD CONSTRAINT "SpecialDesignations_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
 
 
 --
--- TOC entry 4519 (class 2606 OID 515924)
--- Name: Restrictions Restrictions_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+-- TOC entry 4118 (class 2606 OID 367215)
+-- Name: SpecialDesignations SpecialDesignations_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
-ALTER TABLE ONLY "moving_traffic"."Restrictions"
-    ADD CONSTRAINT "Restrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
+    ADD CONSTRAINT "SpecialDesignations_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
 
 
 --
--- TOC entry 4529 (class 2606 OID 516065)
+-- TOC entry 4119 (class 2606 OID 367220)
+-- Name: SpecialDesignations SpecialDesignations_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
+    ADD CONSTRAINT "SpecialDesignations_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+
+
+--
+-- TOC entry 4120 (class 2606 OID 367225)
+-- Name: SpecialDesignations SpecialDesignations_NetworkReferenceID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
+    ADD CONSTRAINT "SpecialDesignations_NetworkReferenceID_fkey" FOREIGN KEY ("NetworkReferenceID") REFERENCES "moving_traffic"."NetworkReference"("NetworkReferenceID");
+
+
+--
+-- TOC entry 4121 (class 2606 OID 367230)
 -- Name: SpecialDesignations SpecialDesignations_timeInterval_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1778,7 +1795,43 @@ ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
 
 
 --
--- TOC entry 4530 (class 2606 OID 516563)
+-- TOC entry 4099 (class 2606 OID 367003)
+-- Name: TurnRestrictions TurnRestrictions_ComplianceRestrictionSignIssue_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
+    ADD CONSTRAINT "TurnRestrictions_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
+
+
+--
+-- TOC entry 4100 (class 2606 OID 367008)
+-- Name: TurnRestrictions TurnRestrictions_ComplianceRoadMarkingsFaded_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
+    ADD CONSTRAINT "TurnRestrictions_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+
+
+--
+-- TOC entry 4101 (class 2606 OID 367013)
+-- Name: TurnRestrictions TurnRestrictions_MHTC_CheckIssueTypeID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
+    ADD CONSTRAINT "TurnRestrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+
+
+--
+-- TOC entry 4102 (class 2606 OID 367018)
+-- Name: TurnRestrictions TurnRestrictions_NetworkReferenceID_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
+--
+
+ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
+    ADD CONSTRAINT "TurnRestrictions_NetworkReferenceID_fkey" FOREIGN KEY ("NetworkReferenceID") REFERENCES "moving_traffic"."NetworkReference"("NetworkReferenceID");
+
+
+--
+-- TOC entry 4103 (class 2606 OID 367023)
 -- Name: TurnRestrictions TurnRestrictions_exemption_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1787,7 +1840,7 @@ ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
 
 
 --
--- TOC entry 4531 (class 2606 OID 516568)
+-- TOC entry 4104 (class 2606 OID 367028)
 -- Name: TurnRestrictions TurnRestrictions_inclusion_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1796,7 +1849,7 @@ ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
 
 
 --
--- TOC entry 4532 (class 2606 OID 516573)
+-- TOC entry 4105 (class 2606 OID 367033)
 -- Name: TurnRestrictions TurnRestrictions_timeInterval_fkey; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1805,7 +1858,7 @@ ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
 
 
 --
--- TOC entry 4524 (class 2606 OID 516085)
+-- TOC entry 4122 (class 2606 OID 371972)
 -- Name: LinkReference fk_link; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
@@ -1814,61 +1867,10 @@ ALTER TABLE ONLY "moving_traffic"."LinkReference"
 
 
 --
--- TOC entry 4525 (class 2606 OID 516090)
+-- TOC entry 4123 (class 2606 OID 371995)
 -- Name: NodeReference fk_node; Type: FK CONSTRAINT; Schema: moving_traffic; Owner: postgres
 --
 
 ALTER TABLE ONLY "moving_traffic"."NodeReference"
     ADD CONSTRAINT "fk_node" FOREIGN KEY ("nodeReference") REFERENCES "highways_network"."itn_roadcentreline"("toid");
-
--- Completed on 2020-08-06 08:00:37
-
---
--- PostgreSQL database dump complete
---
-
---
--- TOC entry 4169 (class 0 OID 0)
--- Dependencies: 354
--- Name: MHTC_RoadLinks_id_seq; Type: SEQUENCE OWNED BY; Schema: highways_network; Owner: postgres
---
-
-CREATE SEQUENCE "highways_network"."MHTC_RoadLinks_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE "highways_network"."MHTC_RoadLinks_id_seq" OWNER TO "postgres";
-
---
--- TOC entry 355 (class 1259 OID 371810)
--- Name: MHTC_RoadLinks; Type: TABLE; Schema: highways_network; Owner: postgres
---
-
-CREATE TABLE "highways_network"."MHTC_RoadLinks"
-(
-    notes character varying(255) COLLATE pg_catalog."default",
-    geom geometry(LineString,27700) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), '000000000'::"text"))
-	)
-INHERITS ("moving_traffic"."Restrictions");
-
-ALTER TABLE ONLY "highways_network"."MHTC_RoadLinks"
-    ADD CONSTRAINT "MHTC_RoadLinks_pkey" PRIMARY KEY ("RestrictionID");
-
-ALTER TABLE "highways_network"."MHTC_RoadLinks" OWNER TO "postgres";
-
---ALTER SEQUENCE "highways_network"."MHTC_RoadLinks_id_seq" OWNED BY "highways_network"."MHTC_RoadLinks"."id";
---
--- TOC entry 354 (class 1259 OID 371808)
--- Name: MHTC_RoadLinks_id_seq; Type: SEQUENCE; Schema: highways_network; Owner: postgres
---
-
-CREATE TRIGGER "create_geometryid_mhtc_RoadLinks" BEFORE INSERT ON "highways_network"."MHTC_RoadLinks" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid"();
-
-CREATE TRIGGER "set_last_update_details_mhtc_RoadLinks" BEFORE INSERT OR UPDATE ON "highways_network"."MHTC_RoadLinks" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 

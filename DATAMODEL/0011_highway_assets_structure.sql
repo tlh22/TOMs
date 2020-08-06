@@ -1008,7 +1008,11 @@ CREATE INDEX "sidx_VehicleBarriers_geom" ON "highway_assets"."VehicleBarriers" U
 
 CREATE TRIGGER "create_geometryid_benches" BEFORE INSERT ON "highway_assets"."Benches" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid_highway_assets"();
 
-
+CREATE TRIGGER create_geometryid_bins
+    BEFORE INSERT
+    ON highway_assets."Bins"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.create_geometryid_highway_assets();
 --
 -- TOC entry 4373 (class 2620 OID 508494)
 -- Name: Bollards create_geometryid_bollards; Type: TRIGGER; Schema: highway_assets; Owner: postgres

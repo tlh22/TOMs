@@ -5,180 +5,164 @@
 -- Dumped from database version 12.2
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-07-03 20:17:16
+-- Started on 2020-08-06 09:07:33
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
+--SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 4145 (class 0 OID 350401)
--- Dependencies: 325
+-- TOC entry 4685 (class 0 OID 515783)
+-- Dependencies: 460
 -- Data for Name: AccessRestrictionValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (1, 'forbiddenLegally');
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (2, 'physicallyImpossible');
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (3, 'private');
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (4, 'publicAccess');
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (5, 'seasonal');
-INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (6, 'toll');
 
 
 --
--- TOC entry 4146 (class 0 OID 350414)
--- Dependencies: 326
+-- TOC entry 4707 (class 0 OID 516435)
+-- Dependencies: 501
+-- Data for Name: CarriagewayMarkingTypes; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
+--
+
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (1, '20 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (2, '30 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (4, '40 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (5, '10 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (6, '5 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (7, '15 MPH (Max)', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (8, 'Turn Right', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (9, 'Turn Left', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (10, 'Straight on', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (11, 'No Entry', NULL);
+
+
+--
+-- TOC entry 4708 (class 0 OID 516441)
+-- Dependencies: 502
+-- Data for Name: CarriagewayMarkingTypesInUse; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
+--
+
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (1);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (2);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (3);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (4);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (5);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (6);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (7);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (8);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (9);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (10);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (11);
+
+
+REFRESH MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View";
+
+--
+-- TOC entry 4687 (class 0 OID 515791)
+-- Dependencies: 462
 -- Data for Name: CycleFacilityValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (1, 'Advisory Cycle Lane Along Road');
-INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (2, 'Mandatory Cycle Lane Along Road');
-INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (3, 'Physically Segregated Cycle Lane Along Road');
-INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (4, 'Unknown Type of Cycle Route Along Road');
-INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (5, 'Signed Cycle Route');
 
 
 --
--- TOC entry 4147 (class 0 OID 350422)
--- Dependencies: 327
+-- TOC entry 4689 (class 0 OID 515796)
+-- Dependencies: 464
 -- Data for Name: DedicationValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (1, 'All Vehicles');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (2, 'Bridleway');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (3, 'Byway Open To All Traffic');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (4, 'Cycle Track Or Cycle Way');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (5, 'Motorway');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (6, 'No Dedication Or Dedication Unknown');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (7, 'Pedestrian Way Or Footpath');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (8, 'Restricted Byway');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (9, 'Pedestrians and pedal cycles only');
-INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (10, 'Separated track and path for cyclists and pedestrians');
 
 
 --
--- TOC entry 4148 (class 0 OID 350430)
--- Dependencies: 328
+-- TOC entry 4691 (class 0 OID 515801)
+-- Dependencies: 466
 -- Data for Name: LinkDirectionValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."LinkDirectionValues" ("Code", "Description") VALUES (1, 'bothDirections');
-INSERT INTO "moving_traffic_lookups"."LinkDirectionValues" ("Code", "Description") VALUES (2, 'inDirection');
-INSERT INTO "moving_traffic_lookups"."LinkDirectionValues" ("Code", "Description") VALUES (3, 'inOppositeDirection');
 
 
 --
--- TOC entry 4149 (class 0 OID 350438)
--- Dependencies: 329
+-- TOC entry 4693 (class 0 OID 515806)
+-- Dependencies: 468
 -- Data for Name: RestrictionTypeValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (1, 'maximumDoubleAxleWeight');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (2, 'maximumHeight');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (3, 'maximumLength');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (4, 'maximumSingleAxleWeight');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (5, 'maximumTotalWeight');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (6, 'maximumTripleAxleWeight');
-INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (7, 'maximumWidth');
 
 
 --
--- TOC entry 4151 (class 0 OID 350470)
--- Dependencies: 331
+-- TOC entry 4695 (class 0 OID 515811)
+-- Dependencies: 470
 -- Data for Name: SpecialDesignationTypes; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (1, 'Bus Lane');
-INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (2, 'Cycle Lane');
-INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (3, 'Signal controlled cycle crossing (from cycle track)');
-INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (4, 'Signal controlled cycle crossing (from cycle lane)');
-INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (5, 'Test');
 
 
 --
--- TOC entry 4152 (class 0 OID 350476)
--- Dependencies: 332
+-- TOC entry 4697 (class 0 OID 515819)
+-- Dependencies: 472
 -- Data for Name: SpeedLimitValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (1, '5');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (2, '10');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (3, '15');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (4, '20');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (5, '30');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (6, '40');
-INSERT INTO "moving_traffic_lookups"."SpeedLimitValues" ("Code", "Description") VALUES (7, '50');
 
 
 --
--- TOC entry 4153 (class 0 OID 350486)
--- Dependencies: 333
+-- TOC entry 4699 (class 0 OID 515827)
+-- Dependencies: 474
 -- Data for Name: StructureTypeValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (1, 'Barrier');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (2, 'Bridge Under Road');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (3, 'Bridge Over Road');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (4, 'Gate');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (5, 'Level Crossing Fully Barriered');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (6, 'Level Crossing Part Barriered');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (7, 'Level Crossing Unbarriered');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (8, 'Moveable barrier');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (9, 'Pedestrian Crossing');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (10, 'Rising Bollards');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (11, 'Street Lighting');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (12, 'Structure');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (13, 'Traffic Calming');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (14, 'Traffic Signal');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (15, 'Toll Indicator');
-INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (16, 'Tunnel');
 
 
 --
--- TOC entry 4154 (class 0 OID 350494)
--- Dependencies: 334
+-- TOC entry 4701 (class 0 OID 515832)
+-- Dependencies: 476
 -- Data for Name: TurnRestrictionValues; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (1, 'Mandatory Turn');
-INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (2, 'No Turn');
-INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (3, 'One Way');
-INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (4, 'Priority to on-coming vehicles');
 
 
 --
--- TOC entry 4155 (class 0 OID 350502)
--- Dependencies: 335
+-- TOC entry 4703 (class 0 OID 515837)
+-- Dependencies: 478
 -- Data for Name: VehicleQualifiers; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (1, 'Goods Vehicles Exceeding 7.5T');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (2, 'Pedal Cycles');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (3, 'Loading and Unloading');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (4, 'Local Buses');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (5, 'Goods Vehicles Exceeding 16.5T');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (6, 'Goods Vehicles Exceeding 18T');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (7, 'Permit Holders');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (8, 'All Vehicles');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (9, 'Buses and Pedal Cycles');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (10, 'Motor Vehicles');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (11, 'Goods Vehicles Exceeding 3T');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (12, 'Emergency Vehicles');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (13, 'Access');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (14, 'Buses');
-INSERT INTO "moving_traffic_lookups"."VehicleQualifiers" ("Code", "Description") VALUES (15, 'Motor Cycles');
 
 
 --
--- TOC entry 4180 (class 0 OID 0)
--- Dependencies: 336
+-- TOC entry 4705 (class 0 OID 515842)
+-- Dependencies: 480
+-- Data for Name: vehicleQualifiers; Type: TABLE DATA; Schema: moving_traffic_lookups; Owner: postgres
+--
+
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (1, 'Goods Vehicles Exceeding 7.5T', '{"Goods Vehicles Exceeding 7.5T"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (2, 'Pedal Cycles', '{"Pedal Cycles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (3, 'Loading and Unloading', NULL, '{"Loading and Unloading"}', NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (4, 'Local Buses', NULL, '{"Local Buses"}', NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (5, 'Goods Vehicles Exceeding 16.5T', '{"Goods Vehicles Exceeding 16.5T"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (6, 'Goods Vehicles Exceeding 18T', '{"Goods Vehicles Exceeding 18T"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (7, 'Permit Holders', NULL, '{"Permit Holders"}', NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (8, 'All Vehicles', '{"All Vehicles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (9, 'Buses and Pedal Cycles', '{Buses,"Pedal Cycles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (10, 'Motor Vehicles', '{"Motor Vehicles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (11, 'Goods Vehicles Exceeding 3T', '{"Goods Vehicles Exceeding 3T"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (12, 'Emergency Vehicles', '{"Emergency Vehicles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (13, 'Access', NULL, '{Access}', NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (14, 'Buses', '{Buses}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (15, 'Motor Cycles', '{"Motor Cycles"}', NULL, NULL);
+
+
+--
+-- TOC entry 4755 (class 0 OID 0)
+-- Dependencies: 461
 -- Name: AccessRestrictionValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -186,8 +170,17 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."AccessRestrictionValues_Code
 
 
 --
--- TOC entry 4181 (class 0 OID 0)
--- Dependencies: 337
+-- TOC entry 4756 (class 0 OID 0)
+-- Dependencies: 504
+-- Name: CarriagewayMarkingTypes_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
+--
+
+SELECT pg_catalog.setval('"moving_traffic_lookups"."CarriagewayMarkingTypes_Code_seq"', 11, true);
+
+
+--
+-- TOC entry 4757 (class 0 OID 0)
+-- Dependencies: 463
 -- Name: CycleFacilityValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -195,8 +188,8 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."CycleFacilityValues_Code_seq
 
 
 --
--- TOC entry 4182 (class 0 OID 0)
--- Dependencies: 338
+-- TOC entry 4758 (class 0 OID 0)
+-- Dependencies: 465
 -- Name: DedicationValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -204,8 +197,8 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."DedicationValues_Code_seq"',
 
 
 --
--- TOC entry 4183 (class 0 OID 0)
--- Dependencies: 339
+-- TOC entry 4759 (class 0 OID 0)
+-- Dependencies: 467
 -- Name: LinkDirectionValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -213,8 +206,8 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."LinkDirectionValues_Code_seq
 
 
 --
--- TOC entry 4184 (class 0 OID 0)
--- Dependencies: 340
+-- TOC entry 4760 (class 0 OID 0)
+-- Dependencies: 469
 -- Name: RestrictionTypeValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -222,17 +215,17 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."RestrictionTypeValues_Code_s
 
 
 --
--- TOC entry 4185 (class 0 OID 0)
--- Dependencies: 330
+-- TOC entry 4761 (class 0 OID 0)
+-- Dependencies: 471
 -- Name: SpecialDesignationTypes_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"moving_traffic_lookups"."SpecialDesignationTypes_Code_seq"', 5, true);
+SELECT pg_catalog.setval('"moving_traffic_lookups"."SpecialDesignationTypes_Code_seq"', 1, false);
 
 
 --
--- TOC entry 4186 (class 0 OID 0)
--- Dependencies: 341
+-- TOC entry 4762 (class 0 OID 0)
+-- Dependencies: 473
 -- Name: SpeedLimitValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -240,8 +233,8 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."SpeedLimitValues_Code_seq"',
 
 
 --
--- TOC entry 4187 (class 0 OID 0)
--- Dependencies: 342
+-- TOC entry 4763 (class 0 OID 0)
+-- Dependencies: 475
 -- Name: StructureTypeValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -249,8 +242,8 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."StructureTypeValues_Code_seq
 
 
 --
--- TOC entry 4188 (class 0 OID 0)
--- Dependencies: 343
+-- TOC entry 4764 (class 0 OID 0)
+-- Dependencies: 477
 -- Name: TurnRestrictionValues_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
@@ -258,15 +251,24 @@ SELECT pg_catalog.setval('"moving_traffic_lookups"."TurnRestrictionValues_Code_s
 
 
 --
--- TOC entry 4189 (class 0 OID 0)
--- Dependencies: 344
+-- TOC entry 4765 (class 0 OID 0)
+-- Dependencies: 479
 -- Name: VehicleQualifiers_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
 --
 
 SELECT pg_catalog.setval('"moving_traffic_lookups"."VehicleQualifiers_Code_seq"', 1, false);
 
 
--- Completed on 2020-07-03 20:17:16
+--
+-- TOC entry 4766 (class 0 OID 0)
+-- Dependencies: 481
+-- Name: vehicleQualifiers_Code_seq; Type: SEQUENCE SET; Schema: moving_traffic_lookups; Owner: postgres
+--
+
+SELECT pg_catalog.setval('"moving_traffic_lookups"."vehicleQualifiers_Code_seq"', 15, true);
+
+
+-- Completed on 2020-08-06 09:07:34
 
 --
 -- PostgreSQL database dump complete
