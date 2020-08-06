@@ -204,7 +204,7 @@ class TOMsLayers(QObject):
             except:
                 formPath = None
 
-            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
 
             if not formPath:
                 TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
@@ -216,7 +216,7 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Warning)
+                                              level=Qgis.Info)
                     if len(formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
@@ -226,7 +226,7 @@ class TOMsLayers(QObject):
                                                       level=Qgis.Warning)
                         else:
                             TOMsMessageLog.logMessage("In TOMsLayers:getLayers.setting new path for form {} ...".format(path_absolute),
-                                                      level=Qgis.Warning)
+                                                      level=Qgis.Info)
                             layerEditFormConfig.setUiForm(path_absolute)
                             self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
 
@@ -241,10 +241,10 @@ class TOMsLayers(QObject):
 
         if found == False:
             self.TOMsLayersNotFound.emit()
-        else:
-            project = QgsProject.instance()
-            project.write()
-            self.TOMsLayersSet.emit()
+            #else:
+            #project = QgsProject.instance()
+            #project.write()
+            #self.TOMsLayersSet.emit()
 
         return
 
@@ -292,8 +292,8 @@ class TOMsLayers(QObject):
                     found = False
                     break
 
-            project = QgsProject.instance()
-            project.write()
+            #project = QgsProject.instance()
+            #project.write()
 
             # TODO: need to deal with any errors arising ...
 
