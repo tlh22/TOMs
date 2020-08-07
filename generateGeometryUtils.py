@@ -1192,7 +1192,7 @@ class generateGeometryUtils:
             TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Warning)
             return [None, None, None, None, None]
 
-        TOMsMessageLog.logMessage('getSignOrientation - orientation: {}'.format(signOrientation), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignOrientation - orientation: {}'.format(signOrientation), level=Qgis.Warning)
         TOMsMessageLog.logMessage('getSignOrientation - signOriginalGeometry: {}'.format(signOriginalGeometry), level=Qgis.Info)
 
         lineGeom = None
@@ -1233,7 +1233,7 @@ class generateGeometryUtils:
             TOMsMessageLog.logMessage('getSignLine - SignOrientationTypeID not found: {}'.format(signOrientation), level=Qgis.Warning)
             return None
 
-        TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Warning)
 
         lineGeom = None
         if signOrientation is None:
@@ -1265,12 +1265,12 @@ class generateGeometryUtils:
                 return None
 
         if lineGeom:
-            TOMsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Warning)
 
         return lineGeom
 
     def getPlatesInSign(feature):
-        TOMsMessageLog.logMessage('getNrPlatesInSign ...', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getNrPlatesInSign ...', level=Qgis.Warning)
         finished = False
         platesInSign = []
         nrPlatesInSign = 0
@@ -1303,7 +1303,7 @@ class generateGeometryUtils:
 
     @staticmethod
     def getGeneratedSignLine(feature):
-        TOMsMessageLog.logMessage('getGeneratedSignLine ...', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getGeneratedSignLine ...', level=Qgis.Warning)
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
         #distanceForIcons = 10
@@ -1313,15 +1313,15 @@ class generateGeometryUtils:
         lineGeom = generateGeometryUtils.getSignLine(feature, RoadCentreLineLayer, distanceForIcons)
         linePts = generateGeometryUtils.addPointsToSignLine(lineGeom, len(generateGeometryUtils.getPlatesInSign(feature)), distanceForIcons)
         if lineGeom:
-            TOMsMessageLog.logMessage('getGeneratedSignLine: lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getGeneratedSignLine: lineGeom: {}'.format(lineGeom.asWkt()), level=Qgis.Warning)
         else:
-            TOMsMessageLog.logMessage('getGeneratedSignLine: no geometry ...', level=Qgis.Info)
+            TOMsMessageLog.logMessage('getGeneratedSignLine: no geometry ...', level=Qgis.Warning)
 
         return lineGeom, linePts
 
     @staticmethod
     def getSignIcons(ptFeature):
-        TOMsMessageLog.logMessage('getSignIcons ... ', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignIcons ... ', level=Qgis.Warning)
         try:
             path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('iconPath')
         except Exception as e:
@@ -1345,7 +1345,7 @@ class generateGeometryUtils:
 
     @staticmethod
     def getSignOrientationList(ptFeature):
-        TOMsMessageLog.logMessage('getSignOrientationList ...', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignOrientationList ...', level=Qgis.Warning)
         try:
             RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         except Exception as e:
@@ -1366,7 +1366,7 @@ class generateGeometryUtils:
             featureSignOrientation = ptFeature.attribute("SignOrientation")
         except KeyError as e:
             return None
-        TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Warning)
         #return orientationList
         return newOrientationList[featureSignOrientation]
 
