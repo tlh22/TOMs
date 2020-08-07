@@ -15,5 +15,6 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA moving_traffic TO t
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA moving_traffic TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA moving_traffic TO toms_public, toms_operator, toms_admin;
 
+GRANT SELECT,USAGE ON SEQUENCE highways_network."MHTC_RoadLinks_id_seq" TO toms_public, toms_operator, toms_admin;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE highways_network."MHTC_RoadLinks" TO toms_admin, toms_operator;
 GRANT SELECT ON TABLE highways_network."MHTC_RoadLinks" TO toms_public;

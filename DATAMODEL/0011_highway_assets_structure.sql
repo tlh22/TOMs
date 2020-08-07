@@ -363,7 +363,8 @@ ALTER TABLE "highway_assets"."CycleParking_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."CycleParking" (
     "GeometryID" character varying(12) DEFAULT ('CY_'::"text" || "to_char"("nextval"('"highway_assets"."CycleParking_id_seq"'::"regclass"), '00000000'::"text")),
-    "geom" "public"."geometry"(Point,27700),
+    "geom_linestring" "public"."geometry"(LineString,27700),
+    "geom_point" "public"."geometry"(Point,27700),
     "CycleParkingTypeID" integer NOT NULL,
     "NrStands" integer
 )
