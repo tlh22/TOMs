@@ -200,7 +200,7 @@ class cvCamera(QThread):
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # width=640
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # height=480
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Info)
 
         while self.cameraAvailable:
             #while True:
@@ -235,7 +235,7 @@ class cvCamera(QThread):
             TOMsMessageLog.logMessage("In cvCamera::getFrame ... 4 ", level=Qgis.Info)
         else:
 
-            TOMsMessageLog.logMessage("In cvCamera::useCamera: frame not returned ... ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In cvCamera::useCamera: frame not returned ... ", level=Qgis.Warning)
             self.closeCamera.emit()
 
         TOMsMessageLog.logMessage("In cvCamera::getFrame ... 5", level=Qgis.Info)
@@ -245,7 +245,7 @@ class cvCamera(QThread):
         TOMsMessageLog.logMessage("In cvCamera::takePhoto ... ", level=Qgis.Info)
         # Save frame to file
 
-        fileName = 'Photo_{}.png'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z'))
+        fileName = 'Photo_{}.png'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S%f'))
         newPhotoFileName = os.path.join(path_absolute, fileName)
 
         TOMsMessageLog.logMessage("Saving photo: file: " + newPhotoFileName, level=Qgis.Info)

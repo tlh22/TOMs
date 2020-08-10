@@ -72,8 +72,14 @@ BEGIN
 	WHEN 'PedestrianRailings' THEN
 		   SELECT concat('PR_', to_char(nextval('highway_assets."PedestrianRailings_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 
+	WHEN 'Postboxes' THEN
+		   SELECT concat('PO_', to_char(nextval('highway_assets."Postboxes_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+
 	WHEN 'StreetNamePlates' THEN
 		   SELECT concat('SN_', to_char(nextval('highway_assets."StreetNamePlates_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+
+	WHEN 'TelephoneBoxes' THEN
+		   SELECT concat('TE_', to_char(nextval('highway_assets."TelephoneBoxes_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 
 	WHEN 'SubterraneanFeatures' THEN
 		   SELECT concat('SF_', to_char(nextval('highway_assets."SubterraneanFeatures_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
@@ -493,6 +499,31 @@ INHERITS ("highway_assets"."HighwayAssets");
 
 ALTER TABLE "highway_assets"."PedestrianRailings" OWNER TO "postgres";
 
+
+CREATE SEQUENCE "highway_assets"."Postboxes_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "highway_assets"."Postboxes_id_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 417 (class 1259 OID 508333)
+-- Name: CCTV_Cameras; Type: TABLE; Schema: highway_assets; Owner: postgres
+--
+
+CREATE TABLE "highway_assets"."Postboxes" (
+    "GeometryID" character varying(12) DEFAULT ('PO_'::"text" || "to_char"("nextval"('"highway_assets"."Postboxes_id_seq"'::"regclass"), '00000000'::"text")),
+    "geom" "public"."geometry"(Point,27700)
+)
+INHERITS ("highway_assets"."HighwayAssets");
+
+
+ALTER TABLE "highway_assets"."Postboxes" OWNER TO "postgres";
+
 --
 -- TOC entry 432 (class 1259 OID 508403)
 -- Name: StreetNamePlates_id_seq; Type: SEQUENCE; Schema: highway_assets; Owner: postgres
@@ -551,6 +582,31 @@ INHERITS ("highway_assets"."HighwayAssets");
 
 
 ALTER TABLE "highway_assets"."SubterraneanFeatures" OWNER TO "postgres";
+
+
+CREATE SEQUENCE "highway_assets"."TelephoneBoxes_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "highway_assets"."TelephoneBoxes_id_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 417 (class 1259 OID 508333)
+-- Name: CCTV_Cameras; Type: TABLE; Schema: highway_assets; Owner: postgres
+--
+
+CREATE TABLE "highway_assets"."TelephoneBoxes" (
+    "GeometryID" character varying(12) DEFAULT ('TE_'::"text" || "to_char"("nextval"('"highway_assets"."TelephoneBoxes_id_seq"'::"regclass"), '00000000'::"text")),
+    "geom" "public"."geometry"(Point,27700)
+)
+INHERITS ("highway_assets"."HighwayAssets");
+
+
+ALTER TABLE "highway_assets"."TelephoneBoxes" OWNER TO "postgres";
 
 --
 -- TOC entry 436 (class 1259 OID 508421)
