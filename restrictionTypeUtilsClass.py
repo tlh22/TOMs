@@ -1219,6 +1219,22 @@ class RestrictionTypeUtilsMixin():
 
         return None
 
+    def getBayGeomShapeType(self, code):
+
+        #TOMsMessageLog.logMessage("In getLookupDescription", level=Qgis.Info)
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
+
+        bayTypesInUse = self.TOMsLayers.setLayer('BayTypesInUse')
+        for row in bayTypesInUse.getFeatures(request):
+            #TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
+            return row.attribute("GeomShapeGroupType") # make assumption that only one row
+
+        return None
+
     def setupPanelTabs(self, iface, parent):
 
         # https: // gis.stackexchange.com / questions / 257603 / activate - a - panel - in -tabbed - panels?utm_medium = organic & utm_source = google_rich_qa & utm_campaign = google_rich_qa
