@@ -203,12 +203,61 @@ FROM toms_lookups."SignTypes_upd"
 WHERE "Code" NOT IN (SELECT "Code" FROM toms_lookups."SignTypes");
 
 -- need to add details to 'signTypesInUse'
+INSERT INTO "toms_lookups"."SignTypesInUse" ("Code")
+--WHERE "Code" IN (
+    SELECT "Code"
+    FROM "toms_lookups"."SignTypes"
+	WHERE (
+	   "Description" LIKE 'Access Restriction %'
+	OR "Description" LIKE 'Banned Turn %'
+	OR "Description" LIKE 'Compulsory Turn %'
+	OR "Description" LIKE 'Cycling %'
+	OR "Description" LIKE 'One Way %'
+	OR "Description" LIKE 'Other %'
+	OR "Description" LIKE 'Parking %'
+	OR "Description" LIKE 'Physical restriction %'
+	OR "Description" LIKE 'Special Lane %'
+	OR "Description" LIKE 'Supplementary Plate %'
+	OR "Description" LIKE 'Warning %'
+	OR "Description" LIKE 'Zone %'
+		)
+	AND "Code" NOT IN (SELECT "Code" FROM "toms_lookups"."SignTypesInUse")
+--)
 
 REFRESH MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View";
 
 -- and tidy ...
 
 DROP TABLE toms_lookups."SignTypes_upd" CASCADE;
+
+-- Update MHTC_CheckIssueTypes
+
+CREATE TABLE "compliance_lookups"."MHTC_CheckIssueTypes_upd" (
+    "Code" integer NOT NULL,
+    "Description" character varying NOT NULL
+);
+
+ALTER TABLE "compliance_lookups"."MHTC_CheckIssueTypes_upd" OWNER TO "postgres";
+
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (1, 'Item checked - Available for release');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (10, 'Field visit - Item missed - confirm location and details');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (11, 'Field visit - Photo missing or needs to be retaken');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (15, 'Field visit - Check details (see notes)');
+
+DELETE FROM "compliance_lookups"."MHTC_CheckIssueTypes"
+WHERE "Code" NOT IN (SELECT "Code" FROM "compliance_lookups"."MHTC_CheckIssueTypes_upd");
+
+UPDATE "compliance_lookups"."MHTC_CheckIssueTypes" AS o
+SET "Description" = u."Description"
+FROM compliance_lookups."MHTC_CheckIssueTypes_upd" u
+WHERE o."Code" = u."Code";
+
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description")
+SELECT "Code", "Description"
+FROM compliance_lookups."MHTC_CheckIssueTypes_upd"
+WHERE "Code" NOT IN (SELECT "Code" FROM "compliance_lookups"."MHTC_CheckIssueTypes");
+
+DROP TABLE "compliance_lookups"."MHTC_CheckIssueTypes_upd" CASCADE;
 
 
 

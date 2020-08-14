@@ -524,6 +524,9 @@ INHERITS ("highway_assets"."HighwayAssets");
 
 ALTER TABLE "highway_assets"."Postboxes" OWNER TO "postgres";
 
+ALTER TABLE highway_assets."Postboxes"
+    ADD PRIMARY KEY ("RestrictionID");
+
 --
 -- TOC entry 432 (class 1259 OID 508403)
 -- Name: StreetNamePlates_id_seq; Type: SEQUENCE; Schema: highway_assets; Owner: postgres
@@ -607,6 +610,9 @@ INHERITS ("highway_assets"."HighwayAssets");
 
 
 ALTER TABLE "highway_assets"."TelephoneBoxes" OWNER TO "postgres";
+
+ALTER TABLE highway_assets."TelephoneBoxes"
+    ADD PRIMARY KEY ("RestrictionID");
 
 --
 -- TOC entry 436 (class 1259 OID 508421)

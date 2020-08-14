@@ -73,8 +73,6 @@ CREATE TRIGGER "set_last_update_details_ISL_Electrical_Items"
     FOR EACH ROW
     EXECUTE PROCEDURE public.set_last_update_details();
 
-
-
 -- set up Types
 CREATE SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq"
     INCREMENT 1
@@ -87,12 +85,6 @@ ALTER SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq"
     OWNER TO postgres;
 
 GRANT ALL ON SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq" TO postgres;
-
-GRANT SELECT, USAGE ON SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq" TO toms_admin;
-
-GRANT SELECT, USAGE ON SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq" TO toms_operator;
-
-GRANT SELECT, USAGE ON SEQUENCE local_authority."ISL_Electrical_Item_Type_Code_seq" TO toms_public;
 
 CREATE TABLE local_authority."ISL_Electrical_Item_Types"
 (
@@ -108,22 +100,16 @@ ALTER TABLE local_authority."ISL_Electrical_Item_Types"
 
 GRANT ALL ON TABLE local_authority."ISL_Electrical_Item_Types" TO postgres;
 
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE local_authority."ISL_Electrical_Item_Types" TO toms_admin;
 
-GRANT SELECT ON TABLE local_authority."ISL_Electrical_Item_Types" TO toms_operator;
-
-GRANT SELECT ON TABLE local_authority."ISL_Electrical_Item_Types" TO toms_public;
+-- *** DATA items *** TODO: need to be moved elsewhere ...
 
 INSERT INTO local_authority."ISL_Electrical_Item_Types"(
 	"Description")
 SELECT DISTINCT "Type_Description" FROM local_authority."ISL_Electrical_Items";
 
-
 alter table local_authority."ISL_Electrical_Items"
 alter column "LastUpdateDateTime" type timestamp without time zone using date('20200728') + "LastUpdateDateTime";
 
-
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE local_authority."ISL_Electrical_Items" TO toms_operator, toms_admin;
 
 -- EV charge points
 
@@ -135,6 +121,8 @@ ALTER TABLE local_authority."EVCP_Asset_Register"
     ADD COLUMN "MHTC_CheckIssueTypeID" integer;
 ALTER TABLE local_authority."EVCP_Asset_Register"
     ADD COLUMN "MHTC_CheckNotes" character varying(255);
+
+-- *** DATA items *** TODO: need to be moved elsewhere ...
 
 UPDATE local_authority."EVCP_Asset_Register"
 SET "LastUpdateDateTime" = TIMESTAMP WITH TIME ZONE '2020-07-01',
