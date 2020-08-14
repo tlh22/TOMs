@@ -113,7 +113,13 @@ class searchBar():
         self.initialPass = True
         self.actionGoToItem.setEnabled(False)
         #self.toolButton.setEnabled(False)
-        self.searchTextbox.textChanged.disconnect(self.doLookupItem)
+        try:
+            self.searchTextbox.textChanged.disconnect(self.doLookupItem)
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In searchBar.disableSearchBar. Issue with disconnects {}".format(
+                    e),
+                level=Qgis.Warning)
 
     def doLookupItem(self):
 
