@@ -180,7 +180,7 @@ INSERT INTO "toms_lookups"."SignTypes_upd" ("Code", "Description", "Icon") VALUE
 INSERT INTO "toms_lookups"."SignTypes_upd" ("Code", "Description", "Icon") VALUES (6101, 'Other moves - Keep Right', 'UK_traffic_sign_610R.svg');
 INSERT INTO "toms_lookups"."SignTypes_upd" ("Code", "Description", "Icon") VALUES (543, 'Warning - Traffic lights', 'UK_traffic_sign_543.svg');
 INSERT INTO "toms_lookups"."SignTypes_upd" ("Code", "Description", "Icon") VALUES (5571, 'Warning - Speed hump', 'UK_traffic_sign_557.1.svg');
-
+INSERT INTO "toms_lookups"."SignTypes_upd" ("Code", "Description", "Icon") VALUES (6151, 'Supplementary plate - Give way to oncoming vehicles', 'UK_traffic_sign_615.1.svg');
 --
 -- TOC entry 4472 (class 2606 OID 368884)
 -- Name: SignTypes_upd SignTypes_upd_pkey; Type: CONSTRAINT; Schema: toms_lookups; Owner: postgres

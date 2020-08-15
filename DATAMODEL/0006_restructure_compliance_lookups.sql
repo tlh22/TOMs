@@ -53,3 +53,5 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA compliance_lookups 
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA compliance_lookups TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA compliance_lookups TO toms_public, toms_operator, toms_admin;
 
+
+

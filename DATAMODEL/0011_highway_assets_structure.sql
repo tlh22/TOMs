@@ -527,6 +527,12 @@ ALTER TABLE "highway_assets"."Postboxes" OWNER TO "postgres";
 ALTER TABLE highway_assets."Postboxes"
     ADD PRIMARY KEY ("RestrictionID");
 
+CREATE INDEX "sidx_Postboxes_geom" ON "highway_assets"."Postboxes" USING "gist" ("geom");
+
+CREATE TRIGGER "create_geometryid_postboxes" BEFORE INSERT ON "highway_assets"."Postboxes" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid_highway_assets"();
+
+CREATE TRIGGER "set_last_update_details_Postboxes" BEFORE INSERT OR UPDATE ON "highway_assets"."Postboxes" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
 --
 -- TOC entry 432 (class 1259 OID 508403)
 -- Name: StreetNamePlates_id_seq; Type: SEQUENCE; Schema: highway_assets; Owner: postgres
@@ -614,6 +620,11 @@ ALTER TABLE "highway_assets"."TelephoneBoxes" OWNER TO "postgres";
 ALTER TABLE highway_assets."TelephoneBoxes"
     ADD PRIMARY KEY ("RestrictionID");
 
+CREATE INDEX "sidx_TelephoneBoxes_geom" ON "highway_assets"."TelephoneBoxes" USING "gist" ("geom");
+
+CREATE TRIGGER "create_geometryid_telephone_boxes" BEFORE INSERT ON "highway_assets"."TelephoneBoxes" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid_highway_assets"();
+
+CREATE TRIGGER "set_last_update_details_TelephoneBoxes" BEFORE INSERT OR UPDATE ON "highway_assets"."TelephoneBoxes" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
 --
 -- TOC entry 436 (class 1259 OID 508421)
 -- Name: TrafficCalming_id_seq; Type: SEQUENCE; Schema: highway_assets; Owner: postgres
