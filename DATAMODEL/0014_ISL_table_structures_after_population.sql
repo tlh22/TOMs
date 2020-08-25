@@ -168,6 +168,9 @@ $BODY$;
 ALTER FUNCTION public.set_last_update_details()
     OWNER TO postgres;
 
+-- FUNCTION: public.set_original_geometry()
+
+-- DROP FUNCTION public.set_original_geometry();
 
 CREATE OR REPLACE FUNCTION public.set_original_geometry()
     RETURNS trigger
@@ -178,8 +181,9 @@ AS $BODY$
 BEGIN
         -- Copy geometry to originalGeometry
 		IF (TG_OP = 'UPDATE') THEN
-			-- RAISE NOTICE 'geom values are: %, %', ST_AsText(ST_QuantizeCoordinates(NEW."geom", 3)), ST_AsText(ST_QuantizeCoordinates(OLD."geom", 3));
-			IF NEW."geom" != OLD."geom" THEN
+			-- Check to see whether or not the point has been moved
+			RAISE NOTICE 'geom values are: %, %', ST_AsText(ST_QuantizeCoordinates(NEW."geom", 3)), ST_AsText(ST_QuantizeCoordinates(OLD."geom", 3));
+			IF ST_AsText(ST_QuantizeCoordinates(NEW."geom", 3)) != ST_AsText(ST_QuantizeCoordinates(OLD."geom", 3)) THEN
 				NEW."original_geom_wkt" := ST_AsText(NEW."geom");
 			END IF;
 		ELSIF (TG_OP = 'INSERT') THEN
