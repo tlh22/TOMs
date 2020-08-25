@@ -90,3 +90,35 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA toms_lookups TO tom
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 
+--- gnss pts table
+CREATE SEQUENCE topography."gnss_pts_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE topography."gnss_pts_id_seq"
+    OWNER TO postgres;
+
+GRANT ALL ON SEQUENCE topography."gnss_pts_id_seq" TO postgres;
+
+
+CREATE TABLE topography."gnss_pts"
+(
+    id integer NOT NULL DEFAULT nextval('topography."gnss_pts_id_seq"'::regclass),
+    geom geometry(Point,27700),
+	latitude double precision,
+	longitude double precision,
+	hacc double precision,
+	"satellitesUsed" integer,
+	pdop double precision,
+	"fixMode" character varying,
+	"fixType" integer,
+	quality integer,
+	--satellitesInView list of satellites with details
+	"satPrn" integer [],
+	"utcDateTime" timestamp without time zone,
+    CONSTRAINT "gnss_pts_pkey" PRIMARY KEY (id)
+)
+

@@ -1003,6 +1003,18 @@ class generateGeometryUtils:
         return None
 
     @staticmethod
+    def getAttributeFromLayer(layer, keyField, keyValue, attributeName):
+
+        query = '"{}" = \'{}\''.format(keyField, keyValue)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        for row in layer.getFeatures(request):
+            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Warning)
+            return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
+
+        return None
+
+    @staticmethod
     def getCPZWaitingTimeID(cpzNr):
 
         TOMsMessageLog.logMessage("In getCPZWaitingTimeID", level=Qgis.Info)
