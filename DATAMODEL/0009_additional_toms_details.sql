@@ -90,35 +90,55 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA toms_lookups TO tom
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 
+CREATE SCHEMA mhtc_operations
+    AUTHORIZATION postgres;
+
 --- gnss pts table
-CREATE SEQUENCE topography."gnss_pts_id_seq"
+CREATE SEQUENCE mhtc_operations."gnss_pts_id_seq"
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER SEQUENCE topography."gnss_pts_id_seq"
+ALTER SEQUENCE mhtc_operations."gnss_pts_id_seq"
     OWNER TO postgres;
 
-GRANT ALL ON SEQUENCE topography."gnss_pts_id_seq" TO postgres;
+GRANT ALL ON SEQUENCE mhtc_operations."gnss_pts_id_seq" TO postgres;
 
-
-CREATE TABLE topography."gnss_pts"
+CREATE TABLE mhtc_operations.gnss_pts
 (
-    id integer NOT NULL DEFAULT nextval('topography."gnss_pts_id_seq"'::regclass),
-    geom geometry(Point,27700),
-	latitude double precision,
-	longitude double precision,
-	hacc double precision,
-	"satellitesUsed" integer,
-	pdop double precision,
-	"fixMode" character varying,
-	"fixType" integer,
-	quality integer,
-	--satellitesInView list of satellites with details
-	"satPrn" integer [],
-	"utcDateTime" timestamp without time zone,
-    CONSTRAINT "gnss_pts_pkey" PRIMARY KEY (id)
+    id integer NOT NULL DEFAULT nextval('topography.gnss_pts_id_seq'::regclass),
+    geom geometry(Point,27700) NOT NULL,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
+    hacc double precision,
+    "satellitesUsed" integer,
+    pdop double precision,
+    "fixMode" character varying COLLATE pg_catalog."default",
+    "fixType" integer,
+    quality integer,
+    "satPrn" integer[],
+    "utcDateTime" timestamp without time zone NOT NULL,
+    CONSTRAINT gnss_pts_pkey PRIMARY KEY (id)
 )
 
+TABLESPACE pg_default;
+
+ALTER TABLE mhtc_operations.gnss_pts
+    OWNER to postgres;
+
+GRANT SELECT ON TABLE mhtc_operations."gnss_pts" TO toms_public;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE mhtc_operations."gnss_pts" TO toms_operator, toms_admin;
+GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+
+ALTER TABLE topography."Corners"
+  SET SCHEMA mhtc_operations;
+
+GRANT USAGE ON SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+
+-- add index to road_casement
+CREATE INDEX road_casement_geom_idx
+    ON topography.road_casement USING gist
+    (geom)
+    TABLESPACE pg_default;

@@ -87,6 +87,21 @@ ALTER TABLE toms."RestrictionPolygons"
 
 -- Update function to reflect changes
 
+CREATE OR REPLACE FUNCTION user_is_admin(g NAME)
+RETURNS boolean AS
+-- https://stackoverflow.com/questions/24354068/how-to-query-user-group-privileges-in-postgresql and
+-- https://dba.stackexchange.com/questions/56096/how-to-get-all-roles-that-a-user-is-a-member-of-including-inherited-roles
+'SELECT EXISTS (
+select a.rolname as user_role_name,
+       c.rolname as other_role_name
+from pg_roles a
+inner join pg_auth_members b on a.oid=b.member
+inner join pg_roles c on b.roleid=c.oid
+where a.rolname = $1
+AND c.rolname = ''toms_admin'');'
+
+LANGUAGE sql;
+
 CREATE OR REPLACE FUNCTION public.set_last_update_details()
     RETURNS trigger
     LANGUAGE 'plpgsql'
@@ -95,10 +110,12 @@ CREATE OR REPLACE FUNCTION public.set_last_update_details()
 AS $BODY$
 DECLARE
         check_details boolean;
+		check_issue_type boolean;
 		restriction_details boolean;
         col_name text;
 		new_value text;
 	    old_value text;
+		admin_user boolean;
     BEGIN
 
 		--RAISE NOTICE 'In set_last_update_details for %; operation: %', TG_TABLE_NAME, TG_OP;
@@ -127,7 +144,9 @@ DECLARE
 				--RAISE NOTICE 'Column is %. OLD=%s. NEW=%s', col_name, old_value, new_value;
 
                 IF old_value != new_value OR (old_value IS NULL AND new_value IS NOT NULL) THEN
-                    IF col_name = 'MHTC_CheckIssueTypeID' OR col_name = 'MHTC_CheckNotes' THEN
+                    IF col_name = 'MHTC_CheckIssueTypeID' THEN
+						check_issue_type = TRUE;
+					ELSIF col_name = 'MHTC_CheckNotes' OR col_name = 'FieldCheckCompleted' THEN
                         check_details = TRUE;
 						--RAISE NOTICE 'Check details CHANGED';
                     ELSE
@@ -139,15 +158,30 @@ DECLARE
 				END IF;
             END LOOP;
 
-            IF check_details = TRUE THEN
+			IF check_issue_type = TRUE THEN
 
-                NEW."Last_MHTC_Check_UpdateDateTime" := now();
-                NEW."Last_MHTC_Check_UpdatePerson" := current_user;
+				EXECUTE format('SELECT user_is_admin (%s)', quote_literal(current_user))
+   				INTO  admin_user;
+				--RAISE NOTICE 'user is admin: %s', admin_user;
 
-                IF restriction_details = False THEN
-                    RETURN NEW;
+				IF admin_user = FALSE THEN
+					NEW."MHTC_CheckIssueTypeID" = OLD."MHTC_CheckIssueTypeID";
+				ELSE
+					NEW."Last_MHTC_Check_UpdateDateTime" := now();
+					NEW."Last_MHTC_Check_UpdatePerson" := current_user;
 				END IF;
 
+			END IF;
+
+            IF check_details = TRUE THEN
+
+				NEW."Last_MHTC_Check_UpdateDateTime" := now();
+				NEW."Last_MHTC_Check_UpdatePerson" := current_user;
+
+			END IF;
+
+            IF restriction_details = False THEN
+                RETURN NEW;
 			END IF;
 
 		END IF;
@@ -196,3 +230,18 @@ $BODY$;
 
 ALTER FUNCTION public.set_original_geometry()
     OWNER TO postgres;
+
+-- change symology for crossing points
+ALTER TABLE highway_assets."CrossingPoints"
+    ADD COLUMN "AzimuthToRoadCentreLine" double precision;
+
+ALTER TABLE highway_assets."CrossingPoints"
+    ADD COLUMN "GeomShapeID" integer;
+
+ALTER TABLE ONLY highway_assets."CrossingPoints"
+    ADD CONSTRAINT "CrossingPoints_GeomShapeID_fkey" FOREIGN KEY ("GeomShapeID") REFERENCES "toms_lookups"."RestrictionGeomShapeTypes"("Code");
+
+--- after populating fields
+ALTER TABLE highway_assets."CrossingPoints"
+    ALTER COLUMN "GeomShapeID" SET NOT NULL;
+
