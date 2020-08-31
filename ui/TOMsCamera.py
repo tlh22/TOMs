@@ -188,6 +188,11 @@ class cvCamera(QThread):
         """if acapture_available:
             self.cap = acapture.open(cameraNr)  # /dev/video0
         else:"""
+        if not cv2_available:
+            reply = QMessageBox.information(None, "Information", "Camera is not available. Check cv2 status ...", QMessageBox.Ok)
+            self.closeCamera.emit()
+            return False
+
         self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
 
         self.cameraAvailable = True
