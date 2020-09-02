@@ -158,9 +158,8 @@ ALTER SEQUENCE mhtc_operations."AreasForReview_id_seq"
 
 CREATE TABLE mhtc_operations."AreasForReview"
 (
-    id integer NOT NULL DEFAULT nextval('"AreasForReview_id_seq"'::regclass),
-    geom geometry(Polygon,27700),
-    "Notes" character varying(255) COLLATE pg_catalog."default",
+    id integer NOT NULL DEFAULT nextval('mhtc_operations."AreasForReview_id_seq"'::regclass),
+    geom geometry(Polygon,27700),"Notes" character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT "AreasForReview_pkey" PRIMARY KEY (id)
 )
 WITH (
@@ -176,12 +175,115 @@ CREATE INDEX "sidx_AreasForReview_geom"
     (geom)
     TABLESPACE pg_default;
 
+GRANT SELECT ON TABLE mhtc_operations."AreasForReview" TO toms_public;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE mhtc_operations."AreasForReview" TO toms_operator, toms_admin;
 
-GRANT SELECT ON TABLE mhtc_operations."gnss_pts" TO toms_public;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE mhtc_operations."gnss_pts" TO toms_operator, toms_admin;
-GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+--- Something to refresh materialized views - currently not working
+/*
+CREATE OR REPLACE FUNCTION refresh_time_periods_view()
+RETURNS TRIGGER language plpgsql
+AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW toms_lookups."TimePeriodsInUse_View";
+    RETURN null;
+END $$;
 
-ALTER TABLE topography."Corners"
-  SET SCHEMA mhtc_operations;
+CREATE TRIGGER refresh_time_periods_in_use_view
+AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+ON toms_lookups."TimePeriodsInUse" FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_time_periods_view();
 
-GRANT USAGE ON SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+CREATE OR REPLACE FUNCTION refresh_sign_types_view()
+RETURNS TRIGGER language plpgsql
+AS $$
+BEGIN
+    EXECUTE 'REFRESH MATERIALIZED VIEW toms_lookups."SignTypesInUse_View"';
+    RETURN null;
+END $$;
+
+CREATE TRIGGER refresh_sign_types_in_use_view
+AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+ON toms_lookups."SignTypesInUse" FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_sign_types_view();
+*/
+
+-- ** Add constraint to reduce issues in future - check entry in "RestrictionsInProposals" exists in main tables
+
+CREATE OR REPLACE FUNCTION check_restriction_exists_in_main_tables(restriction_id text) RETURNS bool AS
+$func$
+SELECT EXISTS (
+        SELECT 1 FROM toms."Bays"
+        WHERE "RestrictionID" = $1
+        UNION
+        SELECT 1 FROM toms."Lines"
+        WHERE "RestrictionID" = $1
+        UNION
+        SELECT 1 FROM toms."Signs"
+        WHERE "RestrictionID" = $1
+        UNION
+        SELECT 1 FROM toms."RestrictionPolygons"
+        WHERE "RestrictionID" = $1
+        UNION
+        SELECT 1 FROM toms."ControlledParkingZones"
+        WHERE "RestrictionID" = $1
+        UNION
+        SELECT 1 FROM toms."ParkingTariffAreas"
+        WHERE "RestrictionID" = $1
+        );
+$func$ language sql stable;
+
+ALTER TABLE toms."RestrictionsInProposals" ADD CONSTRAINT "RestrictionsInProposals_restriction_exists_check"
+CHECK (check_restriction_exists_in_main_tables("RestrictionID"));
+
+-- check entry in main tables exists within "RestrictionsInProposals"  *** Needs to be checked ...
+/***
+CREATE OR REPLACE FUNCTION "check_restriction_exists_in_RestrictionsInProposals"()
+RETURNS trigger AS
+$BODY$
+DECLARE
+	 restrictionTableCode int;
+     restrictionExists int = 0;
+     current_table_name text;
+BEGIN
+
+    current_table_name = TG_TABLE_NAME::regclass::text;
+
+    SELECT "Code"
+    FROM "toms"."RestrictionLayers"
+	WHERE "RestrictionLayerName" = toms.quote_ident(current_table_name)
+    INTO restrictionTableCode;
+
+    SELECT 1 FROM "toms"."RestrictionsInProposals"
+    WHERE "RestrictionID" = NEW."RestrictionID"
+    AND "RestrictionTableID" = restrictionTableCode
+    INTO restrictionExists;
+
+    IF restrictionExists = 1 THEN
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'Restriction does not exist in RestrictionsInProposals';
+        RETURN NULL;
+    END IF;
+
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER "check_Bay_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."Bays"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+
+CREATE TRIGGER "check_Line_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."Lines"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+
+CREATE TRIGGER "check_Sign_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."Signs"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+
+CREATE TRIGGER "check_RestrictionPolygon_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."RestrictionPolygons"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+
+CREATE TRIGGER "check_ControlledParkingZone_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."ControlledParkingZones"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+
+CREATE TRIGGER "check_ParkingTariffArea_exists_in_RestrictionsInProposals" BEFORE INSERT OR UPDATE ON toms."ParkingTariffAreas"
+FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInProposals"();
+*/

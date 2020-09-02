@@ -28,6 +28,7 @@ INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description"
 INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (2, 'Serviceable');
 INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (3, 'Needs replacement');
 
+
 --
 -- TOC entry 4453 (class 0 OID 506641)
 -- Dependencies: 384

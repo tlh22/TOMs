@@ -1,7 +1,8 @@
 -- Populate ...
 
-INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (3, 'Needs replacement');
 INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (4, 'Unknown');
+INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (5, 'Not Visited');
+INSERT INTO "highway_asset_lookups"."AssetConditionTypes" ("Code", "Description") VALUES (6, 'Removed (not present)');
 
 INSERT INTO "compliance_lookups"."SignAttachmentTypes" ("Description") VALUES ('Building');
 
