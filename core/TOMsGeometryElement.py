@@ -342,6 +342,10 @@ class TOMsGeometryElement(QObject):
         length = self.currFeature.geometry().length()
 
         NrSegments = int(length / wavelength)    # e.g., length = 33, wavelength = 4
+        if NrSegments == 0:
+            NrSegments = 1
+            TOMsMessageLog.logMessage(
+                "In getZigZag. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
         interval = int(length/float(NrSegments) * 10000) / 10000
 
         TOMsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
