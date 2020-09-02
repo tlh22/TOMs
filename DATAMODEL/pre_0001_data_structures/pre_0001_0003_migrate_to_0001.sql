@@ -796,6 +796,15 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."GeomShapeGroupType"
     OWNER to postgres;
 
+--
+-- TOC entry 4458 (class 0 OID 294812)
+-- Dependencies: 285
+-- Data for Name: GeomShapeGroupType; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "toms_lookups"."GeomShapeGroupType" ("Code") VALUES ('LineString');
+INSERT INTO "toms_lookups"."GeomShapeGroupType" ("Code") VALUES ('Polygon');
+
 -- BayTypesInUse
 CREATE TABLE toms_lookups."BayTypesInUse"
 (
@@ -812,6 +821,34 @@ TABLESPACE pg_default;
 
 ALTER TABLE toms_lookups."BayTypesInUse"
     OWNER to postgres;
+
+--
+-- TOC entry 4456 (class 0 OID 294802)
+-- Dependencies: 283
+-- Data for Name: BayTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (101, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (103, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (105, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (107, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (108, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (110, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (111, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (115, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (116, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (117, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (118, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (119, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (124, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (114, 'Polygon', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType")
+SELECT DISTINCT "RestrictionTypeID", 'LineString'
+FROM "toms"."Bays"
+WHERE "RestrictionTypeID" NOT IN (
+SELECT DISTINCT "RestrictionTypeID"
+FROM "toms_lookups"."BayTypesInUse");
 
 -- LineTypesInUse
 CREATE TABLE toms_lookups."LineTypesInUse"
@@ -830,6 +867,25 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."LineTypesInUse"
     OWNER to postgres;
 
+--
+-- TOC entry 4461 (class 0 OID 294823)
+-- Dependencies: 288
+-- Data for Name: LineTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (224, 'LineString', NULL);
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (202, 'LineString', NULL);
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (203, 'LineString', NULL);
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (209, 'LineString', NULL);
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (214, 'LineString', NULL);
+
+INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType")
+SELECT DISTINCT "RestrictionTypeID", 'LineString'
+FROM "toms"."Lines"
+WHERE "RestrictionTypeID" NOT IN (
+SELECT DISTINCT "RestrictionTypeID"
+FROM "toms_lookups"."LineTypesInUse");
+
 -- RestrictionPolygonTypesInUse
 CREATE TABLE toms_lookups."RestrictionPolygonTypesInUse"
 (
@@ -847,6 +903,24 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."RestrictionPolygonTypesInUse"
     OWNER to postgres;
 
+--
+-- TOC entry 4469 (class 0 OID 294861)
+-- Dependencies: 296
+-- Data for Name: RestrictionPolygonTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (1, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (3, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (4, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (2, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (5, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (6, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (20, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (7, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (8, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (21, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (22, 'Polygon', NULL);
+
 -- SignTypesInUse
 CREATE TABLE toms_lookups."SignTypesInUse"
 (
@@ -858,6 +932,20 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."SignTypesInUse"
     OWNER to postgres;
 
+INSERT INTO "toms_lookups"."SignTypesInUse" ("Code")
+SELECT DISTINCT "SignType_1"
+FROM "toms"."Signs"
+WHERE "SignType_1" IS NOT NULL
+UNION
+SELECT DISTINCT "SignType_2"
+FROM "toms"."Signs"
+WHERE "SignType_2" IS NOT NULL
+UNION
+SELECT DISTINCT "SignType_3"
+FROM "toms"."Signs"
+WHERE "SignType_3" IS NOT NULL
+;
+
 -- TimePeriodsInUse
 CREATE TABLE toms_lookups."TimePeriodsInUse"
 (
@@ -868,6 +956,19 @@ TABLESPACE pg_default;
 
 ALTER TABLE toms_lookups."TimePeriodsInUse"
     OWNER to postgres;
+
+INSERT INTO "toms_lookups"."TimePeriodsInUse" ("Code")
+SELECT DISTINCT "TimePeriodID"
+FROM "toms"."Bays"
+WHERE "TimePeriodID" IS NOT NULL
+UNION
+SELECT DISTINCT "NoWaitingTimeID"
+FROM "toms"."Lines"
+WHERE "NoWaitingTimeID" IS NOT NULL
+UNION
+SELECT DISTINCT "NoLoadingTimeID"
+FROM "toms"."Lines"
+WHERE "NoLoadingTimeID" IS NOT NULL;
 
 -- SignOrientationTypes
 CREATE TABLE toms_lookups."SignOrientationTypes"
@@ -892,6 +993,23 @@ TABLESPACE pg_default;
 
 ALTER TABLE toms_lookups."UnacceptableTypes"
     OWNER to postgres;
+
+--
+-- TOC entry 4483 (class 0 OID 294922)
+-- Dependencies: 310
+-- Data for Name: UnacceptableTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
+--
+
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (2, 'Narrow Road');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (3, 'Obstruction');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (1, 'Crossover (vehicles)');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (4, 'Crossover (pedestrians/other)');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (5, 'Other');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (6, 'Corner');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (7, 'Garage frontage');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (8, 'Traffic flow');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (9, 'Edge of bay');
+INSERT INTO "toms_lookups"."UnacceptableTypes" ("Code", "Description") VALUES (10, 'Short section');
 
 -- ConditionTypes
 CREATE TABLE compliance_lookups."ConditionTypes"
@@ -1318,6 +1436,9 @@ ALTER TABLE toms."Bays" RENAME COLUMN "Bays_DateTime" TO "LastUpdateDateTime";
 ALTER TABLE toms."Bays" RENAME COLUMN "BaysWordingID" TO "AdditionalConditionID";
 
 ALTER TABLE toms."Bays" RENAME COLUMN "Surveyor" TO "LastUpdatePerson" ;
+UPDATE toms."Bays" SET "LastUpdatePerson" = 'CEC' WHERE "LastUpdatePerson" IS NULL;
+ALTER TABLE toms."Bays"
+    ALTER COLUMN "LastUpdatePerson" SET NOT NULL;
 
 ALTER TABLE toms."Bays" DROP COLUMN "BaysGeometry";
 
@@ -1495,7 +1616,7 @@ ALTER TABLE toms."ControlledParkingZones"
     ALTER COLUMN geom SET NOT NULL;
 
 ALTER TABLE toms."ControlledParkingZones"
-    ADD COLUMN "RestrictionTypeID" integer NOT NULL;
+    ADD COLUMN "RestrictionTypeID" integer NOT NULL DEFAULT 20;
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "Notes" character varying(254) COLLATE pg_catalog."default";
@@ -1522,10 +1643,15 @@ ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "label_TextChanged" character varying(254) COLLATE pg_catalog."default";
 
 ALTER TABLE toms."ControlledParkingZones"
-    ADD COLUMN "LastUpdateDateTime" timestamp without time zone NOT NULL;
+    ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+UPDATE toms."ControlledParkingZones" SET "LastUpdateDateTime" = "OpenDate";
+UPDATE toms."ControlledParkingZones" SET "LastUpdateDateTime" = '2018-01-01'::date
+WHERE "LastUpdateDateTime" IS NULL;
+ALTER TABLE toms."ControlledParkingZones"
+    ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
 ALTER TABLE toms."ControlledParkingZones"
-    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL;
+    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL DEFAULT 'CEC';
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "LabelText" character varying(254) COLLATE pg_catalog."default";
@@ -1612,6 +1738,9 @@ ALTER TABLE toms."Lines" ALTER COLUMN "RestrictionLength" SET NOT NULL;
 ALTER TABLE toms."Lines" RENAME COLUMN "Lines_DateTime" TO "LastUpdateDateTime";
 
 ALTER TABLE toms."Lines" RENAME COLUMN "Surveyor" TO "LastUpdatePerson" ;
+UPDATE toms."Lines" SET "LastUpdatePerson" = 'CEC' WHERE "LastUpdatePerson" IS NULL;
+ALTER TABLE toms."Lines"
+    ALTER COLUMN "LastUpdatePerson" SET NOT NULL;
 
 ALTER TABLE toms."Lines" RENAME COLUMN "Compl_Lines_Faded" TO "ComplianceRoadMarkingsFaded";
 
@@ -1812,7 +1941,7 @@ ALTER TABLE toms."ParkingTariffAreas"
     ALTER COLUMN geom SET NOT NULL;
 
 ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "RestrictionTypeID" integer NOT NULL;
+    ADD COLUMN "RestrictionTypeID" integer NOT NULL DEFAULT 22;
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "Notes" character varying(254) COLLATE pg_catalog."default";
@@ -1842,10 +1971,15 @@ ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "ParkingTariffArea" character varying(40) COLLATE pg_catalog."default";
 
 ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "LastUpdateDateTime" timestamp without time zone NOT NULL;
+    ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = "OpenDate";
+UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = '2018-01-01'::date
+WHERE "LastUpdateDateTime" IS NULL;
+ALTER TABLE toms."ParkingTariffAreas"
+    ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
 ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL;
+    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL DEFAULT 'CEC';
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LabelText" character varying(254) COLLATE pg_catalog."default";
@@ -1971,15 +2105,20 @@ CREATE INDEX "idx_ProposalStatusID"
     ON toms."Proposals"("ProposalStatusID");
 
 -- RestrictionLayers
-ALTER TABLE toms."RestrictionLayers" DROP COLUMN id;
+ALTER TABLE toms."RestrictionLayers"
+    DROP CONSTRAINT "RestrictionLayers2_pkey";
+ALTER TABLE toms."RestrictionLayers"
+    DROP CONSTRAINT "RestrictionLayers_id_key";
+
+ALTER TABLE "toms"."RestrictionLayers" RENAME COLUMN "id" TO "Code";
 
 ALTER TABLE toms."RestrictionLayers"
-    ADD COLUMN "Code" integer NOT NULL DEFAULT nextval('toms."RestrictionLayers_id_seq"'::regclass);
+    ALTER COLUMN "Code" SET NOT NULL;
+ALTER TABLE toms."RestrictionLayers"
+    ALTER COLUMN "Code" SET DEFAULT nextval('toms."RestrictionLayers_id_seq"'::regclass);
+
 ALTER TABLE toms."RestrictionLayers"
     ADD CONSTRAINT "RestrictionLayers_pkey" PRIMARY KEY ("Code");
-
-ALTER TABLE toms."RestrictionLayers"
-    ADD CONSTRAINT "RestrictionLayers_id_key" UNIQUE ("Code");
 
 -- RestrictionPolygons
 ALTER TABLE toms."RestrictionPolygons"
@@ -2015,10 +2154,15 @@ ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "label_TextChanged" character varying(254) COLLATE pg_catalog."default";
 
 ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "LastUpdateDateTime" timestamp without time zone NOT NULL;
+    ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+UPDATE toms."RestrictionPolygons" SET "LastUpdateDateTime" = "OpenDate";
+UPDATE toms."RestrictionPolygons" SET "LastUpdateDateTime" = '2018-01-01'::date
+WHERE "LastUpdateDateTime" IS NULL;
+ALTER TABLE toms."RestrictionPolygons"
+    ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
 ALTER TABLE toms."RestrictionPolygons"
-    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL;
+    ADD COLUMN "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL DEFAULT 'CEC';
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "ComplianceRoadMarkingsFaded" integer;
@@ -2169,6 +2313,9 @@ ALTER TABLE toms."Signs" RENAME COLUMN "Signs_DateTime" TO "LastUpdateDateTime";
 ALTER TABLE toms."Signs" DROP COLUMN "PhotoTaken";
 
 ALTER TABLE toms."Signs" RENAME COLUMN "Surveyor" TO "LastUpdatePerson";
+UPDATE toms."Signs" SET "LastUpdatePerson" = 'CEC' WHERE "LastUpdatePerson" IS NULL;
+ALTER TABLE toms."Signs"
+    ALTER COLUMN "LastUpdatePerson" SET NOT NULL;
 
 ALTER TABLE toms."Signs" RENAME COLUMN "Compl_Signs_Direction" TO "Compl_Sign_Direction";
 
@@ -2394,3 +2541,9 @@ CREATE INDEX "idx_TileNr"
 
 DROP TABLE public."CPZs" CASCADE;
 -- DROP MATERIALIZED VIEW public."BayLineTypes";
+
+CREATE SCHEMA "export";
+ALTER SCHEMA "export" OWNER TO "postgres";
+
+
+

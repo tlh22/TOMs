@@ -90,7 +90,7 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA toms_lookups TO tom
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA toms_lookups TO toms_public, toms_operator, toms_admin;
 
-CREATE SCHEMA mhtc_operations
+CREATE SCHEMA IF NOT EXISTS mhtc_operations
     AUTHORIZATION postgres;
 
 --- gnss pts table
@@ -132,13 +132,56 @@ GRANT SELECT ON TABLE mhtc_operations."gnss_pts" TO toms_public;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE mhtc_operations."gnss_pts" TO toms_operator, toms_admin;
 GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
 
+GRANT USAGE ON SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+
 ALTER TABLE topography."Corners"
   SET SCHEMA mhtc_operations;
 
-GRANT USAGE ON SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
 
 -- add index to road_casement
 CREATE INDEX road_casement_geom_idx
     ON topography.road_casement USING gist
     (geom)
     TABLESPACE pg_default;
+
+-- AreasForReview
+
+CREATE SEQUENCE mhtc_operations."AreasForReview_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE mhtc_operations."AreasForReview_id_seq"
+    OWNER TO "postgres";
+
+CREATE TABLE mhtc_operations."AreasForReview"
+(
+    id integer NOT NULL DEFAULT nextval('"AreasForReview_id_seq"'::regclass),
+    geom geometry(Polygon,27700),
+    "Notes" character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT "AreasForReview_pkey" PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE mhtc_operations."AreasForReview"
+    OWNER to postgres;
+
+CREATE INDEX "sidx_AreasForReview_geom"
+    ON mhtc_operations."AreasForReview" USING gist
+    (geom)
+    TABLESPACE pg_default;
+
+
+GRANT SELECT ON TABLE mhtc_operations."gnss_pts" TO toms_public;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE mhtc_operations."gnss_pts" TO toms_operator, toms_admin;
+GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
+
+ALTER TABLE topography."Corners"
+  SET SCHEMA mhtc_operations;
+
+GRANT USAGE ON SCHEMA mhtc_operations TO toms_public, toms_operator, toms_admin;
