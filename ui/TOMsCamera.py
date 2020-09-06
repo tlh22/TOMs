@@ -71,12 +71,14 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
 
-    def __init__(self, path_absolute, currFileName, cameraNr):
+    def __init__(self, path_absolute, currFileName, cameraNr=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
         self.camera = cvCamera()
         self.cameraNr = cameraNr
+        if self.cameraNr is None:
+            self.cameraNr = 1
 
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
@@ -183,7 +185,7 @@ class cvCamera(QThread):
 
     def startCamera(self, cameraNr):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Info)
 
         """if acapture_available:
             self.cap = acapture.open(cameraNr)  # /dev/video0
@@ -197,7 +199,7 @@ class cvCamera(QThread):
 
         self.cameraAvailable = True
         if not self.cap.isOpened():
-            reply = QMessageBox.information(None, "Information", "Camera did not open ...", QMessageBox.Ok)
+            reply = QMessageBox.information(None, "Information", "Camera {} did not open ...".format(cameraNr), QMessageBox.Ok)
             self.cameraAvailable = False
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2a ", level=Qgis.Info)

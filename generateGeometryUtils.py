@@ -845,7 +845,7 @@ class generateGeometryUtils:
 
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
 
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)" + feature.attribute("GeometryID"), level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
@@ -1315,7 +1315,7 @@ class generateGeometryUtils:
 
     @staticmethod
     def getGeneratedSignLine(feature):
-        TOMsMessageLog.logMessage('getGeneratedSignLine ...', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getGeneratedSignLine ... {}'.format(feature.attribute("GeometryID")), level=Qgis.Info)
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
         #distanceForIcons = 10

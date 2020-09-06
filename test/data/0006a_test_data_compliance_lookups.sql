@@ -62,4 +62,6 @@ INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") 
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (12, 'Photo - person in photo - Retake');
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (13, 'Photo - pole in photo - Retake');
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (14, 'Restriction Type');
-
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (15, 'Field visit - Check details (see notes)');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (16, 'Further office involvement required');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes" ("Code", "Description") VALUES (17, 'Item checked - Client involvement required');
