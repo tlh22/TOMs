@@ -202,6 +202,7 @@ class TOMsLayers(QObject):
             try:
                 formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
             except:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
                 formPath = None
 
             TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
@@ -267,11 +268,6 @@ class TOMsLayers(QObject):
             except:
                 formPath = None
 
-            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Warning)
-
-            if not formPath:
-                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
-
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
@@ -279,7 +275,7 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Warning)
+                                              level=Qgis.Info)
                     if len(formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
@@ -849,14 +845,17 @@ class RestrictionTypeUtilsMixin():
                 TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
 
             if cv2_available:
-                START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
-                TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
-                TAKE_PHOTO_1.setEnabled(False)
+                try:
+                    START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
+                    TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
+                    TAKE_PHOTO_1.setEnabled(False)
 
-                self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
-                START_CAMERA_1.clicked.connect(
-                    functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
-                self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
+                    self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
+                    START_CAMERA_1.clicked.connect(
+                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
+                    self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
 
         if FIELD2:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
@@ -874,14 +873,18 @@ class RestrictionTypeUtilsMixin():
                 TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
 
             if cv2_available:
-                START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
-                TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
-                TAKE_PHOTO_2.setEnabled(False)
+                try:
+                    START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
+                    TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
+                    TAKE_PHOTO_2.setEnabled(False)
 
-                self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
-                START_CAMERA_2.clicked.connect(
-                    functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
-                self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
+                    self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
+                    START_CAMERA_2.clicked.connect(
+                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
+                    self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
+
         if FIELD3:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
                                      level=Qgis.Info)
@@ -896,16 +899,18 @@ class RestrictionTypeUtilsMixin():
                 FIELD3.setScaledContents(True)
                 TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Warning)
 
-
             if cv2_available:
-                START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
-                TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
-                TAKE_PHOTO_3.setEnabled(False)
+                try:
+                    START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
+                    TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
+                    TAKE_PHOTO_3.setEnabled(False)
 
-                self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
-                START_CAMERA_3.clicked.connect(
-                    functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
-                self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+                    self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
+                    START_CAMERA_3.clicked.connect(
+                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
+                    self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
 
     def photoDetails_camera(self, restrictionDialog, currRestrictionLayer, currRestriction):
 

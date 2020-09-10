@@ -519,3 +519,32 @@ ALTER TABLE ONLY "highway_asset_lookups"."VehicleBarrierTypes"
 -- PostgreSQL database dump complete
 --
 
+CREATE SEQUENCE "highway_asset_lookups"."UnidentifiedStaticObjectTypes_Code_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "highway_asset_lookups"."UnidentifiedStaticObjectTypes_Code_seq" OWNER TO "postgres";
+
+SET default_tablespace = '';
+
+SET default_table_access_method = "heap";
+
+--
+-- TOC entry 382 (class 1259 OID 506635)
+-- Name: AssetConditionTypes; Type: TABLE; Schema: highway_asset_lookups; Owner: postgres
+--
+
+CREATE TABLE "highway_asset_lookups"."UnidentifiedStaticObjectTypes" (
+    "Code" integer DEFAULT "nextval"('"highway_asset_lookups"."UnidentifiedStaticObjectTypes_Code_seq"'::"regclass") NOT NULL,
+    "Description" character varying(255)
+);
+
+
+ALTER TABLE "highway_asset_lookups"."UnidentifiedStaticObjectTypes" OWNER TO "postgres";
+
+ALTER TABLE highway_asset_lookups."UnidentifiedStaticObjectTypes"
+    ADD PRIMARY KEY ("Code");

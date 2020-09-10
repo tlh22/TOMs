@@ -12,6 +12,12 @@ import os.path
 import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
+from qgis.PyQt.QtCore import (
+    QObject,
+    QDate,
+    pyqtSignal
+)
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
@@ -41,7 +47,7 @@ from qgis.utils import iface
 import math
 from cmath import rect, phase
 
-class generateGeometryUtils:
+class generateGeometryUtils (QObject):
     # https://gis.stackexchange.com/questions/95528/produce-line-from-components-length-and-angle?noredirect=1&lq=1
     # direction cosines function
 
@@ -127,6 +133,26 @@ class generateGeometryUtils:
         # TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), level=Qgis.Info)
 
         return bisectAz, distToPt
+
+    def calcInteriorBisectAzimuth(Az1, Az2):
+        # function to return Az of bisector
+
+        diffAz = generateGeometryUtils.checkDegrees(Az1) - generateGeometryUtils.checkDegrees(Az2)
+
+        diffAz2 = diffAz
+        if diffAz > 180.0:
+            diffAz2 = diffAz - 360.0
+        if diffAz < -180.0:
+            diffAz2 = diffAz + 360.0
+
+        #TOMsMessageLog.logMessage("In generate_display_geometry: Az1: {}; Az2:{}; diffAz:{}: {}".format(Az1, Az2, diffAz, diffAz2), level=Qgis.Info)
+
+        diffAngle = diffAz2 / float(2)
+        bisectAz = generateGeometryUtils.checkDegrees(Az1 - diffAngle)
+
+        #TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz), level=Qgis.Info)
+
+        return bisectAz
 
     @staticmethod
     def checkDegrees(Az):
@@ -1009,7 +1035,7 @@ class generateGeometryUtils:
         request = QgsFeatureRequest().setFilterExpression(query)
 
         for row in layer.getFeatures(request):
-            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
             return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
 
         return None
@@ -1173,17 +1199,23 @@ class generateGeometryUtils:
 
         lineGeom = lineFeature.geometry()
         distSquared, closestPt, vertexNrAfterPt, leftOf = lineGeom.closestSegmentWithContext(point)
-        orientationToFeature = point.azimuth(QgsPointXY(closestPt))
-        orientationInFeatureDirection = closestPt.azimuth(QgsPointXY(lineGeom.vertexAt(vertexNrAfterPt)))
+        orientationToFeature = generateGeometryUtils.checkDegrees(point.azimuth(QgsPointXY(closestPt)))
+        orientationInFeatureDirection = generateGeometryUtils.checkDegrees(closestPt.azimuth(QgsPointXY(lineGeom.vertexAt(vertexNrAfterPt))))
         #orientationAwayFromFeature = generateGeometryUtils.checkDegrees(orientationToFeature + 180.0)
-        orientationAwayFromFeature = math.degrees(QgsGeometryUtils.normalizedAngle(math.radians(orientationToFeature + 180.0)))
+        orientationAwayFromFeature = generateGeometryUtils.checkDegrees(orientationToFeature + 180.0)
         #orientationOppositeFeatureDirection = generateGeometryUtils.checkDegrees(orientationInFeatureDirection + 180)
-        orientationOppositeFeatureDirection = math.degrees(QgsGeometryUtils.normalizedAngle(math.radians(orientationInFeatureDirection + 180.0)))
+        orientationOppositeFeatureDirection = generateGeometryUtils.checkDegrees(orientationInFeatureDirection + 180.0)
 
-        #TOMsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
+        # TODO: Include type 5 - defined Az
+
+        orientationObliqueInFeatureDirection = generateGeometryUtils.calcInteriorBisectAzimuth(orientationToFeature, orientationInFeatureDirection)
+        orientationObliqueOppositeFeatureDirection = generateGeometryUtils.calcInteriorBisectAzimuth(orientationToFeature, orientationOppositeFeatureDirection)
+
+        TOMsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getLineOrientationAtPoint 6: {obliqueInFeatureDirection}; 7: {obliqueOppFeatureDirection}'.format(obliqueInFeatureDirection=orientationObliqueInFeatureDirection, obliqueOppFeatureDirection=orientationObliqueOppositeFeatureDirection), level=Qgis.Info)
         #print('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
 
-        return orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection
+        return orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection, orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection
 
     def createLinewithPointAzimuthDistance(point, azimuth, distance):
         #azimuth in degrees
@@ -1196,20 +1228,20 @@ class generateGeometryUtils:
         try:
             signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
-            return [None, None, None, None, None]
+            return [None, None, None, None, None, None, None]
 
         try:
             signOriginalGeometry = ptFeature.attribute("original_geom_wkt")
         except KeyError as e:
-            TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Warning)
-            return [None, None, None, None, None]
+            TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Info)
+            return [None, None, None, None, None, None, None]
 
         TOMsMessageLog.logMessage('getSignOrientation - orientation: {}'.format(signOrientation), level=Qgis.Info)
         TOMsMessageLog.logMessage('getSignOrientation - signOriginalGeometry: {}'.format(signOriginalGeometry), level=Qgis.Info)
 
         lineGeom = None
         if signOrientation is None:
-            return [None, None, None, None, None]
+            return [None, None, None, None, None, None, None]
 
         # find closest point/feature on lineLayer
 
@@ -1221,28 +1253,29 @@ class generateGeometryUtils:
             'getSignOrientation lineLayer {}'.format(lineLayer.name()),
             level=Qgis.Info)
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
-        if closestPoint:
-            TOMsMessageLog.logMessage('getSignLine closestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
 
         # Now generate a line in the appropriate direction
         if closestPoint:
+            TOMsMessageLog.logMessage('getSignLine closestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
             # get the orientation of the line feature
-            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection) = generateGeometryUtils.getLineOrientationAtPoint(
-                signPt, closestFeature)
+            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature,
+             orientationOppositeFeatureDirection, orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection) \
+                = generateGeometryUtils.getLineOrientationAtPoint(signPt, closestFeature)
             #TOMsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), level=Qgis.Info)
             #print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
 
             # make it match sign orientation
-            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature]
+            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature,
+                    orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection]
 
-        return [None, None, None, None, None]
+        return [None, None, None, None, None, None, None]
 
     def getSignLine(ptFeature, lineLayer, distanceForIcons):
 
         try:
             signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
-            TOMsMessageLog.logMessage('getSignLine - SignOrientationTypeID not found: {}'.format(signOrientation), level=Qgis.Warning)
+            TOMsMessageLog.logMessage('getSignLine - SignOrientationTypeID not found: {}'.format(signOrientation), level=Qgis.Info)
             return None
 
         TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Info)
@@ -1258,9 +1291,10 @@ class generateGeometryUtils:
             # work out the length of the line based on the number of plates in the sign
             platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
             nrPlatesInSign = len(platesInSign)
-            #TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
+            # TODO work out scaling required for sign here
             lineLength = (nrPlatesInSign + 1) * distanceForIcons
-            #TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
             #print('getSignLine lineLength: {}'.format(lineLength))
 
             signPt = ptFeature.geometry().asPoint()
@@ -1273,6 +1307,11 @@ class generateGeometryUtils:
                 lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[3], lineLength)
             elif signOrientation == 4:  # "Facing away from road"
                 lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[4], lineLength)
+                # TODO: Include type 5 - defined angle
+            elif signOrientation == 6:  # "Facing oblique in same direction as road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[5], lineLength)
+            elif signOrientation == 7:  # "Facing oblique in opposite direction to road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[6], lineLength)
             else:
                 return None
 
@@ -1337,7 +1376,7 @@ class generateGeometryUtils:
         try:
             path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('iconPath')
         except Exception as e:
-            TOMsMessageLog.logMessage('getSignIcons: iconPath not found {}'.format(e), level=Qgis.Warning)
+            TOMsMessageLog.logMessage('getSignIcons: iconPath not found {}'.format(e), level=Qgis.Info)
             return None
 
         platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
@@ -1361,26 +1400,34 @@ class generateGeometryUtils:
         try:
             RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         except Exception as e:
-            TOMsMessageLog.logMessage('getSignOrientationList: RoadCentreLine layer not found {}'.format(e), level=Qgis.Warning)
+            TOMsMessageLog.logMessage('getSignOrientationList: RoadCentreLine layer not found {}'.format(e), level=Qgis.Info)
             return None
 
         orientationList = generateGeometryUtils.getSignOrientation(ptFeature, RoadCentreLineLayer)
 
-        # This list give the orientation for the way the line is pointing. Now need to swap each through 180 to give true direction for arrows, etc
-        # add extra value to match SignsOrientation values
-        newOrientationList = [0,
-                              orientationList[2], # "Facing in same direction as road" inverted is 2
-                              orientationList[1],  # "Facing in opposite direction to road" inverted is 1
-                              orientationList[4], # "Facing road" inverted is 4
-                              orientationList[3]]  # "Facing away from road" inverted is 3
+        if orientationList[1]:  # check that valid values have been returned
+            # This list give the orientation for the way the line is pointing. Now need to swap each through 180 to give true direction for arrows, etc
+            # add extra value to match SignsOrientation values
+            newOrientationList = [0,
+                                  orientationList[2],  # "Facing in same direction as road" inverted is 2
+                                  orientationList[1],  # "Facing in opposite direction to road" inverted is 1
+                                  orientationList[4],  # "Facing road" inverted is 4
+                                  orientationList[3],  # "Facing away from road" inverted is 3
+                                  0,  # defined azimuth ...
+                                  generateGeometryUtils.checkDegrees(orientationList[5] + 180.0),  # oblique in road direction
+                                  generateGeometryUtils.checkDegrees(orientationList[6] + 180.0)  # oblique opposite road direction
+                                  ]
 
-        try:
-            featureSignOrientation = ptFeature.attribute("SignOrientationTypeID")
-        except KeyError as e:
-            return None
-        TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
-        #return orientationList
-        return newOrientationList[featureSignOrientation]
+            try:
+                featureSignOrientation = ptFeature.attribute("SignOrientationTypeID")
+            except KeyError as e:
+                return None
+            TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
+            #return orientationList
+            return newOrientationList[featureSignOrientation]
+
+        return 0
+
 
     def getLookupRow(lookupLayer, code):
         query = '"Code" = \'{}\''.format(code)

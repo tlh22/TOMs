@@ -291,6 +291,8 @@ FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInPropos
 
 ALTER TABLE toms."Bays"
     ADD COLUMN "PayParkingAreaCode" character varying(255);
+ALTER TABLE toms."Bays"
+    ADD COLUMN "PermitCode" character varying(255);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE topography."road_casement" TO toms_admin;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."ControlledParkingZones" TO toms_admin;

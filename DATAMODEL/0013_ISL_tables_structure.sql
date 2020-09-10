@@ -122,11 +122,6 @@ ALTER TABLE local_authority."EVCP_Asset_Register"
 ALTER TABLE local_authority."EVCP_Asset_Register"
     ADD COLUMN "MHTC_CheckNotes" character varying(255);
 
--- *** DATA items *** TODO: need to be moved elsewhere ...
-
-UPDATE local_authority."EVCP_Asset_Register"
-SET "LastUpdateDateTime" = TIMESTAMP WITH TIME ZONE '2020-07-01',
-    "LastUpdatePerson" = 'Islington';
 
 ALTER TABLE local_authority."EVCP_Asset_Register"
     ALTER COLUMN geom SET NOT NULL;
@@ -148,3 +143,55 @@ ALTER TABLE "highway_assets"."StreetNamePlates"
     ADD COLUMN "StreetNamePlateAttachmentTypeID" integer;
 ALTER TABLE ONLY "highway_assets"."StreetNamePlates"
     ADD CONSTRAINT "StreetNamePlates_SignsAttachmentTypes_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES compliance_lookups."SignAttachmentTypes"("Code");
+
+--
+-- TOC entry 516 (class 1259 OID 630951)
+-- Name: ISL_HousingEstates; Type: TABLE; Schema: local_authority; Owner: postgres
+--
+
+CREATE TABLE "local_authority"."ISL_HousingEstates" (
+    "id" integer NOT NULL,
+    "geom" "public"."geometry"(MultiPolygon,27700),
+    "estate_ref" character varying(254),
+    "mi_style" character varying(254),
+    "name" character varying(254),
+    "easting" numeric,
+    "northing" numeric
+);
+
+
+ALTER TABLE "local_authority"."ISL_HousingEstates" OWNER TO "postgres";
+
+--
+-- TOC entry 515 (class 1259 OID 630949)
+-- Name: ISL_HousingEstates_id_seq; Type: SEQUENCE; Schema: local_authority; Owner: postgres
+--
+
+CREATE SEQUENCE "local_authority"."ISL_HousingEstates_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "local_authority"."ISL_HousingEstates_id_seq" OWNER TO "postgres";
+
+--
+-- TOC entry 4735 (class 0 OID 0)
+-- Dependencies: 515
+-- Name: ISL_HousingEstates_id_seq; Type: SEQUENCE OWNED BY; Schema: local_authority; Owner: postgres
+--
+
+ALTER SEQUENCE "local_authority"."ISL_HousingEstates_id_seq" OWNED BY "local_authority"."ISL_HousingEstates"."id";
+
+--
+-- TOC entry 4525 (class 2604 OID 630954)
+-- Name: ISL_HousingEstates id; Type: DEFAULT; Schema: local_authority; Owner: postgres
+--
+
+ALTER TABLE ONLY "local_authority"."ISL_HousingEstates" ALTER COLUMN "id" SET DEFAULT "nextval"('"local_authority"."ISL_HousingEstates_id_seq"'::"regclass");
+
+ALTER TABLE local_authority."ISL_HousingEstates"
+    ADD PRIMARY KEY (id);

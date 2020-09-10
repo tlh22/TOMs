@@ -223,8 +223,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # TODO: Delete any objects that are no longer needed
 
-        self.proposalTransaction.rollBackTransactionGroup()
-        del self.proposalTransaction  # There is another call to this function from the dock.close()
+        try:
+            self.proposalTransaction.rollBackTransactionGroup()
+            del self.proposalTransaction  # There is another call to this function from the dock.close()
+        except Exception as e:
+            TOMsMessageLog.logMessage('closeTOMsTools: issue with transactions {}'.format(e), level=Qgis.Info)
 
         # Now disable the items from the Toolbar
 

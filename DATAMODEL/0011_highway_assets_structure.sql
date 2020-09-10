@@ -48,6 +48,8 @@ BEGIN
 		   SELECT concat('BO_', to_char(nextval('highway_assets."Bollards_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 	WHEN 'BusShelters' THEN
 		   SELECT concat('BS_', to_char(nextval('highway_assets."BusShelters_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+    WHEN 'BusStopSigns' THEN
+			SELECT concat('BU_', to_char(nextval('highway_assets."BusStopSigns_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 	WHEN 'CCTV_Cameras' THEN
 		   SELECT concat('CT_', to_char(nextval('highway_assets."CCTV_Cameras_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 
@@ -707,6 +709,7 @@ ALTER TABLE "highway_assets"."UnidentifiedStaticObjects_id_seq" OWNER TO "postgr
 
 CREATE TABLE "highway_assets"."UnidentifiedStaticObjects" (
     "GeometryID" character varying(12) DEFAULT ('VB_'::"text" || "to_char"("nextval"('"highway_assets"."UnidentifiedStaticObjects_id_seq"'::"regclass"), '00000000'::"text")),
+    "UnidentifiedStaticObjectTypeID" integer,
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -1385,7 +1388,7 @@ ALTER TABLE ONLY "highway_assets"."Bollards"
 --
 
 ALTER TABLE ONLY "highway_assets"."EV_ChargingPoints"
-    ADD CONSTRAINT "HighwayAssets_BollardTypeID_fkey" FOREIGN KEY ("EV_ChargingPointTypeID") REFERENCES "highway_asset_lookups"."EV_ChargingPointTypes"("Code");
+    ADD CONSTRAINT "HighwayAssets_ChargingPointTypeID_fkey" FOREIGN KEY ("EV_ChargingPointTypeID") REFERENCES "highway_asset_lookups"."EV_ChargingPointTypes"("Code");
 
 
 --
@@ -1459,6 +1462,14 @@ ALTER TABLE ONLY "highway_assets"."SubterraneanFeatures"
 ALTER TABLE ONLY "highway_assets"."TrafficCalming"
     ADD CONSTRAINT "HighwayAssets_TrafficCalmingTypeID_fkey" FOREIGN KEY ("TrafficCalmingTypeID") REFERENCES "highway_asset_lookups"."TrafficCalmingTypes"("Code");
 
+--
+-- TOC entry 4368 (class 2606 OID 508565)
+-- Name: TrafficCalming HighwayAssets_TrafficCalmingTypeID_fkey; Type: FK CONSTRAINT; Schema: highway_assets; Owner: postgres
+--
+
+ALTER TABLE ONLY "highway_assets"."UnidentifiedStaticObjects"
+    ADD CONSTRAINT "HighwayAssets_UnidentifiedStaticObjectTypeID_fkey" FOREIGN KEY ("UnidentifiedStaticObjectTypeID") REFERENCES "highway_asset_lookups"."UnidentifiedStaticObjectTypes"("Code");
+
 
 --
 -- TOC entry 4369 (class 2606 OID 508570)
@@ -1484,3 +1495,36 @@ ALTER TABLE ONLY "highway_assets"."CycleParking"
 -- PostgreSQL database dump complete
 --
 
+
+-- BusStopSigns
+--
+
+CREATE SEQUENCE "highway_assets"."BusStopSigns_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "highway_assets"."BusStopSigns_id_seq" OWNER TO "postgres";
+
+CREATE TABLE "highway_assets"."BusStopSigns" (
+    "GeometryID" character varying(12) DEFAULT ('BU_'::"text" || "to_char"("nextval"('"highway_assets"."BusStopSigns_id_seq"'::"regclass"), '00000000'::"text")),
+    --"BusStopSignTypeID" integer NOT NULL,
+    "geom_point" "public"."geometry"(Point,27700)
+)
+INHERITS ("highway_assets"."HighwayAssets");
+
+ALTER TABLE ONLY "highway_assets"."BusStopSigns"
+    ADD CONSTRAINT "BusStopSigns_pkey" PRIMARY KEY ("RestrictionID");
+
+CREATE INDEX "sidx_BusStopSigns_geom_point" ON "highway_assets"."BusStopSigns" USING "gist" ("geom_point");
+
+CREATE TRIGGER create_geometryid_bus_stop_signs
+    BEFORE INSERT
+    ON highway_assets."BusStopSigns"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.create_geometryid_highway_assets();
+
+CREATE TRIGGER "set_last_update_details_BusStopSigns" BEFORE INSERT OR UPDATE ON "highway_assets"."BusStopSigns" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();

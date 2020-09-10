@@ -1371,6 +1371,7 @@ CREATE TABLE "moving_traffic"."SpecialDesignations" (
     "designation" "moving_traffic_lookups"."specialDesignationTypeValue" NOT NULL,
     "timeInterval" integer,
     "lane" integer,
+    "cycleFacility" "moving_traffic_lookups"."cycleFacilityValue",
     "mt_capture_geom" "public"."geometry"(LineString,27700)
 )
 INHERITS ("moving_traffic"."Restrictions");

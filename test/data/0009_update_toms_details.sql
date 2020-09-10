@@ -259,5 +259,7 @@ WHERE "Code" NOT IN (SELECT "Code" FROM "compliance_lookups"."MHTC_CheckIssueTyp
 
 DROP TABLE "compliance_lookups"."MHTC_CheckIssueTypes_upd" CASCADE;
 
+INSERT INTO "toms_lookups"."SignOrientationTypes" ("Code", "Description") VALUES (6, 'Oblique in the same direction as road');
+INSERT INTO "toms_lookups"."SignOrientationTypes" ("Code", "Description") VALUES (7, 'Oblique in the opposite direction to road');
 
 
