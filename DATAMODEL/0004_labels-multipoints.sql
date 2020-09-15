@@ -54,6 +54,10 @@ UPDATE toms."Bays" SET
     "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("label_X", "label_Y"), 27700))
 WHERE "label_X" IS NOT NULL AND "label_Y" IS NOT NULL;
 
+-- Leaders ??
+UPDATE toms."Bays" SET
+    "label_pos" = ST_Multi(ST_SetSRID(ST_MakePoint("label_X", "label_Y"), 27700))
+WHERE "label_X" IS NOT NULL AND "label_Y" IS NOT NULL;
 
 -- Remove obsolete fields
 ALTER TABLE toms."Lines" DROP COLUMN "label_X";

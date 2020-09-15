@@ -72,6 +72,7 @@ import uuid
 try:
     import cv2
     cv2_available = True
+    cv2_available = False  # for office ...
 except ImportError:
     print('cv2 not available ...')
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
