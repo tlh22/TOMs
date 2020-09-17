@@ -223,6 +223,7 @@ INSERT INTO "toms_lookups"."SignTypesInUse" ("Code")
 		)
 	AND "Code" NOT IN (SELECT "Code" FROM "toms_lookups"."SignTypesInUse")
 --)
+;
 
 REFRESH MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View";
 

@@ -1,3 +1,5 @@
+set search_path = "$user", public, postgis;
+
 -- SignTypes - need to include ICON field and update from MASTER
 
 ALTER TABLE toms_lookups."SignTypes"
@@ -108,7 +110,7 @@ GRANT ALL ON SEQUENCE mhtc_operations."gnss_pts_id_seq" TO postgres;
 
 CREATE TABLE mhtc_operations.gnss_pts
 (
-    id integer NOT NULL DEFAULT nextval('topography.gnss_pts_id_seq'::regclass),
+    id integer NOT NULL DEFAULT nextval('mhtc_operations.gnss_pts_id_seq'::regclass),
     geom geometry(Point,27700) NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,

@@ -83,6 +83,9 @@ BEGIN
 	WHEN 'TelephoneBoxes' THEN
 		   SELECT concat('TE_', to_char(nextval('highway_assets."TelephoneBoxes_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 
+	WHEN 'TelegraphPoles' THEN
+		   SELECT concat('TP_', to_char(nextval('highway_assets."TelegraphPoles_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+
 	WHEN 'SubterraneanFeatures' THEN
 		   SELECT concat('SF_', to_char(nextval('highway_assets."SubterraneanFeatures_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 
@@ -1528,3 +1531,36 @@ CREATE TRIGGER create_geometryid_bus_stop_signs
     EXECUTE PROCEDURE public.create_geometryid_highway_assets();
 
 CREATE TRIGGER "set_last_update_details_BusStopSigns" BEFORE INSERT OR UPDATE ON "highway_assets"."BusStopSigns" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
+-- TelegraphPoles
+--
+
+CREATE SEQUENCE "highway_assets"."TelegraphPoles_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "highway_assets"."TelegraphPoles_id_seq" OWNER TO "postgres";
+
+CREATE TABLE "highway_assets"."TelegraphPoles" (
+    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."TelegraphPoles_id_seq"'::"regclass"), '00000000'::"text")),
+    --"TelegraphPoleTypeID" integer NOT NULL,
+    "geom_point" "public"."geometry"(Point,27700)
+)
+INHERITS ("highway_assets"."HighwayAssets");
+
+ALTER TABLE ONLY "highway_assets"."TelegraphPoles"
+    ADD CONSTRAINT "TelegraphPoles_pkey" PRIMARY KEY ("RestrictionID");
+
+CREATE INDEX "sidx_TelegraphPoles_geom_point" ON "highway_assets"."TelegraphPoles" USING "gist" ("geom_point");
+
+CREATE TRIGGER create_geometryid_telegraph_poles
+    BEFORE INSERT
+    ON highway_assets."TelegraphPoles"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.create_geometryid_highway_assets();
+
+CREATE TRIGGER "set_last_update_details_telegraph_poles" BEFORE INSERT OR UPDATE ON "highway_assets"."TelegraphPoles" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
