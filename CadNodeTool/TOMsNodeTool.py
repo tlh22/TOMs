@@ -289,7 +289,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
 
-            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # close the original feature
+            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), RestrictionAction.CLOSE) # close the original feature
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", level=Qgis.Info)
 
             self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # open the new one
