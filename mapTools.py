@@ -166,7 +166,10 @@ class MapToolMixin:
 
             # Exclude consideration of CPZs
             if layerDetails.attribute("Code") >= 6:  # CPZs
-                continue
+                allowZoneEditing = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('AllowZoneEditing')
+                if allowZoneEditing != 'True':
+                    continue
+                TOMsMessageLog.logMessage("In findNearestFeatureAt: Zone editing enabled: ", level=Qgis.Info)
 
             self.currLayer = RestrictionTypeUtilsMixin.getRestrictionsLayer (layerDetails)
 
@@ -343,7 +346,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             If no feature is close to the given coordinate, we return None.
         """
         mapPt = self.transformCoordinates(pos)
-        TOMsMessageLog.logMessage("In findNearestFeatureAtC:  mapPt ********: " + mapPt.asWkt(),
+        TOMsMessageLog.logMessage("In getRestrictionsUnderPoint:  mapPt ********: " + mapPt.asWkt(),
                                  level=Qgis.Info)
         #tolerance = self.calcTolerance(pos)
         tolerance = 0.5
@@ -363,7 +366,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
         for layerDetails in self.RestrictionLayers.getFeatures():
 
             if layerDetails.attribute("Code") >= 6:   # CPZs, PTAs
-                continue
+                allowZoneEditing = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('AllowZoneEditing')
+                if allowZoneEditing != 'True':
+                    continue
+                TOMsMessageLog.logMessage("In getRestrictionsUnderPoint: Zone editing enabled: ", level=Qgis.Info)
 
             if layerDetails.attribute("Code") == RestrictionLayers.BAYS:  # Bays
                 tolerance = 2.0
@@ -436,6 +442,10 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                                 self.getLookupDescription(self.SIGN_TYPES, feature[field_index])),
                                                                                     GeometryID=currGeometryID)
                             featureList.append(title)
+
+                else:
+                    title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))), GeometryID=currGeometryID)
+                    featureList.append(title)
 
         return featureList
 
