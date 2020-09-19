@@ -395,7 +395,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                     layerDetails.attribute("Code") == RestrictionLayers.LINES):
                     context.setFeature(f)
                     expression1 = QgsExpression(
-                        'generate_display_geometry ("GeometryID",  "GeomShapeID",  "AzimuthToRoadCentreLine",   @BayOffsetFromKerb, @BayWidth)')
+                        'generateDisplayGeometry()')
 
                     shapeGeom = expression1.evaluate(context)
                     TOMsMessageLog.logMessage("In findNearestFeatureAtC:  shapeGeom ********: " + shapeGeom.asWkt(),
