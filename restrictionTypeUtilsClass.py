@@ -93,7 +93,8 @@ class TOMsParams(QObject):
                           "CrossoverShapeWidth",
                           "PhotoPath",
                           "MinimumTextDisplayScale",
-                          "TOMsDebugLevel"
+                          "TOMsDebugLevel",
+                          "AllowZoneEditing"
                         ]
 
         self.TOMsParamsDict = {}
