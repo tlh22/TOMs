@@ -1,3 +1,9 @@
 FROM postgis/postgis:12-3.0
 RUN apt-get update && apt-get install -y postgresql-plpython3-$PG_MAJOR
 RUN mkdir /io
+# set time zone
+# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# add backup job
+#RUN mkdir -p /io/backup_scripts
+#COPY ./pgbackup.sh /io/backup_scripts/pg_backup.sh
+#RUN chmod +x /io/backup_scripts/pg_backup.sh

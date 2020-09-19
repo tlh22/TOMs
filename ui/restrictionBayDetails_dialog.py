@@ -27,7 +27,7 @@ from PyQt5 import QtGui, uic, QtWidgets
 from qgis.gui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'restrictionBayDetails_dialog_base3.ui'))
+    os.path.dirname(__file__), 'restrictionBayDetails_dialog_base2_qt5.ui'))
 
 
 class restrictionBayDetailsDialog(QtWidgets.QDialog, FORM_CLASS):

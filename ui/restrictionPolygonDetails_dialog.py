@@ -27,7 +27,7 @@ from PyQt5 import QtGui, uic, QtWidgets
 from qgis.gui import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'restrictionPolygonDetails_dialog_base.ui'))
+    os.path.dirname(__file__), 'restrictionPolygonDetails_dialog_base_qt5.ui'))
 
 
 class restrictionPolygonDetailsDialog(QtWidgets.QDialog, FORM_CLASS):

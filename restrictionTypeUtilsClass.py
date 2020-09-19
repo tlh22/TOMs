@@ -17,7 +17,8 @@ from qgis.PyQt.QtWidgets import (
     QAction,
     QDialogButtonBox,
     QLabel,
-    QDockWidget
+    QDockWidget,
+    QPushButton
 )
 
 from qgis.PyQt.QtGui import (
@@ -51,6 +52,7 @@ from qgis.gui import *
 import functools
 import time
 import os
+from pathlib import Path
 
 from .constants import (
     ProposalStatus,
@@ -198,9 +200,40 @@ class TOMsLayers(QObject):
 
         else:
 
+            try:
+                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            except:
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
+                formPath = None
+
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
+
+            if not formPath:
+                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
+
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
+                    # set paths for forms
+                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
+                    ui_path = layerEditFormConfig.uiForm()
+                    TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
+                                              level=Qgis.Info)
+                    if len(formPath)>0 and len(ui_path)>0:
+                        # try to get basename - doesn't seem to work on Linux
+                        #base_ui_path = os.path.basename(ui_path)
+                        path_absolute = os.path.abspath(os.path.join(formPath, os.path.basename(ui_path)))
+                        if not os.path.isfile(path_absolute):
+                            TOMsMessageLog.logMessage("In TOMsLayers:getLayers.form path not found for layer {} ...".format(layer),
+                                                      level=Qgis.Warning)
+                        else:
+                            TOMsMessageLog.logMessage("In TOMsLayers:getLayers.setting new path for form {} ...".format(path_absolute),
+                                                      level=Qgis.Info)
+                            layerEditFormConfig.setUiForm(path_absolute)
+                            self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
+
+                            # TODO: may need to reinstate original values here - so save them somewhere useful
+
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table " + layer + " is not present"))
                     found = False
@@ -210,10 +243,56 @@ class TOMsLayers(QObject):
 
         if found == False:
             self.TOMsLayersNotFound.emit()
-        else:
-            self.TOMsLayersSet.emit()
+            #else:
+            #project = QgsProject.instance()
+            #project.write()
+            #self.TOMsLayersSet.emit()
 
         return
+
+    def removePathFromLayerForms(self):
+
+        TOMsMessageLog.logMessage("In TOMSLayers.removePathFromLayerForms ...", level=Qgis.Info)
+        found = True
+
+        # Check for project being open
+        project = QgsProject.instance()
+
+        if len(project.fileName()) == 0:
+            QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
+            found = False
+
+        else:
+
+            try:
+                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
+            except:
+                formPath = None
+
+            for layer in self.TOMsLayerList:
+                if QgsProject.instance().mapLayersByName(layer):
+                    self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
+                    # set paths for forms
+                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
+                    ui_path = layerEditFormConfig.uiForm()
+                    TOMsMessageLog.logMessage("In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(layer, ui_path),
+                                              level=Qgis.Info)
+                    if len(formPath)>0 and len(ui_path)>0:
+                        # try to get basename - doesn't seem to work on Linux
+                        #base_ui_path = os.path.basename(ui_path)
+                        formName = os.path.basename(ui_path)
+                        layerEditFormConfig.setUiForm(formName)
+                        self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
+
+                else:
+                    QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Table " + layer + " is not present"))
+                    found = False
+                    break
+
+            #project = QgsProject.instance()
+            #project.write()
+
+            # TODO: need to deal with any errors arising ...
 
     def setLayer(self, layer):
         return self.TOMsLayerDict.get(layer)
@@ -254,7 +333,7 @@ class RestrictionTypeUtilsMixin():
         #self.proposalTransaction = QgsTransaction()
         #self.proposalPanel = None
 
-        pass
+        self.cameraNr = None
 
     def restrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         # returns True if resstriction is in Proposal
@@ -738,6 +817,7 @@ class RestrictionTypeUtilsMixin():
             projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
             path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
+        TOMsMessageLog.logMessage("In photoDetails. path_absolute: {}".format(path_absolute), level=Qgis.Warning)
         # check that the path exists
         if not os.path.isdir(path_absolute):
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
@@ -758,22 +838,25 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName1 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
             pixmap1 = QPixmap(newPhotoFileName1)
             if not pixmap1.isNull():
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
 
             if cv2_available:
-                START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
-                TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
-                TAKE_PHOTO_1.setEnabled(False)
+                try:
+                    START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
+                    TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
+                    TAKE_PHOTO_1.setEnabled(False)
 
-                self.camera1 = formCamera(path_absolute, newPhotoFileName1)
-                START_CAMERA_1.clicked.connect(
-                    functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
-                self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
+                    self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
+                    START_CAMERA_1.clicked.connect(
+                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
+                    self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
 
         if FIELD2:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
@@ -783,22 +866,26 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName2 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
             pixmap2 = QPixmap(newPhotoFileName2)
             if not pixmap2.isNull():
                 FIELD2.setPixmap(pixmap2)
                 FIELD2.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
 
             if cv2_available:
-                START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
-                TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
-                TAKE_PHOTO_2.setEnabled(False)
+                try:
+                    START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
+                    TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
+                    TAKE_PHOTO_2.setEnabled(False)
 
-                self.camera2 = formCamera(path_absolute, newPhotoFileName2)
-                START_CAMERA_2.clicked.connect(
-                    functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
-                self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
+                    self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
+                    START_CAMERA_2.clicked.connect(
+                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
+                    self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
+
         if FIELD3:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
                                      level=Qgis.Info)
@@ -811,166 +898,35 @@ class RestrictionTypeUtilsMixin():
             if not pixmap3.isNull():
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
-
+                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Warning)
 
             if cv2_available:
-                START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
-                TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
-                TAKE_PHOTO_3.setEnabled(False)
+                try:
+                    START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
+                    TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
+                    TAKE_PHOTO_3.setEnabled(False)
 
-                self.camera3 = formCamera(path_absolute, newPhotoFileName3)
-                START_CAMERA_3.clicked.connect(
-                    functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
-                self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+                    self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
+                    START_CAMERA_3.clicked.connect(
+                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
+                    self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+                except Exception as e:
+                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
 
-    def photoDetails_local(self, restrictionDialog, currRestrictionLayer, currRestriction):
+    def photoDetails_camera(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        # Function to deal with photo fields
+        # if cv2 is available, check camera nr
+        try:
+            self.cameraNr = int(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CameraNr'))
+        except Exception as e:
+            TOMsMessageLog.logMessage("In photoDetails_camera: cameraNr issue: {}".format(e), level=Qgis.Warning)
+            if cv2_available:
+                self.cameraNr = QMessageBox.information(None, "Information", "Please set value for CameraNr.", QMessageBox.Ok)
+            self.cameraNr = None
 
-        self.demandDialog = restrictionDialog
-        self.currDemandLayer = currRestrictionLayer
-        self.currFeature = currRestriction
+        TOMsMessageLog.logMessage("In photoDetails_field: cameraNr is: {}".format(self.cameraNr), level=Qgis.Info)
 
-        QgsMessageLog.logMessage("In photoDetails", tag="TOMs panel")
-
-        FIELD1 = self.demandDialog.findChild(QLabel, "Photo_Widget_01")
-        FIELD2 = self.demandDialog.findChild(QLabel, "Photo_Widget_02")
-        FIELD3 = self.demandDialog.findChild(QLabel, "Photo_Widget_03")
-
-        photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('PhotoPath')
-        projectFolder = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_folder')
-
-        """ v2.18
-        photoPath = QgsExpressionContextUtils.projectScope().variable('PhotoPath')
-        projectFolder = QgsExpressionContextUtils.projectScope().variable('project_folder')
-        """
-        path_absolute = os.path.join(projectFolder, photoPath)
-
-        if path_absolute == None:
-            reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
-            return
-
-        # Check path exists ...
-        if os.path.isdir(path_absolute) == False:
-            reply = QMessageBox.information(None, "Information", "PhotoPath folder " + str(
-                path_absolute) + " does not exist. Please check value.", QMessageBox.Ok)
-            return
-
-        layerName = self.currDemandLayer.name()
-
-        # Generate the full path to the file
-
-        # fileName1 = "Photos"
-        fileName1 = "Photos_01"
-        fileName2 = "Photos_02"
-        fileName3 = "Photos_03"
-
-        idx1 = self.currDemandLayer.fields().indexFromName(fileName1)
-        idx2 = self.currDemandLayer.fields().indexFromName(fileName2)
-        idx3 = self.currDemandLayer.fields().indexFromName(fileName3)
-
-        """  v2.18
-        idx1 = self.currDemandLayer.fieldNameIndex(fileName1)
-        idx2 = self.currDemandLayer.fieldNameIndex(fileName2)
-        idx3 = self.currDemandLayer.fieldNameIndex(fileName3)
-        """
-
-        QgsMessageLog.logMessage("In photoDetails. idx1: " + str(idx1) + "; " + str(idx2) + "; " + str(idx3),
-                                 tag="TOMs panel")
-        # if currFeatureFeature[idx1]:
-        # QgsMessageLog.logMessage("In photoDetails. photo1: " + str(currFeatureFeature[idx1]), tag="TOMs panel")
-        # QgsMessageLog.logMessage("In photoDetails. photo2: " + str(currFeatureFeature.attribute(idx2)), tag="TOMs panel")
-        # QgsMessageLog.logMessage("In photoDetails. photo3: " + str(currFeatureFeature.attribute(idx3)), tag="TOMs panel")
-
-        if FIELD1:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
-                                     tag="TOMs panel")
-            if self.currFeature[idx1]:
-                newPhotoFileName1 = os.path.join(path_absolute, self.currFeature[idx1])
-            else:
-                newPhotoFileName1 = None
-
-            # QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
-            pixmap1 = QPixmap(newPhotoFileName1)
-            if pixmap1.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
-                FIELD1.setPixmap(pixmap1)
-                FIELD1.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), tag="TOMs panel")
-
-            START_CAMERA_1 = self.demandDialog.findChild(QPushButton, "startCamera1")
-            TAKE_PHOTO_1 = self.demandDialog.findChild(QPushButton, "getPhoto1")
-            TAKE_PHOTO_1.setEnabled(False)
-
-            self.camera1 = formCamera(path_absolute, newPhotoFileName1)
-            START_CAMERA_1.clicked.connect(
-                functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
-            self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
-
-        if FIELD2:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
-                                     tag="TOMs panel")
-            if self.currFeature[idx2]:
-                newPhotoFileName2 = os.path.join(path_absolute, self.currFeature[idx2])
-            else:
-                newPhotoFileName2 = None
-
-            # newPhotoFileName2 = os.path.join(path_absolute, str(self.currFeature[idx2]))
-            # newPhotoFileName2 = os.path.join(path_absolute, str(self.currFeature.attribute(fileName2)))
-            # QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
-            pixmap2 = QPixmap(newPhotoFileName2)
-            if pixmap2.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
-                FIELD2.setPixmap(pixmap2)
-                FIELD2.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), tag="TOMs panel")
-
-            START_CAMERA_2 = self.demandDialog.findChild(QPushButton, "startCamera2")
-            TAKE_PHOTO_2 = self.demandDialog.findChild(QPushButton, "getPhoto2")
-            TAKE_PHOTO_2.setEnabled(False)
-
-            self.camera2 = formCamera(path_absolute, newPhotoFileName2)
-            START_CAMERA_2.clicked.connect(
-                functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
-            self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
-
-        if FIELD3:
-            QgsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
-                                     tag="TOMs panel")
-
-            if self.currFeature[idx3]:
-                newPhotoFileName3 = os.path.join(path_absolute, self.currFeature[idx3])
-            else:
-                newPhotoFileName3 = None
-
-            # newPhotoFileName3 = os.path.join(path_absolute, str(self.currFeature[idx3]))
-            # newPhotoFileName3 = os.path.join(path_absolute,
-            #                                 str(self.currFeature.attribute(fileName3)))
-            # newPhotoFileName3 = os.path.join(path_absolute, str(layerName + "_Photos_03"))
-
-            # QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
-            pixmap3 = QPixmap(newPhotoFileName3)
-            if pixmap3.isNull():
-                pass
-                # FIELD1.setText('Picture could not be opened ({path})'.format(path=newPhotoFileName1))
-            else:
-                FIELD3.setPixmap(pixmap3)
-                FIELD3.setScaledContents(True)
-                QgsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), tag="TOMs panel")
-
-            START_CAMERA_3 = self.demandDialog.findChild(QPushButton, "startCamera3")
-            TAKE_PHOTO_3 = self.demandDialog.findChild(QPushButton, "getPhoto3")
-            TAKE_PHOTO_3.setEnabled(False)
-
-            self.camera3 = formCamera(path_absolute, newPhotoFileName3)
-            START_CAMERA_3.clicked.connect(
-                functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
-            self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+        self.photoDetails(restrictionDialog, currRestrictionLayer, currRestriction)
 
     def onSaveProposalFormDetails(self, currProposalRecord, currProposalObject, proposalsLayer, proposalsDialog, proposalTransaction):
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails.", level=Qgis.Info)
@@ -1133,6 +1089,22 @@ class RestrictionTypeUtilsMixin():
         for row in lookupLayer.getFeatures(request):
             #TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
             return row.attribute("Description") # make assumption that only one row
+
+        return None
+
+    def getBayGeomShapeType(self, code):
+
+        #TOMsMessageLog.logMessage("In getLookupDescription", level=Qgis.Info)
+
+        query = "\"Code\" = " + str(code)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        #TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
+
+        bayTypesInUse = self.TOMsLayers.setLayer('BayTypesInUse')
+        for row in bayTypesInUse.getFeatures(request):
+            #TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
+            return row.attribute("GeomShapeGroupType") # make assumption that only one row
 
         return None
 

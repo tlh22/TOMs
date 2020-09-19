@@ -57,22 +57,32 @@ except ImportError:
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
     cv2_available = False
 
+try:
+    import acapture
+    acapture_available = True
+except ImportError:
+    print('acapture not available ...')
+    QgsMessageLog.logMessage("Not able to import acapture ...", tag="TOMs panel")
+    acapture_available = False
+
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
 
 class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
 
-    def __init__(self, path_absolute, currFileName, cameraNr):
+    def __init__(self, path_absolute, currFileName, cameraNr=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
         self.camera = cvCamera()
         self.cameraNr = cameraNr
+        if self.cameraNr is None:
+            self.cameraNr = 1
 
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
-        # TOMsMessageLog.logMessage("In formCamera::displayFrame ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::displayFrame ... ", level=Qgis.Info)
         self.FIELD.setPixmap(pixmap)
         self.FIELD.setScaledContents(True)
         QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
@@ -169,59 +179,80 @@ class cvCamera(QThread):
         QThread.__init__(self)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
+        self.cameraAvailable = False
         self.cap.release()
 
     def startCamera(self, cameraNr):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Info)
+
+        """if acapture_available:
+            self.cap = acapture.open(cameraNr)  # /dev/video0
+        else:"""
+        if not cv2_available:
+            reply = QMessageBox.information(None, "Information", "Camera is not available. Check cv2 status ...", QMessageBox.Ok)
+            self.closeCamera.emit()
+            return False
 
         self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
 
+        self.cameraAvailable = True
         if not self.cap.isOpened():
-            reply = QMessageBox.information(None, "Information", "Camera did not open ...", QMessageBox.Ok)
+            reply = QMessageBox.information(None, "Information", "Camera {} did not open ...".format(cameraNr), QMessageBox.Ok)
+            self.cameraAvailable = False
 
-        self.cap.set(3, 640)  # width=640
-        self.cap.set(4, 480)  # height=480
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2a ", level=Qgis.Info)
 
-        while self.cap.isOpened():
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # width=640
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # height=480
+
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Info)
+
+        while self.cameraAvailable:
+            #while True:
             self.getFrame()
             # cv2.imshow('img1',self.frame) #display the captured image
             # cv2.waitKey(1)
-            time.sleep(0.1)  # QTimer::singleShot()
+            time.sleep(0.1)
         else:
-            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In cvCamera::startCamera: camera closed ... ", level=Qgis.Info)
             self.closeCamera.emit()
 
     def getFrame(self):
 
         """ Camera code  """
 
-        # TOMsMessageLog.logMessage("In cvCamera::getFrame ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::getFrame ... 1", level=Qgis.Info)
 
         ret, self.frame = self.cap.read()  # return a single frame in variable `frame`
+
+        TOMsMessageLog.logMessage("In cvCamera::getFrame ... 2 ", level=Qgis.Info)
 
         if ret == True:
             # Need to change from BRG (cv::mat) to RGB image
             cvRGBImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
             qimg = QImage(cvRGBImg.data, cvRGBImg.shape[1], cvRGBImg.shape[0], QImage.Format_RGB888)
-
+            TOMsMessageLog.logMessage("In cvCamera::getFrame ... 3 ", level=Qgis.Info)
             # Now display ...
             pixmap = QPixmap.fromImage(qimg)
 
             self.changePixmap.emit(pixmap)
 
+            TOMsMessageLog.logMessage("In cvCamera::getFrame ... 4 ", level=Qgis.Info)
         else:
 
             TOMsMessageLog.logMessage("In cvCamera::useCamera: frame not returned ... ", level=Qgis.Warning)
             self.closeCamera.emit()
+
+        TOMsMessageLog.logMessage("In cvCamera::getFrame ... 5", level=Qgis.Info)
 
     def takePhoto(self, path_absolute):
 
         TOMsMessageLog.logMessage("In cvCamera::takePhoto ... ", level=Qgis.Info)
         # Save frame to file
 
-        fileName = 'Photo_{}.png'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z'))
+        fileName = 'Photo_{}.png'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S%f'))
         newPhotoFileName = os.path.join(path_absolute, fileName)
 
         TOMsMessageLog.logMessage("Saving photo: file: " + newPhotoFileName, level=Qgis.Info)

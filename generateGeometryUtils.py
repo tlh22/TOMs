@@ -12,6 +12,12 @@ import os.path
 import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
+from qgis.PyQt.QtCore import (
+    QObject,
+    QDate,
+    pyqtSignal
+)
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
@@ -41,7 +47,7 @@ from qgis.utils import iface
 import math
 from cmath import rect, phase
 
-class generateGeometryUtils:
+class generateGeometryUtils (QObject):
     # https://gis.stackexchange.com/questions/95528/produce-line-from-components-length-and-angle?noredirect=1&lq=1
     # direction cosines function
 
@@ -127,6 +133,26 @@ class generateGeometryUtils:
         # TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), level=Qgis.Info)
 
         return bisectAz, distToPt
+
+    def calcInteriorBisectAzimuth(Az1, Az2):
+        # function to return Az of bisector
+
+        diffAz = generateGeometryUtils.checkDegrees(Az1) - generateGeometryUtils.checkDegrees(Az2)
+
+        diffAz2 = diffAz
+        if diffAz > 180.0:
+            diffAz2 = diffAz - 360.0
+        if diffAz < -180.0:
+            diffAz2 = diffAz + 360.0
+
+        #TOMsMessageLog.logMessage("In generate_display_geometry: Az1: {}; Az2:{}; diffAz:{}: {}".format(Az1, Az2, diffAz, diffAz2), level=Qgis.Info)
+
+        diffAngle = diffAz2 / float(2)
+        bisectAz = generateGeometryUtils.checkDegrees(Az1 - diffAngle)
+
+        #TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz), level=Qgis.Info)
+
+        return bisectAz
 
     @staticmethod
     def checkDegrees(Az):
@@ -813,29 +839,17 @@ class generateGeometryUtils:
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
-        #CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
+        CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
-        try:
-            cpzLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
-        except Exception as e:
-            cpzLayer = None
-            CPZWaitingTimeID = None
+        """TOMsMessageLog.logMessage(
+            "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
+            level=Qgis.Info)"""
 
-        if cpzLayer:
-            CPZWaitingTimeID = generateGeometryUtils.getZoneAttribute(zoneLayer=cpzLayer,
-                                                                      zoneFeatureID=restrictionCPZ,
-                                                                      attributeName="TimePeriodID",
-                                                                      zoneFeatureKeyField="CPZ")
-
-            """TOMsMessageLog.logMessage(
-                "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
-                level=Qgis.Info)"""
-
-            if CPZWaitingTimeID:
-                #TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
-                #                         level=Qgis.Info)
-                if CPZWaitingTimeID == waitingTimeID:
-                    waitDesc = None
+        if CPZWaitingTimeID:
+            #TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
+            #                         level=Qgis.Info)
+            if CPZWaitingTimeID == waitingTimeID:
+                waitDesc = None
 
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
@@ -854,9 +868,10 @@ class generateGeometryUtils:
         timePeriodID = feature.attribute("TimePeriodID")
 
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
+
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
 
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)" + feature.attribute("GeometryID"), level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
@@ -864,68 +879,40 @@ class generateGeometryUtils:
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), level=Qgis.Info)
 
-        if timePeriodID == 1:  # 'At Any Time'
-            timePeriodDesc = None
-
         restrictionCPZ = feature.attribute("CPZ")
         restrictionPTA = feature.attribute("ParkingTariffArea")
 
-        #CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
-        try:
-            cpzLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
-        except Exception as e:
-            cpzLayer = None
-            CPZWaitingTimeID = None
+        CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
+        TariffZoneTimePeriodID, TariffZoneMaxStayID, TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneDetails(restrictionPTA)
 
-        if cpzLayer:
-            CPZWaitingTimeID = generateGeometryUtils.getZoneAttribute(zoneLayer=cpzLayer,
-                                                                      zoneFeatureID=restrictionCPZ,
-                                                                      attributeName="TimePeriodID",
-                                                                      zoneFeatureKeyField="CPZ")
+        TOMsMessageLog.logMessage(
+            "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
+            level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), level=Qgis.Info)
 
-            if CPZWaitingTimeID:
-                TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
-                                         level=Qgis.Info)
-                if CPZWaitingTimeID == timePeriodID:
-                    timePeriodDesc = None
+        if timePeriodID == 1:  # 'At Any Time'
+            timePeriodDesc = None
 
-        try:
-            tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-        except Exception as e:
-            tpaLayer = None
-            TariffZoneTimePeriodID = None
-            TariffZoneMaxStayID = None
-            TariffZoneNoReturnID = None
-
-        if tpaLayer:
-            TariffZoneTimePeriodID = generateGeometryUtils.getZoneAttribute(zoneLayer=tpaLayer,  zoneFeatureID=restrictionPTA,
-                                                                            attributeName="TimePeriodID", zoneFeatureKeyField="ParkingTariffArea")
-            TariffZoneMaxStayID = generateGeometryUtils.getZoneAttribute(zoneLayer=tpaLayer,  zoneFeatureID=restrictionPTA,
-                                                                         attributeName="MaxStayID", zoneFeatureKeyField="ParkingTariffArea")
-            TariffZoneNoReturnID = generateGeometryUtils.getZoneAttribute(zoneLayer=tpaLayer,  zoneFeatureID=restrictionPTA,
-                                                                          attributeName="NoReturnID", zoneFeatureKeyField="ParkingTariffArea")
-
-            #TariffZoneTimePeriodID, TariffZoneMaxStayID, TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneDetails(restrictionPTA)
-
-            TOMsMessageLog.logMessage(
-                "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
-                level=Qgis.Info)
-            TOMsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), level=Qgis.Info)
-
-            if TariffZoneTimePeriodID == timePeriodID:
+        if CPZWaitingTimeID:
+            TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
+                                     level=Qgis.Info)
+            if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
 
-            if TariffZoneMaxStayID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                                         level=Qgis.Info)"""
-                if TariffZoneMaxStayID == maxStayID:
-                    maxStayDesc = None
+        if TariffZoneTimePeriodID == timePeriodID:
+            timePeriodDesc = None
 
-            if TariffZoneNoReturnID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                                         level=Qgis.Info)"""
-                if TariffZoneNoReturnID == noReturnID:
-                    noReturnDesc = None
+        if TariffZoneMaxStayID:
+            """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
+                                     level=Qgis.Info)"""
+            if TariffZoneMaxStayID == maxStayID:
+                maxStayDesc = None
+
+        if TariffZoneNoReturnID:
+            """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
+                                     level=Qgis.Info)"""
+            if TariffZoneNoReturnID == noReturnID:
+                noReturnDesc = None
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
 
@@ -967,30 +954,22 @@ class generateGeometryUtils:
     def getCurrentCPZDetails(feature):
 
         TOMsMessageLog.logMessage("In getCurrentCPZDetails", level=Qgis.Info)
-        #CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
 
-        try:
-            cpzLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
-        except Exception as e:
-            cpzLayer = None
-            CPZWaitingTimeID = None
+        restrictionID = feature.attribute("GeometryID")
+        #TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        if cpzLayer:
+        geom = feature.geometry()
 
-            restrictionID = feature.attribute("GeometryID")
-            #TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
 
-            geom = feature.geometry()
+        if currentCPZFeature:
 
-            currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, cpzLayer)
+            currentCPZ = currentCPZFeature.attribute("CPZ")
+            cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
+            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
 
-            if currentCPZFeature:
-
-                currentCPZ = currentCPZFeature.attribute("CPZ")
-                cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
-                #TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: " + str(currentCPZ), level=Qgis.Info)
-
-                return currentCPZ, cpzWaitingTimeID
+            return currentCPZ, cpzWaitingTimeID
 
         return None, None
 
@@ -998,34 +977,24 @@ class generateGeometryUtils:
     def getCurrentPTADetails(feature):
 
         #TOMsMessageLog.logMessage("In getCurrentPTADetails", level=Qgis.Info)
-        #PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
 
-        try:
-            tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-        except Exception as e:
-            tpaLayer = None
-            TariffZoneTimePeriodID = None
-            TariffZoneMaxStayID = None
-            TariffZoneNoReturnID = None
+        restrictionID = feature.attribute("GeometryID")
+        #TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        if tpaLayer:
-            
-            restrictionID = feature.attribute("GeometryID")
-            #TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        geom = feature.geometry()
 
-            geom = feature.geometry()
+        currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
 
-            currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, tpaLayer)
+        if currentPTAFeature:
+            currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
+            ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
+            ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
+            ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
-            if currentPTAFeature:
-                currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
-                ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
-                ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
-                ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
+            #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
 
-                #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
-
-                return currentPTA, ptaMaxStayID, ptaNoReturnID
+            return currentPTA, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
@@ -1056,6 +1025,18 @@ class generateGeometryUtils:
                 if poly.geometry().contains(QgsGeometry.fromPointXY(testPt)):
                     #TOMsMessageLog.logMessage("In getPolygonForRestriction. feature found", level=Qgis.Info)
                     return poly
+
+        return None
+
+    @staticmethod
+    def getAttributeFromLayer(layer, keyField, keyValue, attributeName):
+
+        query = '"{}" = \'{}\''.format(keyField, keyValue)
+        request = QgsFeatureRequest().setFilterExpression(query)
+
+        for row in layer.getFeatures(request):
+            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
+            return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
 
         return None
 
@@ -1147,40 +1128,6 @@ class generateGeometryUtils:
         return None
 
     @staticmethod
-    def getZoneForFeature(feature, zone, attribute):
-
-        TOMsMessageLog.logMessage("In getZoneAttributeForFeature", level=Qgis.Info)
-
-        zoneLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
-
-        for poly in CPZLayer.getFeatures():
-            currentCPZ = poly.attribute("CPZ")
-            if currentCPZ == cpzNr:
-                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
-                cpzWaitingTimeID = poly.attribute("TimePeriodID")
-                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), level=Qgis.Info)
-                return cpzWaitingTimeID
-
-        return None
-
-    @staticmethod
-    def getZoneAttribute(zoneLayer, zoneFeatureKeyField, zoneFeatureID, attributeName):
-
-        TOMsMessageLog.logMessage("In getZoneAttribute", level=Qgis.Info)
-
-        #zoneLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
-
-        for poly in zoneLayer.getFeatures():
-            currentPolyID = poly.attribute(zoneFeatureKeyField)
-            if currentPolyID == zoneFeatureID:
-                TOMsMessageLog.logMessage("In getZoneAttribute. Found relevant zone.", level=Qgis.Info)
-                zoneAttribute = poly.attribute(attributeName)
-                TOMsMessageLog.logMessage("In getZoneAttribute. {}:{}".format(attributeName, zoneAttribute), level=Qgis.Info)
-                return zoneAttribute
-
-        return None
-
-    @staticmethod
     def getAdjacentGridSquares(currGridSquare):
 
         #TOMsMessageLog.logMessage("In getAdjacentGridSquares", level=Qgis.Info)
@@ -1252,17 +1199,23 @@ class generateGeometryUtils:
 
         lineGeom = lineFeature.geometry()
         distSquared, closestPt, vertexNrAfterPt, leftOf = lineGeom.closestSegmentWithContext(point)
-        orientationToFeature = point.azimuth(QgsPointXY(closestPt))
-        orientationInFeatureDirection = closestPt.azimuth(QgsPointXY(lineGeom.vertexAt(vertexNrAfterPt)))
+        orientationToFeature = generateGeometryUtils.checkDegrees(point.azimuth(QgsPointXY(closestPt)))
+        orientationInFeatureDirection = generateGeometryUtils.checkDegrees(closestPt.azimuth(QgsPointXY(lineGeom.vertexAt(vertexNrAfterPt))))
         #orientationAwayFromFeature = generateGeometryUtils.checkDegrees(orientationToFeature + 180.0)
-        orientationAwayFromFeature = math.degrees(QgsGeometryUtils.normalizedAngle(math.radians(orientationToFeature + 180.0)))
+        orientationAwayFromFeature = generateGeometryUtils.checkDegrees(orientationToFeature + 180.0)
         #orientationOppositeFeatureDirection = generateGeometryUtils.checkDegrees(orientationInFeatureDirection + 180)
-        orientationOppositeFeatureDirection = math.degrees(QgsGeometryUtils.normalizedAngle(math.radians(orientationInFeatureDirection + 180.0)))
+        orientationOppositeFeatureDirection = generateGeometryUtils.checkDegrees(orientationInFeatureDirection + 180.0)
 
-        #TOMsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
+        # TODO: Include type 5 - defined Az
+
+        orientationObliqueInFeatureDirection = generateGeometryUtils.calcInteriorBisectAzimuth(orientationToFeature, orientationInFeatureDirection)
+        orientationObliqueOppositeFeatureDirection = generateGeometryUtils.calcInteriorBisectAzimuth(orientationToFeature, orientationOppositeFeatureDirection)
+
+        TOMsMessageLog.logMessage('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
+        TOMsMessageLog.logMessage('getLineOrientationAtPoint 6: {obliqueInFeatureDirection}; 7: {obliqueOppFeatureDirection}'.format(obliqueInFeatureDirection=orientationObliqueInFeatureDirection, obliqueOppFeatureDirection=orientationObliqueOppositeFeatureDirection), level=Qgis.Info)
         #print('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
 
-        return orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection
+        return orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection, orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection
 
     def createLinewithPointAzimuthDistance(point, azimuth, distance):
         #azimuth in degrees
@@ -1273,54 +1226,56 @@ class generateGeometryUtils:
     def getSignOrientation(ptFeature, lineLayer):
         TOMsMessageLog.logMessage('In getSignOrientation ...', level=Qgis.Info)
         try:
-            signOrientation = ptFeature.attribute("SignOrientation")
+            signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
-            return [None, None, None, None, None]
+            return [None, None, None, None, None, None, None]
 
         try:
             signOriginalGeometry = ptFeature.attribute("original_geom_wkt")
         except KeyError as e:
-            TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Warning)
-            return [None, None, None, None, None]
+            TOMsMessageLog.logMessage('getSignLine - signOriginalGeometry issue', level=Qgis.Info)
+            return [None, None, None, None, None, None, None]
 
         TOMsMessageLog.logMessage('getSignOrientation - orientation: {}'.format(signOrientation), level=Qgis.Info)
         TOMsMessageLog.logMessage('getSignOrientation - signOriginalGeometry: {}'.format(signOriginalGeometry), level=Qgis.Info)
 
         lineGeom = None
         if signOrientation is None:
-            return [None, None, None, None, None]
+            return [None, None, None, None, None, None, None]
 
         # find closest point/feature on lineLayer
 
         #signPt = ptFeature.geometry().asPoint()
         signPt = QgsGeometry.fromWkt(signOriginalGeometry).asPoint()
         #print('signPt: {}'.format(signPt.asWkt()))
-        TOMsMessageLog.logMessage('getSignOrientation signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage('getSignOrientation signPt: {}'.format(signPt.asWkt()), level=Qgis.Info)
         TOMsMessageLog.logMessage(
             'getSignOrientation lineLayer {}'.format(lineLayer.name()),
             level=Qgis.Info)
         closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
-        if closestPoint:
-            TOMsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
 
         # Now generate a line in the appropriate direction
         if closestPoint:
+            TOMsMessageLog.logMessage('getSignLine closestPoint: {}'.format(closestPoint.asWkt()), level=Qgis.Info)
             # get the orientation of the line feature
-            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection) = generateGeometryUtils.getLineOrientationAtPoint(
-                signPt, closestFeature)
+            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature,
+             orientationOppositeFeatureDirection, orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection) \
+                = generateGeometryUtils.getLineOrientationAtPoint(signPt, closestFeature)
             #TOMsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), level=Qgis.Info)
             #print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
 
             # make it match sign orientation
-            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature]
+            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature,
+                    orientationObliqueInFeatureDirection, orientationObliqueOppositeFeatureDirection]
 
-        return [None, None, None, None, None]
+        return [None, None, None, None, None, None, None]
 
     def getSignLine(ptFeature, lineLayer, distanceForIcons):
 
         try:
-            signOrientation = ptFeature.attribute("SignOrientation")
+            signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError as e:
+            TOMsMessageLog.logMessage('getSignLine - SignOrientationTypeID not found: {}'.format(signOrientation), level=Qgis.Info)
             return None
 
         TOMsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), level=Qgis.Info)
@@ -1336,9 +1291,10 @@ class generateGeometryUtils:
             # work out the length of the line based on the number of plates in the sign
             platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
             nrPlatesInSign = len(platesInSign)
-            #TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), level=Qgis.Info)
+            # TODO work out scaling required for sign here
             lineLength = (nrPlatesInSign + 1) * distanceForIcons
-            #TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
+            TOMsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), level=Qgis.Info)
             #print('getSignLine lineLength: {}'.format(lineLength))
 
             signPt = ptFeature.geometry().asPoint()
@@ -1351,6 +1307,11 @@ class generateGeometryUtils:
                 lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[3], lineLength)
             elif signOrientation == 4:  # "Facing away from road"
                 lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[4], lineLength)
+                # TODO: Include type 5 - defined angle
+            elif signOrientation == 6:  # "Facing oblique in same direction as road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[5], lineLength)
+            elif signOrientation == 7:  # "Facing oblique in opposite direction to road"
+                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[6], lineLength)
             else:
                 return None
 
@@ -1393,7 +1354,7 @@ class generateGeometryUtils:
 
     @staticmethod
     def getGeneratedSignLine(feature):
-        TOMsMessageLog.logMessage('getGeneratedSignLine ...', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getGeneratedSignLine ... {}'.format(feature.attribute("GeometryID")), level=Qgis.Info)
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
         #distanceForIcons = 10
@@ -1415,7 +1376,7 @@ class generateGeometryUtils:
         try:
             path_absolute = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('iconPath')
         except Exception as e:
-            TOMsMessageLog.logMessage('getSignIcons: iconPath not found {}'.format(e), level=Qgis.Warning)
+            TOMsMessageLog.logMessage('getSignIcons: iconPath not found {}'.format(e), level=Qgis.Info)
             return None
 
         platesInSign = generateGeometryUtils.getPlatesInSign(ptFeature)
@@ -1425,6 +1386,9 @@ class generateGeometryUtils:
             signTypeRow = generateGeometryUtils.getLookupRow(signTypesLayer, plateType)
             if signTypeRow:
                 icon = signTypeRow["Icon"]
+                TOMsMessageLog.logMessage('getSignIcons: icon {}'.format(icon), level=Qgis.Info)
+                if not icon:
+                    continue
                 path = os.path.join(path_absolute, icon)
                 plateIconsInSign.append(path)
         #TOMsMessageLog.logMessage('getSignIcons ... returning ... ', level=Qgis.Info)
@@ -1436,26 +1400,34 @@ class generateGeometryUtils:
         try:
             RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
         except Exception as e:
-            TOMsMessageLog.logMessage('getSignOrientationList: RoadCentreLine layer not found {}'.format(e), level=Qgis.Warning)
+            TOMsMessageLog.logMessage('getSignOrientationList: RoadCentreLine layer not found {}'.format(e), level=Qgis.Info)
             return None
 
         orientationList = generateGeometryUtils.getSignOrientation(ptFeature, RoadCentreLineLayer)
 
-        # This list give the orientation for the way the line is pointing. Now need to swap each through 180 to give true direction for arrows, etc
-        # add extra value to match SignsOrientation values
-        newOrientationList = [0,
-                              orientationList[2], # "Facing in same direction as road" inverted is 2
-                              orientationList[1],  # "Facing in opposite direction to road" inverted is 1
-                              orientationList[4], # "Facing road" inverted is 4
-                              orientationList[3]]  # "Facing away from road" inverted is 3
+        if orientationList[1]:  # check that valid values have been returned
+            # This list give the orientation for the way the line is pointing. Now need to swap each through 180 to give true direction for arrows, etc
+            # add extra value to match SignsOrientation values
+            newOrientationList = [0,
+                                  orientationList[2],  # "Facing in same direction as road" inverted is 2
+                                  orientationList[1],  # "Facing in opposite direction to road" inverted is 1
+                                  orientationList[4],  # "Facing road" inverted is 4
+                                  orientationList[3],  # "Facing away from road" inverted is 3
+                                  0,  # defined azimuth ...
+                                  generateGeometryUtils.checkDegrees(orientationList[5] + 180.0),  # oblique in road direction
+                                  generateGeometryUtils.checkDegrees(orientationList[6] + 180.0)  # oblique opposite road direction
+                                  ]
 
-        try:
-            featureSignOrientation = ptFeature.attribute("SignOrientation")
-        except KeyError as e:
-            return None
-        TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
-        #return orientationList
-        return newOrientationList[featureSignOrientation]
+            try:
+                featureSignOrientation = ptFeature.attribute("SignOrientationTypeID")
+            except KeyError as e:
+                return None
+            TOMsMessageLog.logMessage('getSignOrientationList ...{}'.format(newOrientationList[featureSignOrientation]), level=Qgis.Info)
+            #return orientationList
+            return newOrientationList[featureSignOrientation]
+
+        return 0
+
 
     def getLookupRow(lookupLayer, code):
         query = '"Code" = \'{}\''.format(code)
