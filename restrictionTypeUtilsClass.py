@@ -693,8 +693,10 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
 
+        # TODO: get the last used values ... look at field ...
+
         if currRestrictionLayer.name() == "Lines":
-            currRestriction.setAttribute("RestrictionTypeID", 201)  # 10 = SYL (Lines)
+            currRestriction.setAttribute("RestrictionTypeID", 224)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
@@ -705,6 +707,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("NrBays", -1)
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
 
             currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
@@ -717,6 +720,7 @@ class RestrictionTypeUtilsMixin():
 
         elif currRestrictionLayer.name() == "RestrictionPolygons":
             currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
+            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
 
         return
 

@@ -954,47 +954,56 @@ class generateGeometryUtils (QObject):
     def getCurrentCPZDetails(feature):
 
         TOMsMessageLog.logMessage("In getCurrentCPZDetails", level=Qgis.Info)
-        CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        try:
+            CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        except Exception as e:
+            CPZLayer = None
 
-        restrictionID = feature.attribute("GeometryID")
-        #TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        if CPZLayer:
+            restrictionID = feature.attribute("GeometryID")
+            TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        geom = feature.geometry()
+            #geom = feature.geometry()
 
-        currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
+            currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
 
-        if currentCPZFeature:
+            if currentCPZFeature:
 
-            currentCPZ = currentCPZFeature.attribute("CPZ")
-            cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
-            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
+                currentCPZ = currentCPZFeature.attribute("CPZ")
+                cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
+                cpzMatchDayTimePeriodID = currentCPZFeature.attribute("MatchDayTimePeriodID")
+                TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}: match day: {}".format(currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID), level=Qgis.Info)
 
-            return currentCPZ, cpzWaitingTimeID
+                return currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID
 
         return None, None
 
     @staticmethod
     def getCurrentPTADetails(feature):
 
-        #TOMsMessageLog.logMessage("In getCurrentPTADetails", level=Qgis.Info)
-        PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        TOMsMessageLog.logMessage("In getCurrentPTADetails", level=Qgis.Info)
+        try:
+            PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        except Exception as e:
+            PTALayer = None
 
-        restrictionID = feature.attribute("GeometryID")
-        #TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        if PTALayer:
+            restrictionID = feature.attribute("GeometryID")
+            TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        geom = feature.geometry()
+            #geom = feature.geometry()
 
-        currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
+            currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
 
-        if currentPTAFeature:
-            currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
-            ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
-            ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
-            ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
+            if currentPTAFeature:
+                currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
+                ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
+                ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
+                ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
-            #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
 
-            return currentPTA, ptaMaxStayID, ptaNoReturnID
+                return currentPTA, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
@@ -1034,9 +1043,12 @@ class generateGeometryUtils (QObject):
         query = '"{}" = \'{}\''.format(keyField, keyValue)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        for row in layer.getFeatures(request):
-            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
-            return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
+        try:
+            for row in layer.getFeatures(request):
+                TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
+                return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
+        except Exception as e:
+            pass
 
         return None
 
