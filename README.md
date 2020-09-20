@@ -94,7 +94,7 @@ The test project file sets capabilities for WMS and WFS services.
 < This video was the original concept. More details required here >
 
 ## **Contributing** <a name="contributing"></a>
-Contributions are welcome - whether it be coding, documenting or moral support!. If you are willin/able to assist, please contact the developer(s) to discuss things further.
+Contributions are welcome - whether it be coding, documenting or moral support!. If you are willing/able to assist, please contact the developer(s) to discuss things further.
 
 ## **Credits** <a name="credits"></a>
 The development is carried out by MHTC Ltd. On-going support has been provided by ProjectCentre Ltd. Guidance and advice has been given by OpenGIS.ch.
