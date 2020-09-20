@@ -688,7 +688,7 @@ class RestrictionTypeUtilsMixin():
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
             #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
-        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
@@ -697,6 +697,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("RestrictionTypeID", 201)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
@@ -727,7 +728,7 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)

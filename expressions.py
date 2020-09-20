@@ -385,7 +385,7 @@ def getBayLabelText(feature, parent):
 def getCPZ(feature, parent):
 	# Returns the CPZ for the feature - or None
     try:
-        cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
+        cpzNr, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(feature)
     except Exception as e:
         TOMsMessageLog.logMessage('getCPZ: error in expression function: {}'.format(e), level=Qgis.Warning)
         """TOMsMessageLog.logMessage('getCPZ', level=Qgis.Info)

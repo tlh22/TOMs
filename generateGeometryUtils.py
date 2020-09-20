@@ -1009,11 +1009,12 @@ class generateGeometryUtils (QObject):
 
             currentCPZ = currentCPZFeature.attribute("CPZ")
             cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
-            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
+            cpzMatchDayTimePeriodID = currentCPZFeature.attribute("MatchDayTimePeriodID")
+            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID), level=Qgis.Info)
 
-            return currentCPZ, cpzWaitingTimeID
+            return currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID
 
-        return None, None
+        return None, None, None
 
     @staticmethod
     def getCurrentPTADetails(feature):

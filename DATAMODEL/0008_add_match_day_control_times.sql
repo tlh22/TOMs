@@ -12,3 +12,8 @@ ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "MatchDayTimePeriodID" integer;
 ALTER TABLE ONLY "toms"."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionPolygons_MatchDayTimePeriodID_fkey" FOREIGN KEY ("MatchDayTimePeriodID") REFERENCES "toms_lookups"."TimePeriodsInUse"("Code");
+
+ALTER TABLE toms."ControlledParkingZones"
+    ADD COLUMN "MatchDayTimePeriodID" integer;
+ALTER TABLE ONLY "toms"."ControlledParkingZones"
+    ADD CONSTRAINT "RestrictionPolygons_MatchDayTimePeriodID_fkey" FOREIGN KEY ("MatchDayTimePeriodID") REFERENCES "toms_lookups"."TimePeriodsInUse"("Code");
