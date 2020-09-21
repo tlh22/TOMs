@@ -829,6 +829,7 @@ class generateGeometryUtils (QObject):
 
         waitingTimeID = feature.attribute("NoWaitingTimeID")
         loadingTimeID = feature.attribute("NoLoadingTimeID")
+        matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
         GeometryID = feature.attribute("GeometryID")
 
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriods")[0]
@@ -836,10 +837,14 @@ class generateGeometryUtils (QObject):
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
+        matchDayTimePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, matchDayTimePeriodID)
+        if matchDayTimePeriodID:
+            waitDesc = "{};Match Day: {}".format(waitDesc, matchDayTimePeriodDesc)
+
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
-        CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
+        CPZWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
 
         """TOMsMessageLog.logMessage(
             "In getWaitingLoadingRestrictionLabelText (" + GeometryID + "): " + str(CPZWaitingTimeID) + "; " + str(waitingTimeID) + "; " + str(loadingTimeID),
@@ -849,7 +854,11 @@ class generateGeometryUtils (QObject):
             #TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
             #                         level=Qgis.Info)
             if CPZWaitingTimeID == waitingTimeID:
-                waitDesc = None
+                if cpzMatchDayTimePeriodID:
+                    if cpzMatchDayTimePeriodID == matchDayTimePeriodID:
+                        waitDesc = None
+                else:
+                    waitDesc = None
 
         TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + GeometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
@@ -860,29 +869,34 @@ class generateGeometryUtils (QObject):
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
+        """maxStayDesc = None
+        noReturnDesc = None
+        timePeriodDesc = None"""
+
         if currScale > minScale:
             return None, None, None
 
         maxStayID = feature.attribute("MaxStayID")
         noReturnID = feature.attribute("NoReturnID")
         timePeriodID = feature.attribute("TimePeriodID")
+        matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
 
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
-
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
 
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2)" + feature.attribute("GeometryID"), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText: GeometryID: " + feature.attribute("GeometryID"), level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
         timePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, timePeriodID)
-
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. maxStay: " + str(maxStayDesc), level=Qgis.Info)
+        matchDayTimePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, matchDayTimePeriodID)
+        if matchDayTimePeriodID:
+            timePeriodDesc = "{};Match Day: {}".format(timePeriodDesc, matchDayTimePeriodDesc)
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionPTA = feature.attribute("ParkingTariffArea")
 
-        CPZWaitingTimeID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
+        CPZWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
         TariffZoneTimePeriodID, TariffZoneMaxStayID, TariffZoneNoReturnID = generateGeometryUtils.getTariffZoneDetails(restrictionPTA)
 
         TOMsMessageLog.logMessage(
@@ -897,22 +911,31 @@ class generateGeometryUtils (QObject):
             TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
                                      level=Qgis.Info)
             if CPZWaitingTimeID == timePeriodID:
-                timePeriodDesc = None
+                if cpzMatchDayTimePeriodID:
+                    if cpzMatchDayTimePeriodID == matchDayTimePeriodID:
+                        timePeriodDesc = None
+                else:
+                    timePeriodDesc = None
 
-        if TariffZoneTimePeriodID == timePeriodID:
-            timePeriodDesc = None
+        if TariffZoneTimePeriodID:
+            if TariffZoneTimePeriodID == timePeriodID:
+                if cpzMatchDayTimePeriodID:
+                    if cpzMatchDayTimePeriodID == matchDayTimePeriodID:
+                        timePeriodDesc = None
+                else:
+                    timePeriodDesc = None
 
-        if TariffZoneMaxStayID:
-            """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                                     level=Qgis.Info)"""
-            if TariffZoneMaxStayID == maxStayID:
-                maxStayDesc = None
+            if TariffZoneMaxStayID:
+                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
+                                         level=Qgis.Info)"""
+                if TariffZoneMaxStayID == maxStayID:
+                    maxStayDesc = None
 
-        if TariffZoneNoReturnID:
-            """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                                     level=Qgis.Info)"""
-            if TariffZoneNoReturnID == noReturnID:
-                noReturnDesc = None
+            if TariffZoneNoReturnID:
+                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
+                                         level=Qgis.Info)"""
+                if TariffZoneNoReturnID == noReturnID:
+                    noReturnDesc = None
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
 
@@ -954,47 +977,56 @@ class generateGeometryUtils (QObject):
     def getCurrentCPZDetails(feature):
 
         TOMsMessageLog.logMessage("In getCurrentCPZDetails", level=Qgis.Info)
-        CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        try:
+            CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        except Exception as e:
+            CPZLayer = None
 
-        restrictionID = feature.attribute("GeometryID")
-        #TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        if CPZLayer:
+            restrictionID = feature.attribute("GeometryID")
+            TOMsMessageLog.logMessage("In getCurrentCPZDetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        geom = feature.geometry()
+            #geom = feature.geometry()
 
-        currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
+            currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, CPZLayer)
 
-        if currentCPZFeature:
+            if currentCPZFeature:
 
-            currentCPZ = currentCPZFeature.attribute("CPZ")
-            cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
-            TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
+                currentCPZ = currentCPZFeature.attribute("CPZ")
+                cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
+                cpzMatchDayTimePeriodID = currentCPZFeature.attribute("MatchDayTimePeriodID")
+                TOMsMessageLog.logMessage("In getCurrentCPZDetails. CPZ found: {}: control: {}: match day: {}".format(currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID), level=Qgis.Info)
 
-            return currentCPZ, cpzWaitingTimeID
+                return currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID
 
-        return None, None
+        return None, None, None
 
     @staticmethod
     def getCurrentPTADetails(feature):
 
-        #TOMsMessageLog.logMessage("In getCurrentPTADetails", level=Qgis.Info)
-        PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        TOMsMessageLog.logMessage("In getCurrentPTADetails", level=Qgis.Info)
+        try:
+            PTALayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        except Exception as e:
+            PTALayer = None
 
-        restrictionID = feature.attribute("GeometryID")
-        #TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
+        if PTALayer:
+            restrictionID = feature.attribute("GeometryID")
+            TOMsMessageLog.logMessage("In getCurrentPTADetails. restriction: " + str(restrictionID), level=Qgis.Info)
 
-        geom = feature.geometry()
+            #geom = feature.geometry()
 
-        currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
+            currentPTAFeature = generateGeometryUtils.getPolygonForRestriction(feature, PTALayer)
 
-        if currentPTAFeature:
-            currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
-            ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
-            ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
-            ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
+            if currentPTAFeature:
+                currentPTA = currentPTAFeature.attribute("ParkingTariffArea")
+                ptaMaxStayID = currentPTAFeature.attribute("MaxStayID")
+                ptaNoReturnID = currentPTAFeature.attribute("NoReturnID")
+                ptaTimePeriodID = currentPTAFeature.attribute("TimePeriodID")
 
-            #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In getCurrentPTADetails. PTA found: " + str(currentPTA), level=Qgis.Info)
 
-            return currentPTA, ptaMaxStayID, ptaNoReturnID
+                return currentPTA, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
@@ -1034,9 +1066,12 @@ class generateGeometryUtils (QObject):
         query = '"{}" = \'{}\''.format(keyField, keyValue)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        for row in layer.getFeatures(request):
-            TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
-            return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
+        try:
+            for row in layer.getFeatures(request):
+                TOMsMessageLog.logMessage("In getAttributeFromLayer. Returning {} with value {} from table {}".format(attributeName, row[layer.fields().indexFromName(attributeName)], layer.name()), level=Qgis.Info)
+                return row[layer.fields().indexFromName(attributeName)] # make assumption that only one row
+        except Exception as e:
+            pass
 
         return None
 
@@ -1052,10 +1087,11 @@ class generateGeometryUtils (QObject):
             if currentCPZ == cpzNr:
                 TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
                 cpzWaitingTimeID = poly.attribute("TimePeriodID")
-                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID." + str(cpzWaitingTimeID), level=Qgis.Info)
-                return cpzWaitingTimeID
+                cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
+                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
+                return cpzWaitingTimeID, cpzMatchDayTimeID
 
-        return None
+        return None, None
 
     @staticmethod
     def getTariffZoneDetails(tpaNr):

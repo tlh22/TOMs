@@ -210,7 +210,7 @@ EXECUTE PROCEDURE refresh_sign_types_view();
 */
 
 -- ** Add constraint to reduce issues in future - check entry in "RestrictionsInProposals" exists in main tables
-
+/*
 CREATE OR REPLACE FUNCTION check_restriction_exists_in_main_tables(restriction_id text) RETURNS bool AS
 $func$
 SELECT EXISTS (
@@ -236,7 +236,7 @@ $func$ language sql stable;
 
 ALTER TABLE toms."RestrictionsInProposals" ADD CONSTRAINT "RestrictionsInProposals_restriction_exists_check"
 CHECK (check_restriction_exists_in_main_tables("RestrictionID"));
-
+*/
 -- check entry in main tables exists within "RestrictionsInProposals"  *** Needs to be checked ...
 /***
 CREATE OR REPLACE FUNCTION "check_restriction_exists_in_RestrictionsInProposals"()
@@ -291,8 +291,6 @@ FOR EACH ROW EXECUTE PROCEDURE "check_restriction_exists_in_RestrictionsInPropos
 */
 
 
-ALTER TABLE toms."Bays"
-    ADD COLUMN "PayParkingAreaCode" character varying(255);
 ALTER TABLE toms."Bays"
     ADD COLUMN "PermitCode" character varying(255);
 
