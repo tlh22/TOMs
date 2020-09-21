@@ -688,7 +688,7 @@ class RestrictionTypeUtilsMixin():
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
             #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
-        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
@@ -699,6 +699,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("RestrictionTypeID", 224)  # 10 = SYL (Lines)
             currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
@@ -714,6 +715,14 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
             currRestriction.setAttribute("NoReturnID", ptaNoReturnID)
             currRestriction.setAttribute("ParkingTariffArea", currentPTA)
+
+            try:
+                payParkingAreasLayer = QgsProject.instance().mapLayersByName("PayParkingAreas")[0]
+                currPayParkingArea = generateGeometryUtils.getPolygonForRestriction(currRestriction,
+                                                                                    payParkingAreasLayer)
+                currRestriction.setAttribute("PayParkingAreaID", currPayParkingArea.attribute("Code"))
+            except Exception as e:
+                pass
 
         elif currRestrictionLayer.name() == "Signs":
             currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
@@ -731,7 +740,7 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
