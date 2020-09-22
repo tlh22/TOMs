@@ -866,6 +866,8 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getBayRestrictionLabelText(feature):
 
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText ..", level=Qgis.Info)
+
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
@@ -884,7 +886,8 @@ class generateGeometryUtils (QObject):
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
 
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText: GeometryID: " + feature.attribute("GeometryID"), level=Qgis.Info)
+        if feature.attribute("GeometryID"):
+            TOMsMessageLog.logMessage("In getBayRestrictionLabelText: GeometryID: " + feature.attribute("GeometryID"), level=Qgis.Info)
 
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)

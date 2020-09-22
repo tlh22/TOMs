@@ -696,15 +696,22 @@ class RestrictionTypeUtilsMixin():
         # TODO: get the last used values ... look at field ...
 
         if currRestrictionLayer.name() == "Lines":
-            currRestriction.setAttribute("RestrictionTypeID", 224)  # 10 = SYL (Lines)
-            currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
+            #currRestriction.setAttribute("RestrictionTypeID", 224)  # 10 = SYL (Lines)
+            currRestriction.setAttribute("RestrictionTypeID",
+                                         self.readLastUsedDetails("Lines", "RestrictionTypeID", 224))
+            #currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
+            currRestriction.setAttribute("GeomShapeID", self.readLastUsedDetails("Lines", "GeomShapeID", 10))
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
             currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
-            currRestriction.setAttribute("RestrictionTypeID", 101)  # 28 = Permit Holders Bays (Bays)
-            currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
+            #currRestriction.setAttribute("RestrictionTypeID", 101)  # 28 = Permit Holders Bays (Bays)
+            currRestriction.setAttribute("RestrictionTypeID", self.readLastUsedDetails("Bays", "RestrictionTypeID",
+                                                                                       101))  # 28 = Permit Holders Bays (Bays)
+            currRestriction.setAttribute("GeomShapeID", self.readLastUsedDetails("Bays", "GeomShapeID",
+                                                                                 21))  # 21 = Parallel Bay (Polygon)
+            #currRestriction.setAttribute("GeomShapeID", 21)   # 21 = Parallel Bay (Polygon)
             currRestriction.setAttribute("NrBays", -1)
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
@@ -725,13 +732,26 @@ class RestrictionTypeUtilsMixin():
                 pass
 
         elif currRestrictionLayer.name() == "Signs":
-            currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
+            #currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
+            currRestriction.setAttribute("SignType_1", self.readLastUsedDetails("Signs", "SignType_1", 28))
 
         elif currRestrictionLayer.name() == "RestrictionPolygons":
-            currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
+            #currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
+            currRestriction.setAttribute("RestrictionTypeID",
+                                         self.readLastUsedDetails("RestrictionPolygons", "RestrictionTypeID", 4))
             currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
 
         return
+
+    def storeLastUsedDetails(self, layer, field, value):
+        entry = '{layer}/{field}'.format(layer=layer, field=field)
+        TOMsMessageLog.logMessage("In storeLastUsedDetails: " + str(entry) + " (" + str(value) + ")", level=Qgis.Info)
+        self.settings.setValue(entry, value)
+
+    def readLastUsedDetails(self, layer, field, default):
+        entry = '{layer}/{field}'.format(layer=layer, field=field)
+        TOMsMessageLog.logMessage("In readLastUsedDetails: " + str(entry) + " (" + str(default) + ")", level=Qgis.Info)
+        return self.settings.value(entry, default)
 
     def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In updateDefaultRestrictionDetails. currLayer: " + currRestrictionLayer.name(), level=Qgis.Info)
@@ -801,11 +821,15 @@ class RestrictionTypeUtilsMixin():
 
             currFeature[layer.fields().indexFromName(fieldName)] = value
 
-        except:
+
+        except Exception as e:
 
             reply = QMessageBox.information(None, "Error",
-                                                "onAttributeChangedClass2. Update failed for: " + str(layer.name()) + " (" + fieldName + "): " + str(value),
+                                                "onAttributeChangedClass2. Update failed for: {}({}): {}; {}".format(layer.name(), fieldName, value, e),
                                                 QMessageBox.Ok)  # rollback all changes
+
+        self.storeLastUsedDetails(layer.name(), fieldName, value)
+
         return
 
     def photoDetails(self, dialog, currRestLayer, currRestrictionFeature):
