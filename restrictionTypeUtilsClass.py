@@ -203,14 +203,17 @@ class TOMsLayers(QObject):
             try:
                 formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
             except:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Project not yet open"))
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
                 formPath = None
 
             TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
 
             if not formPath:
                 TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
+                found = False
 
+        if found:
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
