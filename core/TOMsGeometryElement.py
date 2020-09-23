@@ -699,9 +699,12 @@ class generatedGeometrySignType(TOMsGeometryElement):
 class ElementGeometryFactory():
 
     @staticmethod
-    def getElementGeometry(currFeature):
+    def getElementGeometry(currFeature, restGeomType=None):
 
-        currRestGeomType = currFeature.attribute("GeomShapeID")
+        if restGeomType:
+            currRestGeomType = restGeomType
+        else:
+            currRestGeomType = currFeature.attribute("GeomShapeID")
         TOMsMessageLog.logMessage("In factory. getElementGeometry " + str(currFeature.attribute("GeometryID")) + ":" + str(currRestGeomType), level=Qgis.Info)
 
         try:

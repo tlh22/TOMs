@@ -36,6 +36,13 @@ import math
 from .generateGeometryUtils import generateGeometryUtils
 from .core.TOMsGeometryElement import ElementGeometryFactory
 
+from TOMs.constants import (
+    ProposalStatus,
+    RestrictionAction,
+    RestrictionLayers,
+    RestrictionGeometryTypes
+)
+
 import sys, traceback
 
 
@@ -80,6 +87,23 @@ def generateDisplayGeometry(feature, parent):
         """TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), level=Qgis.Info)"""
+
+    return res
+
+@qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+def generateCrossoverGeometry(feature, parent):
+
+    res = None
+
+    try:
+        res = ElementGeometryFactory.getElementGeometry(feature, RestrictionGeometryTypes.CROSSOVER)
+
+    except Exception as e:
+        TOMsMessageLog.logMessage('generateDisplayGeometry: error in expression function: {}'.format(e),
+                          level=Qgis.Warning)
+        TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        TOMsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), level=Qgis.Info)
 
     return res
 
@@ -483,6 +507,7 @@ def prepareSignOrientation(feature, parent):
 functions = [
     generate_display_geometry,
     generateDisplayGeometry,
+    generateCrossoverGeometry,
     getAzimuthToRoadCentreLine,
     getRoadName,
     getUSRN,
