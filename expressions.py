@@ -242,12 +242,12 @@ def getWaitingRestrictionLabelText(feature, parent):
     except Exception as e:
         TOMsMessageLog.logMessage('getWaitingRestrictionLabelText: error in expression function: {}'.format(e),
                                   level=Qgis.Warning)
-        """TOMsMessageLog.logMessage('getWaitingRestrictionLabelText', level=Qgis.Info)
+        TOMsMessageLog.logMessage('getWaitingRestrictionLabelText', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
             'getWaitingRestrictionLabelText: error in expression function: ' + str(
                 repr(traceback.extract_tb(exc_traceback))),
-            level=Qgis.Info)"""
+            level=Qgis.Warning)
 
     #TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), level=Qgis.Info)
     # waitingText = "Test"

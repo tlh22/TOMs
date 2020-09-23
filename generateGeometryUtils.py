@@ -1083,16 +1083,21 @@ class generateGeometryUtils (QObject):
 
         TOMsMessageLog.logMessage("In getCPZWaitingTimeID", level=Qgis.Info)
 
-        CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        try:
+            CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
+        except Exception as e:
+            CPZLayer = None
 
-        for poly in CPZLayer.getFeatures():
-            currentCPZ = poly.attribute("CPZ")
-            if currentCPZ == cpzNr:
-                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
-                cpzWaitingTimeID = poly.attribute("TimePeriodID")
-                cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
-                TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
-                return cpzWaitingTimeID, cpzMatchDayTimeID
+        if CPZLayer:
+            for poly in CPZLayer.getFeatures():
+                currentCPZ = poly.attribute("CPZ")
+
+                if currentCPZ == cpzNr:
+                    TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
+                    cpzWaitingTimeID = poly.attribute("TimePeriodID")
+                    cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
+                    TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
+                    return cpzWaitingTimeID, cpzMatchDayTimeID
 
         return None, None
 
@@ -1101,20 +1106,26 @@ class generateGeometryUtils (QObject):
 
         TOMsMessageLog.logMessage("In getTariffZoneDetails", level=Qgis.Info)
 
-        tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        try:
+            tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
+        except Exception as e:
+            tpaLayer = None
 
-        for poly in tpaLayer.getFeatures():
-            currentPTA = poly.attribute("ParkingTariffArea")
-            if currentPTA == tpaNr:
-                TOMsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", level=Qgis.Info)
-                ptaTimePeriodID = poly.attribute("TimePeriodID")
-                ptaMaxStayID = poly.attribute("MaxStayID")
-                ptaNoReturnID = poly.attribute("NoReturnID")
-                TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), level=Qgis.Info)
-                return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnID
+        if tpaLayer:
+            for poly in tpaLayer.getFeatures():
+                currentPTA = poly.attribute("ParkingTariffArea")
+
+                if currentPTA == tpaNr:
+                    TOMsMessageLog.logMessage("In getTariffZoneDetails. Found PTA.", level=Qgis.Info)
+                    ptaTimePeriodID = poly.attribute("TimePeriodID")
+                    ptaMaxStayID = poly.attribute("MaxStayID")
+                    ptaNoReturnID = poly.attribute("NoReturnID")
+                    TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), level=Qgis.Info)
+                    return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
 
+    """
     @staticmethod
     def getTariffZoneMaxStayID(tpaNr):
 
@@ -1165,7 +1176,7 @@ class generateGeometryUtils (QObject):
                 return ptaTimePeriodID
 
         return None
-
+    """
     @staticmethod
     def getAdjacentGridSquares(currGridSquare):
 
@@ -1395,7 +1406,11 @@ class generateGeometryUtils (QObject):
     def getGeneratedSignLine(feature):
         TOMsMessageLog.logMessage('getGeneratedSignLine ... {}'.format(feature.attribute("GeometryID")), level=Qgis.Info)
         RoadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
-        distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
+        try:
+            distanceForIcons = float(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('distanceForIcons'))
+        except Exception as e:
+            return None, None
+
         #distanceForIcons = 10
         #iconSize = 4
         #nrPlatesInSign = generateGeometryUtils.getNrPlatesInSign(feature)
