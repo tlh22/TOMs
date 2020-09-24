@@ -17,6 +17,8 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+SET session_replication_role = replica;  -- Disable all triggers
+
 --
 -- TOC entry 4432 (class 0 OID 294705)
 -- Dependencies: 259
@@ -276,6 +278,8 @@ SELECT pg_catalog.setval('"toms"."RestrictionPolygons_id_seq"', 2, true);
 SELECT pg_catalog.setval('"toms"."Signs_id_seq"', 1, true);
 
 -- Completed on 2020-06-17 13:06:20
+
+SET session_replication_role = DEFAULT;  -- Enable all triggers
 
 --
 -- PostgreSQL database dump complete
