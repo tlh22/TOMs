@@ -296,3 +296,4 @@ ALTER TABLE toms."Bays"
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE topography."road_casement" TO toms_admin;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE toms."ControlledParkingZones" TO toms_admin;
+
