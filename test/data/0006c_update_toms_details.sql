@@ -1,5 +1,7 @@
 -- Deal with errant bay types
 
+SET session_replication_role = replica;  -- Disable all triggers
+
 UPDATE toms."Bays" AS b
 SET "GeomShapeID" = "GeomShapeID" - 20
 FROM toms_lookups."BayTypesInUse" l
@@ -13,6 +15,8 @@ FROM toms_lookups."BayTypesInUse" l
 WHERE b."RestrictionTypeID" = l."Code"
 AND b."GeomShapeID" < 20
 AND l."GeomShapeGroupType" = 'Polygon';
+
+SET session_replication_role = DEFAULT;  -- Enable all triggers
 
 --
 -- TOC entry 308 (class 1259 OID 368640)
@@ -262,5 +266,3 @@ DROP TABLE "compliance_lookups"."MHTC_CheckIssueTypes_upd" CASCADE;
 
 INSERT INTO "toms_lookups"."SignOrientationTypes" ("Code", "Description") VALUES (6, 'Oblique in the same direction as road');
 INSERT INTO "toms_lookups"."SignOrientationTypes" ("Code", "Description") VALUES (7, 'Oblique in the opposite direction to road');
-
-
