@@ -889,6 +889,7 @@ class generateGeometryUtils (QObject):
         timePeriodID = feature.attribute("TimePeriodID")
         matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
         additionalConditionID = feature.attribute("AdditionalConditionID")
+        permitCode = feature.attribute("PermitCode")
 
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
@@ -946,6 +947,12 @@ class generateGeometryUtils (QObject):
                                          level=Qgis.Info)"""
                 if TariffZoneNoReturnID == noReturnID:
                     noReturnDesc = None
+
+        if permitCode:
+            if timePeriodDesc:
+                timePeriodDesc = "{};Permit: {}".format(timePeriodDesc, permitCode)
+            else:
+                timePeriodDesc = "Permit: {}".format(permitCode)
 
         if additionalConditionID:
             AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
