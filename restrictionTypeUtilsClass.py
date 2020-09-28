@@ -45,7 +45,8 @@ from qgis.core import (
     QgsTransactionGroup,
     QgsProject,
     QgsApplication,
-    Qgis
+    Qgis,
+    QgsSettings
 )
 
 from qgis.gui import *
@@ -337,6 +338,9 @@ class RestrictionTypeUtilsMixin():
         #self.proposalPanel = None
 
         self.cameraNr = None
+
+        self.settings = QgsSettings()
+
 
     def restrictionInProposal(self, currRestrictionID, currRestrictionLayerID, proposalID):
         # returns True if resstriction is in Proposal
