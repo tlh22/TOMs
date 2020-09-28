@@ -313,8 +313,9 @@ def getLoadingRestrictionLabelText(feature, parent):
 def getBayTimePeriodLabelText(feature, parent):
 	# Returns the text to label the feature
 
+    #TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:", level=Qgis.Info)
+    
     try:
-        TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:", level=Qgis.Warning)
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
     except Exception as e:
         TOMsMessageLog.logMessage('getBayTimePeriodLabelText: error in expression function: {}'.format(e), level=Qgis.Warning)
