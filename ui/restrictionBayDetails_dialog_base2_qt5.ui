@@ -556,6 +556,16 @@
          <item row="9" column="1" colspan="2">
           <widget class="QLineEdit" name="RestrictionID"/>
          </item>
+         <item row="5" column="3">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Capacity:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="4">
+          <widget class="QLineEdit" name="Capacity"/>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="Photo1">
