@@ -819,19 +819,21 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getWaitingLoadingRestrictionLabelText(feature):
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", level=Qgis.Info)
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
         if currScale > minScale:
             return None, None
-
-        waitingTimeID = feature.attribute("NoWaitingTimeID")
-        loadingTimeID = feature.attribute("NoLoadingTimeID")
-        matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
-        additionalConditionID = feature.attribute("AdditionalConditionID")
-        geometryID = feature.attribute("GeometryID")
+        try:
+            waitingTimeID = feature.attribute("NoWaitingTimeID")
+            loadingTimeID = feature.attribute("NoLoadingTimeID")
+            matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
+            additionalConditionID = feature.attribute("AdditionalConditionID")
+            geometryID = feature.attribute("GeometryID")
+        except Exception as e:
+            return None, None
 
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriods")[0]
 
@@ -842,7 +844,7 @@ class generateGeometryUtils (QObject):
             matchDayTimePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, matchDayTimePeriodID)
             waitDesc = "{};Match Day: {}".format(waitDesc, matchDayTimePeriodDesc)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
@@ -869,7 +871,7 @@ class generateGeometryUtils (QObject):
             else:
                 waitDesc = "{}".format(additionalConditionDesc)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
 
     @staticmethod
