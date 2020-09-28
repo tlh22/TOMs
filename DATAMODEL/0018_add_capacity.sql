@@ -11,6 +11,7 @@ CREATE TABLE "mhtc_operations"."project_parameters" (
     "Value" character varying NOT NULL
 );
 
+-- main trigger
 
 CREATE OR REPLACE FUNCTION "public"."update_capacity"() RETURNS "trigger"
     LANGUAGE "plpgsql"
@@ -64,5 +65,36 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_bays" BEFORE INSERT ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
-CREATE TRIGGER "update_capacity_lines" BEFORE INSERT ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+CREATE TRIGGER "update_capacity_bays" BEFORE INSERT OR UPDATE OF "RestrictionLength", "NrBays" ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+CREATE TRIGGER "update_capacity_lines" BEFORE INSERT OR UPDATE OF "RestrictionLength" ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+
+-- Do complete revision if change parameters
+
+CREATE OR REPLACE FUNCTION "public"."revise_all_capacities"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    AS $$
+DECLARE
+	 vehicleLength real := 0.0;
+	 vehicleWidth real := 0.0;
+	 motorcycleWidth real := 0.0;
+BEGIN
+
+    IF NEW."Field" = 'VehicleLength' OR  NEW."Field" = 'VehicleWidth' OR NEW."Field" = 'MotorcycleWidth' THEN
+        UPDATE "toms"."Bays" SET "RestrictionLength" = ROUND(public.ST_Length ("geom")::numeric,2);
+        UPDATE "toms"."Lines" SET "RestrictionLength" = ROUND(public.ST_Length ("geom")::numeric,2);
+    END IF;
+
+	RETURN NEW;
+
+END;
+$$;
+
+CREATE TRIGGER "update_capacity_all" BEFORE INSERT OR UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
+
+-- modify RestrictionLength triggers to be just on geom
+
+DROP TRIGGER "set_restriction_length_Bays" ON "toms"."Bays";
+CREATE TRIGGER "set_restriction_length_Bays" BEFORE INSERT OR UPDATE OF geom ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."set_restriction_length"();
+
+DROP TRIGGER "set_restriction_length_Lines" ON "toms"."Lines";
+CREATE TRIGGER "set_restriction_length_Lines" BEFORE INSERT OR UPDATE OF geom ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."set_restriction_length"();
