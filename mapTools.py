@@ -262,7 +262,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
     def __init__(self, iface):
         QgsMapToolIdentify.__init__(self, iface.mapCanvas())
-
+        RestrictionTypeUtilsMixin.__init__(self, iface)
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
 
@@ -484,6 +484,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
     def __init__(self, iface, layer, proposalsManager, currTransaction):
 
         TOMsMessageLog.logMessage(("In CreateRestrictionTool - init."), level=Qgis.Info)
+
         if layer.geometryType() == 0: # PointGeometry:
             captureMode = (CreateRestrictionTool.CapturePoint)
         elif layer.geometryType() == 1: # LineGeometry:
@@ -495,6 +496,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             return
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget(), captureMode)
+        RestrictionTypeUtilsMixin.__init__(self, iface)
 
         # https: // qgis.org / api / classQgsMapToolCapture.html
         canvas = iface.mapCanvas()
@@ -783,6 +785,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
     def __init__(self, iface, layer, proposalsManager, restrictionTransaction):
 
         TOMsMessageLog.logMessage(("In SplitRestrictionTool - init."), level=Qgis.Info)
+        RestrictionTypeUtilsMixin.__init__(self, iface)
 
         if layer.geometryType() == 0: # PointGeometry:
             captureMode = (CreateRestrictionTool.CapturePoint)

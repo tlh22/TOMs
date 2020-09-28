@@ -64,6 +64,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def __init__(self, iface, TOMsToolbar, proposalsManager):
 
         TOMsMessageLog.logMessage("In manageRestrictionDetails::init", level=Qgis.Info)
+        RestrictionTypeUtilsMixin.__init__(self, iface)
 
         # Save reference to the QGIS interface
         self.iface = iface
