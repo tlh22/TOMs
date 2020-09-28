@@ -11,6 +11,12 @@ CREATE TABLE "mhtc_operations"."project_parameters" (
     "Value" character varying NOT NULL
 );
 
+ALTER TABLE ONLY "mhtc_operations"."project_parameters"
+    ADD CONSTRAINT "project_parameters_pkey" PRIMARY KEY ("Field");
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mhtc_operations"."project_parameters" TO toms_admin;
+GRANT SELECT, USAGE ON SEQUENCE "mhtc_operations"."project_parameters" TO toms_operator, toms_public;
+
 -- main trigger
 
 CREATE OR REPLACE FUNCTION "public"."update_capacity"() RETURNS "trigger"
