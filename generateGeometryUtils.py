@@ -819,7 +819,7 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getWaitingLoadingRestrictionLabelText(feature):
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText", level=Qgis.Warning)
 
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
@@ -842,12 +842,7 @@ class generateGeometryUtils (QObject):
             matchDayTimePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, matchDayTimePeriodID)
             waitDesc = "{};Match Day: {}".format(waitDesc, matchDayTimePeriodDesc)
 
-        if additionalConditionID:
-            AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
-            additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
-            waitDesc = "{};{}".format(waitDesc, additionalConditionDesc)
-
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
 
         restrictionCPZ = feature.attribute("CPZ")
         CPZWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCPZWaitingTimeID(restrictionCPZ)
@@ -866,7 +861,15 @@ class generateGeometryUtils (QObject):
                 else:
                     waitDesc = None
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
+        if additionalConditionID:
+            AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
+            additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
+            if waitDesc:
+                waitDesc = "{};{}".format(waitDesc, additionalConditionDesc)
+            else:
+                waitDesc = "{}".format(additionalConditionDesc)
+
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
         return waitDesc, loadDesc
 
     @staticmethod
