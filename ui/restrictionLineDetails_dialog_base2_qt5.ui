@@ -212,6 +212,9 @@
        </item>
        <item row="8" column="1">
         <widget class="QgsDateTimeEdit" name="OpenDate">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
          <property name="displayFormat">
           <string>dd-MMM-yyyy</string>
          </property>

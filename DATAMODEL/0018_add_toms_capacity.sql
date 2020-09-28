@@ -42,7 +42,9 @@ BEGIN
 
 -- TODO: raise error if these fields are not available
 
-    IF
+    IF vehicleLength IS NULL OR vehicleWidth IS NULL OR motorcycleWidth IS NULL THEN
+        RETURN OLD;
+    END IF;
 
     CASE
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(NEW."RestrictionLength"/motorcycleWidth);
@@ -97,7 +99,7 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_all" BEFORE INSERT OR UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
+CREATE TRIGGER "update_capacity_all" AFTER INSERT OR UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
 
 -- modify RestrictionLength triggers to be just on geom
 
