@@ -10,6 +10,7 @@ SELECT pg_catalog.setval('toms."Proposals_id_seq"', 9, true);
 SET session_replication_role = replica;  -- Disable all triggers
 
 INSERT INTO "toms"."Bays" ("RestrictionID", "GeometryID", "geom", "RestrictionLength", "RestrictionTypeID", "GeomShapeID", "AzimuthToRoadCentreLine", "Notes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "OpenDate", "CloseDate", "CPZ", "LastUpdateDateTime", "LastUpdatePerson", "BayOrientation", "NrBays", "TimePeriodID", "PayTypeID", "MaxStayID", "NoReturnID", "ParkingTariffArea", "AdditionalConditionID", "ComplianceRoadMarkingsFaded", "ComplianceRestrictionSignIssue", "ComplianceNotes", "MHTC_CheckIssueTypeID", "MHTC_CheckNotes", "PermitCode", "MatchDayTimePeriodID", "PayParkingAreaID") VALUES ('df48c0f5-791a-4ef0-8ce7-de279060c2e7', 'B_ 000000039', '0102000020346C00000200000043186169BCDC134157C9DCB5C490244154BD7FD4ECDC1341DEEF4FABCB902441', 12.59, 105, 21, 163, NULL, NULL, NULL, NULL, 'Princes Street', '1007', NULL, NULL, NULL, NULL, NULL, NULL, 'B', '2020-09-21 16:08:00.903341', 'toms.admin', NULL, -1, 39, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 224, 90001);
+SELECT setval('toms."Lines_id_seq"', 40, true);
 
 SET session_replication_role = DEFAULT;  -- Enable all triggers
 
