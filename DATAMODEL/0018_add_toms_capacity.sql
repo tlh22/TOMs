@@ -42,6 +42,8 @@ BEGIN
 
 -- TODO: raise error if these fields are not available
 
+    IF
+
     CASE
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(NEW."RestrictionLength"/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN
