@@ -181,10 +181,34 @@ class TOMsLayers(QObject):
                          "RoadCasement",
                          "TilesInAcceptedProposals",
                          #"RestrictionTypes",
-                         "BayLineTypes",
-                         "SignTypes",
-                         "RestrictionPolygonTypes"
-                         ]
+                         #"BayLineTypes",
+                         #"SignTypes",
+                         #"RestrictionPolygonTypes",
+                              "AdditionalConditionTypes",
+                              "BayLineTypes",
+                              "BayTypesInUse",
+                              "BayTypesInUse_View",
+                              "LineTypesInUse",
+                              "LineTypesInUse_View",
+                              "RestrictionPolygonTypes",
+                              "RestrictionPolygonTypesInUse",
+                              "RestrictionPolygonTypesInUse_View",
+                              "LengthOfTime",
+                              "PaymentTypes",
+                              # "RestrictionShapeTypes",
+                              #"MHTC_CheckIssueTypes",
+                              # "MHTC_CheckStatus",
+                              #"SignConditionTypes",
+                              #"SignIlluminationTypes",
+                              #"SignOrientationTypes",
+                              "SignTypes",
+                              "SignTypesInUse",
+                              "SignTypesInUse_View",
+                              "TimePeriods",
+                              "TimePeriodsInUse",
+                              "TimePeriodsInUse_View",
+                              "GeomShapeGroupType"
+                              ]
         self.TOMsLayerDict = {}
 
     def getLayers(self):

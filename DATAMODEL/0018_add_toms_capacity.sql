@@ -15,7 +15,7 @@ ALTER TABLE ONLY "mhtc_operations"."project_parameters"
     ADD CONSTRAINT "project_parameters_pkey" PRIMARY KEY ("Field");
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mhtc_operations"."project_parameters" TO toms_admin;
-GRANT SELECT, USAGE ON SEQUENCE "mhtc_operations"."project_parameters" TO toms_operator, toms_public;
+GRANT SELECT ON TABLE "mhtc_operations"."project_parameters" TO toms_operator, toms_public;
 
 -- main trigger
 
@@ -26,6 +26,7 @@ DECLARE
 	 vehicleLength real := 0.0;
 	 vehicleWidth real := 0.0;
 	 motorcycleWidth real := 0.0;
+	 restrictionLength real := 0.0;
 BEGIN
 
     select "Value" into vehicleLength
@@ -40,31 +41,30 @@ BEGIN
         from "mhtc_operations"."project_parameters"
         where "Field" = 'MotorcycleWidth';
 
--- TODO: raise error if these fields are not available
-
     IF vehicleLength IS NULL OR vehicleWidth IS NULL OR motorcycleWidth IS NULL THEN
+        RAISE EXCEPTION 'Capacity parameters not available ...';
         RETURN OLD;
     END IF;
 
     CASE
-        WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(NEW."RestrictionLength"/motorcycleWidth);
-        WHEN NEW."RestrictionTypeID" < 200 THEN
+        WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
+        WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
             CASE WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
-                 WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(NEW."RestrictionLength"/vehicleWidth);
+                 WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
                  WHEN NEW."RestrictionLength" >=(vehicleLength*4) THEN
-                     CASE WHEN MOD(NEW."RestrictionLength"::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(NEW."RestrictionLength"/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(NEW."RestrictionLength"/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
-                 WHEN NEW."RestrictionLength" <=(vehicleLength-1) THEN NEW."Capacity" = 1;
+                 WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
                  ELSE
-                     CASE WHEN MOD(NEW."RestrictionLength"::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(NEW."RestrictionLength"/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(NEW."RestrictionLength"/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
             END CASE;
         ELSE
             CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225) THEN
-                     CASE WHEN MOD(NEW."RestrictionLength"::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(NEW."RestrictionLength"/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(NEW."RestrictionLength"/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
                  ELSE NEW."Capacity" = 0;
                  END CASE;
@@ -75,8 +75,8 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_bays" BEFORE INSERT OR UPDATE OF "RestrictionLength", "NrBays" ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
-CREATE TRIGGER "update_capacity_lines" BEFORE INSERT OR UPDATE OF "RestrictionLength" ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+CREATE TRIGGER "update_capacity_bays" BEFORE INSERT OR UPDATE ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+CREATE TRIGGER "update_capacity_lines" BEFORE INSERT OR UPDATE ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
 
 -- Do complete revision if change parameters
 
@@ -99,7 +99,7 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_all" AFTER INSERT OR UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
+CREATE TRIGGER "update_capacity_all" AFTER UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
 
 -- modify RestrictionLength triggers to be just on geom
 

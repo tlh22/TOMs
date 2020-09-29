@@ -1162,7 +1162,7 @@ CREATE TABLE "toms"."MapGrid" (
 );
 
 
-ALTER TABLE "toms"."MapGrid" OWNER TO "toms_operator";
+ALTER TABLE "toms"."MapGrid" OWNER TO "postgres";
 
 --
 -- TOC entry 264 (class 1259 OID 222152)
