@@ -99,7 +99,7 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_all" AFTER INSERT OR UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
+CREATE TRIGGER "update_capacity_all" AFTER UPDATE ON "mhtc_operations"."project_parameters" FOR EACH ROW EXECUTE FUNCTION "public"."revise_all_capacities"();
 
 -- modify RestrictionLength triggers to be just on geom
 
