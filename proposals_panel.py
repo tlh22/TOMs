@@ -58,7 +58,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #def __init__(self, iface, TOMsMenu, proposalsManager):
 
         RestrictionTypeUtilsMixin.__init__(self, iface)
-        
+
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
