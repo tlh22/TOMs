@@ -208,7 +208,22 @@ class TOMsLayers(QObject):
                               "TimePeriods",
                               "TimePeriodsInUse",
                               "TimePeriodsInUse_View",
-                              "GeomShapeGroupType"
+                              "GeomShapeGroupType",
+
+                                # for labels
+                               "Bays.label_pos",
+                               "Lines.label_pos",
+                               "Lines.label_loading_pos",
+                               "RestrictionPolygons.label_pos",
+                               "ControlledParkingZones.label_pos",
+                               "ParkingTariffAreas.label_pos",
+                               "Bays.label_ldr",
+                              "Lines.label_ldr",
+                              "Lines.label_loading_ldr",
+                              "RestrictionPolygons.label_ldr",
+                              "ControlledParkingZones.label_ldr",
+                              "ParkingTariffAreas.label_ldr"
+
                               ]
         self.TOMsLayerDict = {}
 
