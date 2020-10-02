@@ -796,9 +796,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         if currRestrictionLayer.name() == 'RestrictionPolygons':
             label_layers_names = ['RestrictionPolygons.label_pos']
         if currRestrictionLayer.name() == 'CPZs':
-            label_layers_names = []
-        if currRestrictionLayer.name() == 'ControlledParkingZones.label_pos':
-            label_layers_names = ['ParkingTariffAreas', 'ParkingTariffAreas.label_pos']
+            label_layers_names = ['ControlledParkingZones.label_pos']
+        if currRestrictionLayer.name() == 'ParkingTariffAreas':
+            label_layers_names = ['ParkingTariffAreas.label_pos']
 
         if len(label_layers_names) == 0:
             alert_box("No labels for this restriction type")
