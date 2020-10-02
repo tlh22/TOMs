@@ -17,3 +17,7 @@ GRANT SELECT ON TABLE local_authority."ISL_HousingEstates" TO toms_public, toms_
 GRANT SELECT, USAGE ON ALL SEQUENCES IN SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
 
+GRANT SELECT ON TABLE local_authority."ISL_PrivateRoads" TO toms_public, toms_operator, toms_admin;
+GRANT SELECT ON TABLE local_authority."ISL_StreetGullies" TO toms_public, toms_operator, toms_admin;
+GRANT SELECT, USAGE ON ALL SEQUENCES IN SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
+GRANT USAGE ON SCHEMA local_authority TO toms_public, toms_operator, toms_admin;
