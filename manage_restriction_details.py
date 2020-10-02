@@ -761,135 +761,143 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def doEditLabels(self):
 
+        TOMsMessageLog.logMessage("In doEditLabels ... ", level=Qgis.Warning)
+
         def alert_box(text):
             QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
 
-        # We start by unsetting all tools
-        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-        self.mapTool = None
-        self.actionEditLabels.setChecked(False)
+        if self.actionEditLabels.isChecked():
 
-        self._currently_editted_label_layers = []
+            # We start by unsetting all tools
+            if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
+            self.actionEditLabels.setChecked(False)
 
-        # Get the current proposal from the session variables
-        currProposalID = self.proposalsManager.currentProposal()
+            self._currently_editted_label_layers = []
 
-        # Get the active layer
-        currRestrictionLayer = self.iface.activeLayer()
+            # Get the current proposal from the session variables
+            currProposalID = self.proposalsManager.currentProposal()
 
-        if not (currProposalID > 0):
-            alert_box("Changes to current data are not allowed. Changes are made via Proposals")
-            return
+            # Get the active layer
+            currRestrictionLayer = self.iface.activeLayer()
 
-        if not currRestrictionLayer or currRestrictionLayer.selectedFeatureCount() == 0:
-            alert_box("Select restriction for edit")
-            return
+            if not (currProposalID > 0):
+                alert_box("Changes to current data are not allowed. Changes are made via Proposals")
+                return
 
-        self.restrictionTransaction.startTransactionGroup()
+            if not currRestrictionLayer or currRestrictionLayer.selectedFeatureCount() == 0:
+                alert_box("Select restriction for edit")
+                return
 
-        currRestriction = currRestrictionLayer.selectedFeatures()[0]
+            self.restrictionTransaction.startTransactionGroup()
 
-        if not self.restrictionInProposal(currRestriction.attribute("RestrictionID"),
-                                          self.getRestrictionLayerTableID(currRestrictionLayer),
-                                          self.proposalsManager.currentProposal()):
+            currRestriction = currRestrictionLayer.selectedFeatures()[0]
 
-            # make a copy of the restriction and operate on the copy
+            if not self.restrictionInProposal(currRestriction.attribute("RestrictionID"),
+                                              self.getRestrictionLayerTableID(currRestrictionLayer),
+                                              self.proposalsManager.currentProposal()):
+
+                # make a copy of the restriction and operate on the copy
+
+                TOMsMessageLog.logMessage(
+                    "In doEditLabels: - adding details to RestrictionsInProposal", level=Qgis.Info)
+
+                newFeature = QgsFeature(currRestriction)
+                newRestrictionID = str(uuid.uuid4())
+
+                newFeature.setAttribute("RestrictionID", newRestrictionID)
+                newFeature.setAttribute("OpenDate", None)
+                newFeature.setAttribute("GeometryID", None)
+
+                currRestrictionLayer.addFeatures([newFeature])
+                currRestrictionLayer.select(newFeature.id())
+
+                TOMsMessageLog.logMessage(
+                    "In doEditLabels - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
+
+                self.addRestrictionToProposal(currRestriction.attribute("RestrictionID"),
+                                              self.getRestrictionLayerTableID(currRestrictionLayer),
+                                              self.proposalsManager.currentProposal(),
+                                              RestrictionAction.CLOSE)  # close the original feature
+                TOMsMessageLog.logMessage("In doEditLabels - feature closed.", level=Qgis.Info)
+
+                self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(currRestrictionLayer),
+                                              self.proposalsManager.currentProposal(),
+                                              RestrictionAction.OPEN)  # open the new one
+                TOMsMessageLog.logMessage("In TdoEditLabels - feature opened.", level=Qgis.Warning)
+
+
+            # get the corresponding label layer
+            if currRestrictionLayer.name() == 'Bays':
+                label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+            if currRestrictionLayer.name() == 'Lines':
+                label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr', 'Lines.label_loading_ldr']
+            if currRestrictionLayer.name() == 'Signs':
+                label_layers_names = []
+            if currRestrictionLayer.name() == 'RestrictionPolygons':
+                label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
+            if currRestrictionLayer.name() == 'CPZs':
+                label_layers_names = ['ControlledParkingZones.label_pos', 'ControlledParkingZones.label_ldr']
+            if currRestrictionLayer.name() == 'ParkingTariffAreas':
+                label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
+
+            if len(label_layers_names) == 0:
+                alert_box("No labels for this restriction type")
+                return
+
+            # get the selected features on the restriction layer
+            # unfortunately, ids of two layers reprenseting the same tables do not seem to be identical
+            # so we need to do this little dance...
+            pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
+            assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+            pk_attr_idx = pk_attrs_idxs[0]
+            pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
+            selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
+            selected_expression = '"{}" IN ({})'.format(pk_attr, selected_pks)
+
+            # we keep the bouding box for zooming
+            box = currRestrictionLayer.boundingBoxOfSelected()
+            self.labelGeometryIsChanged = False
+
+            for label_layers_name in label_layers_names:
+
+                # get the label layer
+                label_layer = QgsProject.instance().mapLayersByName(label_layers_name)[0]
+
+                # keep track of the layer to commit changes when vertex tool disabled
+                self._currently_editted_label_layers.append(label_layer)
+
+                # reselect the same feature on the label layer
+                label_layer.selectByExpression(selected_expression)
+
+                # add the selection to the boudingbox (for zooming)
+                box.combineExtentWith(label_layer.boundingBoxOfSelected())
+
+                # toggle edit mode
+                #label_layer.startEditing()  # already started with transaction
+                label_layer.geometryChanged.connect(self.labelGeometryChanged)
+                TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Warning)
 
             TOMsMessageLog.logMessage(
-                "In doEditLabels: - adding details to RestrictionsInProposal", level=Qgis.Info)
+                "In doEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)),
+                level=Qgis.Warning)
+            # enable the vertex tool
+            self.iface.actionVertexTool().trigger()
+            self.mapTool = self.iface.mapCanvas().mapTool()
+            self.mapTool.deactivated.connect(self.stopEditLabels)
+            self.actionEditLabels.setChecked(True)
 
-            newFeature = QgsFeature(currRestriction)
-            newRestrictionID = str(uuid.uuid4())
+            # TODO: Need to set a filter so that node tool can only pick up label/leader layers
 
-            newFeature.setAttribute("RestrictionID", newRestrictionID)
-            newFeature.setAttribute("OpenDate", None)
-            newFeature.setAttribute("GeometryID", None)
+            # zoom to the bounding box
+            box.scale(1.5)
+            self.iface.mapCanvas().setExtent(box)
+            self.iface.mapCanvas().refresh()
 
-            currRestrictionLayer.addFeatures([newFeature])
-            currRestrictionLayer.select(newFeature.id())
+        else:
 
-            TOMsMessageLog.logMessage(
-                "In doEditLabels - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
-
-            self.addRestrictionToProposal(currRestriction.attribute("RestrictionID"),
-                                          self.getRestrictionLayerTableID(currRestrictionLayer),
-                                          self.proposalsManager.currentProposal(),
-                                          RestrictionAction.CLOSE)  # close the original feature
-            TOMsMessageLog.logMessage("In doEditLabels - feature closed.", level=Qgis.Info)
-
-            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(currRestrictionLayer),
-                                          self.proposalsManager.currentProposal(),
-                                          RestrictionAction.OPEN)  # open the new one
-            TOMsMessageLog.logMessage("In TdoEditLabels - feature opened.", level=Qgis.Warning)
-
-
-        # get the corresponding label layer
-        if currRestrictionLayer.name() == 'Bays':
-            label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
-        if currRestrictionLayer.name() == 'Lines':
-            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr', 'Lines.label_loading_ldr']
-        if currRestrictionLayer.name() == 'Signs':
-            label_layers_names = []
-        if currRestrictionLayer.name() == 'RestrictionPolygons':
-            label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
-        if currRestrictionLayer.name() == 'CPZs':
-            label_layers_names = ['ControlledParkingZones.label_pos', 'ControlledParkingZones.label_ldr']
-        if currRestrictionLayer.name() == 'ParkingTariffAreas':
-            label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
-
-        if len(label_layers_names) == 0:
-            alert_box("No labels for this restriction type")
-            return
-
-        # get the selected features on the restriction layer
-        # unfortunately, ids of two layers reprenseting the same tables do not seem to be identical
-        # so we need to do this little dance...
-        pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
-        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
-        pk_attr_idx = pk_attrs_idxs[0]
-        pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
-        selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
-        selected_expression = '"{}" IN ({})'.format(pk_attr, selected_pks)
-
-        # we keep the bouding box for zooming
-        box = currRestrictionLayer.boundingBoxOfSelected()
-        self.labelGeometryIsChanged = False
-
-        for label_layers_name in label_layers_names:
-
-            # get the label layer
-            label_layer = QgsProject.instance().mapLayersByName(label_layers_name)[0]
-
-            # keep track of the layer to commit changes when vertex tool disabled
-            self._currently_editted_label_layers.append(label_layer)
-
-            # reselect the same feature on the label layer
-            label_layer.selectByExpression(selected_expression)
-
-            # add the selection to the boudingbox (for zooming)
-            box.combineExtentWith(label_layer.boundingBoxOfSelected())
-
-            # toggle edit mode
-            #label_layer.startEditing()  # already started with transaction
-            label_layer.geometryChanged.connect(self.labelGeometryChanged)
-            TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Warning)
-
-        TOMsMessageLog.logMessage(
-            "In doEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)),
-            level=Qgis.Warning)
-        # enable the vertex tool
-        self.iface.actionVertexTool().trigger()
-        self.mapTool = self.iface.mapCanvas().mapTool()
-        self.mapTool.deactivated.connect(self.stopEditLabels)
-        self.actionEditLabels.setChecked(True)
-
-        # TODO: Need to set a filter so that node tool can only pick up label/leader layers
-
-        # zoom to the bounding box
-        box.scale(1.5)
-        self.iface.mapCanvas().setExtent(box)
-        self.iface.mapCanvas().refresh()
+            TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Warning)
 
     def labelGeometryChanged(self):
         TOMsMessageLog.logMessage("In labelGeometryChanged ... ", level=Qgis.Warning)

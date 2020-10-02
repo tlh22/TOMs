@@ -112,10 +112,11 @@ def ensure_labels_points(main_geom, label_geom):
 
         # TH: TODO: currently failing with new feature that has label geometry, i.e., it has no OLD ...
 
-        old_label_geom = ensure_labels_points(OLD["geom"], None)
-        plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])   # TH: not sure what this does
-        results = plpy.execute(plan, [label_geom, old_label_geom])
-        label_geom = results[0]['g']
+        if not OLD is None:
+            old_label_geom = ensure_labels_points(OLD["geom"], None)  # TH: why is the recursion used?
+            plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])   # TH: not sure what this does
+            results = plpy.execute(plan, [label_geom, old_label_geom])
+            label_geom = results[0]['g']
 
     plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
 
