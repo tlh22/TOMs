@@ -70,6 +70,14 @@ class ProposalTypeUtilsMixin():
         layerTypeList.append([6, 'ControlledParkingZones.label_pos'])
         layerTypeList.append([7, 'ParkingTariffAreas.label_pos'])
 
+        layerTypeList.append([2, 'Bays.label_ldr'])
+        layerTypeList.append([3, 'Lines.label_ldr'])
+        layerTypeList.append([3, 'Lines.label_loading_ldr'])
+        # layerTypeList.append([5, 'Signs.label_ldr'])
+        layerTypeList.append([4, 'RestrictionPolygons.label_ldr'])
+        layerTypeList.append([6, 'ControlledParkingZones.label_ldr'])
+        layerTypeList.append([7, 'ParkingTariffAreas.label_ldr'])
+
         return layerTypeList
 
     def getRestrictionLayerFromID(self, layerID):
