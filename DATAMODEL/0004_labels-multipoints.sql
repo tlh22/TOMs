@@ -87,7 +87,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Create the main function to manage restrictions label geometries
-CREATE FUNCTION toms."labelling_for_restrictions"() RETURNS trigger AS /*"""*/ $$
+CREATE OR REPLACE FUNCTION toms."labelling_for_restrictions"() RETURNS trigger AS /*"""*/ $$
 
 import plpy
 
@@ -100,6 +100,7 @@ def ensure_labels_points(main_geom, label_geom):
     """
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
+    plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
     if label_geom is None:
@@ -108,10 +109,15 @@ def ensure_labels_points(main_geom, label_geom):
     else:
         # We remove multipoints that have not been moved from the calculated position
         # so they will still be attached on the geometry
+
+        # TH: TODO: currently failing with new feature that has label geometry, i.e., it has no OLD ...
+
         old_label_geom = ensure_labels_points(OLD["geom"], None)
-        plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
+        plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])   # TH: not sure what this does
         results = plpy.execute(plan, [label_geom, old_label_geom])
         label_geom = results[0]['g']
+
+    plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
 
     # We select all sheets that intersect with the feature but not with the label
     # multipoints to obtain all sheets that miss a label point

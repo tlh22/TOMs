@@ -85,7 +85,22 @@ class TOMsTransaction(QObject):
              "MapGrid",
              "CPZs",
              "ParkingTariffAreas",
-             "TilesInAcceptedProposals"
+             "TilesInAcceptedProposals",
+
+             # for labels
+             "Bays.label_pos",
+             "Lines.label_pos",
+             "Lines.label_loading_pos",
+             "RestrictionPolygons.label_pos",
+             "ControlledParkingZones.label_pos",
+             "ParkingTariffAreas.label_pos",
+             "Bays.label_ldr",
+             "Lines.label_ldr",
+             "Lines.label_loading_ldr",
+             "RestrictionPolygons.label_ldr",
+             "ControlledParkingZones.label_ldr",
+             "ParkingTariffAreas.label_ldr"
+
              ]
 
         self.prepareLayerSet()
@@ -174,6 +189,7 @@ class TOMsTransaction(QObject):
         currMapTool = self.iface.mapCanvas().mapTool()
         # currMapTool.deactivate()
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        self.mapTool = None
 
         if not self.currTransactionGroup:
             TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Transaction DOES NOT exist",

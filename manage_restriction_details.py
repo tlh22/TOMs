@@ -786,19 +786,57 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             alert_box("Select restriction for edit")
             return
 
+        self.restrictionTransaction.startTransactionGroup()
+
+        currRestriction = currRestrictionLayer.selectedFeatures()[0]
+
+        if not self.restrictionInProposal(currRestriction.attribute("RestrictionID"),
+                                          self.getRestrictionLayerTableID(currRestrictionLayer),
+                                          self.proposalsManager.currentProposal()):
+
+            # make a copy of the restriction and operate on the copy
+
+            TOMsMessageLog.logMessage(
+                "In doEditLabels: - adding details to RestrictionsInProposal", level=Qgis.Info)
+
+            newFeature = QgsFeature(currRestriction)
+            newRestrictionID = str(uuid.uuid4())
+
+            newFeature.setAttribute("RestrictionID", newRestrictionID)
+            newFeature.setAttribute("OpenDate", None)
+            newFeature.setAttribute("GeometryID", None)
+
+            currRestrictionLayer.addFeatures([newFeature])
+            currRestrictionLayer.select(newFeature.id())
+
+            TOMsMessageLog.logMessage(
+                "In doEditLabels - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
+
+            self.addRestrictionToProposal(currRestriction.attribute("RestrictionID"),
+                                          self.getRestrictionLayerTableID(currRestrictionLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          RestrictionAction.CLOSE)  # close the original feature
+            TOMsMessageLog.logMessage("In doEditLabels - feature closed.", level=Qgis.Info)
+
+            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(currRestrictionLayer),
+                                          self.proposalsManager.currentProposal(),
+                                          RestrictionAction.OPEN)  # open the new one
+            TOMsMessageLog.logMessage("In TdoEditLabels - feature opened.", level=Qgis.Warning)
+
+
         # get the corresponding label layer
         if currRestrictionLayer.name() == 'Bays':
-            label_layers_names = ['Bays.label_pos']
+            label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
         if currRestrictionLayer.name() == 'Lines':
-            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr', 'Lines.label_loading_ldr']
         if currRestrictionLayer.name() == 'Signs':
             label_layers_names = []
         if currRestrictionLayer.name() == 'RestrictionPolygons':
-            label_layers_names = ['RestrictionPolygons.label_pos']
+            label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
         if currRestrictionLayer.name() == 'CPZs':
-            label_layers_names = ['ControlledParkingZones.label_pos']
+            label_layers_names = ['ControlledParkingZones.label_pos', 'ControlledParkingZones.label_ldr']
         if currRestrictionLayer.name() == 'ParkingTariffAreas':
-            label_layers_names = ['ParkingTariffAreas.label_pos']
+            label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
 
         if len(label_layers_names) == 0:
             alert_box("No labels for this restriction type")
@@ -816,6 +854,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         # we keep the bouding box for zooming
         box = currRestrictionLayer.boundingBoxOfSelected()
+        self.labelGeometryIsChanged = False
 
         for label_layers_name in label_layers_names:
 
@@ -832,33 +871,62 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             box.combineExtentWith(label_layer.boundingBoxOfSelected())
 
             # toggle edit mode
-            label_layer.startEditing()
+            #label_layer.startEditing()  # already started with transaction
+            label_layer.geometryChanged.connect(self.labelGeometryChanged)
+            TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Warning)
 
+        TOMsMessageLog.logMessage(
+            "In doEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)),
+            level=Qgis.Warning)
         # enable the vertex tool
         self.iface.actionVertexTool().trigger()
         self.mapTool = self.iface.mapCanvas().mapTool()
         self.mapTool.deactivated.connect(self.stopEditLabels)
         self.actionEditLabels.setChecked(True)
 
-        # zoom to the bouding box
+        # TODO: Need to set a filter so that node tool can only pick up label/leader layers
+
+        # zoom to the bounding box
         box.scale(1.5)
         self.iface.mapCanvas().setExtent(box)
         self.iface.mapCanvas().refresh()
 
+    def labelGeometryChanged(self):
+        TOMsMessageLog.logMessage("In labelGeometryChanged ... ", level=Qgis.Warning)
+        self.labelGeometryIsChanged = True
 
     def stopEditLabels(self):
         # commit and cleanup after vertex tool stopped
+        """for layer in self._currently_editted_label_layers:
+            layer.commitChanges()   # use commitTransactionGroup
+        """
+
+        TOMsMessageLog.logMessage("In stopEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)), level=Qgis.Warning)
         for layer in self._currently_editted_label_layers:
-            layer.commitChanges()
-        self._currently_editted_label_layers = []
-        self.actionEditLabels.setChecked(False)
+            TOMsMessageLog.logMessage("In stopEditLabels - layer: {}".format(layer.name()), level=Qgis.Warning)
+
+            try:   # TODO: for some reason stopEditLabels is called twice. Need to find out why, but in short term, this stops error
+                layer.geometryChanged.disconnect(self.labelGeometryChanged)
+            except Exception as e:
+                None
+
         try:
             self.mapTool.deactivated.disconnect(self.stopEditLabels)
         except TypeError:
             pass
+
         if self.mapTool:
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
+
+        # check to see of there has been any change
+        if self.labelGeometryIsChanged:
+            self.restrictionTransaction.commitTransactionGroup(self._currently_editted_label_layers[0])
+        else:
+            self.restrictionTransaction.rollBackTransactionGroup()
+
+        self._currently_editted_label_layers = []
+        self.actionEditLabels.setChecked(False)
 
 
     def doSplitRestriction(self):
