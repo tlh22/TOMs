@@ -78,39 +78,39 @@ ALTER TABLE toms."Bays"
 ALTER TABLE toms."Bays"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_Bays" BEFORE INSERT OR UPDATE ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_Bays" BEFORE INSERT ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
 ALTER TABLE toms."Lines"
     ALTER COLUMN "CreateDateTime" SET NOT NULL;
 ALTER TABLE toms."Lines"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_Lines" BEFORE INSERT OR UPDATE ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_Lines" BEFORE INSERT ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
 ALTER TABLE toms."Signs"
     ALTER COLUMN "CreateDateTime" SET NOT NULL;
 ALTER TABLE toms."Signs"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_Signs" BEFORE INSERT OR UPDATE ON "toms"."Signs" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_Signs" BEFORE INSERT ON "toms"."Signs" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
 ALTER TABLE toms."RestrictionPolygons"
     ALTER COLUMN "CreateDateTime" SET NOT NULL;
 ALTER TABLE toms."RestrictionPolygons"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_RestrictionPolygons" BEFORE INSERT OR UPDATE ON "toms"."RestrictionPolygons" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_RestrictionPolygons" BEFORE INSERT ON "toms"."RestrictionPolygons" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
 ALTER TABLE toms."ControlledParkingZones"
     ALTER COLUMN "CreateDateTime" SET NOT NULL;
 ALTER TABLE toms."ControlledParkingZones"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_ControlledParkingZones" BEFORE INSERT OR UPDATE ON "toms"."ControlledParkingZones" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_ControlledParkingZones" BEFORE INSERT ON "toms"."ControlledParkingZones" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
 ALTER TABLE toms."ParkingTariffAreas"
     ALTER COLUMN "CreateDateTime" SET NOT NULL;
 ALTER TABLE toms."ParkingTariffAreas"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_ParkingTariffAreas" BEFORE INSERT OR UPDATE ON "toms"."ParkingTariffAreas" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_ParkingTariffAreas" BEFORE INSERT ON "toms"."ParkingTariffAreas" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
