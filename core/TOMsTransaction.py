@@ -92,13 +92,13 @@ class TOMsTransaction(QObject):
              "Lines.label_pos",
              "Lines.label_loading_pos",
              "RestrictionPolygons.label_pos",
-             "ControlledParkingZones.label_pos",
+             "CPZs.label_pos",
              "ParkingTariffAreas.label_pos",
              "Bays.label_ldr",
              "Lines.label_ldr",
              "Lines.label_loading_ldr",
              "RestrictionPolygons.label_ldr",
-             "ControlledParkingZones.label_ldr",
+             "CPZs.label_ldr",
              "ParkingTariffAreas.label_ldr"
 
              ]

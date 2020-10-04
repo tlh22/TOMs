@@ -16,7 +16,7 @@ import math
 #from qgis.PyQt.QtCore import *
 
 from qgis.PyQt.QtWidgets import (
-    QDockWidget
+    QDockWidget, QMessageBox
 )
 
 from qgis.PyQt.QtGui import (
@@ -80,35 +80,12 @@ from ..mapTools import MapToolMixin
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, originalFeature
 from ..core.proposalsManager import TOMsProposalsManager
 
-"""class originalFeature(object):
-    def __init__(self, feature=None):
-        self.savedFeature = None
-
-    def setFeature(self, feature):
-        self.savedFeature = QgsFeature(feature)
-        #self.printFeature()
-
-    def getFeature(self):
-        #self.printFeature()
-        return self.savedFeature
-
-    def getGeometryID(self):
-        return self.savedFeature.attribute("GeometryID")
-
-    def printFeature(self):
-        TOMsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes (fid:" + str(self.savedFeature.id()) + "): " + str(self.savedFeature.attributes()),
-                                 level=Qgis.Info)
-        TOMsMessageLog.logMessage("In TOMsNodeTool:originalFeature - attributes: " + str(self.savedFeature.geometry().asWkt()),
-                                 level=Qgis.Info)"""
-
 # generate a subclass of Martin's class
 
 # class TOMsNodeTool(NodeTool, MapToolMixin, TOMsConstants):
 class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
     def __init__(self, iface, proposalsManager, restrictionTransaction):
-
-        #def __init__(self, iface, proposalsManager, restrictionTransaction, currFeature, currLayer):
 
         TOMsMessageLog.logMessage("In TOMsNodeTool:initialising .... ", level=Qgis.Info)
 
@@ -118,20 +95,12 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         NodeTool.__init__(self, canvas, cadDock)
 
-        # set current layer to active layer to avoid any issues in NodeTools cadCanvasReleaseEvent
-        #canvas.setCurrentLayer(self.iface.activeLayer())
-
         self.proposalsManager = proposalsManager
         self.restrictionTransaction = restrictionTransaction
+        self.labelFlag = False
 
-        #self.constants = TOMsConstants()
-        #self.origFeature = self.originalFeature()
-
-        # taken from mapTools.CreateRestrictionTool (not sure if they will make a difference ...)
-        # self.setMode(TOMsNodeTool.CaptureLine)
         self.snappingConfig = QgsSnappingConfig()
         self.snappingConfig.setMode(QgsSnappingConfig.AdvancedConfiguration)
-        #RoadCasementLayer = QgsProject.instance().mapLayersByName("rc_nsg_sideofstreet")[0]
 
         # get details of the selected feature
         self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
@@ -141,20 +110,12 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         self.origFeature = originalFeature()
         self.origFeature.setFeature(self.selectedRestriction)
         self.origLayer = self.iface.activeLayer()
-        TOMsMessageLog.logMessage("In TOMsNodeTool:initialising ... original layer + " + self.origLayer.name(), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsNodeTool:initialising ... original layer + " + self.origLayer.name(), level=Qgis.Warning)
 
-        #self.origLayer.startEditing()
         self.origFeature.printFeature()
 
         self.origLayer.geometryChanged.connect(self.on_cached_geometry_changed)
         self.origLayer.featureDeleted.connect(self.on_cached_geometry_deleted)
-
-        #*** New
-
-        #RestInProp = self.constants.RESTRICTIONS_IN_PROPOSALS_LAYER()
-        #TOMsMessageLog.logMessage("In init: RestInProp: " + str(RestInProp.name()), level=Qgis.Info)
-
-        #RestInProp.editCommandEnded.connect(self.proposalsManager.updateMapCanvas())
 
         advancedDigitizingPanel = iface.mainWindow().findChild(QDockWidget, 'AdvancedDigitizingTools')
         advancedDigitizingPanel.setVisible(True)
@@ -162,33 +123,11 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         self.setAdvancedDigitizingAllowed(True)
         self. setAutoSnapEnabled(True)
-        #QgsMapToolAdvancedDigitizing.deactivate(self)
-        #QgsMapToolAdvancedDigitizing.activate(self)
 
-        #self.newFeature = None
         self.finishEdit = False
 
         self.iface.mapCanvas().mapToolSet.connect(self.setUnCheck)
         self.proposalsManager.TOMsToolChanged.connect(functools.partial(self.onGeometryChanged, self.origFeature.getFeature()))
-
-        # get details of the selected feature
-        #self.selectedRestriction = self.iface.activeLayer().selectedFeatures()[0]
-        #TOMsMessageLog.logMessage("In TOMsNodeTool:initialising ... saving original feature + " + self.selectedRestriction.attribute("GeometryID"), level=Qgis.Info)
-
-        #self.origFeature.setFeature(self.selectedRestriction)
-        #self.currFeature = currFeature
-        #self.currLayer = currLayer
-        #self.origLayer = self.iface.activeLayer()
-        #self.origLayer.startEditing()
-        #self.origFeature.printFeature()
-
-        #cache = self.cached_geometry(self.currLayer, self.currFeature.id())
-
-        #newFeature = self.prepareRestrictionForEdit(self.selectedRestriction, self.origLayer)
-
-        #TOMsMessageLog.logMessage("In TOMsNodeTool:init - fid: " + str(self.newFid), level=Qgis.Info)
-        #self.origLayer.selectByIds([self.newFid])
-        #self.origLayer.selectByIds([self.newFid])
 
     def setUnCheck(self):
         pass
@@ -251,7 +190,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(currRestriction[idxRestrictionID]), level=Qgis.Info)
 
-        if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal()):
+        if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal()):
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - adding details to RestrictionsInProposal", level=Qgis.Info)
             #  This one is not in the current Proposal, so now we need to:
             #  - generate a new ID and assign it to the feature for which the geometry has changed
@@ -289,10 +228,10 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
 
-            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), RestrictionAction.CLOSE) # close the original feature
+            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.CLOSE) # close the original feature
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature closed.", level=Qgis.Info)
 
-            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.origLayer), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # open the new one
+            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # open the new one
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", level=Qgis.Info)
 
             #self.proposalsManager.updateMapCanvas()
@@ -452,7 +391,6 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         # try to stay snapped to previously used feature
         # so the highlight does not jump around at nodes where features are joined
-
         ### TH: Amend to choose only from selected feature (and layer)
 
         filter_last = OneFeatureFilter(self.origLayer, self.origFeature.getFeature().id())
@@ -469,7 +407,6 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         """
         TOMsMessageLog.logMessage("In TOMsNodeTool:snap_to_editable_layer: pos " + str(e.pos().x()) + "|" + str(e.pos().y()),
                                  level=Qgis.Info)
-
         m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
         """self.canvas().setSnappingUtils(snap_util)
         m = snap_util.snapToMap(e.pos(), filter_last)"""
@@ -503,3 +440,206 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
             return
 
         NodeTool.keyPressEvent(self, e)
+
+class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
+    """ a filter to allow just one particular feature """
+    def __init__(self, layer, fid):
+        QgsPointLocator.MatchFilter.__init__(self)
+        self.currLayer = layer
+        self.primaryLayer = self.getPrimaryLabelLayer(layer)
+        self.fid = fid
+        self.pkFieldName = self.primaryKeyFieldName(layer)
+        self.pkFieldValue = layer.getFeature(fid).attribute(self.pkFieldName)
+
+        TOMsMessageLog.logMessage("In OneFeatureLabelFilter: Layer {}:{} | {}:{}".format(self.currLayer.name(), self.primaryLayer.name(), str(fid), self.pkFieldValue),
+                                 level=Qgis.Warning)
+    def acceptMatch(self, match):
+        try:
+            TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
+                                                                                                       match.layer().getFeature(match.featureId()).attribute(self.pkFieldName)),
+                                     level=Qgis.Warning)
+            # need to check whether it is in the layer or any of the child layers
+
+            return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
+                       and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue
+        except:
+            return False
+
+    def getPrimaryLabelLayer(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        dotLocation = currLayerName.find (".")
+
+        if dotLocation == -1:
+            return currLayer
+        else:
+            primaryLayerName = currLayerName[:dotLocation]
+            TOMsMessageLog.logMessage(
+                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+                level=Qgis.Warning)
+            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
+
+    def getPrimaryLabelLayer(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        pointLocation = currLayerName.find (".")
+
+        if pointLocation == -1:
+            return currLayer
+        else:
+            primaryLayerName = currLayerName[:pointLocation]
+            TOMsMessageLog.logMessage(
+                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+                level=Qgis.Warning)
+            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
+
+    def primaryKeyFieldName(self, currLayer):
+        # from Olivier Delange ...
+        pk_attrs_idxs = currLayer.primaryKeyAttributes()
+        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+        pk_attr_idx = pk_attrs_idxs[0]
+        pkFieldName = currLayer.fields().names()[pk_attr_idx]
+
+        TOMsMessageLog.logMessage(
+            "In primaryKeyFieldName: layer: {}".format(pkFieldName),
+            level=Qgis.Warning)
+
+        return pkFieldName
+
+class TOMsLabelTool(TOMsNodeTool):
+
+    def __init__(self, iface, proposalsManager, restrictionTransaction):
+
+        #def __init__(self, iface, proposalsManager, restrictionTransaction, currFeature, currLayer):
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:initialising .... ", level=Qgis.Info)
+
+        TOMsNodeTool.__init__(self, iface, proposalsManager, restrictionTransaction)
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool: origLayer: {}".format(self.origLayer), level=Qgis.Warning)
+
+        """labelLayer, labelFeature = self.getOrigFeatureInLabelLayer(self.origLayer,
+                                                                   self.origFeature)  # TH: could this be part of origFeature
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool: origLayer: {}; labelLayer: {}".format(self.origLayer.name(), labelLayer.name()), level=Qgis.Warning)
+
+        #self.origFeature = originalFeature()
+        self.origFeature.setFeature(labelFeature)
+        self.origLayer = labelLayer
+        self.labelFlag = True
+
+        self.selectedRestriction = labelFeature
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:initialising ... original layer + " + self.origLayer.name(), level=Qgis.Info)"""
+
+        """def getOrigFeatureInLabelLayer(self, currRestrictionLayer, feature):
+        # given a feature on a layer, return the feature on the associated label layer
+
+        currRestrictionLabelLayerName = self.getCurrLabelLayer(currRestrictionLayer)[0]
+        currRestrictionLabelLayer = QgsProject.instance().mapLayersByName(currRestrictionLabelLayerName)[0]
+
+        TOMsMessageLog.logMessage("In getOrigFeatureInLabelLayer: layer: {}".format(currRestrictionLabelLayer.name()),
+                                  level=Qgis.Warning)
+
+        # assume that the feature has been selected on this layer at an earlier time
+
+        return currRestrictionLabelLayer, currRestrictionLabelLayer.selectedFeatures()[0]"""
+
+    def getCurrLabelLayerNames(self, currRestrictionLayer):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        if currRestrictionLayer.name() == 'Bays':
+            label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+        if currRestrictionLayer.name() == 'Lines':
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr',
+                                  'Lines.label_loading_ldr']
+        if currRestrictionLayer.name() == 'Signs':
+            label_layers_names = []
+        if currRestrictionLayer.name() == 'RestrictionPolygons':
+            label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
+        if currRestrictionLayer.name() == 'CPZs':
+            label_layers_names = ['CPZs.label_pos', 'CPZs.label_ldr']
+        if currRestrictionLayer.name() == 'ParkingTariffAreas':
+            label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
+
+        if len(label_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
+
+        return label_layers_names
+
+    def snap_to_editable_layer(self, e):
+        """ Temporarily override snapping config and snap to vertices and edges
+         of any editable vector layer, to allow selection of node for editing
+         (if snapped to edge, it would offer creation of a new vertex there).
+        """
+        TOMsMessageLog.logMessage("In TOMsLabelTool:snap_to_editable_layer", level=Qgis.Info)
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        map_point = self.toMapCoordinates(e.pos())
+        tol = QgsTolerance.vertexSearchRadius(self.canvas().mapSettings())
+        snap_type = QgsPointLocator.Type(QgsPointLocator.Vertex | QgsPointLocator.Edge)
+
+        snap_util = self.canvas().snappingUtils()
+        old_snap_util = snap_util
+        snap_config = snap_util.config()
+
+        # snap_config.clearIndividualLayerSettings() # not yet available ...
+        layerList = []
+        for layer in self.canvas().layers():
+            if isinstance(layer, QgsVectorLayer):
+                layerList.append(layer)
+        snap_config.removeLayers(layerList)
+
+        snap_layers = []
+
+        ### TH: Amend to choose only from selected feature and label layers
+
+        for label_layers_name in self.getCurrLabelLayerNames(self.origLayer):
+
+            snap_layers.append(QgsProject.instance().mapLayersByName(label_layers_name)[0])
+
+        snap_config.addLayers(snap_layers)
+        snap_util.setCurrentLayer(self.origLayer)
+
+        snap_config.setMode(QgsSnappingConfig.AdvancedConfiguration)
+        snap_config.setIntersectionSnapping(False)  # only snap to layers
+        # m = snap_util.snapToMap(map_point)
+        snap_config.setTolerance(tol)
+        snap_config.setUnits(QgsTolerance.ProjectUnits)
+        snap_config.setType(QgsSnappingConfig.VertexAndSegment)
+        snap_config.setEnabled(True)
+
+        # try to stay snapped to previously used feature
+        # so the highlight does not jump around at nodes where features are joined
+        ### TH: Amend to choose only from selected feature (and layer)
+
+        filter_last = OneFeatureLabelFilter(self.origLayer, self.origFeature.getFeature().id())
+        # m = snap_util.snapToMap(map_point, filter_last)
+        """if m_last.isValid() and m_last.distance() <= m.distance():
+            m = m_last"""
+
+        TOMsMessageLog.logMessage(
+            "In TOMsLabelTool:snap_to_editable_layer: pos " + str(e.pos().x()) + "|" + str(e.pos().y()),
+            level=Qgis.Warning)
+        # m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
+        m = snap_util.snapToMap(e.pos(), filter_last)
+
+        self.canvas().setSnappingUtils(old_snap_util)
+
+        # TODO: Tidy up ...
+
+        TOMsMessageLog.logMessage(
+            "In TOMsLabelTool:snap_to_editable_layer: snap point " + str(m.type()) + ";" + str(m.isValid()) + "; ",
+            level=Qgis.Warning)
+
+        return m
+

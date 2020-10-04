@@ -47,7 +47,7 @@ import os
 
 #from qgis.gui import *
 
-from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
+from TOMs.CadNodeTool.TOMsNodeTool import TOMsNodeTool, TOMsLabelTool
 
 from .mapTools import *
 from .constants import (
@@ -792,42 +792,6 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             self.restrictionTransaction.startTransactionGroup()
 
-            currRestriction = currRestrictionLayer.selectedFeatures()[0]
-
-            if not self.restrictionInProposal(currRestriction.attribute("RestrictionID"),
-                                              self.getRestrictionLayerTableID(currRestrictionLayer),
-                                              self.proposalsManager.currentProposal()):
-
-                # make a copy of the restriction and operate on the copy
-
-                TOMsMessageLog.logMessage(
-                    "In doEditLabels: - adding details to RestrictionsInProposal", level=Qgis.Info)
-
-                newFeature = QgsFeature(currRestriction)
-                newRestrictionID = str(uuid.uuid4())
-
-                newFeature.setAttribute("RestrictionID", newRestrictionID)
-                newFeature.setAttribute("OpenDate", None)
-                newFeature.setAttribute("GeometryID", None)
-
-                currRestrictionLayer.addFeatures([newFeature])
-                currRestrictionLayer.select(newFeature.id())
-
-                TOMsMessageLog.logMessage(
-                    "In doEditLabels - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
-
-                self.addRestrictionToProposal(currRestriction.attribute("RestrictionID"),
-                                              self.getRestrictionLayerTableID(currRestrictionLayer),
-                                              self.proposalsManager.currentProposal(),
-                                              RestrictionAction.CLOSE)  # close the original feature
-                TOMsMessageLog.logMessage("In doEditLabels - feature closed.", level=Qgis.Info)
-
-                self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(currRestrictionLayer),
-                                              self.proposalsManager.currentProposal(),
-                                              RestrictionAction.OPEN)  # open the new one
-                TOMsMessageLog.logMessage("In TdoEditLabels - feature opened.", level=Qgis.Warning)
-
-
             # get the corresponding label layer
             if currRestrictionLayer.name() == 'Bays':
                 label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
@@ -838,7 +802,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             if currRestrictionLayer.name() == 'RestrictionPolygons':
                 label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
             if currRestrictionLayer.name() == 'CPZs':
-                label_layers_names = ['ControlledParkingZones.label_pos', 'ControlledParkingZones.label_ldr']
+                label_layers_names = ['CPZs.label_pos', 'CPZs.label_ldr']
             if currRestrictionLayer.name() == 'ParkingTariffAreas':
                 label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
 
@@ -876,16 +840,22 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 # toggle edit mode
                 #label_layer.startEditing()  # already started with transaction
-                label_layer.geometryChanged.connect(self.labelGeometryChanged)
+                #label_layer.geometryChanged.connect(self.labelGeometryChanged)
                 TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Warning)
 
             TOMsMessageLog.logMessage(
                 "In doEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)),
                 level=Qgis.Warning)
             # enable the vertex tool
-            self.iface.actionVertexTool().trigger()
-            self.mapTool = self.iface.mapCanvas().mapTool()
-            self.mapTool.deactivated.connect(self.stopEditLabels)
+            #self.iface.actionVertexTool().trigger()
+            #self.mapTool = self.iface.mapCanvas().mapTool()
+
+            self.mapTool = TOMsLabelTool(self.iface,
+                                        self.proposalsManager, self.restrictionTransaction)
+            self.mapTool.setAction(self.actionEditLabels)
+            self.iface.mapCanvas().setMapTool(self.mapTool)
+
+            #self.mapTool.deactivated.connect(self.stopEditLabels)
             self.actionEditLabels.setChecked(True)
 
             # TODO: Need to set a filter so that node tool can only pick up label/leader layers
@@ -921,6 +891,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         try:
             self.mapTool.deactivated.disconnect(self.stopEditLabels)
         except TypeError:
+            pass
+        else:   # still seems to be trying to disconnect when not connected ...
             pass
 
         if self.mapTool:
