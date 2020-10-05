@@ -480,21 +480,6 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
                 level=Qgis.Warning)
             return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
 
-    def getPrimaryLabelLayer(self, currLayer):
-        # given a layer work out the primary layer
-
-        currLayerName = currLayer.name()
-        pointLocation = currLayerName.find (".")
-
-        if pointLocation == -1:
-            return currLayer
-        else:
-            primaryLayerName = currLayerName[:pointLocation]
-            TOMsMessageLog.logMessage(
-                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
-                level=Qgis.Warning)
-            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
-
     def primaryKeyFieldName(self, currLayer):
         # from Olivier Delange ...
         pk_attrs_idxs = currLayer.primaryKeyAttributes()
@@ -519,33 +504,6 @@ class TOMsLabelTool(TOMsNodeTool):
         TOMsNodeTool.__init__(self, iface, proposalsManager, restrictionTransaction)
 
         TOMsMessageLog.logMessage("In TOMsLabelTool: origLayer: {}".format(self.origLayer), level=Qgis.Warning)
-
-        """labelLayer, labelFeature = self.getOrigFeatureInLabelLayer(self.origLayer,
-                                                                   self.origFeature)  # TH: could this be part of origFeature
-
-        TOMsMessageLog.logMessage("In TOMsLabelTool: origLayer: {}; labelLayer: {}".format(self.origLayer.name(), labelLayer.name()), level=Qgis.Warning)
-
-        #self.origFeature = originalFeature()
-        self.origFeature.setFeature(labelFeature)
-        self.origLayer = labelLayer
-        self.labelFlag = True
-
-        self.selectedRestriction = labelFeature
-
-        TOMsMessageLog.logMessage("In TOMsLabelTool:initialising ... original layer + " + self.origLayer.name(), level=Qgis.Info)"""
-
-        """def getOrigFeatureInLabelLayer(self, currRestrictionLayer, feature):
-        # given a feature on a layer, return the feature on the associated label layer
-
-        currRestrictionLabelLayerName = self.getCurrLabelLayer(currRestrictionLayer)[0]
-        currRestrictionLabelLayer = QgsProject.instance().mapLayersByName(currRestrictionLabelLayerName)[0]
-
-        TOMsMessageLog.logMessage("In getOrigFeatureInLabelLayer: layer: {}".format(currRestrictionLabelLayer.name()),
-                                  level=Qgis.Warning)
-
-        # assume that the feature has been selected on this layer at an earlier time
-
-        return currRestrictionLabelLayer, currRestrictionLabelLayer.selectedFeatures()[0]"""
 
     def getCurrLabelLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
@@ -604,7 +562,6 @@ class TOMsLabelTool(TOMsNodeTool):
         ### TH: Amend to choose only from selected feature and label layers
 
         for label_layers_name in self.getCurrLabelLayerNames(self.origLayer):
-
             snap_layers.append(QgsProject.instance().mapLayersByName(label_layers_name)[0])
 
         snap_config.addLayers(snap_layers)
@@ -643,3 +600,165 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return m
 
+    def cadCanvasPressEvent(self, e):
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent", level=Qgis.Info)
+
+        NodeTool.cadCanvasPressEvent(self, e)
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: after NodeTool.cadCanvasPressEvent", level=Qgis.Info)
+
+        #currLayer = self.iface.activeLayer()
+
+        if e.button() == Qt.RightButton:
+            TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: right button pressed",
+                                     level=Qgis.Info)
+
+            self.finishEdit = True
+
+            # now need to check whether the label layers have had any change
+            labelModified = False
+            for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
+                if QgsProject.instance().mapLayersByName(label_layer_name)[0].isModified():
+                    TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: {} modified".format(label_layer_name),
+                                              level=Qgis.Warning)
+                    labelModified = True
+
+            if labelModified:
+                TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: orig layer modified",
+                                         level=Qgis.Warning)
+                self.onGeometryChanged(self.selectedRestriction)
+
+        return
+
+    def onGeometryChanged(self, currRestriction):
+        # Added by TH to deal with RestrictionsInProposals
+        # When a geometry is changed; we need to check whether or not the feature is part of the current proposal
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. fid: " + str(currRestriction.id()) + " GeometryID: " + str(currRestriction.attribute("GeometryID")), level=Qgis.Info)
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. Layer: " + str(self.origLayer.name()), level=Qgis.Info)
+
+        idxRestrictionID = self.origLayer.fields().indexFromName("RestrictionID")
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. currProposal: " + str(self.proposalsManager.currentProposal()), level=Qgis.Info)
+
+        #newGeometry = QgsGeometry(self.feature_band.asGeometry())
+
+        #TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom incoming: " + newGeometry.asWkt(),
+        #                         level=Qgis.Info)
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. currRestrictionID: " + str(currRestriction[idxRestrictionID]), level=Qgis.Info)
+
+        if not self.restrictionInProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal()):
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - adding details to RestrictionsInProposal", level=Qgis.Info)
+            #  This one is not in the current Proposal, so now we need to:
+            #  - generate a new ID and assign it to the feature for which the geometry has changed
+            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+            #  - add the details to RestrictionsInProposal
+
+            originalfeature = self.origFeature.getFeature()
+
+            newFeature = QgsFeature(self.origLayer.fields())
+
+            newFeature.setAttributes(currRestriction.attributes())
+            #newFeature.setGeometry(newGeometry)
+            # changes are to label geometry (and possibly to leader geometry??)
+            for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
+                labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
+                # assume only one restriction being considered ?? use asset ??
+            for details in self.cache:
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged - details: {}".format(details),
+                    level=Qgis.Warning)
+                labelFieldName = self.getLabelFieldName(details)
+                for fid in self.cache[details]:
+                    newLabelGeom = self.cache[details][fid]
+                    TOMsMessageLog.logMessage(
+                        "In TOMsLabelTool:onGeometryChanged - adding details to {}: {}".format(labelFieldName, newLabelGeom.asWkt()), level=Qgis.Warning)
+                    result = newFeature.setAttribute(labelFieldName, newLabelGeom.asWkt())
+
+            newRestrictionID = str(uuid.uuid4())
+
+            newFeature[idxRestrictionID] = newRestrictionID
+
+            idxOpenDate = self.origLayer.fields().indexFromName("OpenDate")
+            idxGeometryID = self.origLayer.fields().indexFromName("GeometryID")
+
+            newFeature[idxOpenDate] = None
+            newFeature[idxGeometryID] = None
+
+            #currLayer.addFeature(newFeature)
+            self.origLayer.addFeatures([newFeature])
+
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
+
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - newGeom: " + newFeature.geometry().asWkt(), level=Qgis.Info)
+
+            originalGeomBuffer = QgsGeometry(originalfeature.geometry())
+            TOMsMessageLog.logMessage(
+                "In TOMsLabelTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.asWkt(),
+                level=Qgis.Info)
+            self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
+
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
+
+            self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.CLOSE) # close the original feature
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - feature closed.", level=Qgis.Info)
+
+            self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # open the new one
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - feature opened.", level=Qgis.Info)
+
+
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - newGeom (2): " + currRestriction.geometry().asWkt(),
+                                 level=Qgis.Info)
+
+        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+
+        self.origLayer.deselect(self.origFeature.getFeature().id())
+
+        self.shutDownNodeTool()
+
+        return
+
+    def getPrimaryLabelLayer(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        dotLocation = currLayerName.find (".")
+
+        if dotLocation == -1:
+            return currLayer
+        else:
+            primaryLayerName = currLayerName[:dotLocation]
+            TOMsMessageLog.logMessage(
+                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+                level=Qgis.Warning)
+            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
+
+    def getLabelFieldName(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        dotLocation = currLayerName.find (".")
+
+        if dotLocation == -1:
+            return None
+        else:
+            labelFieldName = currLayerName[dotLocation+1:]
+            TOMsMessageLog.logMessage(
+                "In getLabelFieldName: layer: {}".format(labelFieldName),
+                level=Qgis.Warning)
+            return labelFieldName
+
+    def primaryKeyFieldName(self, currLayer):
+        # from Olivier Delange ...
+        pk_attrs_idxs = currLayer.primaryKeyAttributes()
+        assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+        pk_attr_idx = pk_attrs_idxs[0]
+        pkFieldName = currLayer.fields().names()[pk_attr_idx]
+
+        TOMsMessageLog.logMessage(
+            "In primaryKeyFieldName: layer: {}".format(pkFieldName),
+            level=Qgis.Warning)
+
+        return pkFieldName

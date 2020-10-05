@@ -1313,3 +1313,17 @@ class RestrictionTypeUtilsMixin():
 
         return newFeature
 
+    def getPrimaryLabelLayer(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        pointLocation = currLayerName.find (".")
+
+        if pointLocation == -1:
+            return currLayer
+        else:
+            primaryLayerName = currLayerName[:pointLocation]
+            TOMsMessageLog.logMessage(
+                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+                level=Qgis.Warning)
+            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
