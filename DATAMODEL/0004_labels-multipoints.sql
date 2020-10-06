@@ -112,7 +112,7 @@ def ensure_labels_points(main_geom, label_geom):
 
         # TH: TODO: currently failing with new feature that has label geometry, i.e., it has no OLD ...
 
-        if not OLD is None:
+        if OLD is not None:
             old_label_geom = ensure_labels_points(OLD["geom"], None)  # TH: why is the recursion used?
             plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])   # TH: not sure what this does
             results = plpy.execute(plan, [label_geom, old_label_geom])
@@ -169,13 +169,19 @@ def update_leader_lines(main_geom, label_geom):
     ''', ['text', 'text'])
     return plpy.execute(plan, [main_geom, label_geom])[0]["p"]
 
-NEW["label_pos"] = ensure_labels_points(NEW["geom"], NEW["label_pos"])
-NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+if (OLD is None):
+    NEW["label_pos"] = ensure_labels_points(NEW["geom"], NEW["label_pos"])
+    NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
-if TD["table_name"] == 'Lines':
-    # the Lines layer has an additionnal label pos
-    NEW["label_loading_pos"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"])
-    NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
+    if TD["table_name"] == 'Lines':
+        # the Lines layer has an additionnal label pos
+        NEW["label_loading_pos"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"])
+        NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
+else:
+    if NEW["label_pos"] != OLD["label_pos"]:
+        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+        if TD["table_name"] == 'Lines':
+            NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"

@@ -452,15 +452,21 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
         self.pkFieldValue = layer.getFeature(fid).attribute(self.pkFieldName)
 
         TOMsMessageLog.logMessage("In OneFeatureLabelFilter: Layer {}:{} | {}:{}".format(self.currLayer.name(), self.primaryLayer.name(), str(fid), self.pkFieldValue),
-                                 level=Qgis.Warning)
+                                 level=Qgis.Info)
     def acceptMatch(self, match):
         try:
             TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
                                                                                                        match.layer().getFeature(match.featureId()).attribute(self.pkFieldName)),
-                                     level=Qgis.Warning)
+                                     level=Qgis.Info)
             # need to check whether it is in the layer or any of the child layers
-
-            return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
+            """return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
+                       and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue"""
+            labelLayerName = '{}.label_pos'.format(self.primaryLayer.name())
+            loadingLabelLayerName = '{}.label_loading_pos'.format(self.primaryLayer.name())
+            TOMsMessageLog.logMessage(
+                "In OneFeatureLabelFilter: labelLayerName: {}; loadingLabelLayerName: {}; matchname: {}".format(labelLayerName, loadingLabelLayerName, self.getPrimaryLabelLayer(match.layer()).name()),
+                level=Qgis.Info)
+            return (match.layer().name() == labelLayerName  or match.layer().name() == loadingLabelLayerName) \
                        and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue
         except:
             return False
@@ -477,7 +483,7 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
             primaryLayerName = currLayerName[:dotLocation]
             TOMsMessageLog.logMessage(
                 "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
-                level=Qgis.Warning)
+                level=Qgis.Info)
             return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
 
     def primaryKeyFieldName(self, currLayer):
@@ -489,7 +495,7 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
 
         TOMsMessageLog.logMessage(
             "In primaryKeyFieldName: layer: {}".format(pkFieldName),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         return pkFieldName
 
@@ -513,18 +519,17 @@ class TOMsLabelTool(TOMsNodeTool):
             QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
 
         if currRestrictionLayer.name() == 'Bays':
-            label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+            label_layers_names = ['Bays.label_pos']
         if currRestrictionLayer.name() == 'Lines':
-            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr',
-                                  'Lines.label_loading_ldr']
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
         if currRestrictionLayer.name() == 'Signs':
             label_layers_names = []
         if currRestrictionLayer.name() == 'RestrictionPolygons':
-            label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
+            label_layers_names = ['RestrictionPolygons.label_pos']
         if currRestrictionLayer.name() == 'CPZs':
-            label_layers_names = ['CPZs.label_pos', 'CPZs.label_ldr']
+            label_layers_names = ['CPZs.label_pos']
         if currRestrictionLayer.name() == 'ParkingTariffAreas':
-            label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
+            label_layers_names = ['ParkingTariffAreas.label_pos']
 
         if len(label_layers_names) == 0:
             alert_box("No labels for this restriction type")
@@ -586,7 +591,7 @@ class TOMsLabelTool(TOMsNodeTool):
 
         TOMsMessageLog.logMessage(
             "In TOMsLabelTool:snap_to_editable_layer: pos " + str(e.pos().x()) + "|" + str(e.pos().y()),
-            level=Qgis.Warning)
+            level=Qgis.Info)
         # m = snap_util.snapToCurrentLayer(e.pos(), snap_type, filter_last)
         m = snap_util.snapToMap(e.pos(), filter_last)
 
@@ -596,7 +601,7 @@ class TOMsLabelTool(TOMsNodeTool):
 
         TOMsMessageLog.logMessage(
             "In TOMsLabelTool:snap_to_editable_layer: snap point " + str(m.type()) + ";" + str(m.isValid()) + "; ",
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         return m
 
@@ -625,7 +630,7 @@ class TOMsLabelTool(TOMsNodeTool):
                     labelModified = True
 
             if labelModified:
-                TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: orig layer modified",
+                TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: label layer modified",
                                          level=Qgis.Warning)
                 self.onGeometryChanged(self.selectedRestriction)
 
@@ -659,14 +664,44 @@ class TOMsLabelTool(TOMsNodeTool):
             originalfeature = self.origFeature.getFeature()
 
             newFeature = QgsFeature(self.origLayer.fields())
-
             newFeature.setAttributes(currRestriction.attributes())
-            #newFeature.setGeometry(newGeometry)
+            newFeature.setGeometry(QgsGeometry(originalfeature.geometry()))
+
             # changes are to label geometry (and possibly to leader geometry??)
             for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
                 labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
-                # assume only one restriction being considered ?? use asset ??
-            for details in self.cache:
+                labelFieldName = self.getLabelFieldName(labelLayer)
+
+                # get label layer feature
+                labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
+                labelLayerFeatureGeometry = QgsGeometry(labelLayerFeature.geometry())
+
+                originalLabelGeometry = QgsGeometry().fromWkt(self.removeSridFromWkt(originalfeature.attribute(labelFieldName)))
+
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged - orig label geom {}: {}".format(originalfeature.attribute(labelFieldName), originalLabelGeometry),
+                    level=Qgis.Warning)
+
+                labelLayerFeatureGeometryAsWktWithSRID = self.asWktWithSRID(labelLayerFeatureGeometry, labelLayer)
+
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged - new details for {} in {}: {}".format(labelFieldName, label_layer_name,
+                                                                                         labelLayerFeatureGeometryAsWktWithSRID),
+                    level=Qgis.Warning)
+
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged - resetting orig feature to: {}".format(originalLabelGeometry.asWkt()),
+                    level=Qgis.Warning)
+
+                result = newFeature.setAttribute(labelFieldName, labelLayerFeatureGeometryAsWktWithSRID)
+                #labelLayerFeature.setGeometry(originalLabelGeometry)  # for some reason, this doesn't work ...
+                labelLayer.changeGeometry(labelLayerFeature.id(), originalLabelGeometry)
+
+                #result = labelLayerFeature.setAttribute(labelFieldName, originalfeature.attribute(labelFieldName)) # change back
+
+            # assume only one restriction being considered ?? use asset ??
+
+            """for details in self.cache:
                 TOMsMessageLog.logMessage(
                     "In TOMsLabelTool:onGeometryChanged - details: {}".format(details),
                     level=Qgis.Warning)
@@ -675,10 +710,12 @@ class TOMsLabelTool(TOMsNodeTool):
                     newLabelGeom = self.cache[details][fid]
                     TOMsMessageLog.logMessage(
                         "In TOMsLabelTool:onGeometryChanged - adding details to {}: {}".format(labelFieldName, newLabelGeom.asWkt()), level=Qgis.Warning)
-                    result = newFeature.setAttribute(labelFieldName, newLabelGeom.asWkt())
+                    result = newFeature.setAttribute(labelFieldName, newLabelGeom)
+                    TOMsMessageLog.logMessage(
+                        "In TOMsLabelTool:onGeometryChanged - result {}: {}".format(result, newFeature.attribute(labelFieldName).asWkt()), level=Qgis.Warning)
+            """
 
             newRestrictionID = str(uuid.uuid4())
-
             newFeature[idxRestrictionID] = newRestrictionID
 
             idxOpenDate = self.origLayer.fields().indexFromName("OpenDate")
@@ -687,20 +724,21 @@ class TOMsLabelTool(TOMsNodeTool):
             newFeature[idxOpenDate] = None
             newFeature[idxGeometryID] = None
 
-            #currLayer.addFeature(newFeature)
             self.origLayer.addFeatures([newFeature])
 
-            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - attributes: " + str(newFeature.attributes()), level=Qgis.Warning)
 
-            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - newGeom: " + newFeature.geometry().asWkt(), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - newGeom: " + newFeature.geometry().asWkt(), level=Qgis.Info)
 
+            """
             originalGeomBuffer = QgsGeometry(originalfeature.geometry())
             TOMsMessageLog.logMessage(
                 "In TOMsLabelTool:onGeometryChanged - originalGeom: " + originalGeomBuffer.asWkt(),
                 level=Qgis.Info)
             self.origLayer.changeGeometry(currRestriction.id(), originalGeomBuffer)
+            """
 
-            TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - geometries switched.", level=Qgis.Info)
 
             self.addRestrictionToProposal(currRestriction[idxRestrictionID], self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.CLOSE) # close the original feature
             TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged - feature closed.", level=Qgis.Info)
@@ -762,3 +800,57 @@ class TOMsLabelTool(TOMsNodeTool):
             level=Qgis.Warning)
 
         return pkFieldName
+
+    def getLabelLayerFeature(self, currRestriction, labelLayer):
+        # given restriction (on primary layer) and labelLayer, get restriction on LabelLayer
+
+        pkFieldName = self.primaryKeyFieldName(self.origLayer)
+
+        pkFieldValue = currRestriction.attribute(pkFieldName)
+
+        expression = '"{}" = \'{}\''.format(pkFieldName, pkFieldValue)
+        TOMsMessageLog.logMessage(
+            "In getLabelLayerFeature: expression: {}".format(expression),
+            level=Qgis.Warning)
+
+        featureIterator = labelLayer.getFeatures(expression)
+        try:
+            return next(featureIterator)
+        except:
+            TOMsMessageLog.logMessage(
+                "In getLabelLayerFeature: no details found",
+                level=Qgis.Warning)
+            return None
+
+    def asWktWithSRID(self, geom, layer):
+        # add layer srid to geom
+
+        refSys = layer.sourceCrs().authid()
+
+        colonLocation = refSys.find(":")
+
+        if colonLocation == -1:
+            return None
+        else:
+            crsDetails = refSys[colonLocation + 1:]
+
+        asWktWithSRID = 'SRID={};{}'.format(crsDetails, geom.asWkt())
+
+        TOMsMessageLog.logMessage(
+        "In asWktWithSRID: wkt: {}".format(asWktWithSRID),
+        level=Qgis.Warning)
+
+        return asWktWithSRID
+
+    def removeSridFromWkt(self, str_wkt):
+        # remove srid from geom str
+
+        semicolonLocation = str_wkt.find(";")
+
+        if semicolonLocation == -1:
+            return str_wkt
+        else:
+            TOMsMessageLog.logMessage(
+                "In asWktWithSRID: wkt: {}".format(str_wkt[semicolonLocation + 1:]),
+                level=Qgis.Warning)
+            return str_wkt[semicolonLocation + 1:]

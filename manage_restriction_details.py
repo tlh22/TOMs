@@ -841,11 +841,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 # toggle edit mode
                 #label_layer.startEditing()  # already started with transaction
                 #label_layer.geometryChanged.connect(self.labelGeometryChanged)
-                TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In doEditLabels - layer: {}".format(label_layers_name), level=Qgis.Info)
 
             TOMsMessageLog.logMessage(
                 "In doEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)),
-                level=Qgis.Warning)
+                level=Qgis.Info)
             # enable the vertex tool
             #self.iface.actionVertexTool().trigger()
             #self.mapTool = self.iface.mapCanvas().mapTool()
@@ -867,9 +867,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         else:
 
-            TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Info)
 
-    def labelGeometryChanged(self):
+        """def labelGeometryChanged(self):
         TOMsMessageLog.logMessage("In labelGeometryChanged ... ", level=Qgis.Warning)
         self.labelGeometryIsChanged = True
 
@@ -906,7 +906,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.restrictionTransaction.rollBackTransactionGroup()
 
         self._currently_editted_label_layers = []
-        self.actionEditLabels.setChecked(False)
+        self.actionEditLabels.setChecked(False)"""
 
 
     def doSplitRestriction(self):
