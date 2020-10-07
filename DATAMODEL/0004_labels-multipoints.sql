@@ -171,17 +171,13 @@ def update_leader_lines(main_geom, label_geom):
 
 if (OLD is None):
     NEW["label_pos"] = ensure_labels_points(NEW["geom"], NEW["label_pos"])
-    NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-
     if TD["table_name"] == 'Lines':
         # the Lines layer has an additionnal label pos
         NEW["label_loading_pos"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"])
-        NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
-else:
-    if NEW["label_pos"] != OLD["label_pos"]:
-        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-        if TD["table_name"] == 'Lines':
-            NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
+
+NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+if TD["table_name"] == 'Lines':
+    NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
