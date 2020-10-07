@@ -204,8 +204,8 @@ class cvCamera(QThread):
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2a ", level=Qgis.Info)
 
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # width=640
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # height=480
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)  # width=640
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)  # height=480
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Info)
 
