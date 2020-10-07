@@ -760,7 +760,7 @@ class RestrictionTypeUtilsMixin():
                                                                                     payParkingAreasLayer)
                 currRestriction.setAttribute("PayParkingAreaID", currPayParkingArea.attribute("Code"))
             except Exception as e:
-                pass
+                TOMsMessageLog.logMessage("In setDefaultRestrictionDetails:payParkingArea: error: {}".format(e), level=Qgis.Info)
 
         elif currRestrictionLayer.name() == "Signs":
             #currRestriction.setAttribute("SignType_1", 28)  # 28 = Permit Holders Only (Signs)
