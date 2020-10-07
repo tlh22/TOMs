@@ -875,9 +875,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
     def stopEditLabels(self):
         # commit and cleanup after vertex tool stopped
-        """for layer in self._currently_editted_label_layers:
-            layer.commitChanges()   # use commitTransactionGroup
-        """
+        #for layer in self._currently_editted_label_layers:
+        #    layer.commitChanges()   # use commitTransactionGroup
 
         TOMsMessageLog.logMessage("In stopEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)), level=Qgis.Warning)
         for layer in self._currently_editted_label_layers:
