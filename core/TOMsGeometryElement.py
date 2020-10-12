@@ -192,22 +192,23 @@ class TOMsGeometryElement(QObject):
         for i in range(len(line) - 1):
 
             # TOMsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), level=Qgis.Info)
-
             Az = generateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
-
             # TOMsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), level=Qgis.Info)
 
             # if this is the first point
 
             if i == 0:
                 # determine which way to turn towards CL
-                # TOMsMessageLog.logMessage("In generate_display_geometry: considering first point", level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: considering first point", level=Qgis.Info)
 
                 Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
 
                 newAz = generateGeometryUtils.checkDegrees(Az + Turn)
-                # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
+
+                initial_cosa = cosa
+                initial_cosb = cosb
 
                 # TOMsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), level=Qgis.Info)
 
@@ -266,7 +267,7 @@ class TOMsGeometryElement(QObject):
 
                 # need to work out half of bisected angle
 
-                # TOMsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), level=Qgis.Info)
 
                 newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
 
@@ -276,8 +277,18 @@ class TOMsGeometryElement(QObject):
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
+                # issue when kerbline is horizontal causing difference in signs between distWidth and offset ...
+                #TOMsMessageLog.logMessage("In generate_display_geometry: line[{}]: x: {}; y: {}; dist {}; offset {}".format(i, line[i].x(), line[i].y(), distWidth, offset), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: newAz: {}; diffEchelonAz; {}; cosa: {}; cosb: {} ".format(newAz, diffEchelonAz, cosa, cosb), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: different signs for cos: {}".format(generateGeometryUtils.same_sign(cosa, initial_cosa)), level=Qgis.Info)
+
+                this_offset = offset
+                if distWidth < 0.0:
+                    if not generateGeometryUtils.same_sign(distWidth, offset):
+                        this_offset = generateGeometryUtils.change_sign(offset)
+
                 parallelPtsList.append(
-                    QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
+                    QgsPointXY(line[i].x() + (float(this_offset) * cosa), line[i].y() + (float(this_offset) * cosb)))
             # TOMsMessageLog.logMessage("In generate_display_geometry: point appended", level=Qgis.Info)
 
             prevAz = Az
