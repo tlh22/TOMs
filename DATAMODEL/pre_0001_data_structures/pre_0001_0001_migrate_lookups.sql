@@ -8,6 +8,13 @@ LengthOfTime
 
 */
 
+/*
+CREATE USER "edi_admin" WITH PASSWORD 'password';
+CREATE USER "edi_operator" WITH PASSWORD 'password';
+CREATE USER "edi_public" WITH PASSWORD 'password';
+CREATE USER "edi_public_nsl" WITH PASSWORD 'password';
+*/
+
 --
 -- TOC entry 238 (class 1259 OID 38231)
 -- Name: LookupCodeTransfers_Bays; Type: TABLE; Schema: public; Owner: postgres
@@ -221,6 +228,7 @@ INSERT INTO "public"."LookupCodeTransfers_Lines" ("id", "Aug2018_Description", "
 INSERT INTO "public"."LookupCodeTransfers_Lines" ("id", "Aug2018_Description", "Aug2018_Code", "CurrCode") VALUES (28, 'Zig-Zag School Keep Clear (On-street but not in TRO)', '221', '2203');
 INSERT INTO "public"."LookupCodeTransfers_Lines" ("id", "Aug2018_Description", "Aug2018_Code", "CurrCode") VALUES (29, 'No Waiting (SYL) (in Mews/PPA)', '410', '2410');
 INSERT INTO "public"."LookupCodeTransfers_Lines" ("id", "Aug2018_Description", "Aug2018_Code", "CurrCode") VALUES (30, 'No Waiting At Any Time (DYL) (in Mews/PPA)', '411', '2411');
+INSERT INTO "public"."LookupCodeTransfers_Lines" ("id", "Aug2018_Description", "Aug2018_Code", "CurrCode") VALUES (31, 'Zig-Zag Keep Clear White', '19', '226');
 
 
 --
@@ -260,7 +268,7 @@ GRANT SELECT ON TABLE public."BayLineTypesInUse" TO edi_operator;
 GRANT SELECT ON TABLE public."BayLineTypesInUse" TO edi_public;
 GRANT SELECT ON TABLE public."BayLineTypesInUse" TO edi_public_nsl;
 
-INSERT INTO "BayLineTypesInUse" ("Code")
+INSERT INTO public."BayLineTypesInUse"("Code")
 SELECT DISTINCT CAST("CurrCode" AS int)
 FROM "LookupCodeTransfers_Bays"
 UNION
