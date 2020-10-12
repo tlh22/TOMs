@@ -209,6 +209,9 @@ class TOMsGeometryElement(QObject):
                 # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
+                initial_cosa = cosa
+                initial_cosb = cosb
+
                 # TOMsMessageLog.logMessage("In generate_display_geometry: cosa : " + str(cosa) + " " + str(cosb), level=Qgis.Info)
 
                 # dx = float(offset) * cosa
@@ -275,6 +278,16 @@ class TOMsGeometryElement(QObject):
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
                 ptsList.append(
                     QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
+
+                # issue when kerbline is horizontal causing cos value (from perpendicular) to become negative ...
+
+                TOMsMessageLog.logMessage("In generate_display_geometry: newAz: {}; diffEchelonAz; {}; cosa: {}; cosb: {} ".format(newAz, diffEchelonAz, cosa, cosb), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In generate_display_geometry: line[{}]: x: {}; y: {}; dist {}; offset {}".format(i, line[i].x(), line[i].y(), distWidth, offset), level=Qgis.Warning)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: different signs for cos: {}".format(generateGeometryUtils.same_sign(cosa, initial_cosa)), level=Qgis.Warning)
+
+                """if abs(cosa) - abs(initial_cosa) < 0.017452:   # value of cos(89)
+                    if generateGeometryUtils.same_sign(cosa, initial_cosa):
+                        cosa = generateGeometryUtils.change_sign(cosa)"""
 
                 parallelPtsList.append(
                     QgsPointXY(line[i].x() + (float(offset) * cosa), line[i].y() + (float(offset) * cosb)))
