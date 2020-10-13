@@ -1325,9 +1325,22 @@ CREATE INDEX os_mastermap_topography_text_geom_idx
     TABLESPACE pg_default;
 
 -- road_casement
+
+CREATE SEQUENCE topography."road_casement_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE topography."road_casement_id_seq"
+    OWNER TO postgres;
+
+GRANT ALL ON SEQUENCE topography."road_casement_id_seq" TO postgres;
+
 CREATE TABLE topography.road_casement
 (
-    id integer NOT NULL,
+    id integer NOT NULL DEFAULT nextval('topography."road_casement_id_seq"'::regclass),
     geom geometry(LineString,27700),
     "RoadName" character varying(100) COLLATE pg_catalog."default",
     "ESUID" double precision,
@@ -1429,7 +1442,7 @@ ALTER TABLE toms."Bays" DROP CONSTRAINT "Bays_pkey";
 ALTER TABLE toms."Bays" DROP COLUMN id;
 
 ALTER TABLE toms."Bays" RENAME COLUMN "Length" TO "RestrictionLength";
-ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
+--ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
 
 ALTER TABLE toms."Bays" RENAME COLUMN "Bays_DateTime" TO "LastUpdateDateTime";
 
@@ -1579,6 +1592,9 @@ CREATE TRIGGER "set_last_update_details_Bays"
     FOR EACH ROW
     EXECUTE PROCEDURE toms.set_last_update_details();
 
+-- trigger trigger
+UPDATE toms."Bays" SET "RestrictionLength" = "RestrictionLength";
+ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
 
 -- *** ControlledParkingZones
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN gid;
@@ -1670,8 +1686,8 @@ ALTER TABLE toms."ControlledParkingZones"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "MHTC_CheckNotes" character varying(254) COLLATE pg_catalog."default";
-ALTER TABLE toms."ControlledParkingZones"
-    ADD CONSTRAINT "ControlledParkingZones_pkey" PRIMARY KEY ("RestrictionID");
+--ALTER TABLE toms."ControlledParkingZones"
+--    ADD CONSTRAINT "ControlledParkingZones_pkey" PRIMARY KEY ("RestrictionID");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_GeometryID_key" UNIQUE ("GeometryID");

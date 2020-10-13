@@ -28,11 +28,6 @@ UPDATE public."Lines"
 SET "Length" = ROUND(ST_Length ("geom")::numeric,2);
 
 -- Not sure how these are still here ...
-DELETE FROM "Bays"
-WHERE "RestrictionTypeID" IS NULL;
-
-DELETE FROM "Lines"
-WHERE "RestrictionTypeID" IS NULL;
 
 UPDATE "Bays"
 SET "NrBays" = -1
@@ -94,8 +89,8 @@ INSERT INTO "public"."SignAttachmentTypes" ("id", "Code", "Description") VALUES 
 
 UPDATE "public"."Signs" SET "Signs_Attachment" = NULL WHERE "Signs_Attachment" = 14;
 
-INSERT INTO "compliance_lookups"."SignMountTypes" ("id", "Code", "Description") VALUES (6, 6, 'Screws or Nails');
-INSERT INTO "compliance_lookups"."SignMountTypes" ("id", "Code", "Description") VALUES (7, 7, 'Simple bar');
+--INSERT INTO "public"."SignMountTypes" ("id", "Code", "Description") VALUES (6, 6, 'Screws or Nails');
+--INSERT INTO "public"."SignMountTypes" ("id", "Code", "Description") VALUES (7, 7, 'Simple bar');
 
 UPDATE "public"."Signs" SET "Signs_Attachment" = NULL WHERE "Signs_Attachment" = 14;
 
@@ -103,3 +98,20 @@ INSERT INTO "public"."SignMountTypes" ("id", "Code", "Description") VALUES (9, 9
 INSERT INTO "public"."SignMountTypes" ("id", "Code", "Description") VALUES (10, 10, 'To Be Confirmed 2');
 INSERT INTO "public"."SignMountTypes" ("id", "Code", "Description") VALUES (11, 11, 'To Be Confirmed 3');
 
+-- Deal with rows without RestrictionTypeID
+
+CREATE TABLE public."Bays_NoRestrictionID" AS
+SELECT id, geom, "Length", "RestrictionTypeID", "NrBays", "TimePeriodID", "PayTypeID", "MaxStayID", "NoReturnID", "Notes", "GeometryID", "Bays_DateTime", "BaysWordingID", "Surveyor", "BaysGeometry", "Bays_PhotoTaken", "Compl_Bays_Faded", "Compl_Bays_SignIssue", "Bays_Photos_01", "Bays_Photos_02", "GeomShapeID", "RoadName", "USRN", "AzimuthToRoadCentreLine", "label_X", "label_Y", "label_Rotation", "label_TextChanged", "BayOrientation", "OpenDate", "CloseDate", "CPZ", "ParkingTariffArea", "OriginalGeomShapeID", "GeometryID_181017", "RestrictionID"
+	FROM public."Bays"
+	WHERE "RestrictionTypeID" IS NULL;
+
+DELETE FROM public."Bays"
+	WHERE "RestrictionTypeID" IS NULL;
+
+CREATE TABLE public."Lines_NoRestrictionID" AS
+SELECT id, geom, "Length", "RestrictionTypeID", "NoWaitingTimeID", "NoLoadingTimeID", "Notes", "GeometryID", "Lines_DateTime", "Surveyor", "Lines_PhotoTaken", "Lines_Photos_01", "Compl_Lines_Faded", "Compl_NoL_Faded", "Lines_Photos_02", "Compl_Lines_SignIssue", "RoadName", "USRN", "AzimuthToRoadCentreLine", "GeomShapeID", "labelX", "labelY", "labelRotation", "Lines_Photos_03", "Unacceptability", "OpenDate", "CloseDate", "CPZ", "ParkingTariffArea", "labelLoadingX", "labelLoadingY", "labelLoadingRotation", "TRO_Status_180409", "GeometryID_181017", "RestrictionID"
+	FROM public."Lines"
+	WHERE "RestrictionTypeID" IS NULL;
+
+DELETE FROM public."Lines"
+	WHERE "RestrictionTypeID" IS NULL;
