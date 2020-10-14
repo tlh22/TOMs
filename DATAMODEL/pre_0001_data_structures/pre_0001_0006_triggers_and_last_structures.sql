@@ -374,3 +374,24 @@ CREATE INDEX "sidx_RC_Sections_geom" ON "public"."RC_Sections" USING "gist" ("ge
 --
 
 CREATE INDEX "sidx_RC_Sections_merged_geom" ON "public"."RC_Sections_merged" USING "gist" ("geom");
+
+-- refresh views
+
+REFRESH MATERIALIZED VIEW "toms_lookups"."BayTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."LineTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."RestrictionPolygonTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."TimePeriodsInUse_View";
+
+-- remove tables no longer required
+
+DROP TABLE "BayLineTypesInUse";
+DROP TABLE baytypes;
+DROP TABLE linetypes;
+DROP TABLE signs;
+DROP TABLE "RestrictionTypes";
+DROP TABLE "RoadCentreLine";
+DROP TABLE "Surveyors";
+
+
+DROP MATERIALIZED VIEW "BayLineTypes";

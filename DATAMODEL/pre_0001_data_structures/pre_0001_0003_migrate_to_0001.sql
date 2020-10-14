@@ -758,6 +758,13 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."BayLineTypes"
     OWNER to postgres;
 
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
+SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
+FROM
+      (SELECT "Code", "Description"
+      FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
+		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "BayLineTypes";
+
 -- SignTypes
 ALTER TABLE toms_lookups."SignTypes" DROP COLUMN id;
 
@@ -1932,6 +1939,13 @@ ALTER TABLE toms."MapGrid"
     ADD COLUMN mapsheetname character varying(10) COLLATE pg_catalog."default";
 
 -- ParkingTariffAreas
+
+ALTER TABLE toms."ParkingTariffAreas"
+    RENAME COLUMN "Name" TO "ParkingTariffArea";
+
+ALTER TABLE toms."ParkingTariffAreas"
+    ALTER COLUMN "ParkingTariffArea" TYPE varchar(40);
+
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN id;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN gid;
@@ -1945,8 +1959,6 @@ ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN charge;
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN cost;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN hours;
-
-ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "Name";
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "NoReturnTimeID";
 
@@ -1998,9 +2010,6 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "label_TextChanged" character varying(254) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "ParkingTariffArea" character varying(40) COLLATE pg_catalog."default";
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
