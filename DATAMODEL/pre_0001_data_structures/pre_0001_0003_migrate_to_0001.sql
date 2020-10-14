@@ -210,7 +210,7 @@ ALTER SEQUENCE compliance_lookups."TicketMachineIssueTypes_id_seq"
 GRANT ALL ON SEQUENCE compliance_lookups."TicketMachineIssueTypes_id_seq" TO postgres;
 */
 -- signAttachmentTypes_id_seq
-CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
+/*CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
     INCREMENT 1
     START 1
     MINVALUE 1
@@ -220,7 +220,7 @@ CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
 ALTER SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
     OWNER TO postgres;
 
-GRANT ALL ON SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq" TO postgres;
+GRANT ALL ON SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq" TO postgres;*/
 
 -- itn_roadcentreline_gid_seq
 CREATE SEQUENCE highways_network.itn_roadcentreline_gid_seq
@@ -582,8 +582,8 @@ ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
     ADD CONSTRAINT "BaysLines_SignIssueTypes_pkey" PRIMARY KEY ("Code");
 
 -- SignAttachmentTypes
-ALTER TABLE compliance_lookups."SignAttachmentTypes"
-    ALTER COLUMN id SET DEFAULT nextval('compliance_lookups."SignAttachmentTypes_Code_seq"'::regclass);
+/*ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ALTER COLUMN id SET DEFAULT nextval('compliance_lookups."SignAttachmentTypes_Code_seq"'::regclass);*/
 
 ALTER TABLE compliance_lookups."SignAttachmentTypes"
     ALTER COLUMN "Code" SET NOT NULL;
@@ -592,8 +592,8 @@ ALTER TABLE compliance_lookups."SignAttachmentTypes" DROP CONSTRAINT "signAttach
 ALTER TABLE compliance_lookups."SignAttachmentTypes"
     ADD CONSTRAINT "signAttachmentTypes_pkey" PRIMARY KEY (id);
 
-ALTER TABLE compliance_lookups."SignAttachmentTypes"
-    ADD CONSTRAINT "SignAttachmentTypes_Code_key" UNIQUE ("Code");
+/*ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ADD CONSTRAINT "SignAttachmentTypes_Code_key" UNIQUE ("Code");*/
 
 -- SignFadedTypes
 ALTER TABLE compliance_lookups."SignFadedTypes"
@@ -1025,7 +1025,7 @@ ALTER TABLE compliance_lookups."ConditionTypes"
 
 -- MHTC_CheckIssueTypes
 
-CREATE TABLE compliance_lookups."MHTC_CheckIssueTypes"
+CREATE TABLE compliance_lookups."MHTC_CheckIssueType"
 (
     "Code" integer NOT NULL DEFAULT nextval('compliance_lookups."MHTC_CheckIssueTypes_Code_seq"'::regclass),
     "Description" character varying COLLATE pg_catalog."default",
@@ -1034,7 +1034,7 @@ CREATE TABLE compliance_lookups."MHTC_CheckIssueTypes"
 
 TABLESPACE pg_default;
 
-ALTER TABLE compliance_lookups."MHTC_CheckIssueTypes"
+ALTER TABLE compliance_lookups."MHTC_CheckIssueType"
     OWNER to postgres;
 
 
@@ -1202,11 +1202,27 @@ CREATE INDEX edi_itn_roadcentreline_geom_idx
 -- SiteArea
 CREATE TABLE local_authority."SiteArea"
 (
+    "id" integer NOT NULL,
     name character varying(32) COLLATE pg_catalog."default",
-    geom geometry(MultiPolygon,27700),
-    CONSTRAINT area_pkey PRIMARY KEY (name)
+    geom geometry(MultiPolygon,27700)
 )
 TABLESPACE pg_default;
+
+CREATE SEQUENCE "local_authority"."SiteArea_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE "local_authority"."SiteArea_id_seq" OWNER TO "postgres";
+
+ALTER TABLE ONLY "local_authority"."SiteArea" ALTER COLUMN "id" SET DEFAULT "nextval"('"local_authority"."SiteArea_id_seq"'::"regclass");
+
+ALTER TABLE ONLY "local_authority"."SiteArea"
+    ADD CONSTRAINT "test_area_pkey" PRIMARY KEY ("id");
+
+ALTER SEQUENCE "local_authority"."SiteArea_id_seq" OWNED BY "local_authority"."SiteArea"."id";
 
 ALTER TABLE local_authority."SiteArea"
     OWNER to postgres;
@@ -1541,7 +1557,7 @@ CREATE INDEX "idx_Bays_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -1712,7 +1728,7 @@ CREATE INDEX "idx_ControlledParkingZones_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -1858,7 +1874,7 @@ CREATE INDEX "idx_Lines_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -2043,7 +2059,7 @@ CREATE INDEX "idx_ParkingTariffAreas_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -2229,7 +2245,7 @@ CREATE INDEX "idx_RestrictionPolygons_GeomShapeID"
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -2429,7 +2445,7 @@ CREATE INDEX "idx_Signs_ComplianceRestrictionSignIssue"
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
