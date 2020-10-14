@@ -398,7 +398,7 @@ def getBayLabelText(feature, parent):
         labelText = '{origText} Max Stay: {text}'.format(origText=labelText, text=maxStayText)
 
     if noReturnText:
-        if timePeriodText or noReturnText:
+        if timePeriodText or maxStayText:
             labelText = labelText + ';'
         labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
 
