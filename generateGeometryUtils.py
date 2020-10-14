@@ -970,8 +970,10 @@ class generateGeometryUtils (QObject):
         if additionalConditionID:
             AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
             additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
-            if additionalConditionDesc:
+            if timePeriodDesc:
                 timePeriodDesc = "{};{}".format(timePeriodDesc, additionalConditionDesc)
+            else:
+                timePeriodDesc = "{}".format(additionalConditionDesc)
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
 
