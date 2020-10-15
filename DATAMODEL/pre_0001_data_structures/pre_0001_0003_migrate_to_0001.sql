@@ -750,7 +750,7 @@ ALTER TABLE toms_lookups."RestrictionPolygonTypes"
 CREATE TABLE toms_lookups."BayLineTypes"
 (
     "Code" integer NOT NULL DEFAULT nextval('toms_lookups."BayLineTypes_Code_seq"'::regclass),
-    "Description" character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    "Description" character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT "BayLineTypes_pkey" PRIMARY KEY ("Code")
 )
 TABLESPACE pg_default;
@@ -761,17 +761,17 @@ ALTER TABLE toms_lookups."BayLineTypes"
 --
 
 INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
-SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
-FROM "LookupCodeTransfers_Bays"
+SELECT DISTINCT CAST("CurrCode" AS int)
+FROM transfer."LookupCodeTransfers_Bays"
 UNION
-SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
-FROM "LookupCodeTransfers_Lines"
+SELECT DISTINCT CAST("CurrCode" AS int)
+FROM transfer."LookupCodeTransfers_Lines"
 ORDER BY "CurrCode";
 
 ---
 
-INSERT INTO "toms_lookups"."BayLineTypes" ("Code", "GeomShapeGroupType")
-SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
+INSERT INTO "toms_lookups"."BayLineTypes" ("Code", "Description")
+SELECT "Master_BayLineTypes"."Code", "Master_BayLineTypes"."Description"
 FROM
       (SELECT "Code", "Description"
       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
@@ -780,6 +780,28 @@ FROM
        SELECT DISTINCT "Code"
        FROM "toms_lookups"."BayLineTypes");
 
+UPDATE "toms_lookups"."BayLineTypes" AS c
+SET "Description" = m."Description"
+FROM (SELECT "Code", "Description"
+      FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
+		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "m"
+WHERE c."Code" = m."Code"
+AND c."Description" IS NULL;
+
+UPDATE "toms_lookups"."BayLineTypes" AS c
+SET "Description" = m."Aug2018_Description"
+FROM transfer."LookupCodeTransfers_Bays" AS "m"
+WHERE c."Code" = CAST(m."CurrCode" AS int)
+AND c."Description" IS NULL;
+
+UPDATE "toms_lookups"."BayLineTypes" AS c
+SET "Description" = m."Aug2018_Description"
+FROM transfer."LookupCodeTransfers_Lines" AS "m"
+WHERE c."Code" = CAST(m."CurrCode" AS int)
+AND c."Description" IS NULL;
+
+ALTER TABLE "toms_lookups"."BayLineTypes"
+    ALTER COLUMN "Description" SET NOT NULL;
 
 /*
 INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
@@ -1637,28 +1659,6 @@ ALTER TABLE toms."Bays"
 CREATE INDEX "idx_Bays_PayTypeID"
     ON toms."Bays"("PayTypeID");
 
-CREATE TRIGGER create_geometryid_bays
-    BEFORE INSERT
-    ON toms."Bays"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.create_geometryid();
-
-CREATE TRIGGER "set_restriction_length_Bays"
-    BEFORE INSERT OR UPDATE
-    ON toms."Bays"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_restriction_length();
-
-CREATE TRIGGER "set_last_update_details_Bays"
-    BEFORE INSERT OR UPDATE
-    ON toms."Bays"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
-
--- trigger trigger
-UPDATE toms."Bays" SET "RestrictionLength" = "RestrictionLength";
-ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
-
 -- *** ControlledParkingZones
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN gid;
 
@@ -1723,9 +1723,12 @@ ALTER TABLE toms."ControlledParkingZones"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+
 UPDATE toms."ControlledParkingZones" SET "LastUpdateDateTime" = "OpenDate";
+
 UPDATE toms."ControlledParkingZones" SET "LastUpdateDateTime" = '2018-01-01'::date
 WHERE "LastUpdateDateTime" IS NULL;
+
 ALTER TABLE toms."ControlledParkingZones"
     ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
@@ -1799,12 +1802,6 @@ ALTER TABLE toms."ControlledParkingZones"
 
 CREATE INDEX "idx_ControlledParkingZones_TimePeriodID"
     ON toms."ControlledParkingZones"("TimePeriodID");
-
-CREATE TRIGGER "set_last_update_details_ControlledParkingZones"
-    BEFORE INSERT OR UPDATE
-    ON toms."ControlledParkingZones"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
 
 -- Lines
 
@@ -1948,24 +1945,6 @@ CREATE INDEX "idx_Lines_UnacceptableTypeID"
 
 DROP INDEX toms."Lines_EDI_180124_idx";
 
-CREATE TRIGGER "set_last_update_details_Lines"
-    BEFORE INSERT OR UPDATE
-    ON toms."Lines"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
-
-CREATE TRIGGER create_geometryid_lines
-    BEFORE INSERT
-    ON toms."Lines"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.create_geometryid();
-
-CREATE TRIGGER "set_restriction_length_Lines"
-    BEFORE INSERT OR UPDATE
-    ON toms."Lines"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_restriction_length();
-
 -- MapGrid
 ALTER TABLE toms."MapGrid" RENAME COLUMN "RevisionNr" TO "CurrRevisionNr";
 
@@ -2054,9 +2033,12 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+
 UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = "OpenDate";
+
 UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = '2018-01-01'::date
 WHERE "LastUpdateDateTime" IS NULL;
+
 ALTER TABLE toms."ParkingTariffAreas"
     ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
@@ -2080,6 +2062,7 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "MHTC_CheckNotes" character varying(254) COLLATE pg_catalog."default";
+
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_pkey" PRIMARY KEY ("RestrictionID");
 
@@ -2156,12 +2139,6 @@ CREATE INDEX "sidx_ParkingTariffAreas_geom"
     (geom)
     TABLESPACE pg_default;
 
-CREATE TRIGGER "set_last_update_details_ParkingTariffAreas"
-    BEFORE INSERT OR UPDATE
-    ON toms."ParkingTariffAreas"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
-
 -- Proposals
 ALTER TABLE toms."Proposals"
     ALTER COLUMN "ProposalID" SET DEFAULT nextval('toms."Proposals_id_seq"'::regclass);
@@ -2234,9 +2211,12 @@ ALTER TABLE toms."RestrictionPolygons"
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
+
 UPDATE toms."RestrictionPolygons" SET "LastUpdateDateTime" = "OpenDate";
+
 UPDATE toms."RestrictionPolygons" SET "LastUpdateDateTime" = '2018-01-01'::date
 WHERE "LastUpdateDateTime" IS NULL;
+
 ALTER TABLE toms."RestrictionPolygons"
     ALTER COLUMN "LastUpdateDateTime" SET NOT NULL;
 
@@ -2335,18 +2315,6 @@ ALTER TABLE toms."RestrictionPolygons"
 CREATE INDEX "idx_RestrictionPolygons_TimePeriodID"
     ON toms."RestrictionPolygons"("TimePeriodID");
 
-CREATE TRIGGER create_geometryid_restrictionpolygons
-    BEFORE INSERT
-    ON toms."RestrictionPolygons"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.create_geometryid();
-
-CREATE TRIGGER "set_last_update_details_RestrictionPolygons"
-    BEFORE INSERT OR UPDATE
-    ON toms."RestrictionPolygons"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
-
 -- RestrictionsInProposals
 ALTER TABLE toms."RestrictionsInProposals"
     ADD CONSTRAINT "RestrictionsInProposals_ActionOnProposalAcceptance_fkey" FOREIGN KEY ("ActionOnProposalAcceptance")
@@ -2392,7 +2360,9 @@ ALTER TABLE toms."Signs" RENAME COLUMN "Signs_DateTime" TO "LastUpdateDateTime";
 ALTER TABLE toms."Signs" DROP COLUMN "PhotoTaken";
 
 ALTER TABLE toms."Signs" RENAME COLUMN "Surveyor" TO "LastUpdatePerson";
+
 UPDATE toms."Signs" SET "LastUpdatePerson" = 'CEC' WHERE "LastUpdatePerson" IS NULL;
+
 ALTER TABLE toms."Signs"
     ALTER COLUMN "LastUpdatePerson" SET NOT NULL;
 
@@ -2406,6 +2376,7 @@ ALTER TABLE toms."Signs" DROP COLUMN "ParkingTariffArea";
 
 ALTER TABLE toms."Signs"
     ALTER COLUMN "GeometryID" TYPE character varying(12) COLLATE pg_catalog."default";
+
 ALTER TABLE toms."Signs"
     ALTER COLUMN "GeometryID" SET DEFAULT ('S_'::text || to_char(nextval('toms."Signs_id_seq"'::regclass), '000000000'::text));
 
@@ -2562,12 +2533,13 @@ ALTER TABLE toms."Signs"
 CREATE INDEX "idx_SignType_4"
     ON toms."Signs"("SignType_4");
 
+/* -- not able to create due to integrity issue - not sure what it is ...
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_Signs_Attachment_fkey" FOREIGN KEY ("Signs_Attachment")
     REFERENCES compliance_lookups."SignAttachmentTypes" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
-
+*/
 CREATE INDEX "idx_Signs_Attachment"
     ON toms."Signs"("Signs_Attachment");
 
@@ -2586,17 +2558,6 @@ CREATE INDEX "sidx_Signs_geom"
     TABLESPACE pg_default;
 
 DROP INDEX toms."sidx_Signs_geom";
-CREATE TRIGGER "set_last_update_details_Signs"
-    BEFORE INSERT OR UPDATE
-    ON toms."Signs"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.set_last_update_details();
-
-CREATE TRIGGER create_geometryid_signs
-    BEFORE INSERT
-    ON toms."Signs"
-    FOR EACH ROW
-    EXECUTE PROCEDURE toms.create_geometryid();
 
 -- TilesInAcceptedProposals
 ALTER TABLE toms."TilesInAcceptedProposals"
