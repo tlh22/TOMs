@@ -64,3 +64,9 @@ FROM toms."Lines" l
 WHERE l."RestrictionLength" = 0
 -- AND l."OpenDate" IS NULL
 ;
+
+--
+UPDATE toms."Bays"
+SET "AdditionalConditionID" = NULL
+WHERE "AdditionalConditionID" = 1;
+

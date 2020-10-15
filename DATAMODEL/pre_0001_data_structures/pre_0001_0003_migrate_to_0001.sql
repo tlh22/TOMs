@@ -210,7 +210,7 @@ ALTER SEQUENCE compliance_lookups."TicketMachineIssueTypes_id_seq"
 GRANT ALL ON SEQUENCE compliance_lookups."TicketMachineIssueTypes_id_seq" TO postgres;
 */
 -- signAttachmentTypes_id_seq
-CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
+/*CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
     INCREMENT 1
     START 1
     MINVALUE 1
@@ -220,7 +220,7 @@ CREATE SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
 ALTER SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq"
     OWNER TO postgres;
 
-GRANT ALL ON SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq" TO postgres;
+GRANT ALL ON SEQUENCE compliance_lookups."SignAttachmentTypes_Code_seq" TO postgres;*/
 
 -- itn_roadcentreline_gid_seq
 CREATE SEQUENCE highways_network.itn_roadcentreline_gid_seq
@@ -582,8 +582,8 @@ ALTER TABLE compliance_lookups."BaysLines_SignIssueTypes"
     ADD CONSTRAINT "BaysLines_SignIssueTypes_pkey" PRIMARY KEY ("Code");
 
 -- SignAttachmentTypes
-ALTER TABLE compliance_lookups."SignAttachmentTypes"
-    ALTER COLUMN id SET DEFAULT nextval('compliance_lookups."SignAttachmentTypes_Code_seq"'::regclass);
+/*ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ALTER COLUMN id SET DEFAULT nextval('compliance_lookups."SignAttachmentTypes_Code_seq"'::regclass);*/
 
 ALTER TABLE compliance_lookups."SignAttachmentTypes"
     ALTER COLUMN "Code" SET NOT NULL;
@@ -592,8 +592,8 @@ ALTER TABLE compliance_lookups."SignAttachmentTypes" DROP CONSTRAINT "signAttach
 ALTER TABLE compliance_lookups."SignAttachmentTypes"
     ADD CONSTRAINT "signAttachmentTypes_pkey" PRIMARY KEY (id);
 
-ALTER TABLE compliance_lookups."SignAttachmentTypes"
-    ADD CONSTRAINT "SignAttachmentTypes_Code_key" UNIQUE ("Code");
+/*ALTER TABLE compliance_lookups."SignAttachmentTypes"
+    ADD CONSTRAINT "SignAttachmentTypes_Code_key" UNIQUE ("Code");*/
 
 -- SignFadedTypes
 ALTER TABLE compliance_lookups."SignFadedTypes"
@@ -758,6 +758,38 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."BayLineTypes"
     OWNER to postgres;
 
+--
+
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
+SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
+FROM "LookupCodeTransfers_Bays"
+UNION
+SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
+FROM "LookupCodeTransfers_Lines"
+ORDER BY "CurrCode";
+
+---
+
+INSERT INTO "toms_lookups"."BayLineTypes" ("Code", "GeomShapeGroupType")
+SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
+FROM
+      (SELECT "Code", "Description"
+      FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
+		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "Master_BayLineTypes"
+       WHERE "Code" NOT IN (
+       SELECT DISTINCT "Code"
+       FROM "toms_lookups"."BayLineTypes");
+
+
+/*
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
+SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
+FROM
+      (SELECT "Code", "Description"
+      FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
+		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "BayLineTypes";
+*/
+
 -- SignTypes
 ALTER TABLE toms_lookups."SignTypes" DROP COLUMN id;
 
@@ -835,19 +867,34 @@ INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "Style
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (108, 'LineString', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (110, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (111, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (112, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (113, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (114, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (115, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (116, 'LineString', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (117, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (118, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (119, 'LineString', NULL);
+
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (124, 'LineString', NULL);
-INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (114, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (126, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (127, 'LineString', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (131, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (133, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (134, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (135, 'Polygon', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (140, 'Polygon', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (168, 'Polygon', NULL);
+
 
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType")
 SELECT DISTINCT "RestrictionTypeID", 'LineString'
 FROM "toms"."Bays"
 WHERE "RestrictionTypeID" NOT IN (
-SELECT DISTINCT "RestrictionTypeID"
+SELECT DISTINCT "Code"
 FROM "toms_lookups"."BayTypesInUse");
 
 -- LineTypesInUse
@@ -883,7 +930,7 @@ INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType")
 SELECT DISTINCT "RestrictionTypeID", 'LineString'
 FROM "toms"."Lines"
 WHERE "RestrictionTypeID" NOT IN (
-SELECT DISTINCT "RestrictionTypeID"
+SELECT DISTINCT "Code"
 FROM "toms_lookups"."LineTypesInUse");
 
 -- RestrictionPolygonTypesInUse
@@ -1025,7 +1072,7 @@ ALTER TABLE compliance_lookups."ConditionTypes"
 
 -- MHTC_CheckIssueTypes
 
-CREATE TABLE compliance_lookups."MHTC_CheckIssueTypes"
+CREATE TABLE compliance_lookups."MHTC_CheckIssueType"
 (
     "Code" integer NOT NULL DEFAULT nextval('compliance_lookups."MHTC_CheckIssueTypes_Code_seq"'::regclass),
     "Description" character varying COLLATE pg_catalog."default",
@@ -1034,7 +1081,7 @@ CREATE TABLE compliance_lookups."MHTC_CheckIssueTypes"
 
 TABLESPACE pg_default;
 
-ALTER TABLE compliance_lookups."MHTC_CheckIssueTypes"
+ALTER TABLE compliance_lookups."MHTC_CheckIssueType"
     OWNER to postgres;
 
 
@@ -1202,11 +1249,27 @@ CREATE INDEX edi_itn_roadcentreline_geom_idx
 -- SiteArea
 CREATE TABLE local_authority."SiteArea"
 (
+    "id" integer NOT NULL,
     name character varying(32) COLLATE pg_catalog."default",
-    geom geometry(MultiPolygon,27700),
-    CONSTRAINT area_pkey PRIMARY KEY (name)
+    geom geometry(MultiPolygon,27700)
 )
 TABLESPACE pg_default;
+
+CREATE SEQUENCE "local_authority"."SiteArea_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE "local_authority"."SiteArea_id_seq" OWNER TO "postgres";
+
+ALTER TABLE ONLY "local_authority"."SiteArea" ALTER COLUMN "id" SET DEFAULT "nextval"('"local_authority"."SiteArea_id_seq"'::"regclass");
+
+ALTER TABLE ONLY "local_authority"."SiteArea"
+    ADD CONSTRAINT "test_area_pkey" PRIMARY KEY ("id");
+
+ALTER SEQUENCE "local_authority"."SiteArea_id_seq" OWNED BY "local_authority"."SiteArea"."id";
 
 ALTER TABLE local_authority."SiteArea"
     OWNER to postgres;
@@ -1325,9 +1388,22 @@ CREATE INDEX os_mastermap_topography_text_geom_idx
     TABLESPACE pg_default;
 
 -- road_casement
+
+CREATE SEQUENCE topography."road_casement_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE topography."road_casement_id_seq"
+    OWNER TO postgres;
+
+GRANT ALL ON SEQUENCE topography."road_casement_id_seq" TO postgres;
+
 CREATE TABLE topography.road_casement
 (
-    id integer NOT NULL,
+    id integer NOT NULL DEFAULT nextval('topography."road_casement_id_seq"'::regclass),
     geom geometry(LineString,27700),
     "RoadName" character varying(100) COLLATE pg_catalog."default",
     "ESUID" double precision,
@@ -1429,7 +1505,7 @@ ALTER TABLE toms."Bays" DROP CONSTRAINT "Bays_pkey";
 ALTER TABLE toms."Bays" DROP COLUMN id;
 
 ALTER TABLE toms."Bays" RENAME COLUMN "Length" TO "RestrictionLength";
-ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
+--ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
 
 ALTER TABLE toms."Bays" RENAME COLUMN "Bays_DateTime" TO "LastUpdateDateTime";
 
@@ -1528,7 +1604,7 @@ CREATE INDEX "idx_Bays_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."Bays"
     ADD CONSTRAINT "Bays_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -1579,6 +1655,9 @@ CREATE TRIGGER "set_last_update_details_Bays"
     FOR EACH ROW
     EXECUTE PROCEDURE toms.set_last_update_details();
 
+-- trigger trigger
+UPDATE toms."Bays" SET "RestrictionLength" = "RestrictionLength";
+ALTER TABLE toms."Bays" ALTER COLUMN "RestrictionLength" SET NOT NULL;
 
 -- *** ControlledParkingZones
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN gid;
@@ -1670,8 +1749,8 @@ ALTER TABLE toms."ControlledParkingZones"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "MHTC_CheckNotes" character varying(254) COLLATE pg_catalog."default";
-ALTER TABLE toms."ControlledParkingZones"
-    ADD CONSTRAINT "ControlledParkingZones_pkey" PRIMARY KEY ("RestrictionID");
+--ALTER TABLE toms."ControlledParkingZones"
+--    ADD CONSTRAINT "ControlledParkingZones_pkey" PRIMARY KEY ("RestrictionID");
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_GeometryID_key" UNIQUE ("GeometryID");
@@ -1696,7 +1775,7 @@ CREATE INDEX "idx_ControlledParkingZones_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."ControlledParkingZones"
     ADD CONSTRAINT "ControlledParkingZones_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -1842,7 +1921,7 @@ CREATE INDEX "idx_Lines_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."Lines"
     ADD CONSTRAINT "Lines_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -1900,6 +1979,16 @@ ALTER TABLE toms."MapGrid"
     ADD COLUMN mapsheetname character varying(10) COLLATE pg_catalog."default";
 
 -- ParkingTariffAreas
+
+ALTER TABLE toms."ParkingTariffAreas"
+    RENAME COLUMN "Name" TO "ParkingTariffArea";
+
+ALTER TABLE toms."ParkingTariffAreas"
+    ALTER COLUMN "ParkingTariffArea" TYPE varchar(40);
+
+ALTER TABLE toms."ParkingTariffAreas"
+    RENAME COLUMN "NoReturnTimeID" TO "NoReturnID";
+
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN id;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN gid;
@@ -1913,10 +2002,6 @@ ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN charge;
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN cost;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN hours;
-
-ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "Name";
-
-ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "NoReturnTimeID";
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "OBJECTID";
 
@@ -1968,9 +2053,6 @@ ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "label_TextChanged" character varying(254) COLLATE pg_catalog."default";
 
 ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "ParkingTariffArea" character varying(40) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LastUpdateDateTime" timestamp without time zone;
 UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = "OpenDate";
 UPDATE toms."ParkingTariffAreas" SET "LastUpdateDateTime" = '2018-01-01'::date
@@ -1983,9 +2065,6 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LabelText" character varying(254) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "NoReturnID" integer;
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "ComplianceRoadMarkingsFaded" integer;
@@ -2027,7 +2106,7 @@ CREATE INDEX "idx_ParkingTariffAreas_ComplianceRoadMarkingsFaded"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD CONSTRAINT "ParkingTariffAreas_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -2213,7 +2292,7 @@ CREATE INDEX "idx_RestrictionPolygons_GeomShapeID"
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionsPolygons_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -2413,7 +2492,7 @@ CREATE INDEX "idx_Signs_ComplianceRestrictionSignIssue"
 
 ALTER TABLE toms."Signs"
     ADD CONSTRAINT "Signs_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID")
-    REFERENCES compliance_lookups."MHTC_CheckIssueTypes" ("Code") MATCH SIMPLE
+    REFERENCES compliance_lookups."MHTC_CheckIssueType" ("Code") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
