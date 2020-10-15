@@ -18,89 +18,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- TOC entry 1072 (class 1255 OID 221974)
--- Name: create_geometryid(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE OR REPLACE FUNCTION "public"."create_geometryid"() RETURNS "trigger"
-    LANGUAGE "plpgsql"
-    AS $$
-DECLARE
-	 nextSeqVal varchar := '';
-BEGIN
-
-	CASE TG_TABLE_NAME
-	WHEN 'Bays' THEN
-			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'Lines' THEN
-		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'Signs' THEN
-		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'RestrictionPolygons' THEN
-		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'ControlledParkingZones' THEN
-		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	WHEN 'ParkingTariffAreas' THEN
-		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
-	ELSE
-	    nextSeqVal = 'U';
-	END CASE;
-
-    NEW."GeometryID" := nextSeqVal;
-	RETURN NEW;
-
-END;
-$$;
-
-
-ALTER FUNCTION "public"."create_geometryid"() OWNER TO "postgres";
-
---
--- TOC entry 1073 (class 1255 OID 221975)
--- Name: set_last_update_details(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE OR REPLACE FUNCTION public.set_last_update_details()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-    BEGIN
-	    -- round to two decimal places
-        NEW."LastUpdateDateTime" := now();
-        NEW."LastUpdatePerson" := current_user;
-
-        RETURN NEW;
-    END;
-$BODY$;
-
-ALTER FUNCTION public.set_last_update_details()
-    OWNER TO postgres;
-
---
--- TOC entry 1074 (class 1255 OID 221976)
--- Name: set_restriction_length(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE OR REPLACE FUNCTION public.set_restriction_length()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-    BEGIN
-	    -- round to two decimal places
-        NEW."RestrictionLength" := ROUND(public.ST_Length (NEW."geom")::numeric,2);
-
-        RETURN NEW;
-    END;
-$BODY$;
-
-ALTER FUNCTION public.set_restriction_length()
-    OWNER TO postgres;
-
 SET default_table_access_method = "heap";
 
 --
@@ -374,6 +291,27 @@ CREATE INDEX "sidx_RC_Sections_geom" ON "public"."RC_Sections" USING "gist" ("ge
 --
 
 CREATE INDEX "sidx_RC_Sections_merged_geom" ON "public"."RC_Sections_merged" USING "gist" ("geom");
+
+-- Add view for gazetteer lookup
+CREATE MATERIALIZED VIEW local_authority."StreetGazetteerView"
+TABLESPACE pg_default
+AS
+    SELECT row_number() OVER (PARTITION BY true::boolean) AS id,
+    name AS "RoadName", "Locality", geometry As geom
+	FROM local_authority."StreetGazetteerRecords"
+WITH DATA;
+
+ALTER TABLE local_authority."StreetGazetteerView"
+    OWNER TO postgres;
+
+CREATE UNIQUE INDEX "idx_StreetGazetteerView_id"
+    ON local_authority."StreetGazetteerView" USING btree
+    (id)
+    TABLESPACE pg_default;
+
+CREATE INDEX idx_street_name
+ON local_authority."StreetGazetteerView"("RoadName");
+
 
 -- refresh views
 

@@ -38,12 +38,16 @@ FROM
 -- itn_roadcentreline
 
 INSERT INTO highways_network.itn_roadcentreline(
-	toid, version, verdate, theme, descgroup, descterm, change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom)
-SELECT toid, version, verdate, theme, descgroup, descterm, change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
+	toid, version, verdate, theme, descgroup, descterm,
+	change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom)
+SELECT toid, version, verdate, theme, descgroup, descterm,
+       change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
 FROM
-      (SELECT toid, version, verdate, theme, descgroup, descterm, change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom)
+      (SELECT toid, version, verdate, theme, descgroup, descterm,
+              change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
        FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
-		'SELECT toid, version, verdate, theme, descgroup, descterm, change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, loaddate, objectid, shape_leng, geom)
+		'SELECT toid, version, verdate, theme, descgroup, descterm,
+		change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
 	     FROM public.edi_itn_roadcentreline') AS "edi_itn_roadcentreline" (
     toid character varying(16),
     version integer,
