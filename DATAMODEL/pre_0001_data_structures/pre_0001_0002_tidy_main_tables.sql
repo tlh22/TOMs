@@ -72,6 +72,7 @@ UPDATE "Lines" SET "GeomShapeID" = 10 WHERE "GeomShapeID" IS NULL;
 
 --
 
+INSERT INTO "public"."RestrictionShapeTypes" ("Code", "Description") VALUES (27, 'Other');
 INSERT INTO "public"."RestrictionShapeTypes" ("Code", "Description") VALUES (35, 'Dropped Kerb (Crossover)');
 INSERT INTO "public"."RestrictionShapeTypes" ("Code", "Description") VALUES (50, 'Polygon');
 

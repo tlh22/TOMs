@@ -758,12 +758,37 @@ TABLESPACE pg_default;
 ALTER TABLE toms_lookups."BayLineTypes"
     OWNER to postgres;
 
+--
+
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
+SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
+FROM "LookupCodeTransfers_Bays"
+UNION
+SELECT DISTINCT CAST("CurrCode" AS int), "Aug2018_Description"
+FROM "LookupCodeTransfers_Lines"
+ORDER BY "CurrCode";
+
+---
+
+INSERT INTO "toms_lookups"."BayLineTypes" ("Code", "GeomShapeGroupType")
+SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
+FROM
+      (SELECT "Code", "Description"
+      FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
+		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "Master_BayLineTypes"
+       WHERE "Code" NOT IN (
+       SELECT DISTINCT "Code"
+       FROM "toms_lookups"."BayLineTypes");
+
+
+/*
 INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
 SELECT "BayLineTypes"."Code", "BayLineTypes"."Description"
 FROM
       (SELECT "Code", "Description"
       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=MasterLookups user=postgres password=password options=-csearch_path=',
 		'SELECT "Code", "Description" FROM public."BayLineTypes"') AS "BayLineTypes"("Code" int, "Description" text)) AS "BayLineTypes";
+*/
 
 -- SignTypes
 ALTER TABLE toms_lookups."SignTypes" DROP COLUMN id;
@@ -842,19 +867,34 @@ INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "Style
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (108, 'LineString', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (110, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (111, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (112, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (113, 'LineString', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (114, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (115, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (116, 'LineString', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (117, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (118, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (119, 'LineString', NULL);
+
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (124, 'LineString', NULL);
-INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (114, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (126, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (127, 'LineString', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (131, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (133, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (134, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (135, 'Polygon', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (140, 'Polygon', NULL);
+
+INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (168, 'Polygon', NULL);
+
 
 INSERT INTO "toms_lookups"."BayTypesInUse" ("Code", "GeomShapeGroupType")
 SELECT DISTINCT "RestrictionTypeID", 'LineString'
 FROM "toms"."Bays"
 WHERE "RestrictionTypeID" NOT IN (
-SELECT DISTINCT "RestrictionTypeID"
+SELECT DISTINCT "Code"
 FROM "toms_lookups"."BayTypesInUse");
 
 -- LineTypesInUse
@@ -890,7 +930,7 @@ INSERT INTO "toms_lookups"."LineTypesInUse" ("Code", "GeomShapeGroupType")
 SELECT DISTINCT "RestrictionTypeID", 'LineString'
 FROM "toms"."Lines"
 WHERE "RestrictionTypeID" NOT IN (
-SELECT DISTINCT "RestrictionTypeID"
+SELECT DISTINCT "Code"
 FROM "toms_lookups"."LineTypesInUse");
 
 -- RestrictionPolygonTypesInUse
@@ -1946,6 +1986,9 @@ ALTER TABLE toms."ParkingTariffAreas"
 ALTER TABLE toms."ParkingTariffAreas"
     ALTER COLUMN "ParkingTariffArea" TYPE varchar(40);
 
+ALTER TABLE toms."ParkingTariffAreas"
+    RENAME COLUMN "NoReturnTimeID" TO "NoReturnID";
+
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN id;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN gid;
@@ -1959,8 +2002,6 @@ ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN charge;
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN cost;
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN hours;
-
-ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "NoReturnTimeID";
 
 ALTER TABLE toms."ParkingTariffAreas" DROP COLUMN "OBJECTID";
 
@@ -2024,9 +2065,6 @@ ALTER TABLE toms."ParkingTariffAreas"
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "LabelText" character varying(254) COLLATE pg_catalog."default";
-
-ALTER TABLE toms."ParkingTariffAreas"
-    ADD COLUMN "NoReturnID" integer;
 
 ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "ComplianceRoadMarkingsFaded" integer;

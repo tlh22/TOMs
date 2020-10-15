@@ -393,5 +393,4 @@ DROP TABLE "RestrictionTypes";
 DROP TABLE "RoadCentreLine";
 DROP TABLE "Surveyors";
 
-
 DROP MATERIALIZED VIEW "BayLineTypes";
