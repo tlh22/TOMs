@@ -6,11 +6,5 @@ Types that we are not yet sure how to introduce
 (22, 'Parking Tariff Area')
 */
 
-ALTER TABLE ONLY "toms"."ControlledParkingZones"
-    DROP CONSTRAINT "ControlledParkingZones_RestrictionTypeID_fkey";
-
-ALTER TABLE ONLY "toms"."ParkingTariffAreas"
-    DROP CONSTRAINT "ParkingTariffAreas_RestrictionTypeID_fkey";
-
 DELETE FROM "toms_lookups"."RestrictionPolygonTypesInUse"
 WHERE "Code" IN (5, 20, 22);
