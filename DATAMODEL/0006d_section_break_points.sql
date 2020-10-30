@@ -13,7 +13,6 @@ ALTER SEQUENCE mhtc_operations."SectionBreakPoints_id_seq"
 GRANT ALL ON SEQUENCE mhtc_operations."SectionBreakPoints_id_seq" TO postgres;
 GRANT SELECT, USAGE ON SEQUENCE mhtc_operations."SectionBreakPoints_id_seq" TO toms_admin, toms_operator, toms_public;
 
-
 CREATE TABLE mhtc_operations."SectionBreakPoints"
 (
     id integer NOT NULL DEFAULT nextval('mhtc_operations."SectionBreakPoints_id_seq"'::regclass),
