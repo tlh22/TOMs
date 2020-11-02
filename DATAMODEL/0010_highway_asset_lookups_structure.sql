@@ -550,7 +550,7 @@ CREATE SEQUENCE "highway_asset_lookups"."BridgeTypes_Code_seq"
 ALTER TABLE "highway_asset_lookups"."BridgeTypes_Code_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_asset_lookups"."BridgeTypes" (
-    "Code" integer DEFAULT "nextval"('"highway_asset_lookups"."BinTypes_Code_seq"'::"regclass") NOT NULL,
+    "Code" integer DEFAULT "nextval"('"highway_asset_lookups"."BridgeTypes_Code_seq"'::"regclass") NOT NULL,
     "Description" character varying
 );
 
