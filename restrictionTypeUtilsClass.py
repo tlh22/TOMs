@@ -1278,15 +1278,15 @@ class RestrictionTypeUtilsMixin():
                     return statusUpd
 
 
-        self.updateTileRevisionNrs(currProposalID)
+        self.updateTileRevisionNrs(currProposalID, currProposalOpenDate)
 
         return statusUpd
 
-    def updateTileRevisionNrs(self, currProposalID):
+    def updateTileRevisionNrs(self, currProposalID, currRevisionDate):
         QgsMessageLog.logMessage("In updateTileRevisionNrs.", tag="TOMs panel")
         # Increment the relevant tile numbers
 
-        currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
+        #currRevisionDate = self.proposalsManager.getProposalOpenDate(currProposalID)
 
         self.getProposalTileList(currProposalID, currRevisionDate)
 
