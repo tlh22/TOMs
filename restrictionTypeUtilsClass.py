@@ -1085,14 +1085,6 @@ class RestrictionTypeUtilsMixin():
         QgsMessageLog.logMessage("In onSaveProposalFormDetails.", tag="TOMs panel")
         self.Proposals.startEditing()
         """
-        #proposalsDialog.accept()
-        #proposalsDialog.close()
-        saveStatus = proposalsDialog.attributeForm().save()
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(saveStatus), tag="TOMs panel")
-        QgsMessageLog.logMessage(
-            "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
-                proposalTransaction.currTransactionGroup.modified()), tag="TOMs panel")
-        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
 
         #proposalsLayerfromClass = TOMsTableNames.PROPOSALS()
         #QgsMessageLog.logMessage("In onSaveProposalFormDetails. Proposals (class):" + str(proposalsLayerfromClass.name()), tag="TOMs panel")
@@ -1197,6 +1189,16 @@ class RestrictionTypeUtilsMixin():
                 "In onSaveProposalFormDetails. updateStatus = " + str(updateStatus),
                 tag="TOMs panel")
             updateStatus = True"""
+
+            #proposalsDialog.accept()
+            #proposalsDialog.close()
+            saveStatus = proposalsDialog.attributeForm().save()
+            QgsMessageLog.logMessage("In onSaveProposalFormDetails. saveStatus. " + str(saveStatus), tag="TOMs panel")
+            QgsMessageLog.logMessage(
+                "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
+                    proposalTransaction.currTransactionGroup.modified()),
+            tag="TOMs panel")
+        QgsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposal.attribute("ProposalTitle")) + " Status: " + str(currProposal.attribute("ProposalStatusID")), tag="TOMs panel")
 
         # Make sure that the saving will not be executed immediately, but
         # only when the event loop runs into the next iteration to avoid
