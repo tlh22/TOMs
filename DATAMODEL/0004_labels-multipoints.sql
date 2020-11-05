@@ -128,7 +128,6 @@ def ensure_labels_points(main_geom, label_geom):
     plpy.info("{} new label points will be created".format(len(sheets_geoms)))
 
     # For these sheets, we add points at the center of the intersection
-    points = []
     for sheet_geom in sheets_geoms:
         # get the intersection between the sheet and the geometry
         plan = plpy.prepare("SELECT ST_Intersection($1::geometry, $2::geometry) as i", ['text', 'text'])
