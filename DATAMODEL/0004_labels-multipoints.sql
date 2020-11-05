@@ -109,8 +109,11 @@ def ensure_labels_points(main_geom, label_geom):
         # TH: TODO: currently failing with new feature that has label geometry, i.e., it has no OLD ...
 
         if OLD is not None:
-            old_label_geom = ensure_labels_points(OLD["geom"], None)  # TH: why is the recursion used?
-            plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])   # TH: not sure what this does
+            # To do so, we generate label positions on the OLD geometry (reusing this same function).
+            # We substract those old generated positions from the new ones, so they are deleted from
+            # the label multipoints, and will be regenerated exactly on the geometry.
+            old_label_geom = ensure_labels_points(OLD["geom"], None)
+            plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
             results = plpy.execute(plan, [label_geom, old_label_geom])
             label_geom = results[0]['g']
 
