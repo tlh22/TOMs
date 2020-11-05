@@ -62,16 +62,12 @@ WHERE "label_X" IS NOT NULL AND "label_Y" IS NOT NULL;
 -- Remove obsolete fields
 ALTER TABLE toms."Lines" DROP COLUMN "label_X";
 ALTER TABLE toms."Lines" DROP COLUMN "label_Y";
--- ALTER TABLE toms."Lines" DROP COLUMN "label_Rotation";
 ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_X";
 ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_Y";
--- ALTER TABLE toms."Lines" DROP COLUMN "labelLoading_Rotation";
 ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_X";
 ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_Y";
--- ALTER TABLE toms."RestrictionPolygons" DROP COLUMN "label_Rotation";
 ALTER TABLE toms."Bays" DROP COLUMN "label_X";
 ALTER TABLE toms."Bays" DROP COLUMN "label_Y";
--- ALTER TABLE toms."Bays" DROP COLUMN "label_Rotation";
 
 
 -- Create geometry function that returns attachment points of labels
@@ -169,11 +165,20 @@ def update_leader_lines(main_geom, label_geom):
     ''', ['text', 'text'])
     return plpy.execute(plan, [main_geom, label_geom])[0]["p"]
 
+# Logic for the primary label
 NEW["label_pos"] = ensure_labels_points(NEW["geom"], NEW["label_pos"])
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+if plpy.execute(plpy.prepare('SELECT ST_NumGeometries($1) as n', ['text']), [NEW["label_pos"]])[0]['n'] > 1:
+    # We don't support rotation on multi-points, so set it to null if there's multiple geometries
+    NEW["label_Rotation"] = None
+
+# Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
     NEW["label_loading_pos"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"])
     NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
+    if plpy.execute(plpy.prepare('SELECT ST_NumGeometries($1) as n', ['text']), [NEW["label_loading_pos"]])[0]['n'] > 1:
+        # We don't support rotation on multi-points, so set it to null if there's multiple geometries
+        NEW["labelLoading_Rotation"] = None
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
