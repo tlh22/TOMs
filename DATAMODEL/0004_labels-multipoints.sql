@@ -92,7 +92,7 @@ NEW = TD["new"] # this contains the feature after modifications
 
 plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
 
-def ensure_labels_points(main_geom, label_geom):
+def ensure_labels_points(main_geom, label_geom, initial_rotation):
     """
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
@@ -112,7 +112,7 @@ def ensure_labels_points(main_geom, label_geom):
             # To do so, we generate label positions on the OLD geometry (reusing this same function).
             # We substract those old generated positions from the new ones, so they are deleted from
             # the label multipoints, and will be regenerated exactly on the geometry.
-            old_label_geom = ensure_labels_points(OLD["geom"], None)
+            old_label_geom, _ = ensure_labels_points(OLD["geom"], None, None)
             plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
             results = plpy.execute(plan, [label_geom, old_label_geom])
             label_geom = results[0]['g']
@@ -128,6 +128,7 @@ def ensure_labels_points(main_geom, label_geom):
     plpy.info("{} new label points will be created".format(len(sheets_geoms)))
 
     # For these sheets, we add points at the center of the intersection
+    point = None
     for sheet_geom in sheets_geoms:
         # get the intersection between the sheet and the geometry
         plan = plpy.prepare("SELECT ST_Intersection($1::geometry, $2::geometry) as i", ['text', 'text'])
@@ -142,7 +143,39 @@ def ensure_labels_points(main_geom, label_geom):
         plan = plpy.prepare("SELECT ST_Multi(ST_Union($1::geometry, $2::geometry)) as p", ['text', 'text'])
         label_geom = plpy.execute(plan, [label_geom, point])[0]["p"]
 
-    return label_geom
+    # We count the number of points to determine label rotation
+    plan = plpy.prepare('SELECT ST_NumGeometries($1::geometry) as n', ['text'])
+    labels_count = plpy.execute(plan, [label_geom])[0]['n']
+
+    # We get the geometry type
+    plan = plpy.prepare('SELECT ST_GeometryType($1::geometry) as n', ['text'])
+    geom_type = plpy.execute(plan, [main_geom])[0]['n']
+
+    if geom_type == 'ST_LineString' and labels_count == 1 and len(sheets_geoms) == 1:
+        # We have exactly one label, and that label's position as generated, so we determine
+        # the rotation automatically according to the line's angle
+
+        # First, we get the position of the point alongside the geometry
+        plan = plpy.prepare('SELECT ST_LINELOCATEPOINT($1::geometry, $2::geometry) as p', ['text', 'text'])
+        point_location = plpy.execute(plan, [main_geom, point])[0]['p']
+
+        # Then, we get the position of the point just a little bit further
+        plan = plpy.prepare('SELECT ST_LINEINTERPOLATEPOINT($1::geometry, $2 + 0.0001) as p', ['text', 'float8'])
+        next_point = plpy.execute(plan, [main_geom, point_location])[0]['p']
+
+        # We compute the angle
+        plan = plpy.prepare('SELECT DEGREES(ATAN((ST_Y($2::geometry)-ST_Y($1::geometry)) / (ST_X($2::geometry)-ST_X($1::geometry)))) as p', ['text', 'text'])
+        azimuth = plpy.execute(plan, [point, next_point])[0]['p']
+
+        label_rot = azimuth
+    elif labels_count > 1:
+        # With more that one label, rotation is not supported, we set it to NULL
+        label_rot = None
+    else:
+        # With exactly one label whose position was not generated, we keep rotation as is
+        label_rot = initial_rotation
+
+    return label_geom, label_rot
 
 def update_leader_lines(main_geom, label_geom):
     """
@@ -168,19 +201,13 @@ def update_leader_lines(main_geom, label_geom):
     return plpy.execute(plan, [main_geom, label_geom])[0]["p"]
 
 # Logic for the primary label
-NEW["label_pos"] = ensure_labels_points(NEW["geom"], NEW["label_pos"])
+NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-if plpy.execute(plpy.prepare('SELECT ST_NumGeometries($1) as n', ['text']), [NEW["label_pos"]])[0]['n'] > 1:
-    # We don't support rotation on multi-points, so set it to null if there's multiple geometries
-    NEW["label_Rotation"] = None
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
-    NEW["label_loading_pos"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"])
+    NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"], NEW["labelLoading_Rotation"])
     NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
-    if plpy.execute(plpy.prepare('SELECT ST_NumGeometries($1) as n', ['text']), [NEW["label_loading_pos"]])[0]['n'] > 1:
-        # We don't support rotation on multi-points, so set it to null if there's multiple geometries
-        NEW["labelLoading_Rotation"] = None
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
