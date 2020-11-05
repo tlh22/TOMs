@@ -99,23 +99,19 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
-    if label_geom is None:
+    if OLD is not or label_geom is None:
         plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p")
         label_geom = plpy.execute(plan)[0]["p"]
     else:
         # We remove multipoints that have not been moved from the calculated position
         # so they will still be attached on the geometry
-
-        # TH: TODO: currently failing with new feature that has label geometry, i.e., it has no OLD ...
-
-        if OLD is not None:
-            # To do so, we generate label positions on the OLD geometry (reusing this same function).
-            # We substract those old generated positions from the new ones, so they are deleted from
-            # the label multipoints, and will be regenerated exactly on the geometry.
-            old_label_geom, _ = ensure_labels_points(OLD["geom"], None, None)
-            plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
-            results = plpy.execute(plan, [label_geom, old_label_geom])
-            label_geom = results[0]['g']
+        # To do so, we generate label positions on the OLD geometry (reusing this same function).
+        # We substract those old generated positions from the new ones, so they are deleted from
+        # the label multipoints, and will be regenerated exactly on the geometry.
+        old_label_geom, _ = ensure_labels_points(OLD["geom"], None, None)
+        plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
+        results = plpy.execute(plan, [label_geom, old_label_geom])
+        label_geom = results[0]['g']
 
     plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
 
