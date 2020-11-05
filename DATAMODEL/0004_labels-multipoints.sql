@@ -104,8 +104,8 @@ def ensure_labels_points(main_geom, label_geom):
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
     if label_geom is None:
-        plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p", ['text'])
-        label_geom = plpy.execute(plan, [label_geom])[0]["p"]
+        plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p")
+        label_geom = plpy.execute(plan)[0]["p"]
     else:
         # We remove multipoints that have not been moved from the calculated position
         # so they will still be attached on the geometry
