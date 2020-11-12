@@ -99,7 +99,7 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
-    if OLD is not or label_geom is None:
+    if OLD is not None or label_geom is None:
         plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p")
         label_geom = plpy.execute(plan)[0]["p"]
     else:
