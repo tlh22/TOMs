@@ -19,21 +19,24 @@ ALTER TABLE toms."ControlledParkingZones" ADD COLUMN "label_ldr" geometry(MultiL
 
 -- Create default label positions
 
-UPDATE toms."Lines" SET
-    "label_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5)),
-    "label_loading_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5));
+-- DISABLED : This is not needed if we run the trigger at the end of the
+-- script, as the triggers will take care of creating the default positions.
 
-UPDATE toms."RestrictionPolygons" SET
-    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
-
-UPDATE toms."Bays" SET
-    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
-
-UPDATE toms."ParkingTariffAreas" SET
-    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
-
-UPDATE toms."ControlledParkingZones" SET
-    "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+-- UPDATE toms."Lines" SET
+--     "label_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5)),
+--     "label_loading_pos" = ST_Multi(ST_LineInterpolatePoint("geom", 0.5));
+-- 
+-- UPDATE toms."RestrictionPolygons" SET
+--     "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+-- 
+-- UPDATE toms."Bays" SET
+--     "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+-- 
+-- UPDATE toms."ParkingTariffAreas" SET
+--     "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
+-- 
+-- UPDATE toms."ControlledParkingZones" SET
+--     "label_pos" = ST_Multi(ST_PointOnSurface("geom"));
 
 
 -- Migrate manually positionned label
