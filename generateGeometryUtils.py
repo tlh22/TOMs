@@ -64,6 +64,14 @@ class generateGeometryUtils (QObject):
         cosb = math.cos(az)
         return cosa, cosb
 
+    def same_sign(x, y):
+        # https://stackoverflow.com/questions/45950285/python-challenge-comparing-signs-of-2-numbers-without-using-or
+        return abs(x) + abs(y) == abs(x + y)
+
+    def change_sign(x):
+        x *= -1
+        return x
+
     @staticmethod
     def turnToCL(Az1, Az2):
         # function to determine direction of turn to road centre    *** needs to be checked carefully ***
@@ -127,10 +135,10 @@ class generateGeometryUtils (QObject):
         bisectAz = prevAzA - diffAngle
 
         diffAngle_rad = math.radians(diffAngle)
-        # TOMsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), level=Qgis.Warning)
         distToPt = float(WidthRest) / math.cos(diffAngle_rad)
 
-        # TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In generate_display_geometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), level=Qgis.Warning)
 
         return bisectAz, distToPt
 

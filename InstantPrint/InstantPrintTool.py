@@ -304,6 +304,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if success != 0:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Export Failed"), self.tr("Failed to export the layout."))
 
+        # Added (TH 20-10-22)
+        QMessageBox.information(self.iface.mainWindow(), "Information",
+                                ("Printing completed"))
+
     def __print(self):
         layout_name = self.dialogui.comboBox_layouts.currentText()
         layout_item = self.projectLayoutManager.layoutByName(layout_name)

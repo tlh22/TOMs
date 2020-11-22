@@ -22,16 +22,16 @@ ALTER TABLE "moving_traffic"."Restrictions"
 ALTER TABLE "moving_traffic"."Restrictions"
     ALTER COLUMN "CreatePerson" SET NOT NULL;
 
-CREATE TRIGGER "set_create_details_access_restrictions" BEFORE INSERT OR UPDATE ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_access_restrictions" BEFORE INSERT ON "moving_traffic"."AccessRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_carriageway_markings" BEFORE INSERT OR UPDATE ON "moving_traffic"."CarriagewayMarkings" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_carriageway_markings" BEFORE INSERT ON "moving_traffic"."CarriagewayMarkings" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_highway_dedications" BEFORE INSERT OR UPDATE ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_highway_dedications" BEFORE INSERT ON "moving_traffic"."HighwayDedications" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_restrictions_for_vehicles" BEFORE INSERT OR UPDATE ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_restrictions_for_vehicles" BEFORE INSERT ON "moving_traffic"."RestrictionsForVehicles" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_special_designations" BEFORE INSERT OR UPDATE ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_special_designations" BEFORE INSERT ON "moving_traffic"."SpecialDesignations" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_turn_restrictions" BEFORE INSERT OR UPDATE ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_turn_restrictions" BEFORE INSERT ON "moving_traffic"."TurnRestrictions" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
-CREATE TRIGGER "set_create_details_mhtc_RoadLinks" BEFORE INSERT OR UPDATE ON "highways_network"."MHTC_RoadLinks" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
+CREATE TRIGGER "set_create_details_mhtc_RoadLinks" BEFORE INSERT ON "highways_network"."MHTC_RoadLinks" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();

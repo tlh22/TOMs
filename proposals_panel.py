@@ -92,6 +92,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.toolButton = QToolButton(self.iface.mainWindow())
         self.toolButton.setIcon(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"))
         self.toolButton.setCheckable(True)
+        self.toolButton.setToolTip("Print")
         self.printButtonAction = self.TOMsToolBar.addWidget(self.toolButton)
 
         self.toolButton.toggled.connect(self.__enablePrintTool)

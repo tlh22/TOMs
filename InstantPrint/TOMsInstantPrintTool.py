@@ -34,6 +34,7 @@ from qgis.gui import (
     )
 import os
 import re
+import sys, traceback
 
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
@@ -55,6 +56,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         self.tableNames = self.proposalsManager.tableNames
 
         InstantPrintTool.__init__(self, iface)
+        self.dialog.hidden.connect(self._InstantPrintTool__onDialogHidden)  # not quite sure why this has to be included ...
 
         # TH (180608) change signals to new functions
         self.dialogui.comboBox_layouts.currentIndexChanged.disconnect(self._InstantPrintTool__selectLayout)
@@ -62,6 +64,37 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.exportButton.clicked.disconnect(self._InstantPrintTool__export)
         self.exportButton.clicked.connect(self.TOMsExport)
+
+        try:
+            self.dialogui.comboBox_scale.scaleChanged.disconnect(self._InstantPrintTool__changeScale)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In TOMsInstantPrintTool.init. error: {}".format(e), level=Qgis.Warning)
+
+        self.dialogui.comboBox_scale.scaleChanged.connect(self.TOMsChangeScale)
+
+        # try setting atlas to be the current layout - and set scale (and possible remove any others)
+        self.initialisePrintdialog()
+
+        #self.dialogui.comboBox_scale.setEnabled(False)
+
+    def initialisePrintdialog(self):
+        # find the first atlas dialog and set it as current. Also amend the
+
+        for i in range(self.dialogui.comboBox_layouts.count()):
+            currLayout = self.dialogui.comboBox_layouts.itemData(i)
+            if currLayout.atlas():
+                self.dialogui.comboBox_layouts.setCurrentIndex(i)
+                # set to scale for layout
+                self.mapitem = currLayout.referenceMap()
+                layoutScale = self.mapitem.scale()
+                self.dialogui.comboBox_scale.setScale(layoutScale)
+
+                # TODO: somehow have to disable combobox for scaled atlas ...
+                self.dialogui.comboBox_scale.setEnabled(False)
+
+                TOMsMessageLog.logMessage("In initialisePrintdialog .. scale box notEnabled ...", level=Qgis.Info)
+
+                return
 
     def createAcceptedProposalcb(self):
         TOMsMessageLog.logMessage("In createAcceptedProposalcb", level=Qgis.Info)
@@ -87,26 +120,88 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         layout_name = self.dialogui.comboBox_layouts.currentText()
         self.layoutView = self.projectLayoutManager.layoutByName(layout_name)
+        self.layoutInterface = self.projectLayoutManager.layoutByName(layout_name)
 
-        layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
+        layout = self.dialogui.comboBox_layouts.itemData(activeIndex)
+        self.mapitem = layout.referenceMap()
+        layoutScale = self.mapitem.scale()
 
         self.exportButton.setEnabled(True)
 
         # self.layoutView = layoutView
         # self.mapitem = maps[0]
 
-        if self.layoutView.atlas():
-            # if len(maps) != 1:
-            # QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
-            # self.exportButton.setEnabled(False)
+        if layout.atlas().enabled():
+            TOMsMessageLog.logMessage("In TOMsSelectLayout. This one has an atlas ...", level=Qgis.Info)
+
+            # tidy - if required
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
+
+            # set to scale for layout
+            self.dialogui.comboBox_scale.setScale(layoutScale)
+            # perhaps call change
+            self.TOMsChangeScale()
+
+            # somehow have to disable combobox
             self.dialogui.comboBox_scale.setEnabled(False)
+            TOMsMessageLog.logMessage("In TOMsSelectLayout .. scale box notEnabled ...", level=Qgis.Info)
+
+            # sort out export process ...
+            try:
+                self.exportButton.clicked.disconnect(self._InstantPrintTool__export)
+                self.exportButton.clicked.connect(self.TOMsExport)
+            except TypeError:
+                TOMsMessageLog.logMessage("In TOMsSelectLayout. export tools already correctly connected ...",
+                                          level=Qgis.Warning)
+            else:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                TOMsMessageLog.logMessage(
+                    'In TOMsSelectLayout. export tools issue {}'.format(
+                        repr(traceback.extract_tb(exc_traceback))),
+                    level=Qgis.Warning)
+
         else:
+            TOMsMessageLog.logMessage("In TOMsSelectLayout. This one does NOT have an atlas ...", level=Qgis.Info)
             self.dialogui.comboBox_scale.setEnabled(True)
-            # self.dialogui.comboBox_scale.setScale(1 / self.mapitem.scale())
-            self.dialogui.comboBox_scale.setScale(1 / 500)  # composer may not have a "scale" item
-            self.__createRubberBand()
+            self.dialogui.comboBox_scale.setScale(layoutScale)
+            #self.dialogui.comboBox_scale.setScale(1 / 500)  # composer may not have a "scale" item
+            #self.__createRubberBand()
+
+            #self.layoutView = layoutView
+            #self.mapitem = layout.referenceMap()
+            #self.dialogui.comboBox_scale.setScale(self.mapitem.scale())
+            self._InstantPrintTool__createRubberBand()
+
+            try:
+                self.exportButton.clicked.disconnect(self.TOMsExport)
+                self.exportButton.clicked.connect(self._InstantPrintTool__export)
+            except TypeError:
+                TOMsMessageLog.logMessage("In TOMsSelectLayout. export tools already correctly connected ...",
+                                          level=Qgis.Warning)
+            else:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                TOMsMessageLog.logMessage(
+                    'In TOMsSelectLayout. export tools issue {}'.format(
+                        repr(traceback.extract_tb(exc_traceback))),
+                    level=Qgis.Warning)
+
+    def TOMsChangeScale(self):
+        TOMsMessageLog.logMessage("In TOMsChangeScale ... ", level=Qgis.Info)
+
+        self._InstantPrintTool__changeScale()
+
+        TOMsMessageLog.logMessage("In TOMsChangeScale. Checking for atlas ", level=Qgis.Info)
+
+        layout = self.dialogui.comboBox_layouts.itemData(self.dialogui.comboBox_layouts.currentIndex())
+        if layout.atlas().enabled():
+            if self.rubberband:
+                self.iface.mapCanvas().scene().removeItem(self.rubberband)
+            if self.oldrubberband:
+                self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
+            self.rubberband = None
+            TOMsMessageLog.logMessage("In TOMsChangeScale .. scale box notEnabled ...", level=Qgis.Info)
+            self.dialogui.comboBox_scale.setEnabled(False)
 
     def TOMsExport(self):
 
@@ -456,7 +551,7 @@ class printListDialog(printListDialog, QDialog):
 
         for feature in sorted(self.initValuesDict):
             if int(feature) == int(valueToAdd):
-                self.tilesToPrint[feature] = self.initValues[feature]
+                self.tilesToPrint[feature] = self.initValuesDict[feature]
                 TOMsMessageLog.logMessage(
                     "In TOMsTileListDialog. Adding: " + str(feature) + " ; " + str(len(self.tilesToPrint)),
                     level=Qgis.Info)
