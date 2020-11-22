@@ -103,3 +103,34 @@ The development is carried out by MHTC Ltd. On-going support has been provided b
 GNU GPLv3
 
 Git revision : $Format:%H$
+
+
+## Setting up the database
+
+Using Docker
+
+```bash
+# Start a postgis database
+docker run --name toms_postgis -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgis/postgis:12-2.5
+# Install the plpython extension
+docker exec toms_postgis bash -c 'apt-get update && apt-get install -y postgresql-plpython3-$PG_MAJOR'
+# Prepare roles
+docker exec toms_postgis psql -U postgres -c "
+CREATE ROLE toms_admin NOLOGIN;
+CREATE ROLE toms_operator NOLOGIN;
+CREATE ROLE toms_public NOLOGIN;
+"
+
+# Create the datamodel (initial)
+cat ./DATAMODEL/0001_initial_data_structure.sql | docker exec -i toms_postgis psql -U postgres
+
+# Import the data
+cat ./test/data/0002a_test_data_lookups.sql | docker exec -i toms_postgis psql -U postgres
+cat ./test/data/0002b1_test_data_main.sql | docker exec -i toms_postgis psql -U postgres
+cat ./test/data/0002b2_test_data_main.sql | docker exec -i toms_postgis psql -U postgres
+
+# Run the other migrations
+cat ./DATAMODEL/0002_permissions.sql | docker exec -i toms_postgis psql -U postgres
+cat ./DATAMODEL/0003_refresh_materialized_views.sql | docker exec -i toms_postgis psql -U postgres
+cat ./DATAMODEL/0004_labels-multipoints.sql | docker exec -i toms_postgis psql -U postgres
+```

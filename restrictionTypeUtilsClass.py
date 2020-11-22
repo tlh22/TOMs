@@ -72,6 +72,7 @@ import uuid
 try:
     import cv2
     cv2_available = True
+    cv2_available = False  # for office ...
 except ImportError:
     print('cv2 not available ...')
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
@@ -207,7 +208,22 @@ class TOMsLayers(QObject):
                               "TimePeriods",
                               "TimePeriodsInUse",
                               "TimePeriodsInUse_View",
-                              "GeomShapeGroupType"
+                              "GeomShapeGroupType",
+
+                                # for labels
+                               "Bays.label_pos",
+                               "Lines.label_pos",
+                               "Lines.label_loading_pos",
+                               "RestrictionPolygons.label_pos",
+                               "CPZs.label_pos",
+                               "ParkingTariffAreas.label_pos",
+                               "Bays.label_ldr",
+                              "Lines.label_ldr",
+                              "Lines.label_loading_ldr",
+                              "RestrictionPolygons.label_ldr",
+                              "CPZs.label_ldr",
+                              "ParkingTariffAreas.label_ldr"
+
                               ]
         self.TOMsLayerDict = {}
 
@@ -1297,3 +1313,17 @@ class RestrictionTypeUtilsMixin():
 
         return newFeature
 
+    def getPrimaryLabelLayer(self, currLayer):
+        # given a layer work out the primary layer
+
+        currLayerName = currLayer.name()
+        pointLocation = currLayerName.find (".")
+
+        if pointLocation == -1:
+            return currLayer
+        else:
+            primaryLayerName = currLayerName[:pointLocation]
+            TOMsMessageLog.logMessage(
+                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+                level=Qgis.Warning)
+            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]

@@ -192,14 +192,22 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 layerFilterString = layerFilterString + ")"
 
             TOMsMessageLog.logMessage("In updateMapCanvas. Layer: " + layerName + " Date Filter: " + layerFilterString, level=Qgis.Info)
-            self.tableNames.setLayer(layerName).dataProvider().setSubsetString(layerFilterString)
+            try:
+                self.tableNames.setLayer(layerName).dataProvider().setSubsetString(layerFilterString)
+            except Exception as e:
+                TOMsMessageLog.logMessage('updateMapCanvas: error in layer {}: {}'.format(layerName, e),
+                                          level=Qgis.Warning)
 
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
         for (layerID, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage("Clearing filter for layer: " + layerName, level=Qgis.Info)
-            self.tableNames.setLayer(layerName).dataProvider().setSubsetString('')
+            try:
+                self.tableNames.setLayer(layerName).dataProvider().setSubsetString('')
+            except Exception as e:
+                TOMsMessageLog.logMessage('clearRestrictionFilters: error in layer {}: {}'.format(layerName, e),
+                                          level=Qgis.Warning)
 
     def getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):  # TODO: possibly better with Proposal
 
