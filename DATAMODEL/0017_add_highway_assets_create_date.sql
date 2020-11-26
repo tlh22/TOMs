@@ -65,3 +65,4 @@ CREATE TRIGGER "set_create_details_BusStopSigns" BEFORE INSERT ON "highway_asset
 
 CREATE TRIGGER "set_create_details_telegraph_poles" BEFORE INSERT ON "highway_assets"."TelegraphPoles" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();
 
+CREATE TRIGGER "set_create_details_bridges" BEFORE INSERT ON "highway_assets"."Bridges" FOR EACH ROW EXECUTE FUNCTION "public"."set_create_details"();

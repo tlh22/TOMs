@@ -46,6 +46,8 @@ BEGIN
 			SELECT concat('BI_', to_char(nextval('highway_assets."Bins_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 	WHEN 'Bollards' THEN
 		   SELECT concat('BO_', to_char(nextval('highway_assets."Bollards_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+	WHEN 'Bridges' THEN
+		   SELECT concat('BR_', to_char(nextval('highway_assets."Bridges_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
 	WHEN 'BusShelters' THEN
 		   SELECT concat('BS_', to_char(nextval('highway_assets."BusShelters_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
     WHEN 'BusStopSigns' THEN
@@ -1564,3 +1566,39 @@ CREATE TRIGGER create_geometryid_telegraph_poles
     EXECUTE PROCEDURE public.create_geometryid_highway_assets();
 
 CREATE TRIGGER "set_last_update_details_telegraph_poles" BEFORE INSERT OR UPDATE ON "highway_assets"."TelegraphPoles" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
+-- Bridges
+--
+
+CREATE SEQUENCE "highway_assets"."Bridges_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE "highway_assets"."Bridges_id_seq" OWNER TO "postgres";
+
+CREATE TABLE "highway_assets"."Bridges" (
+    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."Bridges_id_seq"'::"regclass"), '00000000'::"text")),
+    "BridgeTypeID" integer NOT NULL,
+    "geom_point" "public"."geometry"(Polygon,27700)
+)
+INHERITS ("highway_assets"."HighwayAssets");
+
+ALTER TABLE ONLY "highway_assets"."Bridges"
+    ADD CONSTRAINT "Bridges_pkey" PRIMARY KEY ("RestrictionID");
+
+CREATE INDEX "sidx_Bridges_geom_point" ON "highway_assets"."Bridges" USING "gist" ("geom_point");
+
+CREATE TRIGGER create_geometryid_bridges
+    BEFORE INSERT
+    ON highway_assets."Bridges"
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.create_geometryid_highway_assets();
+
+CREATE TRIGGER "set_last_update_details_bridges" BEFORE INSERT OR UPDATE ON "highway_assets"."Bridges" FOR EACH ROW EXECUTE FUNCTION "public"."set_last_update_details"();
+
+ALTER TABLE ONLY "highway_assets"."Bridges"
+    ADD CONSTRAINT "HighwayAssets_BridgeTypeID_fkey" FOREIGN KEY ("BridgeTypeID") REFERENCES "highway_asset_lookups"."BridgeTypes"("Code");
+
