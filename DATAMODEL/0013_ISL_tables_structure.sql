@@ -142,7 +142,7 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE local_authority."EVCP_Asset_Regist
 ALTER TABLE "highway_assets"."StreetNamePlates"
     ADD COLUMN "StreetNamePlateAttachmentTypeID" integer;
 ALTER TABLE ONLY "highway_assets"."StreetNamePlates"
-    ADD CONSTRAINT "StreetNamePlates_SignsAttachmentTypes_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES compliance_lookups."SignAttachmentTypes"("Code");
+    ADD CONSTRAINT "StreetNamePlates_SignsAttachmentTypes_fkey" FOREIGN KEY ("StreetNamePlateAttachmentTypeID") REFERENCES compliance_lookups."SignAttachmentTypes"("Code");
 
 --
 -- TOC entry 516 (class 1259 OID 630951)
@@ -195,3 +195,4 @@ ALTER TABLE ONLY "local_authority"."ISL_HousingEstates" ALTER COLUMN "id" SET DE
 
 ALTER TABLE local_authority."ISL_HousingEstates"
     ADD PRIMARY KEY (id);
+
