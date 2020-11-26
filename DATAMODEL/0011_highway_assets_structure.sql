@@ -591,7 +591,8 @@ ALTER TABLE "highway_assets"."SubterraneanFeatures_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."SubterraneanFeatures" (
     "GeometryID" character varying(12) DEFAULT ('SF_'::"text" || "to_char"("nextval"('"highway_assets"."SubterraneanFeatures_id_seq"'::"regclass"), '00000000'::"text")),
-    "geom" "public"."geometry"(Point,27700),
+    "geom_point" "public"."geometry"(Point,27700),
+    "geom_linestring"."geometry"(LineString,27700),
     "SubterraneanFeatureTypeID" integer NOT NULL
 )
 INHERITS ("highway_assets"."HighwayAssets");
