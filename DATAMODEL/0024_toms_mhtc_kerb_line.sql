@@ -66,7 +66,7 @@ ALTER TABLE "mhtc_operations"."MHTC_Kerbline_id_seq" OWNER TO "postgres";
 CREATE TABLE "mhtc_operations"."MHTC_Kerblines"
 (
     geom geometry(LineString,27700) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"mhtc_operations"."MHTC_Kerbline_id_seq"'::"regclass"), '000000000'::"text"))
+    "GeometryID" character varying(12) DEFAULT ('K_'::"text" || "to_char"("nextval"('"mhtc_operations"."MHTC_Kerbline_id_seq"'::"regclass"), '000000000'::"text"))
 	)
 INHERITS ("moving_traffic"."Restrictions");
 
