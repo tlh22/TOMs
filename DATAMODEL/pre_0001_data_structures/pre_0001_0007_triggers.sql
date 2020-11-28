@@ -198,10 +198,10 @@ CREATE TRIGGER "set_last_update_details_ParkingTariffAreas"
     FOR EACH ROW
     EXECUTE PROCEDURE public.set_last_update_details();
 
-DROP TRIGGER "set_restriction_length_Bays" ON "toms"."Bays";
+--DROP TRIGGER "set_restriction_length_Bays" ON "toms"."Bays";
 CREATE TRIGGER "set_restriction_length_Bays" BEFORE INSERT OR UPDATE OF geom ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."set_restriction_length"();
 
-DROP TRIGGER "set_restriction_length_Lines" ON "toms"."Lines";
+--DROP TRIGGER "set_restriction_length_Lines" ON "toms"."Lines";
 CREATE TRIGGER "set_restriction_length_Lines" BEFORE INSERT OR UPDATE OF geom ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."set_restriction_length"();
 
 
