@@ -181,7 +181,14 @@ class searchBar():
 
         # Split out the components of the text
 
-        RoadName, localityName = searchText.split(',')
+        try:
+            RoadName, localityName = searchText.split(',')
+        except Exception as e:
+            TOMsMessageLog.logMessage('In doGoToItem: error spliting searchText: {}'.format(e),
+                                      level=Qgis.Warning)
+            RoadName = searchText
+            localityName = ''
+
         #amendedRoadName = RoadName.replace("'", "\'\'")
         #amendedLocalityName = localityName.replace("'", "\'\'")
         TOMsMessageLog.logMessage("In doGoToItem: RoadName: " + str(RoadName.replace("'", "\'\'")) + " locality: + " + str(localityName.replace("'", "\'\'")), level=Qgis.Info)
@@ -189,7 +196,7 @@ class searchBar():
         # Now search for the street
 
         queryString = "\"RoadName\" = \'" + RoadName.replace("'", "\'\'") + "\'"
-        if localityName:
+        if len(localityName) > 0:
             queryString = queryString + " AND \"Locality\" = \'" + localityName.replace("'", "\'\'").lstrip() + "\'"
 
         TOMsMessageLog.logMessage("In doGoToItem: queryString: " + str(queryString), level=Qgis.Info)
