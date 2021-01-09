@@ -253,6 +253,9 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         self.proposalsManager.clearRestrictionFilters()
 
+        # reset path names
+        self.tableNames.removePathFromLayerForms()
+
         pass
 
     def createProposalcb(self):

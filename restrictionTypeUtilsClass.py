@@ -290,6 +290,7 @@ class TOMsLayers(QObject):
         self.TOMsLayerDict = {}
 
     def getTOMsLayerListFromConfigFile(self, configFileObject):
+        self.configFileObject = configFileObject
         layers = configFileObject.getTOMsConfigElement('TOMsLayers', 'layers')
         if layers:
             self.TOMsLayerList = layers.split('\n')
@@ -297,6 +298,10 @@ class TOMsLayers(QObject):
 
         self.TOMsLayersNotFound.emit()
         return False
+
+    def getTOMsFormPathFromConfigFile(self, configFileObject):
+        form_path = configFileObject.getTOMsConfigElement('TOMsLayers', 'form_path')
+        return form_path
 
     def getLayers(self, configFileObject):
 
@@ -313,19 +318,16 @@ class TOMsLayers(QObject):
         else:
 
             if not self.getTOMsLayerListFromConfigFile(configFileObject):
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Problem with TOMs config file ..."))
                 self.TOMsLayersNotFound.emit()
+                found = False
 
-            try:
-                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except None:
+            self.formPath = self.getTOMsFormPathFromConfigFile(configFileObject)
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. formPath is {} ...".format(self.formPath),
+                                      level=Qgis.Warning)
+            if self.formPath is None:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
-                formPath = None
-
-            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
-
-            if not formPath:
-                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
+                self.TOMsLayersNotFound.emit()
                 found = False
 
         if found:
@@ -336,11 +338,11 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Info)
-                    if len(formPath)>0 and len(ui_path)>0:
+                                              level=Qgis.Warning)
+                    if len(self.formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
-                        path_absolute = os.path.abspath(os.path.join(formPath, os.path.basename(ui_path)))
+                        path_absolute = os.path.abspath(os.path.join(self.formPath, os.path.basename(ui_path)))
                         if not os.path.isfile(path_absolute):
                             TOMsMessageLog.logMessage("In TOMsLayers:getLayers.form path not found for layer {} ...".format(layer),
                                                       level=Qgis.Warning)
@@ -382,11 +384,6 @@ class TOMsLayers(QObject):
 
         else:
 
-            try:
-                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except Exception as e:
-                formPath = None
-
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
@@ -395,7 +392,7 @@ class TOMsLayers(QObject):
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(layer, ui_path),
                                               level=Qgis.Info)
-                    if len(formPath)>0 and len(ui_path)>0:
+                    if len(self.formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
                         formName = os.path.basename(ui_path)
