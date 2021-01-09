@@ -43,7 +43,7 @@ from TOMs.manage_restriction_details import manageRestrictionDetails
 from TOMs.search_bar import searchBar
 from TOMs.InstantPrint.TOMsInstantPrintTool import TOMsInstantPrintTool
 
-from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
+from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers, TOMsConfigFile
 from .core.TOMsTransaction import (TOMsTransaction)
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
@@ -150,7 +150,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", level=Qgis.Info)
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
 
-        self.tableNames.getLayers()
+        self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
+        self.TOMsConfigFileObject.TOMsConfigFileNotFound.connect(self.setCloseTOMsFlag)
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile()
+
+        self.tableNames.getLayers(self.TOMsConfigFileObject)
 
         if self.closeTOMs:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start TOMs ..."))

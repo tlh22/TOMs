@@ -68,6 +68,7 @@ from TOMs.ui.TOMsCamera import (formCamera)
 from abc import ABCMeta
 import datetime
 import uuid
+import configparser
 
 try:
     import cv2
@@ -150,6 +151,63 @@ class TOMsParams(QObject):
     def setParam(self, param):
         return self.TOMsParamsDict.get(param)
 
+class TOMsConfigFile(QObject):
+
+    TOMsConfigFileNotFound = pyqtSignal()
+    """ signal will be emitted if TOMs config file is not found """
+
+    def __init__(self, iface):
+        QObject.__init__(self)
+        self.iface = iface
+
+        TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
+
+    def initialiseTOMsConfigFile(self):
+
+        # function to open file "toms.conf". Assume path is same as project file - unless environ variable is set
+
+        # check for environ variable
+        config_path = None
+        try:
+            config_path = os.environ.get('TOMs_CONFIG_PATH')
+        except None:
+            TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Warning)
+            # config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
+
+        if config_path is None:
+            config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_home')
+
+        config_file = os.path.abspath(os.path.join(config_path, 'TOMs.conf'))
+        TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Warning)
+
+        if not os.path.isfile(config_file):
+            reply = QMessageBox.information(None, "Information", "TOMs configuration file not found. Stopping ...",
+                                            QMessageBox.Ok)
+            self.TOMsConfigFileNotFound.emit()
+
+        # now read file
+        self.readTOMsConfigFile(config_file)
+
+    def readTOMsConfigFile(self, config_file):
+
+        self.config = configparser.ConfigParser()
+        try:
+            self.config.read(config_file)
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In TOMsConfigFile.init. Error reading config file ... {}".format(e),
+                level=Qgis.Warning)
+            self.TOMsConfigFileNotFound.emit()
+
+    def getTOMsConfigElement(self, section, value):
+        item = None
+        try:
+            item = self.config[section][value]
+        except KeyError:
+            TOMsMessageLog.logMessage("In getTOMsConfigElement. not able to find: {}:{}".format(section, value), level=Qgis.Warning)
+
+        return item
+
 class TOMsLayers(QObject):
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
@@ -158,12 +216,14 @@ class TOMsLayers(QObject):
 
     def __init__(self, iface):
         QObject.__init__(self)
+
         self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
         #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        """
         self.TOMsLayerList = ["Proposals",
                          "ProposalStatusTypes",
                          "ActionOnProposalAcceptanceTypes",
@@ -225,9 +285,20 @@ class TOMsLayers(QObject):
                               "ParkingTariffAreas.label_ldr"
 
                               ]
+                              """
+
         self.TOMsLayerDict = {}
 
-    def getLayers(self):
+    def getTOMsLayerListFromConfigFile(self, configFileObject):
+        layers = configFileObject.getTOMsConfigElement('TOMsLayers', 'layers')
+        if layers:
+            self.TOMsLayerList = layers.split('\n')
+            return True
+
+        self.TOMsLayersNotFound.emit()
+        return False
+
+    def getLayers(self, configFileObject):
 
         TOMsMessageLog.logMessage("In TOMSLayers.getLayers ...", level=Qgis.Info)
         found = True
@@ -241,9 +312,12 @@ class TOMsLayers(QObject):
 
         else:
 
+            if not self.getTOMsLayerListFromConfigFile(configFileObject):
+                self.TOMsLayersNotFound.emit()
+
             try:
                 formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except:
+            except None:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
                 formPath = None
 
@@ -310,7 +384,7 @@ class TOMsLayers(QObject):
 
             try:
                 formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except:
+            except Exception as e:
                 formPath = None
 
             for layer in self.TOMsLayerList:
