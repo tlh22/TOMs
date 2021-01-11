@@ -70,6 +70,7 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
 class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
+    pixmapUpdated = pyqtSignal(QPixmap)
 
     def __init__(self, path_absolute, currFileName, cameraNr=None):
         QObject.__init__(self)
@@ -83,8 +84,9 @@ class formCamera(QObject):
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
         TOMsMessageLog.logMessage("In formCamera::displayFrame ... ", level=Qgis.Info)
-        self.FIELD.setPixmap(pixmap)
-        self.FIELD.setScaledContents(True)
+        #self.FIELD.setPixmap(pixmap)
+        #self.FIELD.setScaledContents(True)
+        self.pixmapUpdated.emit(pixmap)
         QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
 
     def useCamera(self, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, FIELD):
@@ -160,14 +162,15 @@ class formCamera(QObject):
             self.photoTaken = False
 
     def resetPhoto(self):
-        TOMsMessageLog.logMessage("In formCamera::resetPhoto ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::resetPhoto ... ", level=Qgis.Warning)
 
         pixmap = QPixmap(self.currFileName)
         if pixmap.isNull():
             pass
         else:
-            self.FIELD.setPixmap(pixmap)
-            self.FIELD.setScaledContents(True)
+            #self.FIELD.setPixmap(pixmap)
+            #self.FIELD.setScaledContents(True)
+            self.pixmapUpdated.emit(pixmap)
 
 
 class cvCamera(QThread):
