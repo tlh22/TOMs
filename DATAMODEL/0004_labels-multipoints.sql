@@ -132,7 +132,11 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     for sheet_geom in sheets_geoms:
         # get the intersection between the sheet and the geometry
         plan = plpy.prepare("SELECT ST_Intersection($1::geometry, $2::geometry) as i", ['text', 'text'])
-        intersection = plpy.execute(plan, [main_geom, sheet_geom])[0]["i"]
+        try:
+            intersection = plpy.execute(plan, [main_geom, sheet_geom])[0]["i"]
+        except Exception as e:
+            plpy.info('ensure_label_points error calculating intersection between map tile and the geometry: {})'.format(e))
+            intersection = main_geom
 
         # get the center (if a line) or the centroid (if not a line)
         # TODO : manage edge case when a feature exits and re-enterds a sheet (we get a MultiLineString, and should return center point of each instead of centroid)
@@ -171,7 +175,8 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
         plan = plpy.prepare('SELECT DEGREES(ATAN((ST_Y($2::geometry)-ST_Y($1::geometry)) / (ST_X($2::geometry)-ST_X($1::geometry)))) as p', ['text', 'text'])
         try:
             azimuth = plpy.execute(plan, [point, next_point])[0]['p']
-        except:
+        except Exception as e:
+            plpy.info('ensure_label_points error calculating orientation of label: {})'.format(e))
             azimuth = 0
 
         label_rot = azimuth
@@ -205,7 +210,14 @@ def update_leader_lines(main_geom, label_geom):
             ON ST_Intersects(mg.geom, lblpos.geom)
         ) as sub2 ON sub2.id = sub1.id
     ''', ['text', 'text'])
-    return plpy.execute(plan, [main_geom, label_geom])[0]["p"]
+
+    try:
+        result = plpy.execute(plan, [main_geom, label_geom])[0]["p"]
+    except Exception as e:
+        plpy.info('update_leader_lines. error calculating leader: {})'.format(e))
+        result = OLD["label_ldr"]
+
+    return result
 
 # Logic for the primary label
 NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
