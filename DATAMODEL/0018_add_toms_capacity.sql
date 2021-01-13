@@ -17,6 +17,15 @@ ALTER TABLE ONLY "mhtc_operations"."project_parameters"
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mhtc_operations"."project_parameters" TO toms_admin;
 GRANT SELECT ON TABLE "mhtc_operations"."project_parameters" TO toms_operator, toms_public;
 
+--
+--DROP FUNCTION IF EXISTS mhtc_operations."getParameter";
+
+CREATE OR REPLACE FUNCTION mhtc_operations."getParameter"(param text) RETURNS text AS
+'SELECT "Value"
+FROM mhtc_operations."project_parameters"
+WHERE "Field" = $1'
+LANGUAGE SQL;
+
 -- main trigger
 
 CREATE OR REPLACE FUNCTION "public"."update_capacity"() RETURNS "trigger"
