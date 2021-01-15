@@ -319,11 +319,6 @@ def getBayTimePeriodLabelText(feature, parent):
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
     except Exception as e:
         TOMsMessageLog.logMessage('getBayTimePeriodLabelText: error in expression function: {}'.format(e), level=Qgis.Warning)
-        TOMsMessageLog.logMessage('getBayTimePeriodLabelText', level=Qgis.Warning)
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        TOMsMessageLog.logMessage(
-            'getBayTimePeriodLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            level=Qgis.Warning)
 
     #TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:" + str(timePeriodText), level=Qgis.Info)
 

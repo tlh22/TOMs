@@ -99,7 +99,8 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     """
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
-    plpy.info('ensure_label_points 0: GeometryID:{})'.format(OLD["GeometryID"]))
+    if OLD is not None:
+        plpy.info('ensure_label_points 0: GeometryID:{})'.format(OLD["GeometryID"]))
     plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
@@ -223,10 +224,25 @@ def update_leader_lines(main_geom, label_geom):
 NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
+# check to see whether or not the label has moved. If so, set rotation to None
+if OLD is not None:
+    if NEW["label_pos"] != OLD["label_pos"]:
+        NEW["label_Rotation"] = None
+
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
     NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"], NEW["labelLoading_Rotation"])
     NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
+
+    # check to see whether or not the label has moved. If so, set rotation to None
+    if OLD is not None:
+        if NEW["label_loading_pos"] != OLD["label_loading_pos"]:
+            NEW["labelLoading_Rotation"] = None
+
+# check to see whether or not the label has moved. If so, set rotation to None
+if OLD is not None:
+    if NEW["label_pos"] != OLD["label_pos"]:
+        NEW["label_Rotation"] = None
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
