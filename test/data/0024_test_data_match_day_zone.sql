@@ -9,18 +9,15 @@ INSERT INTO "toms"."MatchDayEventDayZones" ("RestrictionID", "geom", "Restrictio
 -- Update restrictions
 UPDATE toms."Bays" AS r
 SET "MatchDayEventDayZone" = c."CPZ", "MatchDayTimePeriodID" = c."TimePeriodID"
-FROM "toms"."ControlledParkingZones" c
-WHERE ST_WITHIN (r.geom, c.geom)
-AND c."CPZ" = 'ED';
+FROM "toms"."MatchDayEventDayZones" c
+WHERE ST_WITHIN (r.geom, c.geom);
 
 UPDATE toms."Lines" AS r
 SET "MatchDayEventDayZone" = c."CPZ", "MatchDayTimePeriodID" = c."TimePeriodID"
-FROM "toms"."ControlledParkingZones" c
-WHERE ST_WITHIN (r.geom, c.geom)
-AND c."CPZ" = 'ED';
+FROM "toms"."MatchDayEventDayZones" c
+WHERE ST_WITHIN (r.geom, c.geom);
 
 UPDATE toms."RestrictionPolygons" AS r
 SET "MatchDayEventDayZone" = c."CPZ", "MatchDayTimePeriodID" = c."TimePeriodID"
-FROM "toms"."ControlledParkingZones" c
-WHERE ST_WITHIN (r.geom, c.geom)
-AND c."CPZ" = 'ED';
+FROM "toms"."MatchDayEventDayZones" c
+WHERE ST_WITHIN (r.geom, c.geom);

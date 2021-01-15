@@ -832,7 +832,7 @@ class generateGeometryUtils (QObject):
 
         TOMsMessageLog.logMessage(
             "In getWaitingLoadingRestrictionLabelText ({}): wait_cpz: {}; wait_res: {}; load: {}; ed: {}".format(geometryID, CPZWaitingTimeID, waitingTimeID, loadingTimeID, matchDayTimePeriodID),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         if CPZWaitingTimeID:
             #TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
@@ -844,7 +844,7 @@ class generateGeometryUtils (QObject):
             cpzMatchDayTimePeriodID = generateGeometryUtils.getEDWaitingTimeID(restrictionEDZ)
             TOMsMessageLog.logMessage(
                 "In getWaitingLoadingRestrictionLabelText: ED: {}; restriction: {}".format(cpzMatchDayTimePeriodID, matchDayTimePeriodID),
-                level=Qgis.Warning)
+                level=Qgis.Info)
             if cpzMatchDayTimePeriodID != matchDayTimePeriodID:
                 matchDayTimePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, matchDayTimePeriodID)
                 if waitDesc:
@@ -860,7 +860,7 @@ class generateGeometryUtils (QObject):
             else:
                 waitDesc = "{}".format(additionalConditionDesc)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
 
     @staticmethod

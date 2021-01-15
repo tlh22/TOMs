@@ -101,6 +101,40 @@ CREATE INDEX MatchDayEventDayZones_geom_idx
     (geom)
     TABLESPACE pg_default;
 
+-- add to GeometryID function
+
+CREATE OR REPLACE FUNCTION "public"."create_geometryid"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    AS $$
+DECLARE
+	 nextSeqVal varchar := '';
+BEGIN
+
+	CASE TG_TABLE_NAME
+	WHEN 'Bays' THEN
+			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'Lines' THEN
+		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'Signs' THEN
+		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'RestrictionPolygons' THEN
+		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'ControlledParkingZones' THEN
+		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'ParkingTariffAreas' THEN
+		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	WHEN 'MatchDayEventDayZones' THEN
+		   SELECT concat('E_', to_char(nextval('toms."MatchDayEventDayZones_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+	ELSE
+	    nextSeqVal = 'U';
+	END CASE;
+
+    NEW."GeometryID" := nextSeqVal;
+	RETURN NEW;
+
+END;
+$$;
+
 -- Trigger: create_geometryid_bays
 
 -- DROP TRIGGER create_geometryid_bays ON toms."MatchDayEventDayZones";
@@ -155,3 +189,5 @@ ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "MatchDayEventDayZone" character varying(40) COLLATE pg_catalog."default";
 ALTER TABLE ONLY "toms"."RestrictionPolygons"
     ADD CONSTRAINT "RestrictionPolygons_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("CPZ");
+
+-- ** Could also add to TOMs
