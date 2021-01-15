@@ -806,7 +806,8 @@ class RestrictionTypeUtilsMixin():
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
             #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
-        currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentED, edWaitingTimeID = generateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
@@ -820,7 +821,7 @@ class RestrictionTypeUtilsMixin():
             #currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
             currRestriction.setAttribute("GeomShapeID", self.readLastUsedDetails("Lines", "GeomShapeID", 10))
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
@@ -833,7 +834,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("NrBays", -1)
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
 
             currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
@@ -857,7 +858,7 @@ class RestrictionTypeUtilsMixin():
             #currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
             currRestriction.setAttribute("RestrictionTypeID",
                                          self.readLastUsedDetails("RestrictionPolygons", "RestrictionTypeID", 4))
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
 
         return
 
@@ -878,10 +879,13 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentED, edWaitingTimeID = generateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                  currRestrictionLayer.fields().indexFromName("MatchDayEventDayZone"), currentED)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRoadMarkingsFaded"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRestrictionSignIssue"), None)
