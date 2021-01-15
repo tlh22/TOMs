@@ -165,7 +165,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "public";
 -- Name: create_geometryid(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION "public"."create_geometryid"() RETURNS "trigger"
+CREATE OR REPLACE FUNCTION "public"."create_geometryid"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     AS $$
 DECLARE
