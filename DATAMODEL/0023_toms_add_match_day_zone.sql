@@ -1,5 +1,7 @@
 -- for the moment, keep things simple. Copy CPZ table and add a new column relating to MatchDay zone into restriction tables ...
 
+-- ** a better way might be to include all all zones include RestrictionPolygons and then amend the functions to pick up the CPZ/PTA/ED details
+
 DROP TABLE IF EXISTS toms."MatchDayEventDayZones" CASCADE;
 
 -- SEQUENCE: toms.MatchDayEventDayZones_id_seq
