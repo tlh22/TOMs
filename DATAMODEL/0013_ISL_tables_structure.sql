@@ -62,7 +62,7 @@ BEGIN
 END;
 $BODY$;
 
-ALTER FUNCTION public.create_geometryid_highway_assets()
+ALTER FUNCTION public.create_geometryid_isl_electrical_items()
     OWNER TO postgres;
 
 CREATE TRIGGER "create_geometryid_isl_electrical_items" BEFORE INSERT ON local_authority."ISL_Electrical_Items" FOR EACH ROW EXECUTE FUNCTION "public"."create_geometryid_isl_electrical_items"();
@@ -137,12 +137,6 @@ CREATE TRIGGER "set_last_update_details_EVCP_Asset_Register"
     EXECUTE PROCEDURE public.set_last_update_details();
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE local_authority."EVCP_Asset_Register" TO toms_operator, toms_admin;
-
---
-ALTER TABLE "highway_assets"."StreetNamePlates"
-    ADD COLUMN "StreetNamePlateAttachmentTypeID" integer;
-ALTER TABLE ONLY "highway_assets"."StreetNamePlates"
-    ADD CONSTRAINT "StreetNamePlates_SignsAttachmentTypes_fkey" FOREIGN KEY ("StreetNamePlateAttachmentTypeID") REFERENCES compliance_lookups."SignAttachmentTypes"("Code");
 
 --
 -- TOC entry 516 (class 1259 OID 630951)
