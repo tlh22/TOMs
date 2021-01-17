@@ -411,7 +411,7 @@ CREATE MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_
    FROM "moving_traffic_lookups"."CarriagewayMarkingTypesInUse",
     "moving_traffic_lookups"."CarriagewayMarkingTypes"
   WHERE ("CarriagewayMarkingTypesInUse"."Code" = "CarriagewayMarkingTypes"."Code")
-  WITH NO DATA;
+  WITH DATA;
 
 
 ALTER TABLE "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View" OWNER TO "postgres";

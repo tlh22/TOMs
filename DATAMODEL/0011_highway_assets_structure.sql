@@ -347,7 +347,9 @@ ALTER TABLE "highway_assets"."CrossingPoints_id_seq" OWNER TO "postgres";
 CREATE TABLE "highway_assets"."CrossingPoints" (
     "GeometryID" character varying(12) DEFAULT ('CR_'::"text" || "to_char"("nextval"('"highway_assets"."CrossingPoints_id_seq"'::"regclass"), '00000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
-    "CrossingPointTypeID" integer NOT NULL
+    "CrossingPointTypeID" integer NOT NULL,
+    "AzimuthToRoadCentreLine" double precision,
+    "GeomShapeID" integer
 )
 INHERITS ("highway_assets"."HighwayAssets");
 
@@ -592,7 +594,7 @@ ALTER TABLE "highway_assets"."SubterraneanFeatures_id_seq" OWNER TO "postgres";
 CREATE TABLE "highway_assets"."SubterraneanFeatures" (
     "GeometryID" character varying(12) DEFAULT ('SF_'::"text" || "to_char"("nextval"('"highway_assets"."SubterraneanFeatures_id_seq"'::"regclass"), '00000000'::"text")),
     "geom_point" "public"."geometry"(Point,27700),
-    "geom_linestring"."geometry"(LineString,27700),
+    "geom_linestring" "public"."geometry"(LineString,27700),
     "SubterraneanFeatureTypeID" integer NOT NULL
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -939,14 +941,12 @@ CREATE INDEX "sidx_Benches_geom" ON "highway_assets"."Benches" USING "gist" ("ge
 
 CREATE INDEX "sidx_Bins_geom_point" ON "highway_assets"."Bins" USING "gist" ("geom_point");
 
-
 --
 -- TOC entry 4308 (class 1259 OID 508600)
 -- Name: sidx_Bins_geom_polygon; Type: INDEX; Schema: highway_assets; Owner: postgres
 --
 
 CREATE INDEX "sidx_Bins_geom_polygon" ON "highway_assets"."Bins" USING "gist" ("geom_polygon");
-
 
 --
 -- TOC entry 4311 (class 1259 OID 508601)
@@ -955,14 +955,12 @@ CREATE INDEX "sidx_Bins_geom_polygon" ON "highway_assets"."Bins" USING "gist" ("
 
 CREATE INDEX "sidx_Bollards_geom_linestring" ON "highway_assets"."Bollards" USING "gist" ("geom_linestring");
 
-
 --
 -- TOC entry 4312 (class 1259 OID 508602)
 -- Name: sidx_Bollards_geom_point; Type: INDEX; Schema: highway_assets; Owner: postgres
 --
 
 CREATE INDEX "sidx_Bollards_geom_point" ON "highway_assets"."Bollards" USING "gist" ("geom_point");
-
 
 --
 -- TOC entry 4315 (class 1259 OID 508603)
@@ -1001,8 +999,8 @@ CREATE INDEX "sidx_CrossingPoints_geom" ON "highway_assets"."CrossingPoints" USI
 -- Name: sidx_CycleParking_geom; Type: INDEX; Schema: highway_assets; Owner: postgres
 --
 
-CREATE INDEX "sidx_CycleParking_geom" ON "highway_assets"."CycleParking" USING "gist" ("geom");
-
+CREATE INDEX "sidx_CycleParking_geom_point" ON "highway_assets"."CycleParking" USING "gist" ("geom_point");
+CREATE INDEX "sidx_CycleParking_geom_linestring" ON "highway_assets"."CycleParking" USING "gist" ("geom_linestring");
 
 --
 -- TOC entry 4330 (class 1259 OID 508608)
@@ -1049,8 +1047,8 @@ CREATE INDEX "sidx_StreetNamePlates_geom" ON "highway_assets"."StreetNamePlates"
 -- Name: sidx_SubterraneanFeatures_geom; Type: INDEX; Schema: highway_assets; Owner: postgres
 --
 
-CREATE INDEX "sidx_SubterraneanFeatures_geom" ON "highway_assets"."SubterraneanFeatures" USING "gist" ("geom");
-
+CREATE INDEX "sidx_SubterraneanFeatures_geom_point" ON "highway_assets"."SubterraneanFeatures" USING "gist" ("geom_point");
+CREATE INDEX "sidx_SubterraneanFeatures_geom_linestring" ON "highway_assets"."SubterraneanFeatures" USING "gist" ("geom_linestring");
 
 --
 -- TOC entry 4348 (class 1259 OID 508614)
@@ -1414,6 +1412,8 @@ ALTER TABLE ONLY "highway_assets"."CommunicationCabinets"
 ALTER TABLE ONLY "highway_assets"."CrossingPoints"
     ADD CONSTRAINT "HighwayAssets_CrossingPointTypeID_fkey" FOREIGN KEY ("CrossingPointTypeID") REFERENCES "highway_asset_lookups"."CrossingPointTypes"("Code");
 
+ALTER TABLE ONLY "highway_assets"."CrossingPoints"
+    ADD CONSTRAINT "CrossingPoints_GeomShapeID_fkey" FOREIGN KEY ("GeomShapeID") REFERENCES toms_lookups."RestrictionGeomShapeTypes" ("Code");
 
 --
 -- TOC entry 4363 (class 2606 OID 508540)

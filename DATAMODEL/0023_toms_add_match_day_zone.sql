@@ -46,7 +46,7 @@ CREATE TABLE toms."MatchDayEventDayZones"
     "label_TextChanged" character varying(254) COLLATE pg_catalog."default",
     "OpenDate" date,
     "CloseDate" date,
-    "CPZ" character varying(40) COLLATE pg_catalog."default",
+    "EDZ" character varying(40) COLLATE pg_catalog."default",
     "LastUpdateDateTime" timestamp without time zone NOT NULL,
     "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL,
     "LabelText" character varying(254) COLLATE pg_catalog."default",
@@ -86,12 +86,16 @@ ALTER TABLE toms."MatchDayEventDayZones"
     OWNER to postgres;
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE toms."MatchDayEventDayZones" TO toms_admin;
-
 GRANT SELECT ON TABLE toms."MatchDayEventDayZones" TO toms_public;
-
 GRANT SELECT ON TABLE toms."MatchDayEventDayZones" TO toms_operator;
-
 GRANT ALL ON TABLE toms."MatchDayEventDayZones" TO postgres;
+
+ALTER TABLE toms."MatchDayEventDayZones"
+    ALTER COLUMN "EDZ" SET NOT NULL;
+
+ALTER TABLE toms."MatchDayEventDayZones"
+    ADD CONSTRAINT "EDZ" UNIQUE ("EDZ");
+
 -- Index: controlledparkingzones_geom_idx
 
 -- DROP INDEX toms.controlledparkingzones_geom_idx;
@@ -178,16 +182,16 @@ CREATE TRIGGER "set_last_update_details_MatchDayEventDayZones"
 ALTER TABLE toms."Bays"
     ADD COLUMN "MatchDayEventDayZone" character varying(40) COLLATE pg_catalog."default";
 ALTER TABLE ONLY "toms"."Bays"
-    ADD CONSTRAINT "Bays_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("CPZ");
+    ADD CONSTRAINT "Bays_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("EDZ");
 
 ALTER TABLE toms."Lines"
     ADD COLUMN "MatchDayEventDayZone" character varying(40) COLLATE pg_catalog."default";
 ALTER TABLE ONLY "toms"."Lines"
-    ADD CONSTRAINT "Lines_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("CPZ");
+    ADD CONSTRAINT "Lines_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("EDZ");
 
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "MatchDayEventDayZone" character varying(40) COLLATE pg_catalog."default";
 ALTER TABLE ONLY "toms"."RestrictionPolygons"
-    ADD CONSTRAINT "RestrictionPolygons_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("CPZ");
+    ADD CONSTRAINT "RestrictionPolygons_MatchDayEventDayZone_fkey" FOREIGN KEY ("MatchDayEventDayZone") REFERENCES "toms"."MatchDayEventDayZones"("EDZ");
 
 -- ** Could also add to TOMs

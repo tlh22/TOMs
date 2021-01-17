@@ -29,6 +29,10 @@ ALTER TABLE "highway_asset_lookups"."MotorcycleParkingFacilityTypes" OWNER TO "p
 ALTER TABLE ONLY "highway_asset_lookups"."MotorcycleParkingFacilityTypes"
     ADD CONSTRAINT "MotorcycleParkingFacilityTypes_pkey" PRIMARY KEY ("Code");
 
+GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE highway_asset_lookups."MotorcycleParkingFacilityTypes" TO toms_admin;
+GRANT ALL ON TABLE highway_asset_lookups."MotorcycleParkingFacilityTypes" TO postgres;
+GRANT SELECT ON TABLE highway_asset_lookups."MotorcycleParkingFacilityTypes" TO toms_operator, toms_public;
+
 --
 
 CREATE TABLE highway_assets."MotorcycleParkingFacilities"
@@ -68,11 +72,8 @@ ALTER TABLE highway_assets."MotorcycleParkingFacilities"
     OWNER to postgres;
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE highway_assets."MotorcycleParkingFacilities" TO toms_admin;
-
 GRANT ALL ON TABLE highway_assets."MotorcycleParkingFacilities" TO postgres;
-
 GRANT SELECT ON TABLE highway_assets."MotorcycleParkingFacilities" TO toms_public;
-
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE highway_assets."MotorcycleParkingFacilities" TO toms_operator;
 -- Index: sidx_CycleParking_geom
 

@@ -811,6 +811,7 @@ class RestrictionTypeUtilsMixin():
 
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
+            currRestriction.setAttribute("MatchDayEventDayZone", currentED)
 
         # TODO: get the last used values ... look at field ...
 
