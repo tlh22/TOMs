@@ -349,7 +349,7 @@ CREATE TABLE "highway_assets"."CrossingPoints" (
     "geom" "public"."geometry"(LineString,27700),
     "CrossingPointTypeID" integer NOT NULL,
     "AzimuthToRoadCentreLine" double precision,
-    "GeomShapeID" integer,
+    "GeomShapeID" integer
 )
 INHERITS ("highway_assets"."HighwayAssets");
 
