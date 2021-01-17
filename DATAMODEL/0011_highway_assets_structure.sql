@@ -347,7 +347,9 @@ ALTER TABLE "highway_assets"."CrossingPoints_id_seq" OWNER TO "postgres";
 CREATE TABLE "highway_assets"."CrossingPoints" (
     "GeometryID" character varying(12) DEFAULT ('CR_'::"text" || "to_char"("nextval"('"highway_assets"."CrossingPoints_id_seq"'::"regclass"), '00000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
-    "CrossingPointTypeID" integer NOT NULL
+    "CrossingPointTypeID" integer NOT NULL,
+    "AzimuthToRoadCentreLine" double precision,
+    "GeomShapeID" integer,
 )
 INHERITS ("highway_assets"."HighwayAssets");
 
@@ -1410,6 +1412,8 @@ ALTER TABLE ONLY "highway_assets"."CommunicationCabinets"
 ALTER TABLE ONLY "highway_assets"."CrossingPoints"
     ADD CONSTRAINT "HighwayAssets_CrossingPointTypeID_fkey" FOREIGN KEY ("CrossingPointTypeID") REFERENCES "highway_asset_lookups"."CrossingPointTypes"("Code");
 
+ALTER TABLE ONLY "highway_assets"."CrossingPoints"
+    ADD CONSTRAINT "CrossingPoints_GeomShapeID_fkey" FOREIGN KEY ("GeomShapeID") REFERENCES toms_lookups."RestrictionGeomShapeTypes" ("Code");
 
 --
 -- TOC entry 4363 (class 2606 OID 508540)
