@@ -87,3 +87,8 @@ CREATE UNIQUE INDEX "idx_StreetGazetteerView_id"
 
 CREATE INDEX idx_street_name
 ON local_authority."StreetGazetteerView"("RoadName");
+
+GRANT SELECT ON TABLE local_authority."StreetGazetteerView" TO toms_admin;
+GRANT ALL ON TABLE local_authority."StreetGazetteerView" TO postgres;
+GRANT SELECT ON TABLE local_authority."StreetGazetteerView" TO toms_public;
+GRANT SELECT ON TABLE local_authority."StreetGazetteerView" TO toms_operator;
