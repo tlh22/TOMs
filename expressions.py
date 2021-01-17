@@ -319,11 +319,6 @@ def getBayTimePeriodLabelText(feature, parent):
         maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
     except Exception as e:
         TOMsMessageLog.logMessage('getBayTimePeriodLabelText: error in expression function: {}'.format(e), level=Qgis.Warning)
-        TOMsMessageLog.logMessage('getBayTimePeriodLabelText', level=Qgis.Warning)
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        TOMsMessageLog.logMessage(
-            'getBayTimePeriodLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-            level=Qgis.Warning)
 
     #TOMsMessageLog.logMessage("In getBayTimePeriodLabelText:" + str(timePeriodText), level=Qgis.Info)
 
@@ -410,7 +405,7 @@ def getBayLabelText(feature, parent):
 def getCPZ(feature, parent):
 	# Returns the CPZ for the feature - or None
     try:
-        cpzNr, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(feature)
+        cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(feature)
     except Exception as e:
         TOMsMessageLog.logMessage('getCPZ: error in expression function: {}'.format(e), level=Qgis.Warning)
         """TOMsMessageLog.logMessage('getCPZ', level=Qgis.Info)

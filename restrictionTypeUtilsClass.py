@@ -68,6 +68,7 @@ from TOMs.ui.TOMsCamera import (formCamera)
 from abc import ABCMeta
 import datetime
 import uuid
+import configparser
 
 try:
     import cv2
@@ -150,6 +151,63 @@ class TOMsParams(QObject):
     def setParam(self, param):
         return self.TOMsParamsDict.get(param)
 
+class TOMsConfigFile(QObject):
+
+    TOMsConfigFileNotFound = pyqtSignal()
+    """ signal will be emitted if TOMs config file is not found """
+
+    def __init__(self, iface):
+        QObject.__init__(self)
+        self.iface = iface
+
+        TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
+
+    def initialiseTOMsConfigFile(self):
+
+        # function to open file "toms.conf". Assume path is same as project file - unless environ variable is set
+
+        # check for environ variable
+        config_path = None
+        try:
+            config_path = os.environ.get('TOMs_CONFIG_PATH')
+        except None:
+            TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Warning)
+            # config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
+
+        if config_path is None:
+            config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_home')
+
+        config_file = os.path.abspath(os.path.join(config_path, 'TOMs.conf'))
+        TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Warning)
+
+        if not os.path.isfile(config_file):
+            reply = QMessageBox.information(None, "Information", "TOMs configuration file not found. Stopping ...",
+                                            QMessageBox.Ok)
+            self.TOMsConfigFileNotFound.emit()
+
+        # now read file
+        self.readTOMsConfigFile(config_file)
+
+    def readTOMsConfigFile(self, config_file):
+
+        self.config = configparser.ConfigParser()
+        try:
+            self.config.read(config_file)
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In TOMsConfigFile.init. Error reading config file ... {}".format(e),
+                level=Qgis.Warning)
+            self.TOMsConfigFileNotFound.emit()
+
+    def getTOMsConfigElement(self, section, value):
+        item = None
+        try:
+            item = self.config[section][value]
+        except KeyError:
+            TOMsMessageLog.logMessage("In getTOMsConfigElement. not able to find: {}:{}".format(section, value), level=Qgis.Warning)
+
+        return item
+
 class TOMsLayers(QObject):
     TOMsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
@@ -158,12 +216,14 @@ class TOMsLayers(QObject):
 
     def __init__(self, iface):
         QObject.__init__(self)
+
         self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
         #self.proposalsManager = proposalsManager
 
         #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
+        """
         self.TOMsLayerList = ["Proposals",
                          "ProposalStatusTypes",
                          "ActionOnProposalAcceptanceTypes",
@@ -225,9 +285,25 @@ class TOMsLayers(QObject):
                               "ParkingTariffAreas.label_ldr"
 
                               ]
+                              """
+
         self.TOMsLayerDict = {}
 
-    def getLayers(self):
+    def getTOMsLayerListFromConfigFile(self, configFileObject):
+        self.configFileObject = configFileObject
+        layers = configFileObject.getTOMsConfigElement('TOMsLayers', 'layers')
+        if layers:
+            self.TOMsLayerList = layers.split('\n')
+            return True
+
+        self.TOMsLayersNotFound.emit()
+        return False
+
+    def getTOMsFormPathFromConfigFile(self, configFileObject):
+        form_path = configFileObject.getTOMsConfigElement('TOMsLayers', 'form_path')
+        return form_path
+
+    def getLayers(self, configFileObject):
 
         TOMsMessageLog.logMessage("In TOMSLayers.getLayers ...", level=Qgis.Info)
         found = True
@@ -241,17 +317,17 @@ class TOMsLayers(QObject):
 
         else:
 
-            try:
-                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
-                formPath = None
+            if not self.getTOMsLayerListFromConfigFile(configFileObject):
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Problem with TOMs config file ..."))
+                self.TOMsLayersNotFound.emit()
+                found = False
 
-            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH: {}".format(formPath), level=Qgis.Info)
-
-            if not formPath:
-                TOMsMessageLog.logMessage("In TOMsLayers:getLayers. QGIS_FIELD_FORM_PATH not found ...", level=Qgis.Warning)
+            self.formPath = self.getTOMsFormPathFromConfigFile(configFileObject)
+            TOMsMessageLog.logMessage("In TOMsLayers:getLayers. formPath is {} ...".format(self.formPath),
+                                      level=Qgis.Warning)
+            if self.formPath is None:
                 QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
+                self.TOMsLayersNotFound.emit()
                 found = False
 
         if found:
@@ -262,11 +338,11 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Info)
-                    if len(formPath)>0 and len(ui_path)>0:
+                                              level=Qgis.Warning)
+                    if len(self.formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
-                        path_absolute = os.path.abspath(os.path.join(formPath, os.path.basename(ui_path)))
+                        path_absolute = os.path.abspath(os.path.join(self.formPath, os.path.basename(ui_path)))
                         if not os.path.isfile(path_absolute):
                             TOMsMessageLog.logMessage("In TOMsLayers:getLayers.form path not found for layer {} ...".format(layer),
                                                       level=Qgis.Warning)
@@ -308,11 +384,6 @@ class TOMsLayers(QObject):
 
         else:
 
-            try:
-                formPath = os.environ.get('QGIS_FIELD_FORM_PATH')
-            except:
-                formPath = None
-
             for layer in self.TOMsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
                     self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(layer)[0]
@@ -321,7 +392,7 @@ class TOMsLayers(QObject):
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(layer, ui_path),
                                               level=Qgis.Info)
-                    if len(formPath)>0 and len(ui_path)>0:
+                    if len(self.formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
                         formName = os.path.basename(ui_path)
@@ -735,10 +806,12 @@ class RestrictionTypeUtilsMixin():
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
             #currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
-        currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+        currentED, edWaitingTimeID = generateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
         if currRestrictionLayer.name() != "Signs":
             currRestriction.setAttribute("CPZ", currentCPZ)
+            currRestriction.setAttribute("MatchDayEventDayZone", currentED)
 
         # TODO: get the last used values ... look at field ...
 
@@ -749,7 +822,7 @@ class RestrictionTypeUtilsMixin():
             #currRestriction.setAttribute("GeomShapeID", 10)   # 10 = Parallel Line
             currRestriction.setAttribute("GeomShapeID", self.readLastUsedDetails("Lines", "GeomShapeID", 10))
             currRestriction.setAttribute("NoWaitingTimeID", cpzWaitingTimeID)
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
             #currRestriction.setAttribute("Lines_DateTime", currDate)
 
         elif currRestrictionLayer.name() == "Bays":
@@ -762,7 +835,7 @@ class RestrictionTypeUtilsMixin():
             currRestriction.setAttribute("NrBays", -1)
 
             currRestriction.setAttribute("TimePeriodID", cpzWaitingTimeID)
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
 
             currentPTA, ptaMaxStayID, ptaNoReturnID = generateGeometryUtils.getCurrentPTADetails(currRestriction)
 
@@ -786,7 +859,7 @@ class RestrictionTypeUtilsMixin():
             #currRestriction.setAttribute("RestrictionTypeID", 4)  # 28 = Residential mews area (RestrictionPolygons)
             currRestriction.setAttribute("RestrictionTypeID",
                                          self.readLastUsedDetails("RestrictionPolygons", "RestrictionTypeID", 4))
-            currRestriction.setAttribute("MatchDayTimePeriodID", cpzMatchDayTimePeriodID)
+            currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
 
         return
 
@@ -807,10 +880,13 @@ class RestrictionTypeUtilsMixin():
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID, cpzMatchDayTimePeriodID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(currRestriction)
+            currentED, edWaitingTimeID = generateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(),
                                                   currRestrictionLayer.fields().indexFromName("CPZ"), currentCPZ)
+            currRestrictionLayer.changeAttributeValue(currRestriction.id(),
+                                                  currRestrictionLayer.fields().indexFromName("MatchDayEventDayZone"), currentED)
 
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRoadMarkingsFaded"), None)
             currRestrictionLayer.changeAttributeValue(currRestriction.id(), currRestrictionLayer.fields().indexFromName("ComplianceRestrictionSignIssue"), None)
