@@ -1046,7 +1046,7 @@ class generateGeometryUtils (QObject):
                 currentEDZ = currentEDZFeature.attribute("EDZ")
                 edzWaitingTimeID = currentEDZFeature.attribute("TimePeriodID")
                 #cpzMatchDayTimePeriodID = currentCPZFeature.attribute("MatchDayTimePeriodID")
-                TOMsMessageLog.logMessage("In getCurrentEventDayDetails. CPZ found: {}: control: {}: match day: {}".format(currentEDZ, edzWaitingTimeID), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getCurrentEventDayDetails. CPZ found: {}: control: {}".format(currentEDZ, edzWaitingTimeID), level=Qgis.Info)
 
                 return currentEDZ, edzWaitingTimeID
 
