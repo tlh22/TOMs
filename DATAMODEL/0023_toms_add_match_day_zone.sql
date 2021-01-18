@@ -143,7 +143,7 @@ $$;
 
 -- DROP TRIGGER create_geometryid_bays ON toms."MatchDayEventDayZones";
 
-CREATE TRIGGER create_geometryid_bays
+CREATE TRIGGER create_geometryid_match_day_zone
     BEFORE INSERT
     ON toms."MatchDayEventDayZones"
     FOR EACH ROW

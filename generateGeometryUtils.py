@@ -1022,6 +1022,7 @@ class generateGeometryUtils (QObject):
                 return currentCPZ, cpzWaitingTimeID
 
         return None, None
+
     @staticmethod
 
     def getCurrentEventDayDetails(feature):
@@ -1038,16 +1039,16 @@ class generateGeometryUtils (QObject):
 
             #geom = feature.geometry()
 
-            currentCPZFeature = generateGeometryUtils.getPolygonForRestriction(feature, EDLayer)
+            currentEDZFeature = generateGeometryUtils.getPolygonForRestriction(feature, EDLayer)
 
-            if currentCPZFeature:
+            if currentEDZFeature:
 
-                currentCPZ = currentCPZFeature.attribute("CPZ")
-                cpzWaitingTimeID = currentCPZFeature.attribute("TimePeriodID")
+                currentEDZ = currentEDZFeature.attribute("EDZ")
+                edzWaitingTimeID = currentEDZFeature.attribute("TimePeriodID")
                 #cpzMatchDayTimePeriodID = currentCPZFeature.attribute("MatchDayTimePeriodID")
-                TOMsMessageLog.logMessage("In getCurrentEventDayDetails. CPZ found: {}: control: {}: match day: {}".format(currentCPZ, cpzWaitingTimeID), level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getCurrentEventDayDetails. CPZ found: {}: control: {}: match day: {}".format(currentEDZ, edzWaitingTimeID), level=Qgis.Info)
 
-                return currentCPZ, cpzWaitingTimeID
+                return currentEDZ, edzWaitingTimeID
 
         return None, None
 
@@ -1151,27 +1152,27 @@ class generateGeometryUtils (QObject):
         return None
 
     @staticmethod
-    def getEDWaitingTimeID(cpzNr):
+    def getEDWaitingTimeID(edzNr):
 
         TOMsMessageLog.logMessage("In getEDWaitingTimeID", level=Qgis.Info)
 
         try:
-            CPZLayer = QgsProject.instance().mapLayersByName("MatchDayEventDayZones")[0]
+            EDZLayer = QgsProject.instance().mapLayersByName("MatchDayEventDayZones")[0]
         except Exception as e:
-            CPZLayer = None
+            EDZLayer = None
 
-        if CPZLayer:
-            for poly in CPZLayer.getFeatures():
-                currentCPZ = poly.attribute("CPZ")
+        if EDZLayer:
+            for poly in EDZLayer.getFeatures():
+                currentEDZ = poly.attribute("EDZ")
 
-                if currentCPZ == cpzNr:
-                    TOMsMessageLog.logMessage("In getEDWaitingTimeID. Found CPZ.", level=Qgis.Info)
-                    cpzWaitingTimeID = poly.attribute("TimePeriodID")
+                if currentEDZ == edzNr:
+                    TOMsMessageLog.logMessage("In getEDWaitingTimeID. Found EDZ.", level=Qgis.Info)
+                    edzWaitingTimeID = poly.attribute("TimePeriodID")
                     #cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
                     #TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
                     #return cpzWaitingTimeID, cpzMatchDayTimeID
-                    TOMsMessageLog.logMessage("In getEDWaitingTimeID. ID. {}".format(cpzWaitingTimeID), level=Qgis.Info)
-                    return cpzWaitingTimeID
+                    TOMsMessageLog.logMessage("In getEDWaitingTimeID. ID. {}".format(edzWaitingTimeID), level=Qgis.Info)
+                    return edzWaitingTimeID
 
         return None
 
