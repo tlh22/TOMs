@@ -36,6 +36,7 @@ class RestrictionGeometryTypes(object):
     PERPENDICULAR_ON_PAVEMENT = 6
     OTHER = 7
     CENTRAL_PARKING = 8
+    ECHELON_ON_PAVEMENT = 9
     PARALLEL_LINE = 10
     ZIG_ZAG = 12
     PARALLEL_BAY_POLYGON = 21
@@ -45,6 +46,7 @@ class RestrictionGeometryTypes(object):
     ECHELON_POLYGON = 25
     PERPENDICULAR_ON_PAVEMENT_POLYGON = 26
     OUTLINE_BAY_POLYGON = 28
+    ECHELON_ON_PAVEMENT_POLYGON = 29
     CROSSOVER = 35
 
 def singleton(myClass):

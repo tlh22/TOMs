@@ -368,7 +368,8 @@ INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") V
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (23, 'On Pavement Bay (Polygon)');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (26, 'Perpendicular on Pavement Bay (Polygon)');
 
-
+INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (9, 'Echelon Bay on Pavement (LineString)');
+INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (29, 'Echelon Bay on Pavement (Polygon)');
 --
 -- TOC entry 4468 (class 0 OID 294855)
 -- Dependencies: 295
