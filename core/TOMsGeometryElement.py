@@ -230,7 +230,7 @@ class TOMsGeometryElement(QObject):
                 #   c. *** also need to adjust the length *** Not yet implemented
 
                 # if restGeomType == 5 or restGeomType == 25:  # echelon
-                if restGeomType in [5, 25]:  # echelon
+                if restGeomType in [5, 25, 9, 29]:  # echelon
                     # TOMsMessageLog.logMessage("In getShape: orientation: " + str(orientation), level=Qgis.Info)
                     if self.is_float(orientation) == False:
                         orientation = AzimuthToCentreLine
@@ -489,6 +489,16 @@ class generatedGeometryOutlineShape(TOMsGeometryElement):
         return self.currFeature.geometry()
 
 
+class generatedGeometryEchelonOnPavementLineType(TOMsGeometryElement):
+    def __init__(self, currFeature):
+        super().__init__(currFeature)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementLineType ... ", level=Qgis.Info)
+
+    def getElementGeometry(self):
+        outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        return outputGeometry
+
+
 class generatedGeometryLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
@@ -602,6 +612,18 @@ class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
 
         return QgsGeometry.fromPolygonXY([self.currFeature.geometry().asPolyline()])
 
+class generatedGeometryEchelonOnPavementPolygonType(TOMsGeometryElement):
+    def __init__(self, currFeature):
+        super().__init__(currFeature)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementPolygonType ... ", level=Qgis.Info)
+
+    def getElementGeometry(self):
+
+        outputGeometry1, parallelLine1 = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        #outputGeometry1A, paralletLine1A = self.getLine()
+
+        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -743,6 +765,9 @@ class ElementGeometryFactory():
             elif currRestGeomType == RestrictionGeometryTypes.CENTRAL_PARKING:
                 return generatedGeometryOutlineShape(currFeature).getElementGeometry()
 
+            elif currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT:
+                return generatedGeometryEchelonOnPavementLineType(currFeature).getElementGeometry()
+
             elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_LINE:
                 return generatedGeometryLineType(currFeature).getElementGeometry()
 
@@ -769,6 +794,9 @@ class ElementGeometryFactory():
 
             elif currRestGeomType == RestrictionGeometryTypes.OUTLINE_BAY_POLYGON:
                 return generatedGeometryOutlineBayPolygonType(currFeature).getElementGeometry()
+
+            elif currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT_POLYGON:
+                return generatedGeometryEchelonOnPavementPolygonType(currFeature).getElementGeometry()
 
             elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
                 return generatedGeometryCrossoverPolygonType(currFeature).getElementGeometry()
