@@ -46,31 +46,31 @@ BEGIN
 
 	CASE TG_TABLE_NAME
 	WHEN 'Bays' THEN
-			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Lines' THEN
-		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Signs' THEN
-		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'RestrictionPolygons' THEN
-		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'ControlledParkingZones' THEN
-		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'ParkingTariffAreas' THEN
-		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'AccessRestrictions' THEN
-		   SELECT concat('A_', to_char(nextval('moving_traffic."AccessRestrictions_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('A_', to_char(nextval('moving_traffic."AccessRestrictions_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'HighwayDedications' THEN
-		   SELECT concat('H_', to_char(nextval('moving_traffic."HighwayDedications_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('H_', to_char(nextval('moving_traffic."HighwayDedications_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'RestrictionsForVehicles' THEN
-		   SELECT concat('R_', to_char(nextval('moving_traffic."RestrictionsForVehicles_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('R_', to_char(nextval('moving_traffic."RestrictionsForVehicles_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'SpecialDesignations' THEN
-		   SELECT concat('D_', to_char(nextval('moving_traffic."SpecialDesignations_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('D_', to_char(nextval('moving_traffic."SpecialDesignations_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'TurnRestrictions' THEN
-		   SELECT concat('V_', to_char(nextval('moving_traffic."TurnRestrictions_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('V_', to_char(nextval('moving_traffic."TurnRestrictions_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'CarriagewayMarkings' THEN
-		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_RoadLinks' THEN
-		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	ELSE
 	    nextSeqVal = 'U';
@@ -1138,7 +1138,7 @@ ALTER TABLE "moving_traffic"."Restrictions" OWNER TO "postgres";
 --
 
 CREATE TABLE "moving_traffic"."AccessRestrictions" (
-    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."AccessRestrictions_id_seq"'::"regclass"), '000000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('A_'::"text" || "to_char"("nextval"('"moving_traffic"."AccessRestrictions_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "restriction" "moving_traffic_lookups"."accessRestrictionValue" NOT NULL,
     "timeInterval" integer,
     "trafficSigns" character varying(255),
@@ -1205,7 +1205,7 @@ ALTER TABLE "moving_traffic"."HighwayDedications_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "moving_traffic"."HighwayDedications" (
-    "GeometryID" character varying(12) DEFAULT ('H_'::"text" || "to_char"("nextval"('"moving_traffic"."HighwayDedications_id_seq"'::"regclass"), '000000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('H_'::"text" || "to_char"("nextval"('"moving_traffic"."HighwayDedications_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "dedication" "moving_traffic_lookups"."dedicationValue" NOT NULL,
     "timeInterval" integer,
     "mt_capture_geom" "public"."geometry"(LineString,27700)
@@ -1332,7 +1332,7 @@ ALTER TABLE "moving_traffic"."RestrictionsForVehicles_id_seq" OWNER TO "postgres
 --
 
 CREATE TABLE "moving_traffic"."RestrictionsForVehicles" (
-    "GeometryID" character varying(12) DEFAULT ('R_'::"text" || "to_char"("nextval"('"moving_traffic"."RestrictionsForVehicles_id_seq"'::"regclass"), '000000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('R_'::"text" || "to_char"("nextval"('"moving_traffic"."RestrictionsForVehicles_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "restrictionType" "moving_traffic_lookups"."restrictionTypeValue" NOT NULL,
     "measure" double precision NOT NULL,
     "measure2" double precision,
@@ -1367,7 +1367,7 @@ ALTER TABLE "moving_traffic"."SpecialDesignations_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "moving_traffic"."SpecialDesignations" (
-    "GeometryID" character varying(12) DEFAULT ('D_'::"text" || "to_char"("nextval"('"moving_traffic"."SpecialDesignations_id_seq"'::"regclass"), '000000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('D_'::"text" || "to_char"("nextval"('"moving_traffic"."SpecialDesignations_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "designation" "moving_traffic_lookups"."specialDesignationTypeValue" NOT NULL,
     "timeInterval" integer,
     "lane" integer,
@@ -1400,7 +1400,7 @@ ALTER TABLE "moving_traffic"."TurnRestrictions_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "moving_traffic"."TurnRestrictions" (
-    "GeometryID" character varying(12) DEFAULT ('V_'::"text" || "to_char"("nextval"('"moving_traffic"."TurnRestrictions_id_seq"'::"regclass"), '000000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('V_'::"text" || "to_char"("nextval"('"moving_traffic"."TurnRestrictions_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "restrictionType" "moving_traffic_lookups"."turnRestrictionValue" NOT NULL,
     "inclusion" integer,
     "exemption" integer,
@@ -1854,7 +1854,7 @@ CREATE TABLE "highways_network"."MHTC_RoadLinks"
 (
     notes character varying(255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), '000000000'::"text"))
+    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), 'FM0000000'::"text"))
 	)
 INHERITS ("moving_traffic"."Restrictions");
 

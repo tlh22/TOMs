@@ -994,7 +994,7 @@ ALTER TABLE "toms"."Bays_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."Bays" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('B_'::"text" || "to_char"("nextval"('"toms"."Bays_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('B_'::"text" || "to_char"("nextval"('"toms"."Bays_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(LineString,27700) NOT NULL,
     "RestrictionLength" double precision NOT NULL,
     "RestrictionTypeID" integer NOT NULL,
@@ -1055,7 +1055,7 @@ ALTER TABLE "toms"."ControlledParkingZones_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."ControlledParkingZones" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('C_'::"text" || "to_char"("nextval"('"toms"."ControlledParkingZones_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('C_'::"text" || "to_char"("nextval"('"toms"."ControlledParkingZones_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(Polygon,27700) NOT NULL,
     "RestrictionTypeID" integer NOT NULL,
     "Notes" character varying(254),
@@ -1105,7 +1105,7 @@ ALTER TABLE "toms"."Lines_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."Lines" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"toms"."Lines_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"toms"."Lines_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(LineString,27700) NOT NULL,
     "RestrictionLength" double precision NOT NULL,
     "RestrictionTypeID" integer NOT NULL,
@@ -1186,7 +1186,7 @@ ALTER TABLE "toms"."ParkingTariffAreas_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."ParkingTariffAreas" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('T_'::"text" || "to_char"("nextval"('"toms"."ParkingTariffAreas_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('T_'::"text" || "to_char"("nextval"('"toms"."ParkingTariffAreas_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(Polygon,27700) NOT NULL,
     "RestrictionTypeID" integer NOT NULL,
     "Notes" character varying(254),
@@ -1307,7 +1307,7 @@ ALTER TABLE "toms"."RestrictionPolygons_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."RestrictionPolygons" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('P_'::"text" || "to_char"("nextval"('"toms"."RestrictionPolygons_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('P_'::"text" || "to_char"("nextval"('"toms"."RestrictionPolygons_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(Polygon,27700) NOT NULL,
     "RestrictionTypeID" integer NOT NULL,
     "GeomShapeID" integer NOT NULL,
@@ -1379,7 +1379,7 @@ ALTER TABLE "toms"."Signs_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "toms"."Signs" (
     "RestrictionID" character varying(254) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('S_'::"text" || "to_char"("nextval"('"toms"."Signs_id_seq"'::"regclass"), '000000000'::"text")) NOT NULL,
+    "GeometryID" character varying(12) DEFAULT ('S_'::"text" || "to_char"("nextval"('"toms"."Signs_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "geom" "public"."geometry"(Point,27700) NOT NULL,
     "Photos_01" character varying(255),
     "Photos_02" character varying(255),

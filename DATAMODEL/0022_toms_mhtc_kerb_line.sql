@@ -12,33 +12,33 @@ BEGIN
 
 	CASE TG_TABLE_NAME
 	WHEN 'Bays' THEN
-			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+			SELECT concat('B_', to_char(nextval('toms."Bays_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Lines' THEN
-		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('L_', to_char(nextval('toms."Lines_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Signs' THEN
-		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('S_', to_char(nextval('toms."Signs_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'RestrictionPolygons' THEN
-		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('P_', to_char(nextval('toms."RestrictionPolygons_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'ControlledParkingZones' THEN
-		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('C_', to_char(nextval('toms."ControlledParkingZones_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'ParkingTariffAreas' THEN
-		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('T_', to_char(nextval('toms."ParkingTariffAreas_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'AccessRestrictions' THEN
-		   SELECT concat('A_', to_char(nextval('moving_traffic."AccessRestrictions_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('A_', to_char(nextval('moving_traffic."AccessRestrictions_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'HighwayDedications' THEN
-		   SELECT concat('H_', to_char(nextval('moving_traffic."HighwayDedications_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('H_', to_char(nextval('moving_traffic."HighwayDedications_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'RestrictionsForVehicles' THEN
-		   SELECT concat('R_', to_char(nextval('moving_traffic."RestrictionsForVehicles_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('R_', to_char(nextval('moving_traffic."RestrictionsForVehicles_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'SpecialDesignations' THEN
-		   SELECT concat('D_', to_char(nextval('moving_traffic."SpecialDesignations_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('D_', to_char(nextval('moving_traffic."SpecialDesignations_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'TurnRestrictions' THEN
-		   SELECT concat('V_', to_char(nextval('moving_traffic."TurnRestrictions_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('V_', to_char(nextval('moving_traffic."TurnRestrictions_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'CarriagewayMarkings' THEN
-		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_RoadLinks' THEN
-		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_Kerblines' THEN
-		   SELECT concat('K_', to_char(nextval('mhtc_operations."MHTC_Kerbline_id_seq"'::regclass), '000000000'::text)) INTO nextSeqVal;
+		   SELECT concat('K_', to_char(nextval('mhtc_operations."MHTC_Kerbline_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	ELSE
 	    nextSeqVal = 'U';
@@ -66,7 +66,7 @@ ALTER TABLE "mhtc_operations"."MHTC_Kerbline_id_seq" OWNER TO "postgres";
 CREATE TABLE "mhtc_operations"."MHTC_Kerblines"
 (
     geom geometry(LineString,27700) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"mhtc_operations"."MHTC_Kerbline_id_seq"'::"regclass"), '000000000'::"text"))
+    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"mhtc_operations"."MHTC_Kerbline_id_seq"'::"regclass"), 'FM0000000'::"text"))
 	)
 INHERITS ("moving_traffic"."Restrictions");
 

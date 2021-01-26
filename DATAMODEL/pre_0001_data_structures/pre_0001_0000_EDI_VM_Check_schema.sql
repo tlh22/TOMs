@@ -163,7 +163,7 @@ CREATE TABLE "public"."Bays" (
     "MaxStayID" integer,
     "NoReturnID" integer,
     "Notes" character varying(254),
-    "GeometryID" character varying(10) DEFAULT ('B_'::"text" || "to_char"("nextval"('"public"."Bays2_id_seq"'::"regclass"), '0000000'::"text")) NOT NULL,
+    "GeometryID" character varying(10) DEFAULT ('B_'::"text" || "to_char"("nextval"('"public"."Bays2_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "Bays_DateTime" timestamp without time zone,
     "BaysWordingID" integer,
     "Surveyor" character varying(50),
@@ -473,7 +473,7 @@ CREATE TABLE "public"."Lines" (
     "NoWaitingTimeID" integer,
     "NoLoadingTimeID" integer,
     "Notes" character varying(254),
-    "GeometryID" character varying(20) DEFAULT ('L_'::"text" || "to_char"("nextval"('"public"."Lines2_id_seq"'::"regclass"), '0000000'::"text")) NOT NULL,
+    "GeometryID" character varying(20) DEFAULT ('L_'::"text" || "to_char"("nextval"('"public"."Lines2_id_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "Lines_DateTime" timestamp without time zone,
     "Surveyor" character varying(100),
     "Lines_PhotoTaken" integer,
@@ -970,7 +970,7 @@ CREATE TABLE "public"."RestrictionPolygons" (
     "USRN" character varying(254),
     "Orientation" integer,
     "RoadName" character varying(254),
-    "GeometryID" character varying(254) DEFAULT ('P_'::"text" || "to_char"("nextval"('"public"."restrictionPolygons_seq"'::"regclass"), '00000000'::"text")) NOT NULL,
+    "GeometryID" character varying(254) DEFAULT ('P_'::"text" || "to_char"("nextval"('"public"."restrictionPolygons_seq"'::"regclass"), 'FM0000000'::"text")) NOT NULL,
     "RestrictionID" character varying(254) NOT NULL,
     "NoWaitingTimeID" integer,
     "NoLoadingTimeID" integer,
@@ -1836,7 +1836,7 @@ ALTER TABLE ONLY "public"."SignTypes" ALTER COLUMN "id" SET DEFAULT "nextval"('"
 -- Name: Signs GeometryID; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY "public"."Signs" ALTER COLUMN "GeometryID" SET DEFAULT ('S_'::"text" || "to_char"("nextval"('"public"."EDI01_Signs_id_seq"'::"regclass"), '0000000'::"text"));
+ALTER TABLE ONLY "public"."Signs" ALTER COLUMN "GeometryID" SET DEFAULT ('S_'::"text" || "to_char"("nextval"('"public"."EDI01_Signs_id_seq"'::"regclass"), 'FM0000000'::"text"));
 
 
 --
