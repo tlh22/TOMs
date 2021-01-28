@@ -182,25 +182,26 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             for (layerID, layerName) in self.getRestrictionLayersList():
                 currLayer = self.tableNames.setLayer(layerName)
                 restrictionStr = self.__getRestrictionsListForLayerForAction(layerID)
-                #TOMsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") request:" + restrictionStr, level=Qgis.Info)
+                TOMsMessageLog.logMessage("In getProposalBoundingBox. ({}) request: {}".format(layerName, restrictionStr), level=Qgis.Info)
 
                 #currLayer.blockSignals(True)
                 # unset filter to get geometries of closed features
-                layerFilterString = currLayer.subsetString()
-                TOMsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") filter:" + layerFilterString, level=Qgis.Info)
-                if not currLayer.dataProvider().setSubsetString(None):
-                    TOMsMessageLog.logMessage(
-                        "In TOMsProposal:getProposalBoundingBox. (" + layerName + ") filter error ....", level=Qgis.Info)
+                if currLayer:
+                    layerFilterString = currLayer.subsetString()
+                    TOMsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") filter:" + layerFilterString, level=Qgis.Info)
+                    if not currLayer.dataProvider().setSubsetString(None):
+                        TOMsMessageLog.logMessage(
+                            "In TOMsProposal:getProposalBoundingBox. (" + layerName + ") filter error ....", level=Qgis.Info)
 
-                query = '"RestrictionID" IN ({restrictions})'.format(restrictions=restrictionStr)
+                    query = '"RestrictionID" IN ({restrictions})'.format(restrictions=restrictionStr)
 
-                request = QgsFeatureRequest().setFilterExpression(query)
-                for currRestriction in currLayer.getFeatures(request):
-                    geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
+                    request = QgsFeatureRequest().setFilterExpression(query)
+                    for currRestriction in currLayer.getFeatures(request):
+                        geometryBoundingBox.combineExtentWith(currRestriction.geometry().boundingBox())
 
-                currLayer.dataProvider().setSubsetString(layerFilterString)
-                #currLayer.blockSignals(False)
-                TOMsMessageLog.logMessage("In In TOMsProposal:getProposalBoundingBox. (" + currLayer.name() + ") filter 1:" + currLayer.subsetString(), level=Qgis.Info)
+                    currLayer.dataProvider().setSubsetString(layerFilterString)
+                    #currLayer.blockSignals(False)
+                    TOMsMessageLog.logMessage("In In TOMsProposal:getProposalBoundingBox. (" + currLayer.name() + ") filter 1:" + currLayer.subsetString(), level=Qgis.Info)
 
         return geometryBoundingBox
 
