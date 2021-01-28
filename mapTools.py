@@ -322,7 +322,8 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                 currGeometryID = str(feature.attribute('GeometryID'))
                 if currGeometryID == selectedGeometryID:
                     # select the feature ...
-                    self.iface.activeLayer().removeSelection()
+                    if self.iface.activeLayer():
+                        self.iface.activeLayer().removeSelection()
                     self.iface.setActiveLayer(layer)
                     layer.selectByIds([feature.id()])
                     TOMsMessageLog.logMessage(
