@@ -1,6 +1,6 @@
 version: "3.8"
 
-# setup for linux
+# setup for linux NB: line ends for .sh files
 
 services:
 

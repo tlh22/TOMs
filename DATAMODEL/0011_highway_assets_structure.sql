@@ -41,66 +41,66 @@ BEGIN
 
 	CASE TG_TABLE_NAME
 	WHEN 'Benches' THEN
-			SELECT concat('BE_', to_char(nextval('highway_assets."Benches_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+			SELECT concat('BE_', to_char(nextval('highway_assets."Benches_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Bins' THEN
-			SELECT concat('BI_', to_char(nextval('highway_assets."Bins_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+			SELECT concat('BI_', to_char(nextval('highway_assets."Bins_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Bollards' THEN
-		   SELECT concat('BO_', to_char(nextval('highway_assets."Bollards_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('BO_', to_char(nextval('highway_assets."Bollards_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'Bridges' THEN
-		   SELECT concat('BR_', to_char(nextval('highway_assets."Bridges_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('BR_', to_char(nextval('highway_assets."Bridges_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'BusShelters' THEN
-		   SELECT concat('BS_', to_char(nextval('highway_assets."BusShelters_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('BS_', to_char(nextval('highway_assets."BusShelters_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
     WHEN 'BusStopSigns' THEN
-			SELECT concat('BU_', to_char(nextval('highway_assets."BusStopSigns_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+			SELECT concat('BU_', to_char(nextval('highway_assets."BusStopSigns_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'CCTV_Cameras' THEN
-		   SELECT concat('CT_', to_char(nextval('highway_assets."CCTV_Cameras_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('CT_', to_char(nextval('highway_assets."CCTV_Cameras_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'CommunicationCabinets' THEN
-		   SELECT concat('CC_', to_char(nextval('highway_assets."CommunicationCabinets_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('CC_', to_char(nextval('highway_assets."CommunicationCabinets_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'CrossingPoints' THEN
-		   SELECT concat('CR_', to_char(nextval('highway_assets."CrossingPoints_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('CR_', to_char(nextval('highway_assets."CrossingPoints_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'CycleParking' THEN
-		   SELECT concat('CY_', to_char(nextval('highway_assets."CycleParking_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('CY_', to_char(nextval('highway_assets."CycleParking_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'DisplayBoards' THEN
-		   SELECT concat('DB_', to_char(nextval('highway_assets."DisplayBoards_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('DB_', to_char(nextval('highway_assets."DisplayBoards_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'EV_ChargingPoints' THEN
-		   SELECT concat('EV_', to_char(nextval('highway_assets."EV_ChargingPoints_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('EV_', to_char(nextval('highway_assets."EV_ChargingPoints_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'EndOfStreetMarkings' THEN
-		   SELECT concat('ES_', to_char(nextval('highway_assets."EndOfStreetMarkings_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('ES_', to_char(nextval('highway_assets."EndOfStreetMarkings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'PedestrianRailings' THEN
-		   SELECT concat('PR_', to_char(nextval('highway_assets."PedestrianRailings_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('PR_', to_char(nextval('highway_assets."PedestrianRailings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'Postboxes' THEN
-		   SELECT concat('PO_', to_char(nextval('highway_assets."Postboxes_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('PO_', to_char(nextval('highway_assets."Postboxes_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'StreetNamePlates' THEN
-		   SELECT concat('SN_', to_char(nextval('highway_assets."StreetNamePlates_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('SN_', to_char(nextval('highway_assets."StreetNamePlates_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'TelephoneBoxes' THEN
-		   SELECT concat('TE_', to_char(nextval('highway_assets."TelephoneBoxes_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('TE_', to_char(nextval('highway_assets."TelephoneBoxes_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'TelegraphPoles' THEN
-		   SELECT concat('TP_', to_char(nextval('highway_assets."TelegraphPoles_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('TP_', to_char(nextval('highway_assets."TelegraphPoles_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'SubterraneanFeatures' THEN
-		   SELECT concat('SF_', to_char(nextval('highway_assets."SubterraneanFeatures_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('SF_', to_char(nextval('highway_assets."SubterraneanFeatures_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'TrafficCalming' THEN
-		   SELECT concat('TC_', to_char(nextval('highway_assets."TrafficCalming_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('TC_', to_char(nextval('highway_assets."TrafficCalming_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'TrafficSignals' THEN
-		   SELECT concat('TS_', to_char(nextval('highway_assets."TrafficSignals_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('TS_', to_char(nextval('highway_assets."TrafficSignals_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'UnidentifiedStaticObjects' THEN
-		   SELECT concat('US_', to_char(nextval('highway_assets."UnidentifiedStaticObjects_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('US_', to_char(nextval('highway_assets."UnidentifiedStaticObjects_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	WHEN 'VehicleBarriers' THEN
-		   SELECT concat('VB_', to_char(nextval('highway_assets."VehicleBarriers_id_seq"'::regclass), '00000000'::text)) INTO nextSeqVal;
+		   SELECT concat('VB_', to_char(nextval('highway_assets."VehicleBarriers_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	ELSE
 	    nextSeqVal = 'U';
@@ -166,7 +166,7 @@ ALTER TABLE "highway_assets"."HighwayAssets" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."Benches" (
-    "GeometryID" character varying(12) DEFAULT ('BE_'::"text" || "to_char"("nextval"('"highway_assets"."Benches_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BE_'::"text" || "to_char"("nextval"('"highway_assets"."Benches_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -195,7 +195,7 @@ ALTER TABLE "highway_assets"."Bins_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."Bins" (
-    "GeometryID" character varying(12) DEFAULT ('BI_'::"text" || "to_char"("nextval"('"highway_assets"."Bins_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BI_'::"text" || "to_char"("nextval"('"highway_assets"."Bins_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "BinTypeID" integer NOT NULL,
     "geom_point" "public"."geometry"(Point,27700),
     "geom_polygon" "public"."geometry"(Polygon,27700)
@@ -226,7 +226,7 @@ ALTER TABLE "highway_assets"."Bollards_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."Bollards" (
-    "GeometryID" character varying(12) DEFAULT ('BO_'::"text" || "to_char"("nextval"('"highway_assets"."Bollards_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BO_'::"text" || "to_char"("nextval"('"highway_assets"."Bollards_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom_linestring" "public"."geometry"(LineString,27700),
     "geom_point" "public"."geometry"(Point,27700),
     "BollardTypeID" integer NOT NULL
@@ -257,7 +257,7 @@ ALTER TABLE "highway_assets"."BusShelters_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."BusShelters" (
-    "GeometryID" character varying(12) DEFAULT ('BS_'::"text" || "to_char"("nextval"('"highway_assets"."BusShelters_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BS_'::"text" || "to_char"("nextval"('"highway_assets"."BusShelters_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(LineString,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -286,7 +286,7 @@ ALTER TABLE "highway_assets"."CCTV_Cameras_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."CCTV_Cameras" (
-    "GeometryID" character varying(12) DEFAULT ('CT_'::"text" || "to_char"("nextval"('"highway_assets"."CCTV_Cameras_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('CT_'::"text" || "to_char"("nextval"('"highway_assets"."CCTV_Cameras_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -315,7 +315,7 @@ ALTER TABLE "highway_assets"."CommunicationCabinets_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."CommunicationCabinets" (
-    "GeometryID" character varying(12) DEFAULT ('CC_'::"text" || "to_char"("nextval"('"highway_assets"."CommunicationCabinets_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('CC_'::"text" || "to_char"("nextval"('"highway_assets"."CommunicationCabinets_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700),
     "CommunicationCabinetTypeID" integer NOT NULL
 )
@@ -345,7 +345,7 @@ ALTER TABLE "highway_assets"."CrossingPoints_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."CrossingPoints" (
-    "GeometryID" character varying(12) DEFAULT ('CR_'::"text" || "to_char"("nextval"('"highway_assets"."CrossingPoints_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('CR_'::"text" || "to_char"("nextval"('"highway_assets"."CrossingPoints_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
     "CrossingPointTypeID" integer NOT NULL,
     "AzimuthToRoadCentreLine" double precision,
@@ -377,7 +377,7 @@ ALTER TABLE "highway_assets"."CycleParking_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."CycleParking" (
-    "GeometryID" character varying(12) DEFAULT ('CY_'::"text" || "to_char"("nextval"('"highway_assets"."CycleParking_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('CY_'::"text" || "to_char"("nextval"('"highway_assets"."CycleParking_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom_linestring" "public"."geometry"(LineString,27700),
     "geom_point" "public"."geometry"(Point,27700),
     "CycleParkingTypeID" integer NOT NULL,
@@ -409,7 +409,7 @@ ALTER TABLE "highway_assets"."DisplayBoards_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."DisplayBoards" (
-    "GeometryID" character varying(12) DEFAULT ('DB_'::"text" || "to_char"("nextval"('"highway_assets"."DisplayBoards_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('DB_'::"text" || "to_char"("nextval"('"highway_assets"."DisplayBoards_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700),
     "DisplayBoardTypeID" integer NOT NULL
 )
@@ -439,7 +439,7 @@ ALTER TABLE "highway_assets"."EV_ChargingPoints_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."EV_ChargingPoints" (
-    "GeometryID" character varying(12) DEFAULT ('EV_'::"text" || "to_char"("nextval"('"highway_assets"."EV_ChargingPoints_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('EV_'::"text" || "to_char"("nextval"('"highway_assets"."EV_ChargingPoints_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700),
     "EV_ChargingPointTypeID" integer NOT NULL
 )
@@ -469,7 +469,7 @@ ALTER TABLE "highway_assets"."EndOfStreetMarkings_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."EndOfStreetMarkings" (
-    "GeometryID" character varying(12) DEFAULT ('ES_'::"text" || "to_char"("nextval"('"highway_assets"."EndOfStreetMarkings_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('ES_'::"text" || "to_char"("nextval"('"highway_assets"."EndOfStreetMarkings_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
     "EndOfStreetMarkingTypeID" integer NOT NULL
 )
@@ -499,7 +499,7 @@ ALTER TABLE "highway_assets"."PedestrianRailings_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."PedestrianRailings" (
-    "GeometryID" character varying(12) DEFAULT ('PR_'::"text" || "to_char"("nextval"('"highway_assets"."PedestrianRailings_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('PR_'::"text" || "to_char"("nextval"('"highway_assets"."PedestrianRailings_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
     "PedestrianRailingTypeID" integer NOT NULL
 )
@@ -525,7 +525,7 @@ ALTER TABLE "highway_assets"."Postboxes_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."Postboxes" (
-    "GeometryID" character varying(12) DEFAULT ('PO_'::"text" || "to_char"("nextval"('"highway_assets"."Postboxes_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('PO_'::"text" || "to_char"("nextval"('"highway_assets"."Postboxes_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -563,7 +563,7 @@ ALTER TABLE "highway_assets"."StreetNamePlates_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."StreetNamePlates" (
-    "GeometryID" character varying(12) DEFAULT ('SN_'::"text" || "to_char"("nextval"('"highway_assets"."StreetNamePlates_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('SN_'::"text" || "to_char"("nextval"('"highway_assets"."StreetNamePlates_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -592,7 +592,7 @@ ALTER TABLE "highway_assets"."SubterraneanFeatures_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."SubterraneanFeatures" (
-    "GeometryID" character varying(12) DEFAULT ('SF_'::"text" || "to_char"("nextval"('"highway_assets"."SubterraneanFeatures_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('SF_'::"text" || "to_char"("nextval"('"highway_assets"."SubterraneanFeatures_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom_point" "public"."geometry"(Point,27700),
     "geom_linestring" "public"."geometry"(LineString,27700),
     "SubterraneanFeatureTypeID" integer NOT NULL
@@ -619,7 +619,7 @@ ALTER TABLE "highway_assets"."TelephoneBoxes_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."TelephoneBoxes" (
-    "GeometryID" character varying(12) DEFAULT ('TE_'::"text" || "to_char"("nextval"('"highway_assets"."TelephoneBoxes_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('TE_'::"text" || "to_char"("nextval"('"highway_assets"."TelephoneBoxes_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -656,7 +656,7 @@ ALTER TABLE "highway_assets"."TrafficCalming_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."TrafficCalming" (
-    "GeometryID" character varying(12) DEFAULT ('TC_'::"text" || "to_char"("nextval"('"highway_assets"."TrafficCalming_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('TC_'::"text" || "to_char"("nextval"('"highway_assets"."TrafficCalming_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(LineString,27700),
     "TrafficCalmingTypeID" integer NOT NULL,
     "NrCushions" integer
@@ -687,7 +687,7 @@ ALTER TABLE "highway_assets"."TrafficSignals_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."TrafficSignals" (
-    "GeometryID" character varying(12) DEFAULT ('TS_'::"text" || "to_char"("nextval"('"highway_assets"."TrafficSignals_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('TS_'::"text" || "to_char"("nextval"('"highway_assets"."TrafficSignals_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700)
 )
 INHERITS ("highway_assets"."HighwayAssets");
@@ -716,7 +716,7 @@ ALTER TABLE "highway_assets"."UnidentifiedStaticObjects_id_seq" OWNER TO "postgr
 --
 
 CREATE TABLE "highway_assets"."UnidentifiedStaticObjects" (
-    "GeometryID" character varying(12) DEFAULT ('VB_'::"text" || "to_char"("nextval"('"highway_assets"."UnidentifiedStaticObjects_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('VB_'::"text" || "to_char"("nextval"('"highway_assets"."UnidentifiedStaticObjects_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "UnidentifiedStaticObjectTypeID" integer,
     "geom" "public"."geometry"(Point,27700)
 )
@@ -746,7 +746,7 @@ ALTER TABLE "highway_assets"."VehicleBarriers_id_seq" OWNER TO "postgres";
 --
 
 CREATE TABLE "highway_assets"."VehicleBarriers" (
-    "GeometryID" character varying(12) DEFAULT ('VB_'::"text" || "to_char"("nextval"('"highway_assets"."VehicleBarriers_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('VB_'::"text" || "to_char"("nextval"('"highway_assets"."VehicleBarriers_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "geom" "public"."geometry"(Point,27700),
     "VehicleBarrierTypeID" integer NOT NULL
 )
@@ -1516,7 +1516,7 @@ CREATE SEQUENCE "highway_assets"."BusStopSigns_id_seq"
 ALTER TABLE "highway_assets"."BusStopSigns_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."BusStopSigns" (
-    "GeometryID" character varying(12) DEFAULT ('BU_'::"text" || "to_char"("nextval"('"highway_assets"."BusStopSigns_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BU_'::"text" || "to_char"("nextval"('"highway_assets"."BusStopSigns_id_seq"'::"regclass"), 'FM0000000'::"text")),
     --"BusStopSignTypeID" integer NOT NULL,
     "geom_point" "public"."geometry"(Point,27700)
 )
@@ -1549,7 +1549,7 @@ CREATE SEQUENCE "highway_assets"."TelegraphPoles_id_seq"
 ALTER TABLE "highway_assets"."TelegraphPoles_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."TelegraphPoles" (
-    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."TelegraphPoles_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."TelegraphPoles_id_seq"'::"regclass"), 'FM0000000'::"text")),
     --"TelegraphPoleTypeID" integer NOT NULL,
     "geom_point" "public"."geometry"(Point,27700)
 )
@@ -1581,7 +1581,7 @@ CREATE SEQUENCE "highway_assets"."Bridges_id_seq"
 ALTER TABLE "highway_assets"."Bridges_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."Bridges" (
-    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."Bridges_id_seq"'::"regclass"), '00000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."Bridges_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "BridgeTypeID" integer NOT NULL,
     "geom_point" "public"."geometry"(Polygon,27700)
 )
