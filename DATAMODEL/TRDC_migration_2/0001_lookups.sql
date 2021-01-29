@@ -106,6 +106,9 @@ FROM public."RestrictionPolygons"
 );
 
 -- TimePeriodsInUse
+
+INSERT INTO toms_lookups."TimePeriods" ("Code", "Description", "LabelText") VALUES (352, 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime', 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime');
+
 INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
 SELECT DISTINCT r."TimePeriodID"
 FROM public."Bays" r
@@ -133,6 +136,15 @@ FROM toms_lookups."TimePeriodsInUse"
 )
 AND r."NoLoadingTimeID" IS NOT NULL;
 
+INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
+SELECT DISTINCT r."WaitingTimeID"
+FROM public."CPZs" r
+WHERE r."WaitingTimeID" NOT IN (
+SELECT "Code"
+FROM toms_lookups."TimePeriodsInUse"
+)
+AND r."WaitingTimeID" IS NOT NULL;
+
 DELETE
 FROM toms_lookups."TimePeriodsInUse" l
 WHERE "Code" IN (
@@ -158,6 +170,35 @@ WHERE r."NoLoadingTimeID" NOT IN (
 SELECT "Code"
 FROM toms_lookups."TimePeriodsInUse"
 )
+UNION
+SELECT r."WaitingTimeID" AS "TimePeriodID"
+FROM public."CPZs" r
+WHERE r."WaitingTimeID" NOT IN (
+SELECT "Code"
+FROM toms_lookups."TimePeriodsInUse"
+)
 ) s
 WHERE s."TimePeriodID" IS NOT NULL
 	);
+
+
+
+-- PolygonRestrictions
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (50, 'Box junction');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (30, 'Council Housing Estate');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (23, 'Congestion Charging Zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (24, 'Ultra Low Emissions Zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (9, 'Pedestrian and cycle zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (10, 'Restricted Zone');
+
+INSERT INTO toms_lookups."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType") VALUES(10, 'Polygon');
+INSERT INTO toms_lookups."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType") VALUES(20, 'Polygon');
+
+-- refresh views
+
+REFRESH MATERIALIZED VIEW "toms_lookups"."BayTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."LineTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."RestrictionPolygonTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."SignTypesInUse_View";
+REFRESH MATERIALIZED VIEW "toms_lookups"."TimePeriodsInUse_View";
