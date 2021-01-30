@@ -120,6 +120,16 @@ SELECT uuid_generate_v4(), (ST_Dump(geom)).geom, 20,
 '2020-01-01', 'MHTC'
 	FROM public."CPZs";
 
+
+-- Tidy geomshape details for Bays
+
+UPDATE toms."Bays"
+SET "GeomShapeID" = "GeomShapeID" + 20
+WHERE "RestrictionTypeID" IN (131, 133, 134, 145)
+AND "GeomShapeID" < 20;
+
+
+
 ALTER TABLE toms."Bays" ENABLE TRIGGER all;
 ALTER TABLE toms."Lines" ENABLE TRIGGER all;
 ALTER TABLE toms."Signs" ENABLE TRIGGER all;
