@@ -128,7 +128,20 @@ SET "GeomShapeID" = "GeomShapeID" + 20
 WHERE "RestrictionTypeID" IN (131, 133, 134, 145)
 AND "GeomShapeID" < 20;
 
+-- Tidy CPZ details
+UPDATE toms."Bays" AS r
+SET "CPZ" = c."CPZ"
+FROM toms."ControlledParkingZones" c
+WHERE r."CPZ" IS NULL
+AND ST_Within(r.geom, c.geom)
+AND r."RestrictionTypeID" IN (101, 131);
 
+UPDATE toms."Lines" AS r
+SET "CPZ" = c."CPZ"
+FROM toms."ControlledParkingZones" c
+WHERE r."CPZ" IS NULL
+AND ST_Within(r.geom, c.geom)
+AND r."RestrictionTypeID" IN (224);
 
 ALTER TABLE toms."Bays" ENABLE TRIGGER all;
 ALTER TABLE toms."Lines" ENABLE TRIGGER all;

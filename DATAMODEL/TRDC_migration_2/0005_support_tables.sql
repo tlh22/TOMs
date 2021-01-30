@@ -23,7 +23,6 @@ ALTER TABLE local_authority."StreetGazetteer" RENAME TO "StreetGazetteerRecords"
 
 --ALTER TABLE "public"."StreetsList" SET SCHEMA local_authority;
 
-
 -- Add view for gazetteer lookup
 DROP MATERIALIZED VIEW IF EXISTS local_authority."StreetGazetteerView";
 CREATE MATERIALIZED VIEW local_authority."StreetGazetteerView"
@@ -49,12 +48,31 @@ ALTER TABLE "Background"."RoadLink" SET SCHEMA highways_network;
 ALTER TABLE highways_network."RoadLink" RENAME TO "roadlink";
 
 -- RoadCasement
-ALTER TABLE "public"."RC_Sections" SET SCHEMA mhtc_operations;
-ALTER TABLE "public"."RC_Sections_merged" SET SCHEMA mhtc_operations;
+ALTER TABLE "public"."RC_Sections" SET SCHEMA topography;
+DROP TABLE IF EXISTS topography."road_casement";
+ALTER TABLE topography."RC_Sections" RENAME TO "road_casement";
+-- ALTER TABLE "public"."RC_Sections_merged" SET SCHEMA mhtc_operations;
 
 -- TODO: need to set up road casement
 
 ALTER TABLE "public"."GNSS_Pts" SET SCHEMA mhtc_operations;
+DROP TABLE IF EXISTS mhtc_operations."gnss_pts";
+ALTER TABLE "mhtc_operations"."GNSS_Pts" RENAME TO "gnss_pts";
+
+DROP TABLE IF EXISTS mhtc_operations."Corners";
+ALTER TABLE "public"."Corners" SET SCHEMA mhtc_operations;
+
+ALTER TABLE "Background"."AdditionalConditionTypes" SET SCHEMA mhtc_operations;
+ALTER TABLE "mhtc_operations"."AdditionalConditionTypes" RENAME TO "TRDC_AdditionalConditionTypes";
+
+ALTER TABLE "Background"."MHTC_CheckIssueTypes" SET SCHEMA mhtc_operations;
+ALTER TABLE "mhtc_operations"."MHTC_CheckIssueTypes" RENAME TO "TRDC_MHTC_CheckIssueTypes";
+
+ALTER TABLE "Background"."BaysLines_SignIssueTypes" SET SCHEMA mhtc_operations;
+ALTER TABLE "mhtc_operations"."BaysLines_SignIssueTypes" RENAME TO "TRDC_BaysLines_SignIssueTypes";
+
+ALTER TABLE "Background"."ConditionTypes" SET SCHEMA mhtc_operations;
+ALTER TABLE "mhtc_operations"."ConditionTypes" RENAME TO "TRDC_ConditionTypes";
 
 -- MapGrid
 
@@ -62,3 +80,6 @@ INSERT INTO toms."MapGrid"(
 	id, geom, x_min, x_max, y_min, y_max)
 SELECT id, ST_Multi(geom), x_min, x_max, y_min, y_max
 	FROM "Background"."MapGrid_1000";
+
+-- CarParks
+ALTER TABLE "public"."CarParks" SET SCHEMA local_authority;

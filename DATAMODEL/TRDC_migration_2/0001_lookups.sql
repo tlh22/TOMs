@@ -137,6 +137,33 @@ FROM toms_lookups."TimePeriodsInUse"
 AND r."NoLoadingTimeID" IS NOT NULL;
 
 INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
+SELECT DISTINCT r."TimePeriodID"
+FROM public."RestrictionPolygons" r
+WHERE r."TimePeriodID" NOT IN (
+SELECT "Code"
+FROM toms_lookups."TimePeriodsInUse"
+)
+AND r."TimePeriodID" IS NOT NULL;
+
+INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
+SELECT DISTINCT r."NoWaitingTimeID"
+FROM public."RestrictionPolygons" r
+WHERE r."NoWaitingTimeID" NOT IN (
+SELECT "Code"
+FROM toms_lookups."TimePeriodsInUse"
+)
+AND r."NoWaitingTimeID" IS NOT NULL;
+
+INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
+SELECT DISTINCT r."NoLoadingTimeID"
+FROM public."RestrictionPolygons" r
+WHERE r."NoLoadingTimeID" NOT IN (
+SELECT "Code"
+FROM toms_lookups."TimePeriodsInUse"
+)
+AND r."NoLoadingTimeID" IS NOT NULL;
+
+INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
 SELECT DISTINCT r."WaitingTimeID"
 FROM public."CPZs" r
 WHERE r."WaitingTimeID" NOT IN (
