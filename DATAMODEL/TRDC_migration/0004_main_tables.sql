@@ -32,7 +32,9 @@ SELECT uuid_generate_v4(), "SHAPE", "RestrictionTypeID", "GeomShapeID", "Azimuth
 "BaysNotes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN",
 "CPZ", COALESCE("LastUpdate_DateTime", '2020-01-01'), COALESCE("LastUpdate_Person", 'MHTC'), "BayOrientation", "NrBays",
 COALESCE("TimePeriodID", 1), COALESCE("PayTypeID", 1), COALESCE("MaxStayID", 12), COALESCE("NoReturnID", 12), "ParkingTariffArea", "AdditionalConditionID", "ComplianceIssueID",
-"MHTC_CheckIssueTypeID", "MHTC_CheckNotes", "PermitCode",
+CASE WHEN "MHTC_CheckIssueTypeID" = 0 THEN NULL
+     ELSE "MHTC_CheckIssueTypeID" END,
+"MHTC_CheckNotes", "PermitCode",
 COALESCE("SurveyDateTime", '2020-01-01'), COALESCE("Surveyor", 'MHTC')
 	FROM public."Bays";
 
@@ -56,7 +58,8 @@ SELECT uuid_generate_v4(), "SHAPE", "RestrictionTypeID", "GeomShapeID", "Azimuth
 "LinesNotes", "Photos_01", "Photos_02", "Photos_03", "RoadName", "USRN",
 "CPZ", COALESCE("LastUpdate_DateTime", '2020-01-01'), COALESCE("LastUpdate_Person", 'MHTC'),
 "NoWaitingTimeID", "NoLoadingTimeID", "Unacceptability", "AdditionalConditionID", "ComplianceIssueID",
-"MHTC_CheckIssueTypeID", "MHTC_CheckNotes",
+CASE WHEN "MHTC_CheckIssueTypeID" = 0 THEN NULL
+     ELSE "MHTC_CheckIssueTypeID" END, "MHTC_CheckNotes",
 COALESCE("SurveyDateTime", '2020-01-01'), COALESCE("Surveyor", 'MHTC')
 	FROM public."Lines"
 	WHERE "RestrictionTypeID" IS NOT NULL;
@@ -76,7 +79,8 @@ SELECT uuid_generate_v4(), "SHAPE", "Photos_01", "Photos_02", "Photos_03",
 "SignNotes", "RoadName", "USRN",
 COALESCE("LastUpdate_DateTime", '2020-01-01'), COALESCE("LastUpdate_Person", 'MHTC'),
 "SignType_1", "SignType_2", "SignType_3", "SignType_4",
-"MHTC_CheckIssueTypeID", "MHTC_CheckNotes",
+CASE WHEN "MHTC_CheckIssueTypeID" = 0 THEN NULL
+     ELSE "MHTC_CheckIssueTypeID" END, "MHTC_CheckNotes",
 COALESCE("SignDate", '2020-01-01'), COALESCE("Surveyor", 'MHTC')
 	FROM public."Signs";
 
@@ -98,7 +102,8 @@ SELECT uuid_generate_v4(), geom, "RestrictionTypeID", 50,
 COALESCE("LastUpdate_DateTime", '2020-01-01'), COALESCE("LastUpdate_Person", 'MHTC'),
 "NoWaitingTimeID", "NoLoadingTimeID", "TimePeriodID", "AreaPermitCode",
 "CPZ",
-"MHTC_CheckIssueTypeID", "MHTC_CheckNotes",
+CASE WHEN "MHTC_CheckIssueTypeID" = 0 THEN NULL
+     ELSE "MHTC_CheckIssueTypeID" END, "MHTC_CheckNotes",
 '2020-01-01', 'MHTC'
 	FROM public."RestrictionPolygons";
 

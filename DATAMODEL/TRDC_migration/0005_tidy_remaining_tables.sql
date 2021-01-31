@@ -41,6 +41,10 @@ DROP TABLE IF EXISTS public."ThreeRiversPossibleStreets_2";
 DROP TABLE IF EXISTS public."ThreeRiversDistrict_RoadLinkPossible";
 
 DROP TABLE IF EXISTS public."ProposalStatusTypes";
+DROP TABLE IF EXISTS public."StreetsList";
+
+ALTER TABLE "public"."RC_Sections_merged" SET SCHEMA mhtc_operations;
+
 DROP TABLE IF EXISTS public."Proposals";
 DROP TABLE IF EXISTS public."RestrictionLayers";
 DROP TABLE IF EXISTS public."RestrictionsInProposals";

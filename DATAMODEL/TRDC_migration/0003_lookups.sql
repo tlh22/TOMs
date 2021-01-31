@@ -107,7 +107,10 @@ FROM public."RestrictionPolygons"
 
 -- TimePeriodsInUse
 
-INSERT INTO toms_lookups."TimePeriods" ("Code", "Description", "LabelText") VALUES (352, 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime', 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime');
+--INSERT INTO toms_lookups."TimePeriods" ("Code", "Description", "LabelText") VALUES (352, 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime', 'Mon-Sat Midnight-Noon 2.30pm-Midnight Sun anytime');
+UPDATE public."CPZs"
+SET "WaitingTimeID" = 143
+WHERE "WaitingTimeID" = 352;
 
 INSERT INTO toms_lookups."TimePeriodsInUse" ("Code")
 SELECT DISTINCT r."TimePeriodID"
@@ -208,9 +211,18 @@ FROM toms_lookups."TimePeriodsInUse"
 WHERE s."TimePeriodID" IS NOT NULL
 	);
 
+-- MHTC_CheckIssueTypeID
 
+INSERT INTO compliance_lookups."MHTC_CheckIssueTypes" ("Code", "Description")
+SELECT DISTINCT r."Code", r."Description"
+FROM mhtc_operations."TRDC_MHTC_CheckIssueTypes" r
+WHERE r."Code" NOT IN (
+SELECT "Code"
+FROM compliance_lookups."MHTC_CheckIssueTypes"
+)
+AND r."Code" IS NOT NULL;
 
--- PolygonRestrictions
+-- PolygonRestrictionTypes
 
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (50, 'Box junction');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (30, 'Council Housing Estate');
@@ -221,6 +233,54 @@ INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VAL
 
 INSERT INTO toms_lookups."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType") VALUES(10, 'Polygon');
 INSERT INTO toms_lookups."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType") VALUES(20, 'Polygon');
+
+-- *** AdditionalConditionTypes
+
+--INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (5, 'Suspended on Match Days');
+--INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (6, 'Bus parking on Match Days only');
+--INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (7, 'except Match Days');
+
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (8, 'except taxis');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (9, 'vehicles > 3 tonnes');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (10, 'except vehicles over 55ft (17m) long and/or 9''-6" (2.9m) wide');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (11, 'school term time only');
+
+-- Bays
+UPDATE public."Bays"
+SET "AdditionalConditionID" = 8
+WHERE "AdditionalConditionID" = 1;
+
+UPDATE public."Bays"
+SET "AdditionalConditionID" = 9
+WHERE "AdditionalConditionID" = 2;
+
+UPDATE public."Bays"
+SET "AdditionalConditionID" = 10
+WHERE "AdditionalConditionID" = 3;
+
+-- Lines
+UPDATE public."Lines"
+SET "AdditionalConditionID" = 8
+WHERE "AdditionalConditionID" = 1;
+
+UPDATE public."Lines"
+SET "AdditionalConditionID" = 9
+WHERE "AdditionalConditionID" = 2;
+
+UPDATE public."Lines"
+SET "AdditionalConditionID" = 10
+WHERE "AdditionalConditionID" = 3;
+
+UPDATE public."Lines"
+SET "AdditionalConditionID" = 11
+WHERE "AdditionalConditionID" = 4;
+
+-- Tidy geomshape details for Bays
+
+UPDATE public."Bays"
+SET "GeomShapeID" = "GeomShapeID" + 20
+WHERE "RestrictionTypeID" IN (131, 133, 134, 145)
+AND "GeomShapeID" < 20;
 
 -- refresh views
 

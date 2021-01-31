@@ -45,6 +45,7 @@ CREATE INDEX idx_street_name
 ON local_authority."StreetGazetteerView"("RoadName");
 
 ALTER TABLE "Background"."RoadLink" SET SCHEMA highways_network;
+DROP TABLE IF EXISTS highways_network."roadlink";
 ALTER TABLE highways_network."RoadLink" RENAME TO "roadlink";
 
 -- RoadCasement
