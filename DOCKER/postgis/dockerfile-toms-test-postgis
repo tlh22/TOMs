@@ -1,6 +1,9 @@
 FROM postgis/postgis:12-3.0
 RUN apt-get update && apt-get install -y postgresql-plpython3-$PG_MAJOR
 RUN mkdir /io
+# Deal with line endings
+#RUN apt-get update && apt-get install -y dos2unix
+#RUN sudo find /docker-entrypoint-initdb.d -type f -print0 | xargs -0 dos2unix /docker-entrypoint-initdb.d
 # set time zone
 # RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # add backup job
