@@ -109,7 +109,7 @@ class TOMsTransaction(QObject):
 
         # Function to create group of layers to be in Transaction for changing proposal
 
-        TOMsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTransaction. prepareLayerSet: ", level=Qgis.Warning)
 
         for layer in self.TOMsTransactionList:
             # currRestrictionLayerName = layer[idxRestrictionsLayerName]
@@ -117,7 +117,7 @@ class TOMsTransaction(QObject):
             # restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             self.setTransactionGroup.append(self.tableNames.setLayer(layer))
-            TOMsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, level=Qgis.Warning)
 
     def createTransactionGroup(self):
 
@@ -180,10 +180,10 @@ class TOMsTransaction(QObject):
         self.errorOccurred = True
         self.errorMessage = message
 
-    def commitTransactionGroup(self, currRestrictionLayer):
+    def commitTransactionGroup(self, currRestrictionLayer=None):
 
         TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup",
-                                 level=Qgis.Info)
+                                 level=Qgis.Warning)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
         currMapTool = self.iface.mapCanvas().mapTool()
@@ -193,7 +193,7 @@ class TOMsTransaction(QObject):
 
         if not self.currTransactionGroup:
             TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Transaction DOES NOT exist",
-                                     level=Qgis.Info)
+                                     level=Qgis.Warning)
             return
 
         if self.errorOccurred == True:
@@ -205,7 +205,7 @@ class TOMsTransaction(QObject):
         for layer in self.setTransactionGroup:
 
             TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Considering: " + layer.name(),
-                                     level=Qgis.Info)
+                                     level=Qgis.Warning)
 
             commitStatus = layer.commitChanges()
 
