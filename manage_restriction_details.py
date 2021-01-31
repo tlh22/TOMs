@@ -163,7 +163,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionEditLabels.triggered.connect(self.doEditLabels)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
 
-        pass
+        # deal with saving label changes ...
+        self.labelMapToolSet = False
 
     def enableTOMsToolbarItems(self, restrictionTransaction):
 
@@ -232,7 +233,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
             # self.actionPan.connect()
-            return
+            # deal with labelling tool. Allow to continue to select ...
+            if self.labelMapToolSet == False:
+                return
+            self.labelMapToolSet = False
 
         self.actionSelectRestriction.setChecked(True)
 
@@ -854,7 +858,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                         self.proposalsManager, self.restrictionTransaction)
             self.mapTool.setAction(self.actionEditLabels)
             self.iface.mapCanvas().setMapTool(self.mapTool)
-
+            self.canvas.mapToolSet.connect(self.saveLabelChanges)
+            self.labelMapToolSet = True
             #self.mapTool.deactivated.connect(self.stopEditLabels)
             self.actionEditLabels.setChecked(True)
 
@@ -868,6 +873,19 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         else:
 
             TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Info)
+
+    def saveLabelChanges(self, newTool, oldTool):
+        TOMsMessageLog.logMessage("In saveLabelChanges ...", level=Qgis.Warning)
+
+        if self.labelMapToolSet:
+            try: # this signal is not connected for situations where right click is used - as tool is already unset within commit process TODO: improve!!
+                self.canvas.mapToolSet.disconnect(self.saveLabelChanges)
+                oldTool.onFinishEditing()
+            except Exception as e:
+                TOMsMessageLog.logMessage('In saveLabelChanges: error in with signal disconnect: {}'.format(e),
+                                          level=Qgis.Warning)
+
+            #self.labelMapToolSet = False
 
         """def labelGeometryChanged(self):
         TOMsMessageLog.logMessage("In labelGeometryChanged ... ", level=Qgis.Warning)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0010_highway_asset_lookups_structure.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/test/data/0010_highway_asset_lookups_data.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0011_highway_assets_structure.sql"

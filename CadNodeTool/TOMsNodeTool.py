@@ -568,6 +568,8 @@ class TOMsLabelTool(TOMsNodeTool):
 
         for label_layers_name in self.getCurrLabelLayerNames(self.origLayer):
             snap_layers.append(QgsProject.instance().mapLayersByName(label_layers_name)[0])
+            # add signal here
+            #QgsProject.instance().mapLayersByName(label_layers_name)[0].geometryChanged.connect(functools.partial(self.onGeometryChanged, self.origFeature.getFeature()))
 
         snap_config.addLayers(snap_layers)
         snap_util.setCurrentLayer(self.origLayer)
@@ -617,22 +619,28 @@ class TOMsLabelTool(TOMsNodeTool):
 
         if e.button() == Qt.RightButton:
             TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: right button pressed",
-                                     level=Qgis.Info)
+                                     level=Qgis.Warning)
 
-            self.finishEdit = True
+            self.onFinishEditing()
 
-            # now need to check whether the label layers have had any change
-            labelModified = False
-            for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
-                if QgsProject.instance().mapLayersByName(label_layer_name)[0].isModified():
-                    TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: {} modified".format(label_layer_name),
-                                              level=Qgis.Warning)
-                    labelModified = True
+        return
 
-            if labelModified:
-                TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: label layer modified",
-                                         level=Qgis.Warning)
-                self.onGeometryChanged(self.selectedRestriction)
+    def onFinishEditing(self):
+
+        self.finishEdit = True
+
+        # now need to check whether the label layers have had any change
+        labelModified = False
+        for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
+            if QgsProject.instance().mapLayersByName(label_layer_name)[0].isModified():
+                TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: {} modified".format(label_layer_name),
+                                          level=Qgis.Warning)
+                labelModified = True
+
+        if labelModified:
+            TOMsMessageLog.logMessage("In TOMsLabelTool:cadCanvasPressEvent: label layer modified",
+                                      level=Qgis.Warning)
+            self.onGeometryChanged(self.selectedRestriction)
 
         return
 

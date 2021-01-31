@@ -99,6 +99,8 @@ def _digitizing_color_width():
 
 def _is_circular_vertex(geom, vertex_index):
     """Find out whether geom (QgsGeometry) has a circular vertex on the given index"""
+    if geom is None:
+        return False
     if geom.type() != QgsWkbTypes.LineGeometry and geom.type() != QgsWkbTypes.PolygonGeometry:
         return False
     v_id = QgsVertexId()
@@ -655,17 +657,24 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
     # ------------
 
     def cached_geometry(self, layer, fid):
-        if layer not in self.cache:
-            self.cache[layer] = {}
-            layer.geometryChanged.connect(self.on_cached_geometry_changed)
-            layer.featureDeleted.connect(self.on_cached_geometry_deleted)
+        # TH (210130) deal with fid is None
+        try:
 
-        if fid not in self.cache[layer]:
-            # f = layer.getFeatures(QgsFeatureRequest(fid)).next()
-            f = layer.getFeature(fid)
-            self.cache[layer][fid] = QgsGeometry(f.geometry())
+            if layer not in self.cache:
+                self.cache[layer] = {}
+                layer.geometryChanged.connect(self.on_cached_geometry_changed)
+                layer.featureDeleted.connect(self.on_cached_geometry_deleted)
 
-        return self.cache[layer][fid]
+            if fid not in self.cache[layer]:
+                # f = layer.getFeatures(QgsFeatureRequest(fid)).next()
+                f = layer.getFeature(fid)
+                self.cache[layer][fid] = QgsGeometry(f.geometry())
+
+            return self.cache[layer][fid]
+
+        except Exception as e:
+
+            return None
 
     def cached_geometry_for_vertex(self, vertex):
         return self.cached_geometry(vertex.layer, vertex.fid)

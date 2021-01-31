@@ -311,6 +311,8 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         TOMsMessageLog.logMessage("In onRestrictionSelectMenuClicked. geomID: " + selectedGeometryID, level=Qgis.Info)
 
+        # Really should rollback (or save) any current transactions
+
         self.doSelectFeature(selectedGeometryID)
 
     def doSelectFeature(self, selectedGeometryID):
