@@ -183,9 +183,13 @@ class generateGeometryUtils (QObject):
 
         newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
         # now set the attributes
-        if newRoadName:
-            feature.setAttribute("RoadName", newRoadName)
-            feature.setAttribute("USRN", newUSRN)
+        try:
+            if newRoadName:
+                feature.setAttribute("RoadName", newRoadName)
+                feature.setAttribute("USRN", newUSRN)
+        except Exception as e:
+            TOMsMessageLog.logMessage('setRoadName: error in expression function: {}'.format(e),
+                                          level=Qgis.Warning)
 
             # feature.setAttribute("AzimuthToRoadCentreLine", int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature)))
 
@@ -193,7 +197,6 @@ class generateGeometryUtils (QObject):
     def determineRoadName(feature):
 
         TOMsMessageLog.logMessage("In setRoadName(helper):", level=Qgis.Info)
-        TOMsMessageLog.logMessage("In setRoadName(helper)2:", level=Qgis.Info)
 
         RoadCasementLayer = QgsProject.instance().mapLayersByName("RoadCasement")[0]
 
@@ -211,8 +214,9 @@ class generateGeometryUtils (QObject):
         geom = feature.geometry()
         # line = QgsGeometry()
 
-        tolerance_nearby = 5.0  # somehow need to have this (and layer names) as global variables
+        tolerance_nearby = 10.0  # somehow need to have this (and layer names) as global variables
 
+        TOMsMessageLog.logMessage("In setRoadName: GeometryID: {}".format(feature.attribute("GeometryID")), level=Qgis.Info)
         if geom:
             if geom.type() == QgsWkbTypes.LineGeometry:
                 TOMsMessageLog.logMessage("In setRoadName(helper): considering line", level=Qgis.Info)
@@ -221,7 +225,12 @@ class generateGeometryUtils (QObject):
                 if len(line) == 0:
                     return None, None
 
-                testPt = line[0]
+                #testPt = line[0]
+                length = geom.length()
+                testPtGeom = geom.interpolate(length / 2.0)
+                testPt = testPtGeom.asPoint()
+                TOMsMessageLog.logMessage("In setRoadName: GeometryID: {}. Length: {}. {}".format(feature.attribute("GeometryID"), length, length / 2.0),
+                                          level=Qgis.Info)
                 #ptList = feature.geometry().asPolyline()
                 #secondPt = ptList[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
@@ -244,13 +253,15 @@ class generateGeometryUtils (QObject):
         #nrPts = len(ptList)
         #TOMsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), level=Qgis.Info)
 
-        TOMsMessageLog.logMessage("In setRoadName: secondPt: " + str(testPt.x()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In setRoadName: GeometryID: {}; testPt: {}:{}".format(feature.attribute("GeometryID"), testPt.x(), testPt.y()), level=Qgis.Info)
 
         # check for the feature within RoadCasement_NSG_RoadName layer
         #tolerance_nearby = 1.0  # somehow need to have this (and layer names) as global variables
 
-        nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, testPt, RoadCasementLayer,
-                                                                tolerance_nearby)
+        #nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, testPt, RoadCasementLayer,
+        #                                                        tolerance_nearby)
+
+        closest_RC_Point, nearestRC_feature = generateGeometryUtils.findNearestPointOnLineLayer(testPt, RoadCasementLayer, tolerance_nearby)
 
         if nearestRC_feature:
             # TOMsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().asWkt(), level=Qgis.Info)
