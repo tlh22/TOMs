@@ -29,7 +29,8 @@ from qgis.PyQt.QtGui import (
 from qgis.PyQt.QtCore import (
     QObject,
     QTimer,
-    pyqtSignal
+    pyqtSignal,
+pyqtSlot, Qt
 )
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
@@ -65,6 +66,7 @@ from .generateGeometryUtils import generateGeometryUtils
 from .core import (TOMsProposal, TOMsTile)
 from .core.TOMsTransaction import (TOMsTransaction)
 from TOMs.ui.TOMsCamera import (formCamera)
+from TOMs.ui.imageLabel import (imageLabel)
 from abc import ABCMeta
 import datetime
 import uuid
@@ -73,7 +75,7 @@ import configparser
 try:
     import cv2
     cv2_available = True
-    cv2_available = False  # for office ...
+    #cv2_available = False  # for office ...
 except ImportError:
     print('cv2 not available ...')
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
@@ -991,87 +993,156 @@ class RestrictionTypeUtilsMixin():
                                  level=Qgis.Info)
 
         if FIELD1:
-            TOMsMessageLog.logMessage("In photoDetails. FIELD 1 exisits",
-                                     level=Qgis.Info)
-            if currRestrictionFeature[idx1]:
-                newPhotoFileName1 = os.path.join(path_absolute, currRestrictionFeature[idx1])
+
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 1 exists",
+                                      level=Qgis.Info)
+            if self.currFeature[idx1]:
+                newPhotoFileName1 = os.path.join(path_absolute, self.currFeature[idx1])
+                TOMsMessageLog.logMessage("In photoDetails. photo1: {}".format(newPhotoFileName1), level=Qgis.Info)
             else:
                 newPhotoFileName1 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
             pixmap1 = QPixmap(newPhotoFileName1)
-            if not pixmap1.isNull():
-                FIELD1.setPixmap(pixmap1)
-                FIELD1.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
 
-            if cv2_available:
-                try:
-                    START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
-                    TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
-                    TAKE_PHOTO_1.setEnabled(False)
+            tab = FIELD1.parentWidget()
+            grid = FIELD1.parentWidget().layout()
 
-                    self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
-                    START_CAMERA_1.clicked.connect(
-                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
-                    self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
-                except Exception as e:
-                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
+            photo_Widget1 = imageLabel(tab)
+            TOMsMessageLog.logMessage(
+                "In photoDetails. FIELD 1 w: {}; h: {}".format(FIELD1.width(), FIELD1.height()), level=Qgis.Info)
+            photo_Widget1.setObjectName("Photo_Widget_01")
+            photo_Widget1.setText("No photo is here")
+            # photo_Widget1 = imageLabel(tab)
+            grid.addWidget(photo_Widget1, 0, 0, 1, 1)
+
+            FIELD1.hide()
+            FIELD1.setParent(None)
+            FIELD1 = photo_Widget1
+            FIELD1.set_Pixmap(pixmap1)
+
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 1 Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails.pixmap1 size: {}".format(pixmap1.size()),
+                                      level=Qgis.Info)
+
+            FIELD1.pixmapUpdated.connect(functools.partial(self.displayPixmapUpdated, FIELD1))
+
+            if takePhoto:
+                START_CAMERA_1 = self.demandDialog.findChild(QPushButton, "startCamera1")
+                TAKE_PHOTO_1 = self.demandDialog.findChild(QPushButton, "getPhoto1")
+                TAKE_PHOTO_1.setEnabled(False)
+
+                self.camera1 = formCamera(path_absolute, newPhotoFileName1, cameraNr)
+                START_CAMERA_1.clicked.connect(
+                    functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
+                self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
+                self.camera1.pixmapUpdated.connect(functools.partial(self.displayImage, FIELD1))
 
         if FIELD2:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 2 exisits",
-                                     level=Qgis.Info)
-            if currRestrictionFeature[idx2]:
-                newPhotoFileName2 = os.path.join(path_absolute, currRestrictionFeature[idx2])
+                                      level=Qgis.Info)
+            if self.currFeature[idx2]:
+                newPhotoFileName2 = os.path.join(path_absolute, self.currFeature[idx2])
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName2), level=Qgis.Info)
             else:
                 newPhotoFileName2 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
             pixmap2 = QPixmap(newPhotoFileName2)
-            if not pixmap2.isNull():
-                FIELD2.setPixmap(pixmap2)
-                FIELD2.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
 
-            if cv2_available:
-                try:
-                    START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
-                    TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
-                    TAKE_PHOTO_2.setEnabled(False)
+            tab = FIELD2.parentWidget()
+            grid = FIELD2.parentWidget().layout()
 
-                    self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
-                    START_CAMERA_2.clicked.connect(
-                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
-                    self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
-                except Exception as e:
-                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
+            photo_Widget2 = imageLabel(tab)
+            TOMsMessageLog.logMessage(
+                "In photoDetails. FIELD 2 w: {}; h: {}".format(FIELD2.width(), FIELD2.height()), level=Qgis.Info)
+            photo_Widget2.setObjectName("Photo_Widget_02")
+            photo_Widget2.setText("No photo is here")
+            # photo_Widget2 = imageLabel(tab)
+            grid.addWidget(photo_Widget2, 0, 0, 1, 1)
+
+            FIELD2.hide()
+            FIELD2.setParent(None)
+            FIELD2 = photo_Widget2
+            FIELD2.set_Pixmap(pixmap2)
+
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 2 Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails.pixmap2 size: {}".format(pixmap2.size()),
+                                      level=Qgis.Info)
+
+            FIELD2.pixmapUpdated.connect(functools.partial(self.displayPixmapUpdated, FIELD2))
+
+            if takePhoto:
+                START_CAMERA_2 = self.demandDialog.findChild(QPushButton, "startCamera2")
+                TAKE_PHOTO_2 = self.demandDialog.findChild(QPushButton, "getPhoto2")
+                TAKE_PHOTO_2.setEnabled(False)
+
+                self.camera2 = formCamera(path_absolute, newPhotoFileName2, cameraNr)
+                START_CAMERA_2.clicked.connect(
+                    functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
+                self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
+                self.camera2.pixmapUpdated.connect(functools.partial(self.displayImage, FIELD2))
 
         if FIELD3:
             TOMsMessageLog.logMessage("In photoDetails. FIELD 3 exisits",
-                                     level=Qgis.Info)
-            if currRestrictionFeature[idx3]:
-                newPhotoFileName3 = os.path.join(path_absolute, currRestrictionFeature[idx3])
+                                      level=Qgis.Info)
+
+            if self.currFeature[idx3]:
+                newPhotoFileName3 = os.path.join(path_absolute, self.currFeature[idx3])
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName3), level=Qgis.Info)
             else:
                 newPhotoFileName3 = None
 
             pixmap3 = QPixmap(newPhotoFileName3)
-            if not pixmap3.isNull():
-                FIELD3.setPixmap(pixmap3)
-                FIELD3.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Warning)
 
-            if cv2_available:
-                try:
-                    START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
-                    TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
-                    TAKE_PHOTO_3.setEnabled(False)
+            tab = FIELD3.parentWidget()
+            grid = FIELD3.parentWidget().layout()
 
-                    self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
-                    START_CAMERA_3.clicked.connect(
-                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
-                    self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
-                except Exception as e:
-                    TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
+            photo_Widget3 = imageLabel(tab)
+            TOMsMessageLog.logMessage(
+                "In photoDetails. FIELD 3 w: {}; h: {}".format(FIELD3.width(), FIELD3.height()), level=Qgis.Info)
+            photo_Widget3.setObjectName("Photo_Widget_03")
+            photo_Widget3.setText("No photo is here")
+            # photo_Widget3 = imageLabel(tab)
+            grid.addWidget(photo_Widget3, 0, 0, 1, 1)
+
+            FIELD3.hide()
+            FIELD3.setParent(None)
+            FIELD3 = photo_Widget3
+            FIELD3.set_Pixmap(pixmap3)
+
+            TOMsMessageLog.logMessage("In photoDetails. FIELD 3 Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In photoDetails.pixmap3 size: {}".format(pixmap3.size()),
+                                      level=Qgis.Info)
+
+            FIELD3.pixmapUpdated.connect(functools.partial(self.displayPixmapUpdated, FIELD3))
+
+            if takePhoto:
+                START_CAMERA_3 = self.demandDialog.findChild(QPushButton, "startCamera3")
+                TAKE_PHOTO_3 = self.demandDialog.findChild(QPushButton, "getPhoto3")
+                TAKE_PHOTO_3.setEnabled(False)
+
+                self.camera3 = formCamera(path_absolute, newPhotoFileName3, cameraNr)
+                START_CAMERA_3.clicked.connect(
+                    functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
+                self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
+                self.camera3.pixmapUpdated.connect(functools.partial(self.displayImage, FIELD3))
+
+        pass
+
+    @pyqtSlot(QPixmap)
+    def displayPixmapUpdated(self, FIELD, pixmap):
+        TOMsMessageLog.logMessage("In utils::displayPixmapUpdated ... ", level=Qgis.Info)
+        FIELD.setPixmap(pixmap)
+        FIELD.setScaledContents(True)
+        QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
+
+    def displayImage(self, FIELD, pixmap):
+        TOMsMessageLog.logMessage("In utils::displayImage ... ", level=Qgis.Info)
+
+        FIELD.update_image(pixmap.scaled(FIELD.width(), FIELD.height(), QtCore.Qt.KeepAspectRatio,
+                                                transformMode=QtCore.Qt.SmoothTransformation))
+
+        QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
+
 
     def photoDetails_camera(self, restrictionDialog, currRestrictionLayer, currRestriction):
 

@@ -45,4 +45,19 @@ WITH relevant_tables AS (
     SELECT mhtc_operations.getPhotosFromTable(full_table_name)
     FROM relevant_tables;
 
+/***
+to copy files from a list use - cat list.txt | xargs -I % echo cp % new_folder
+
+*** beware of line endings ...
+
+Other options include:
+prefix="/home/QGIS/projects/Islington/Mapping/photos"
+file="/home/tim/Downloads/photoList_210202.csv"
+while read -r line
+do
+ cp ${prefix}/$line /home/tim/ISL_Photos_210202
+done <$file
+
+***/
+
 
