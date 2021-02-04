@@ -760,7 +760,7 @@ ALTER TABLE toms_lookups."BayLineTypes"
 
 --
 
-INSERT INTO toms_lookups."BayLineTypes"("Code", "Description")
+INSERT INTO toms_lookups."BayLineTypes"("Code")
 SELECT DISTINCT CAST("CurrCode" AS int)
 FROM transfer."LookupCodeTransfers_Bays"
 UNION

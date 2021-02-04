@@ -297,7 +297,7 @@ CREATE MATERIALIZED VIEW local_authority."StreetGazetteerView"
 TABLESPACE pg_default
 AS
     SELECT row_number() OVER (PARTITION BY true::boolean) AS id,
-    name AS "RoadName", "Locality", geometry As geom
+    "RoadName" AS "RoadName", "Locality", geom As geom
 	FROM local_authority."StreetGazetteerRecords"
 WITH DATA;
 
@@ -323,12 +323,12 @@ REFRESH MATERIALIZED VIEW "toms_lookups"."TimePeriodsInUse_View";
 
 -- remove tables no longer required
 
-DROP TABLE "BayLineTypesInUse";
-DROP TABLE baytypes;
-DROP TABLE linetypes;
-DROP TABLE signs;
-DROP TABLE "RestrictionTypes";
-DROP TABLE "RoadCentreLine";
-DROP TABLE "Surveyors";
+DROP MATERIALIZED VIEW public."BayLineTypes";
 
-DROP MATERIALIZED VIEW "BayLineTypes";
+--DROP TABLE public."BayLineTypesInUse";
+DROP TABLE public.baytypes;
+DROP TABLE public.linetypes;
+DROP TABLE public.signs;
+DROP TABLE public."RestrictionTypes";
+DROP TABLE public."RoadCentreLine";
+DROP TABLE public."Surveyors";
