@@ -4,7 +4,7 @@ INSERT INTO topography.road_casement (geom, "RoadName", "ESUID", "USRN", "Locali
 SELECT geom, "StreetName", "ESUID", "USRN", "Locality", "Town"
 FROM
       (SELECT geom, "StreetName", "ESUID", "USRN", "Locality", "Town"
-       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 		'SELECT geom, "ESUID", "USRN", "StreetName", "Locality", "Town"
 	     FROM public."EDI_RC_with_USRN_StreetNames"') AS "EDI_RC_with_USRN_StreetNames" (geom geometry(LineString,27700),
 	     "ESUID" double precision, "USRN" integer, "StreetName" character varying(254), "Locality" character varying(255), "Town" character varying(255))) AS t;
@@ -16,7 +16,7 @@ INSERT INTO local_authority."StreetGazetteerRecords"(
 SELECT geom, "ESUID", "USRN", "Custodian", "StreetName", "Locality", "Town", "Language", "StreetLength"
 FROM
       (SELECT geom, "ESUID", "USRN", "Custodian", "StreetName", "Locality", "Town", "Language", "StreetLength"
-       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 		'SELECT geom, "ESUID", "USRN", "Custodian_", "Descriptor_", "Locality", "Town", "Language_", "Shape_Leng"
 	     FROM public."StreetGazetteerRecords_171231_USRN"') AS "StreetGazetteerRecords_171231_USRN" (geom geometry(MultiLineString,27700),
 	     "ESUID" double precision, "USRN" integer, "Custodian" integer, "StreetName" character varying(254), "Locality" character varying(255), "Town" character varying(255), "Language" character varying(255), "StreetLength" double precision)) AS t;
@@ -28,7 +28,7 @@ INSERT INTO local_authority."SiteArea"(
 SELECT name, geom
 FROM
       (SELECT name, geom
-       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 		'SELECT name, geom
 	     FROM public.city_of_edinburgh_area') AS "city_of_edinburgh_area" (
          name character varying(32),
@@ -45,7 +45,7 @@ SELECT toid, version, verdate, theme, descgroup, descterm,
 FROM
       (SELECT toid, version, verdate, theme, descgroup, descterm,
               change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
-       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 		'SELECT toid, version, verdate, theme, descgroup, descterm,
 		change, topoarea, nature, lnklength, node1, node1grade, node1gra_1, node2, node2grade, node2gra_1, shape_leng, geom
 	     FROM public.edi_itn_roadcentreline') AS "edi_itn_roadcentreline" (
@@ -76,7 +76,7 @@ SELECT id, geom, adoption_s, area_sq_m, confirmed, primary_ns, reinstatem, speed
 
 FROM
       (SELECT id, geom, adoption_s, area_sq_m, confirmed, primary_ns, reinstatem, speed_limi, surface, type, width, "Shape_Length", "Shape_Area"
-       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+       FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 		'SELECT id, geom, adoption_s, area_sq_m, confirmed, primary_ns, reinstatem, speed_limi, surface, type, width, "Shape_Length", "Shape_Area"
 	     FROM public."EDI_AdoptedRoads_2"') AS "EDI_AdoptedRoads_2" (
     id integer,
@@ -108,7 +108,7 @@ CREATE TABLE topography.os_mastermap_topography_text_cec AS
 SELECT toid, featcode, version, verdate, theme, change, descgroup, descterm, make, physlevel, physpres, text_, textfont, textpos, textheight, textangle, shape_leng, geom
 FROM
     (SELECT toid, featcode, version, verdate, theme, change, descgroup, descterm, make, physlevel, physpres, text_, textfont, textpos, textheight, textangle, shape_leng, geom
-	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 	'SELECT toid, featcode, version, verdate, theme, change, descgroup, descterm, make, physlevel, physpres, text_, textfont, textpos, textheight, textangle, shape_leng, geom
 	FROM public.edi_cartotext') AS edi_cartotext (
     toid character varying(20),
@@ -150,7 +150,7 @@ CREATE TABLE topography.os_mastermap_topography_polygons_cec_no_toid AS
 SELECT gid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
 FROM
     (SELECT gid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
-	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 	'SELECT gid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
 	FROM public.edi_mm WHERE toid IS NULL') AS edi_mm (
     gid integer,
@@ -182,7 +182,7 @@ CREATE TABLE topography.os_mastermap_topography_polygons_cec AS
 SELECT toid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
 FROM
     (SELECT toid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
-	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=OS!2postgreS options=-csearch_path=',
+	FROM dblink('hostaddr=127.0.0.1 port=5432 dbname=EDI1_VM user=postgres password=password options=-csearch_path=',
 	'SELECT toid, version, verdate, featcode, theme, calcarea, change, descgroup, descterm, make, physlevel, physpres, broken, shape_leng, shape_area, geom
 	FROM public.edi_mm WHERE toid IS NOT NULL') AS edi_mm (
     toid character varying(20),
