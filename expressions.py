@@ -135,6 +135,8 @@ def getRoadName(feature, parent):
     except Exception as e:
         TOMsMessageLog.logMessage('getRoadName: error in expression function: {}'.format(e),
                                   level=Qgis.Warning)
+        newRoadName = None
+
         """TOMsMessageLog.logMessage('getRoadName', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
@@ -154,6 +156,7 @@ def getUSRN(feature, parent):
     except Exception as e:
         TOMsMessageLog.logMessage('getUSRN: error in expression function: {}'.format(e),
                                   level=Qgis.Warning)
+        newUSRN = None
         """TOMsMessageLog.logMessage('getUSRN', level=Qgis.Info)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage(
