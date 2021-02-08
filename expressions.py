@@ -527,7 +527,6 @@ functions = [
     getPTA, prepareSignLine,
     prepareSignIconLocation,
     prepareSignIcon, prepareSignOrientation
-
 ]
 
 def registerFunctions():
