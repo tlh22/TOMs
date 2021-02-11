@@ -415,15 +415,136 @@ class TOMsGeometryElement(QObject):
         return newLine
 
 
+    def getBayDividers(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
+
+        # returns list of bay dividing lines
+
+        TOMsMessageLog.logMessage("In getBayDividers ... ", level=Qgis.Warning)
+
+        if shpExtent is None:
+            shpExtent = self.BayWidth
+        if offset is None:
+            offset = self.BayOffsetFromKerb
+        if AzimuthToCentreLine is None:
+            AzimuthToCentreLine = self.currAzimuthToCentreLine
+
+        feature = self.currFeature
+        restGeomType = self.currRestGeomType
+        orientation = self.currBayOrientation
+
+        newLines = []
+        ptsList = []
+        currGeom = self.currFeature.geometry()
+
+        line = generateGeometryUtils.getLineForAz(self.currFeature)
+
+        if len(line) == 0:
+            return None
+
+        # get Az and calc turn to CL
+
+        Az = generateGeometryUtils.checkDegrees(line[0].azimuth(line[1]))
+        # TOMsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), level=Qgis.Info)
+
+        Turn = generateGeometryUtils.turnToCL(Az, self.currAzimuthToCentreLine)
+
+        #newAz = generateGeometryUtils.checkDegrees(Az + Turn)
+        # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
+        #cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
+
+        TOMsMessageLog.logMessage(
+                "In getBayDividers. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
+
+        length = currGeom.length()
+
+        NrSegments = self.nrBays
+
+        interval = int(length/float(NrSegments) * 10000) / 10000
+
+        TOMsMessageLog.logMessage("In getBayDividers. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Warning)
+
+        # deal with two points
+        #ptsList.append(
+        #    QgsPointXY(line[0].x() + (float(offset) * cosa), line[0].y() + (float(offset) * cosb)))
+
+        #ptsList.append(
+        #    QgsPointXY(line[0].x() + (float(shpExtent) * cosa),
+        #             line[0].y() + (float(shpExtent) * cosb)))
+
+        distanceAlongLine = 0.0
+        countSegments = 0
+        while countSegments < (NrSegments):
+
+            countSegments = countSegments + 1
+
+            distanceAlongLine = distanceAlongLine + interval
+
+            interpolatedPointC = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
+
+            # now need to find the two vertices around this point and determine the azimuth ...
+
+            distSquared, closestPt, vertexNrAfterPt, leftOf = currGeom.closestSegmentWithContext(interpolatedPointC)
+            #orientationToFeature = generateGeometryUtils.checkDegrees(point.azimuth(QgsPointXY(closestPt)))
+            Az = generateGeometryUtils.checkDegrees(QgsPointXY(currGeom.vertexAt(vertexNrAfterPt-1)).azimuth(QgsPointXY(currGeom.vertexAt(vertexNrAfterPt))))
+            newAz = generateGeometryUtils.checkDegrees(Az + Turn)
+            # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
+            cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
+
+            TOMsMessageLog.logMessage("In getBayDividers. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Warning)
+            # TOMsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), level=Qgis.Info)
+
+            TOMsMessageLog.logMessage("In getBayDividers. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Warning)
+
+            #ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
+
+            ptsList.append(
+                QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
+
+            ptsList.append(
+                QgsPointXY(interpolatedPointC.x() + (float(shpExtent) * cosa),
+                         interpolatedPointC.y() + (float(shpExtent) * cosb)))
+
+            #distanceAlongLine = distanceAlongLine+interval/2
+
+            #interpolatedPointD = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
+
+            #TOMsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
+
+            #ptsList.append(QgsPointXY(interpolatedPointD.x() + (float(shpExtent) * cosa),
+            #         interpolatedPointD.y() + (float(shpExtent) * cosb)))
+
+            newLine = QgsGeometry.fromPolylineXY(ptsList)
+            newLines.append(newLine)
+        # deal with last point
+        #ptsList.append(
+        #    QgsPointXY(line[len(line) - 1].x() + (float(offset) * cosa),
+        #             line[len(line) - 1].y() + (float(offset) * cosb)))
+
+        #newLine = QgsGeometry.fromPolylineXY(ptsList)
+
+        return newLines
+
+
 """ ***** """
 
 class generatedGeometryBayLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Warning)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape()
+
+        if self.nrBays > 0:
+            bayDividers = self.getBayDividers()
+            if bayDividers is not None:
+                # prepare geometries list
+                geomList = []
+                geomList.append(outputGeometry)
+                for divider in bayDividers:
+                    geomList.append(divider)
+                return self.generateMultiLineShape(geomList)
+
         return outputGeometry
 
 
