@@ -82,7 +82,7 @@ class TOMsGeometryElement(QObject):
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
-        TOMsMessageLog.logMessage("In generatePolygon ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Warning)
 
         outputGeometry = QgsGeometry()
 
@@ -93,6 +93,8 @@ class TOMsGeometryElement(QObject):
                                      level=Qgis.Info)
 
             newGeometry = shape.combine(line)
+            TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} " + QgsWkbTypes.displayString(newGeometry.wkbType()),
+                                     level=Qgis.Warning)
 
             if newGeometry.wkbType() == QgsWkbTypes.MultiLineString:
 
@@ -119,13 +121,19 @@ class TOMsGeometryElement(QObject):
     def generateMultiLineShape(self, listGeometries):
         # ... and combine the geometries. NB: May be more than one
 
-        TOMsMessageLog.logMessage("In generateMultiLineShape ... ", level=Qgis.Info)
-
+        TOMsMessageLog.logMessage("In generateMultiLineShape ... nr pairs: {}".format(len(listGeometries)), level=Qgis.Warning)
         outputGeometry = QgsGeometry()
 
         for (shape) in listGeometries:
 
-            res = outputGeometry.addPointsXY(shape.asPolyline(), QgsWkbTypes.LineGeometry)
+            if shape.wkbType() ==  QgsWkbTypes.LineString:
+                res = outputGeometry.addPointsXY(shape.asPolyline(), QgsWkbTypes.LineGeometry)
+            else:
+                TOMsMessageLog.logMessage(
+                    "In generateMultiLineShape:  shape type: {} " + QgsWkbTypes.displayString(shape.wkbType()),
+                    level=Qgis.Warning)
+                for lineStr in shape.parts():
+                    res = outputGeometry.addPointsXY(lineStr.points(), QgsWkbTypes.LineGeometry)
 
             if res != QgsGeometry.OperationResult.Success:
                 TOMsMessageLog.logMessage(
@@ -527,7 +535,7 @@ class TOMsGeometryElement(QObject):
 
             TOMsMessageLog.logMessage(
                 "In factory. generatedGeometryBayPolygonType ... nr dividers: {}".format(len(bayDividers)),
-                level=Qgis.Info)
+                level=Qgis.Warning)
             for divider in bayDividers:
                 # divGeometry = QgsGeometry()
                 # res = divGeometry.addPointsXY(divider.asPolyline(), QgsWkbTypes.LineGeometry)
@@ -721,25 +729,21 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         TOMsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
-        # TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... BayWidth/2 = " + str((self.BayWidth)/2), level=Qgis.Info)
         outputGeometry1, parallelLine1 = self.getShape((self.BayWidth)/2)
-        #outputGeometry1A, paralletLine1A = self.getLine()
-
         outputGeometry2, parallelLine2 = self.getShape((self.BayWidth)/2, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        #outputGeometry2A, paralletLine2A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-
-        #return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
-        #return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
 
         outputGeometry1 = self.generatePolygon([(outputGeometry1, parallelLine1)])
-        outputGeometry2 = self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry2 = self.generatePolygon([(outputGeometry2, parallelLine2)])
 
         if self.nrBays > 0:
-            outputGeometry1 = self.addBayPolygonDividers(outputGeometry1, shpExtent=self.BayWidth/2)
-            outputGeometry2 = self.addBayPolygonDividers(outputGeometry2, shpExtent=self.BayWidth/2,
+            TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... getting bay divisions ", level=Qgis.Warning)
+            outputGeometry1 = self.addBayPolygonDividers(outputGeometry=outputGeometry1, shpExtent=self.BayWidth/2)
+            outputGeometry2 = self.addBayPolygonDividers(outputGeometry=outputGeometry2, shpExtent=self.BayWidth/2,
                               AzimuthToCentreLine=generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
+        outputGeometry1.addPartGeometry(outputGeometry2)
+
+        return outputGeometry1
 
 
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
