@@ -356,7 +356,7 @@ class TOMsGeometryElement(QObject):
         if NrSegments == 0:
             NrSegments = 1
             TOMsMessageLog.logMessage(
-                "In getZigZag. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
+                "In getZigZag. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Info)
         interval = int(length/float(NrSegments) * 10000) / 10000
 
         TOMsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
@@ -419,7 +419,7 @@ class TOMsGeometryElement(QObject):
 
         # returns list of bay dividing lines
 
-        TOMsMessageLog.logMessage("In getBayDividers ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getBayDividers ... ", level=Qgis.Info)
 
         if shpExtent is None:
             shpExtent = self.BayWidth
@@ -428,12 +428,15 @@ class TOMsGeometryElement(QObject):
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
 
+        # slightly extend the length of the dividers to deal with any rounding errors in the split process
+        shpExtent = shpExtent + 0.0001
+        offset = offset - 0.0001
+
         feature = self.currFeature
         restGeomType = self.currRestGeomType
         orientation = self.currBayOrientation
 
         newLines = []
-        ptsList = []
         currGeom = self.currFeature.geometry()
 
         line = generateGeometryUtils.getLineForAz(self.currFeature)
@@ -444,16 +447,15 @@ class TOMsGeometryElement(QObject):
         # get Az and calc turn to CL
 
         Az = generateGeometryUtils.checkDegrees(line[0].azimuth(line[1]))
-        # TOMsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), level=Qgis.Info)
-
         Turn = generateGeometryUtils.turnToCL(Az, self.currAzimuthToCentreLine)
+        newAz = generateGeometryUtils.checkDegrees(Az + Turn)
 
-        #newAz = generateGeometryUtils.checkDegrees(Az + Turn)
-        # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
-        #cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
+        if restGeomType in [5, 25, 9, 29]:  # echelon
+            if self.is_float(orientation) == False:
+                orientation = AzimuthToCentreLine
 
         TOMsMessageLog.logMessage(
-                "In getBayDividers. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
+                "In getBayDividers. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Info)
 
         length = currGeom.length()
 
@@ -461,20 +463,13 @@ class TOMsGeometryElement(QObject):
 
         interval = int(length/float(NrSegments) * 10000) / 10000
 
-        TOMsMessageLog.logMessage("In getBayDividers. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Warning)
-
-        # deal with two points
-        #ptsList.append(
-        #    QgsPointXY(line[0].x() + (float(offset) * cosa), line[0].y() + (float(offset) * cosb)))
-
-        #ptsList.append(
-        #    QgsPointXY(line[0].x() + (float(shpExtent) * cosa),
-        #             line[0].y() + (float(shpExtent) * cosb)))
+        TOMsMessageLog.logMessage("In getBayDividers. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
 
         distanceAlongLine = 0.0
         countSegments = 0
-        while countSegments < (NrSegments):
+        while countSegments < (NrSegments-1):
 
+            ptsList = []
             countSegments = countSegments + 1
 
             distanceAlongLine = distanceAlongLine + interval
@@ -484,66 +479,101 @@ class TOMsGeometryElement(QObject):
             # now need to find the two vertices around this point and determine the azimuth ...
 
             distSquared, closestPt, vertexNrAfterPt, leftOf = currGeom.closestSegmentWithContext(interpolatedPointC)
-            #orientationToFeature = generateGeometryUtils.checkDegrees(point.azimuth(QgsPointXY(closestPt)))
+
             Az = generateGeometryUtils.checkDegrees(QgsPointXY(currGeom.vertexAt(vertexNrAfterPt-1)).azimuth(QgsPointXY(currGeom.vertexAt(vertexNrAfterPt))))
             newAz = generateGeometryUtils.checkDegrees(Az + Turn)
-            # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
+
+            if restGeomType in [5, 25, 9, 29]:  # echelon
+                diffEchelonAz1 = float(orientation) - newAz
+                diffEchelonAz = generateGeometryUtils.checkDegrees(diffEchelonAz1)
+                newAz = generateGeometryUtils.checkDegrees(newAz + diffEchelonAz)
+
             cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-            TOMsMessageLog.logMessage("In getBayDividers. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Warning)
-            # TOMsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), level=Qgis.Info)
-
-            TOMsMessageLog.logMessage("In getBayDividers. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Warning)
-
-            #ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
+            TOMsMessageLog.logMessage("In getBayDividers. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getBayDividers. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Info)
 
             ptsList.append(
-                QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
+                QgsPointXY(closestPt.x() + (float(offset) * cosa), closestPt.y() + (float(offset) * cosb)))
 
             ptsList.append(
-                QgsPointXY(interpolatedPointC.x() + (float(shpExtent) * cosa),
-                         interpolatedPointC.y() + (float(shpExtent) * cosb)))
-
-            #distanceAlongLine = distanceAlongLine+interval/2
-
-            #interpolatedPointD = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
-
-            #TOMsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
-
-            #ptsList.append(QgsPointXY(interpolatedPointD.x() + (float(shpExtent) * cosa),
-            #         interpolatedPointD.y() + (float(shpExtent) * cosb)))
+                QgsPointXY(closestPt.x() + (float(shpExtent) * cosa),
+                         closestPt.y() + (float(shpExtent) * cosb)))
 
             newLine = QgsGeometry.fromPolylineXY(ptsList)
             newLines.append(newLine)
-        # deal with last point
-        #ptsList.append(
-        #    QgsPointXY(line[len(line) - 1].x() + (float(offset) * cosa),
-        #             line[len(line) - 1].y() + (float(offset) * cosb)))
-
-        #newLine = QgsGeometry.fromPolylineXY(ptsList)
 
         return newLines
 
+    def addBayLineDividers(self, outputGeometry, shpExtent=None, AzimuthToCentreLine=None, offset=None):
+        # add "legs" to bay shape to show dividers
+
+        bayDividers = self.getBayDividers(shpExtent, AzimuthToCentreLine, offset)
+        if bayDividers is not None:
+            # prepare geometries list
+            geomList = []
+            for divider in bayDividers:
+                geomList.append(divider)
+            geomList.append(outputGeometry)
+            return self.generateMultiLineShape(geomList)
+
+    def addBayPolygonDividers(self, outputGeometry, shpExtent=None, AzimuthToCentreLine=None, offset=None):
+
+        # split output polygon(s) to show bay dividers
+        bayDividers = self.getBayDividers(shpExtent, AzimuthToCentreLine, offset)
+        if bayDividers is not None:
+            # prepare geometries list
+            outputGeometries = [outputGeometry]
+
+            TOMsMessageLog.logMessage(
+                "In factory. generatedGeometryBayPolygonType ... nr dividers: {}".format(len(bayDividers)),
+                level=Qgis.Info)
+            for divider in bayDividers:
+                # divGeometry = QgsGeometry()
+                # res = divGeometry.addPointsXY(divider.asPolyline(), QgsWkbTypes.LineGeometry)
+                TOMsMessageLog.logMessage(
+                    "In factory. divider : {}".format(divider.asWkt()),
+                    level=Qgis.Info)
+
+                newGeomsList = []
+                for outGeom in outputGeometries:
+                    result, extraGeometriesList, topologyTestPointsList = outGeom.splitGeometry(
+                        divider.asPolyline(), True)
+                    newGeomsList.append(outGeom)
+                    for geom in extraGeometriesList:
+                        newGeomsList.append(geom)
+                outputGeometries = newGeomsList
+                TOMsMessageLog.logMessage(
+                    "In factory. generatedGeometryBayPolygonType ... nr outputGeometries: {}".format(
+                        len(outputGeometries)),
+                    level=Qgis.Info)
+
+            # now combine all the output polygons
+            newGeom = QgsGeometry()
+            newGeom = outputGeometries[0]
+            for i in range(1, len(outputGeometries)):
+                newGeom.addPartGeometry(outputGeometries[i])
+
+            outputGeometry = newGeom
+
+            TOMsMessageLog.logMessage(
+                "In addPolygonDividers ... split geom: {}".format(outputGeometry.asWkt()),
+                level=Qgis.Info)
+
+        return outputGeometry
 
 """ ***** """
 
 class generatedGeometryBayLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape()
 
         if self.nrBays > 0:
-            bayDividers = self.getBayDividers()
-            if bayDividers is not None:
-                # prepare geometries list
-                geomList = []
-                geomList.append(outputGeometry)
-                for divider in bayDividers:
-                    geomList.append(divider)
-                return self.generateMultiLineShape(geomList)
+            outputGeometry = self.addBayLineDividers(outputGeometry)
 
         return outputGeometry
 
@@ -558,6 +588,10 @@ class generatedGeometryHalfOnHalfOffLineType(TOMsGeometryElement):
         outputGeometry1, parallelLine1 = self.getShape(self.BayWidth/2)
         outputGeometry2, parallelLine2 = self.getShape(self.BayWidth/2, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
+        if self.nrBays > 0:
+            outputGeometry1 = self.addBayLineDividers(outputGeometry1, self.BayWidth/2)
+            outputGeometry2 = self.addBayLineDividers(outputGeometry2, self.BayWidth/2, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+        
         return self.generateMultiLineShape([outputGeometry1, outputGeometry2])
 
 
@@ -568,6 +602,10 @@ class generatedGeometryOnPavementLineType(TOMsGeometryElement):
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayLineDividers(outputGeometry, self.BayWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
         return outputGeometry
 
 
@@ -578,6 +616,10 @@ class generatedGeometryPerpendicularLineType(TOMsGeometryElement):
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayLineDividers(outputGeometry, self.BayLength)
+
         return outputGeometry
 
 
@@ -588,6 +630,10 @@ class generatedGeometryEchelonLineType(TOMsGeometryElement):
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayLineDividers(outputGeometry, self.BayLength)
+
         return outputGeometry
 
 
@@ -598,6 +644,10 @@ class generatedGeometryPerpendicularOnPavementLineType(TOMsGeometryElement):
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayLineDividers(outputGeometry, self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
         return outputGeometry
 
 
@@ -617,6 +667,10 @@ class generatedGeometryEchelonOnPavementLineType(TOMsGeometryElement):
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayLineDividers(outputGeometry, self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
         return outputGeometry
 
 
@@ -652,8 +706,13 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
         outputGeometry1, parallelLine1 = self.getShape()
         #outputGeometry1A, paralletLine1A = self.getLine()
 
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
-        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry)
+
+        return outputGeometry
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
 
 
 class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
@@ -670,7 +729,15 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         #outputGeometry2A, paralletLine2A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
+
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry)
+
+        return outputGeometry
+
 
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -683,7 +750,14 @@ class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
         #outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry)
+
+        return outputGeometry
+
 
 class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -696,7 +770,14 @@ class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
         #outputGeometry1A, paralletLine1A = self.getLine()
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry, self.BayLength)
+
+        return outputGeometry
+
 
 class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -709,7 +790,14 @@ class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
         #outputGeometry1A, paralletLine1A = self.getLine()
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry, self.BayLength)
+
+        return outputGeometry
+
 
 class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -723,6 +811,13 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
         return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry, self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
+        return outputGeometry
+
 
 class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
@@ -744,7 +839,14 @@ class generatedGeometryEchelonOnPavementPolygonType(TOMsGeometryElement):
         #outputGeometry1A, paralletLine1A = self.getLine()
 
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        if self.nrBays > 0:
+            outputGeometry = self.addBayPolygonDividers(outputGeometry, self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
+
+        return outputGeometry
+
 
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
