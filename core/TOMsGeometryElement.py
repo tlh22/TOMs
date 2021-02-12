@@ -447,7 +447,7 @@ class TOMsGeometryElement(QObject):
         # get Az and calc turn to CL
 
         Az = generateGeometryUtils.checkDegrees(line[0].azimuth(line[1]))
-        Turn = generateGeometryUtils.turnToCL(Az, self.currAzimuthToCentreLine)
+        Turn = generateGeometryUtils.turnToCL(Az, AzimuthToCentreLine)
         newAz = generateGeometryUtils.checkDegrees(Az + Turn)
 
         if restGeomType in [5, 25, 9, 29]:  # echelon
@@ -520,7 +520,7 @@ class TOMsGeometryElement(QObject):
     def addBayPolygonDividers(self, outputGeometry, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
         # split output polygon(s) to show bay dividers
-        bayDividers = self.getBayDividers(shpExtent, AzimuthToCentreLine, offset)
+        bayDividers = self.getBayDividers(shpExtent=shpExtent, AzimuthToCentreLine=AzimuthToCentreLine, offset=offset)
         if bayDividers is not None:
             # prepare geometries list
             outputGeometries = [outputGeometry]
@@ -731,12 +731,15 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         #return self.generatePolygon([(outputGeometry1, outputGeometry1A), (outputGeometry2, outputGeometry2A)])
         #return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
 
-        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
+        outputGeometry1 = self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry2 = self.generatePolygon([(outputGeometry1, parallelLine1)])
 
         if self.nrBays > 0:
-            outputGeometry = self.addBayPolygonDividers(outputGeometry)
+            outputGeometry1 = self.addBayPolygonDividers(outputGeometry1, shpExtent=self.BayWidth/2)
+            outputGeometry2 = self.addBayPolygonDividers(outputGeometry2, shpExtent=self.BayWidth/2,
+                              AzimuthToCentreLine=generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        return outputGeometry
+        return self.generatePolygon([(outputGeometry1, parallelLine1), (outputGeometry2, parallelLine2)])
 
 
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
@@ -754,7 +757,8 @@ class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
         outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
 
         if self.nrBays > 0:
-            outputGeometry = self.addBayPolygonDividers(outputGeometry)
+            outputGeometry = self.addBayPolygonDividers(outputGeometry, shpExtent=self.BayWidth,
+                                                        AzimuthToCentreLine=generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
         return outputGeometry
 
