@@ -82,7 +82,7 @@ class TOMsGeometryElement(QObject):
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
-        TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Info)
 
         outputGeometry = QgsGeometry()
 
@@ -94,7 +94,7 @@ class TOMsGeometryElement(QObject):
 
             newGeometry = shape.combine(line)
             TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} " + QgsWkbTypes.displayString(newGeometry.wkbType()),
-                                     level=Qgis.Warning)
+                                     level=Qgis.Info)
 
             if newGeometry.wkbType() == QgsWkbTypes.MultiLineString:
 
@@ -121,23 +121,15 @@ class TOMsGeometryElement(QObject):
     def generateMultiLineShape(self, listGeometries):
         # ... and combine the geometries. NB: May be more than one
 
-        TOMsMessageLog.logMessage("In generateMultiLineShape ... nr pairs: {}".format(len(listGeometries)), level=Qgis.Warning)
-        outputGeometry = QgsGeometry()
+        TOMsMessageLog.logMessage("In generateMultiLineShape ... nr pairs: {}".format(len(listGeometries)), level=Qgis.Info)
 
-        for (shape) in listGeometries:
+        outputGeometry = listGeometries[0]
+        outputGeometry.convertToMultiType()
 
-            if shape.wkbType() ==  QgsWkbTypes.LineString:
-                res = outputGeometry.addPointsXY(shape.asPolyline(), QgsWkbTypes.LineGeometry)
-            else:
-                TOMsMessageLog.logMessage(
-                    "In generateMultiLineShape:  shape type: {} " + QgsWkbTypes.displayString(shape.wkbType()),
-                    level=Qgis.Warning)
-                for lineStr in shape.parts():
-                    res = outputGeometry.addPointsXY(lineStr.points(), QgsWkbTypes.LineGeometry)
+        for i in range(1, len(listGeometries)):
 
-            if res != QgsGeometry.OperationResult.Success:
-                TOMsMessageLog.logMessage(
-                    "In generateMultiLineShape: NOT able to add part  ...", level=Qgis.Info)
+            listGeometries[i].convertToMultiType()
+            outputGeometry = outputGeometry.combine(listGeometries[i])
 
         return outputGeometry
 
@@ -535,7 +527,7 @@ class TOMsGeometryElement(QObject):
 
             TOMsMessageLog.logMessage(
                 "In factory. generatedGeometryBayPolygonType ... nr dividers: {}".format(len(bayDividers)),
-                level=Qgis.Warning)
+                level=Qgis.Info)
             for divider in bayDividers:
                 # divGeometry = QgsGeometry()
                 # res = divGeometry.addPointsXY(divider.asPolyline(), QgsWkbTypes.LineGeometry)
@@ -736,7 +728,7 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         outputGeometry2 = self.generatePolygon([(outputGeometry2, parallelLine2)])
 
         if self.nrBays > 0:
-            TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... getting bay divisions ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... getting bay divisions ", level=Qgis.Info)
             outputGeometry1 = self.addBayPolygonDividers(outputGeometry=outputGeometry1, shpExtent=self.BayWidth/2)
             outputGeometry2 = self.addBayPolygonDividers(outputGeometry=outputGeometry2, shpExtent=self.BayWidth/2,
                               AzimuthToCentreLine=generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
