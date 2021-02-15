@@ -96,8 +96,13 @@ class TOMsGeometryElement(QObject):
             TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} ".format(QgsWkbTypes.displayString(newGeometry.wkbType())),
                                      level=Qgis.Warning)
 
+            #TOMsMessageLog.logMessage("In generatePolygon:  new geom type ********: {}: {}".format(newGeometry.wkbType(), newGeometry.asWkt()),
+            #                         level=Qgis.Info)
+
             if newGeometry.wkbType() == QgsWkbTypes.MultiLineString:
 
+                #TOMsMessageLog.logMessage(
+                #    "In generatePolygon: creating multi  ...", level=Qgis.Info)
                 linesList = newGeometry.asMultiPolyline()
 
                 outputGeometry = QgsGeometry.fromPolygonXY(linesList)
@@ -110,8 +115,6 @@ class TOMsGeometryElement(QObject):
 
             else:
 
-<<<<<<< Updated upstream
-=======
                 #TOMsMessageLog.logMessage(
                 #    "In generatePolygon: creating single?  ...", level=Qgis.Info)
 
@@ -121,19 +124,25 @@ class TOMsGeometryElement(QObject):
                 #TOMsMessageLog.logMessage(
                 #    "In generatePolygon: creating single 2?  ...: {}".format(linesList), level=Qgis.Info)
                 #outputGeometry = QgsGeometry.fromPolygonXY(linesList)
+
                 #res = outputGeometry.addPartGeometry(newGeometry.asPolyline())
                 #res = outputGeometry.addPartGeometry(newGeometry)
 
                 outputGeometry = QgsGeometry.fromPolygonXY([newGeometry.asPolyline()])
                 
                 """
->>>>>>> Stashed changes
                 res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.PolygonGeometry)
 
                 if res != QgsGeometry.OperationResult.Success:
                     TOMsMessageLog.logMessage(
                         "In generatePolygon: NOT able to add part  ...", level=Qgis.Info)
+                """
+                TOMsMessageLog.logMessage(
+                    "In generatePolygon: after creating single  ...", level=Qgis.Info)
 
+        #TOMsMessageLog.logMessage(
+        #    "In generatePolygon:  outputGeometry ********: {}".format(outputGeometry.asWkt()),
+        #    level=Qgis.Info)
         return outputGeometry
 
     def generateMultiLineShape(self, listGeometries):

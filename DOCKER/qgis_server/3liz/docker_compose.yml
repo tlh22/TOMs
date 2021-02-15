@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+
+  qgisserver:
+    build:
+      context: .
+      dockerfile: dockerfile-toms-test-qgis-server-3liz
+    hostname: qgis-server-3liz
+    environment:
+      - PGSERVICEFILE=/io/pg_service/.pg_service.conf
+      - QGSRV_SERVER_PLUGINPATH
+      - QGSRV_SERVER_WORKERS=2
+      - QGSRV_LOGGING_LEVEL=DEBUG
+      - QGSRV_CACHE_ROOTDIR=/io/data
+      - QGSRV_CACHE_SIZE=10
+    volumes:
+      - ../pg_service:/io/pg_service
+      - ../../QGIS/qgis_server:/io/data
+    ports:
+      - 8387:8080
+    networks:
+      c2c-toms-net:
+        aliases:
+          - qgis-server-camptocamp
+
+networks:
+  c2c-toms-net:
+    external:
+      name: toms_net
+
+
+#Plugin  PATH: /usr/local/lib/qgis/plugins
+
+#PkgData PATH: /usr/local/share/qgis
+
+#User DB PATH: /tmp/profiles/default/qgis.db
+
+#Auth DB PATH: /tmp/profiles/default/qgis-auth.db
+
+#SVG PATHS: /usr/local/share/qgis/svg/:/tmp/profiles/default/svg/
