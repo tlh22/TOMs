@@ -84,7 +84,7 @@ class TOMsGeometryElement(QObject):
 
         TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Info)
 
-        outputGeometry = QgsGeometry()
+        #outputGeometry = QgsGeometry()
 
         for (shape, line) in listGeometryPairs:
 
@@ -93,8 +93,8 @@ class TOMsGeometryElement(QObject):
                                      level=Qgis.Info)
 
             newGeometry = shape.combine(line)
-            TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} " + QgsWkbTypes.displayString(newGeometry.wkbType()),
-                                     level=Qgis.Info)
+            TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} ".format(QgsWkbTypes.displayString(newGeometry.wkbType())),
+                                     level=Qgis.Warning)
 
             #TOMsMessageLog.logMessage("In generatePolygon:  new geom type ********: {}: {}".format(newGeometry.wkbType(), newGeometry.asWkt()),
             #                         level=Qgis.Info)
@@ -124,8 +124,12 @@ class TOMsGeometryElement(QObject):
                 #TOMsMessageLog.logMessage(
                 #    "In generatePolygon: creating single 2?  ...: {}".format(linesList), level=Qgis.Info)
                 #outputGeometry = QgsGeometry.fromPolygonXY(linesList)
-                res = outputGeometry.addPartGeometry(newGeometry.asPolyline())
 
+                #res = outputGeometry.addPartGeometry(newGeometry.asPolyline())
+                #res = outputGeometry.addPartGeometry(newGeometry)
+
+                outputGeometry = QgsGeometry.fromPolygonXY([newGeometry.asPolyline()])
+                
                 """
                 res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.PolygonGeometry)
 
