@@ -94,7 +94,7 @@ class TOMsGeometryElement(QObject):
 
             newGeometry = shape.combine(line)
             TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} ".format(QgsWkbTypes.displayString(newGeometry.wkbType())),
-                                     level=Qgis.Warning)
+                                     level=Qgis.Info)
 
             #TOMsMessageLog.logMessage("In generatePolygon:  new geom type ********: {}: {}".format(newGeometry.wkbType(), newGeometry.asWkt()),
             #                         level=Qgis.Info)
@@ -447,7 +447,7 @@ class TOMsGeometryElement(QObject):
         # returns list of bay dividing lines
 
         TOMsMessageLog.logMessage(
-                "In getBayDividers. restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
+                "In getBayDividers. restriction {}: geometry {}".format(self.currFeature.attribute("RestrictionID"), self.currFeature.attribute("GeometryID")), level=Qgis.Info)
 
         if shpExtent is None:
             shpExtent = self.BayWidth
@@ -551,21 +551,21 @@ class TOMsGeometryElement(QObject):
 
             if parallelShapeGeom.intersects(testLineGeom):
                 startPoint = testStartPoint
-                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects startPoint ...", level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects startPoint ...", level=Qgis.Info)
             else:
                 # get point on bay shape from testPoint
                 startPoint = parallelShapeGeom.nearestPoint(QgsGeometry.fromPointXY(testStartPoint)).asPoint()
                 TOMsMessageLog.logMessage(
-                    "In getBayDividers. *** new startPt x = {}; y = {}".format(startPoint.x(), startPoint.y()), level=Qgis.Warning)
+                    "In getBayDividers. *** new startPt x = {}; y = {}".format(startPoint.x(), startPoint.y()), level=Qgis.Info)
 
             if outsideBayShapeLineGeom.intersects(testLineGeom):
                 endPoint = testEndPoint
-                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects endPoint ...", level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects endPoint ...", level=Qgis.Info)
             else:
                 # get point on bay shape from testPoint
                 endPoint = outsideBayShapeLineGeom.nearestPoint(QgsGeometry.fromPointXY(testEndPoint)).asPoint()
                 TOMsMessageLog.logMessage(
-                    "In getBayDividers. *** new endPt x = {}; y = {}".format(endPoint.x(), endPoint.y()), level=Qgis.Warning)
+                    "In getBayDividers. *** new endPt x = {}; y = {}".format(endPoint.x(), endPoint.y()), level=Qgis.Info)
 
             newLine = QgsGeometry.fromPolylineXY([startPoint, endPoint]).extendLine(0.0001, 0.0001)
             newLines.append(newLine)
@@ -614,7 +614,7 @@ class TOMsGeometryElement(QObject):
                 TOMsMessageLog.logMessage(
                     "In factory. generatedGeometryBayPolygonType ... nr outputGeometries: {}".format(
                         len(outputGeometries)),
-                    level=Qgis.Warning)
+                    level=Qgis.Info)
 
             # now combine all the output polygons
             newGeom = QgsGeometry()
@@ -782,7 +782,7 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
         if self.nrBays > 0:
             outputGeometry = self.addBayPolygonDividers(outputGeometry, outputGeometry1, parallelLine1)
 
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
 
         return outputGeometry
         #return self.generatePolygon([(outputGeometry1, parallelLine1)])
@@ -890,7 +890,7 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
             outputGeometry = self.addBayPolygonDividers(outputGeometry, outputGeometry1, parallelLine1, self.BayLength,
                                                         generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
 
         return outputGeometry
 
