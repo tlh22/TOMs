@@ -88,6 +88,8 @@ def generateDisplayGeometry(feature, parent):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         TOMsMessageLog.logMessage('generateDisplayGeometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))), level=Qgis.Info)"""
 
+    TOMsMessageLog.logMessage('generateDisplayGeometry: {}:{}'.format(feature.attribute("GeometryID"), res.asWkt()),
+                          level=Qgis.Info)
     return res
 
 @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
