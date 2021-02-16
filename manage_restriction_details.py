@@ -818,7 +818,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             # unfortunately, ids of two layers reprenseting the same tables do not seem to be identical
             # so we need to do this little dance...
             pk_attrs_idxs = currRestrictionLayer.primaryKeyAttributes()
-            assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys'
+            assert len(pk_attrs_idxs) == 1, 'We do not support composite primary keys {}'.format(pk_attrs_idxs)
             pk_attr_idx = pk_attrs_idxs[0]
             pk_attr = currRestrictionLayer.fields().names()[pk_attr_idx]
             selected_pks = ','.join(["'"+f[pk_attr_idx]+"'" for f in currRestrictionLayer.selectedFeatures()])
