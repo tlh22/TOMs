@@ -122,13 +122,18 @@ class TOMsTransaction(QObject):
     def createTransactionGroup(self):
 
         TOMsMessageLog.logMessage("In TOMsTransaction.createTransactionGroup",
-                                 level=Qgis.Info)
+                                 level=Qgis.Warning)
 
         if self.currTransactionGroup:
 
             for layer in self.setTransactionGroup:
-                self.currTransactionGroup.addLayer(layer)
-                TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup. Adding " + str(layer.name()), level=Qgis.Info)
+
+                try:
+                    self.currTransactionGroup.addLayer(layer)
+                except Exception as e:
+                    TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup: adding {}. error: {}".format(layer, e), level=Qgis.Warning)
+
+                TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup. Adding " + str(layer.name()), level=Qgis.Warning)
 
                 #layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
                 #layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
