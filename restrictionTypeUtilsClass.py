@@ -220,72 +220,6 @@ class TOMsLayers(QObject):
         self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
-        #self.proposalsManager = proposalsManager
-
-        #RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
-        """
-        self.TOMsLayerList = ["Proposals",
-                         "ProposalStatusTypes",
-                         "ActionOnProposalAcceptanceTypes",
-                         "RestrictionLayers",
-                         "RestrictionsInProposals",
-                         "Bays",
-                         "Lines",
-                         "Signs",
-                         "RestrictionPolygons",
-                         "ConstructionLines",
-                         "MapGrid",
-                         "CPZs",
-                         "ParkingTariffAreas",
-                         "StreetGazetteerRecords",
-                         "RoadCentreLine",
-                         "RoadCasement",
-                         "TilesInAcceptedProposals",
-                         #"RestrictionTypes",
-                         #"BayLineTypes",
-                         #"SignTypes",
-                         #"RestrictionPolygonTypes",
-                              "AdditionalConditionTypes",
-                              "BayLineTypes",
-                              "BayTypesInUse",
-                              "BayTypesInUse_View",
-                              "LineTypesInUse",
-                              "LineTypesInUse_View",
-                              "RestrictionPolygonTypes",
-                              "RestrictionPolygonTypesInUse",
-                              "RestrictionPolygonTypesInUse_View",
-                              "LengthOfTime",
-                              "PaymentTypes",
-                              # "RestrictionShapeTypes",
-                              #"MHTC_CheckIssueTypes",
-                              # "MHTC_CheckStatus",
-                              #"SignConditionTypes",
-                              #"SignIlluminationTypes",
-                              #"SignOrientationTypes",
-                              "SignTypes",
-                              "SignTypesInUse",
-                              "SignTypesInUse_View",
-                              "TimePeriods",
-                              "TimePeriodsInUse",
-                              "TimePeriodsInUse_View",
-                              "GeomShapeGroupType",
-
-                                # for labels
-                               "Bays.label_pos",
-                               "Lines.label_pos",
-                               "Lines.label_loading_pos",
-                               "RestrictionPolygons.label_pos",
-                               "CPZs.label_pos",
-                               "ParkingTariffAreas.label_pos",
-                               "Bays.label_ldr",
-                              "Lines.label_ldr",
-                              "Lines.label_loading_ldr",
-                              "RestrictionPolygons.label_ldr",
-                              "CPZs.label_ldr",
-                              "ParkingTariffAreas.label_ldr"
-
-                              ]
-                              """
 
         self.TOMsLayerDict = {}
 
@@ -325,8 +259,10 @@ class TOMsLayers(QObject):
             self.formPath = self.getTOMsFormPathFromConfigFile(configFileObject)
             TOMsMessageLog.logMessage("In TOMsLayers:getLayers. formPath is {} ...".format(self.formPath),
                                       level=Qgis.Warning)
-            if self.formPath is None:
-                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("QGIS_FIELD_FORM_PATH not found ..."))
+
+            # check that path exists
+            if not os.path.isdir(self.formPath):
+                QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Form path in config file was not found ..."))
                 self.TOMsLayersNotFound.emit()
                 found = False
 
