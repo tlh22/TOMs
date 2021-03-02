@@ -69,6 +69,8 @@ CREATE INDEX sidx_roadlink_geom
     TABLESPACE pg_default;
 
 -- Add view for gazetteer lookup from roadlink
+DROP MATERIALIZED VIEW IF EXISTS local_authority."StreetGazetteerView" CASCADE;
+
 CREATE MATERIALIZED VIEW local_authority."StreetGazetteerView"
 TABLESPACE pg_default
 AS
