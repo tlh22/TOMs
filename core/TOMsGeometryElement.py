@@ -383,7 +383,7 @@ class TOMsGeometryElement(QObject):
         if NrSegments == 0:
             NrSegments = 1
             TOMsMessageLog.logMessage(
-                "In getZigZag. NrSegments is 0 for restriction {}: geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
+                "In getZigZag. NrSegments is 0 for geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
         interval = int(length/float(NrSegments) * 10000) / 10000
 
         TOMsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
@@ -447,7 +447,7 @@ class TOMsGeometryElement(QObject):
         # returns list of bay dividing lines
 
         TOMsMessageLog.logMessage(
-                "In getBayDividers. restriction {}: geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
+                "In getBayDividers. geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
 
         if shpExtent is None:
             shpExtent = self.BayWidth
