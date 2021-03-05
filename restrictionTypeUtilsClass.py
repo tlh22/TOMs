@@ -48,7 +48,7 @@ from qgis.core import (
     Qgis,
     QgsSettings
 )
-
+from qgis.utils import iface
 from qgis.gui import *
 import functools
 import time
@@ -88,7 +88,7 @@ class TOMsParams(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        # self.iface = iface
+        self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSParams.init ...", level=Qgis.Info)
         self.TOMsParamsList = ["BayWidth",
