@@ -72,14 +72,23 @@ class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
     pixmapUpdated = pyqtSignal(QPixmap)
 
-    def __init__(self, path_absolute, currFileName, cameraNr=None):
+    def __init__(self, path_absolute, currFileName, cameraNr=None, frameWidth=None, frameHeight=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
         self.camera = cvCamera()
+
         self.cameraNr = cameraNr
         if self.cameraNr is None:
             self.cameraNr = 1
+
+        self.frameWidth = frameWidth
+        if self.frameWidth is None:
+            self.frameWidth = 640
+
+        self.frameHeight = frameHeight
+        if self.frameHeight is None:
+            self.frameHeight = 480
 
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
@@ -113,7 +122,7 @@ class formCamera(QObject):
 
         TOMsMessageLog.logMessage("In formCamera::useCamera: starting camera ... ", level=Qgis.Info)
 
-        self.camera.startCamera(self.cameraNr)
+        self.camera.startCamera(self.cameraNr, self.frameWidth, self.frameHeight)
 
     def endCamera(self):
 
@@ -186,7 +195,7 @@ class cvCamera(QThread):
         self.cameraAvailable = False
         self.cap.release()
 
-    def startCamera(self, cameraNr):
+    def startCamera(self, cameraNr, frameWidth, frameHeight):
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Info)
 
@@ -207,8 +216,10 @@ class cvCamera(QThread):
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2a ", level=Qgis.Info)
 
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)  # width=640
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)  # height=480
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... resolution: {}*{} ".format(frameWidth, frameHeight), level=Qgis.Warning)
+
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, frameWidth)  # width=640 (1600)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frameHeight)  # height=480 (1200)
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Info)
 
