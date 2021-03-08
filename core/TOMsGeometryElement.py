@@ -166,7 +166,7 @@ class TOMsGeometryElement(QObject):
 
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
-        return self.getShape(self.BayOffsetFromKerb, AzimuthToCentreLine)
+        return self.getShape(self.LineOffsetFromKerb, AzimuthToCentreLine, self.LineOffsetFromKerb)
 
     def getShape(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
