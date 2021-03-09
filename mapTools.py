@@ -368,7 +368,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         for layerDetails in self.RestrictionLayers.getFeatures():
 
-            if layerDetails.attribute("Code") >= 6:   # CPZs, PTAs
+            if layerDetails.attribute("Code") >= 6:   # CPZs, PTAs  - TODO: Need to improve
                 allowZoneEditing = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('AllowZoneEditing')
                 if allowZoneEditing != 'True':
                     continue
