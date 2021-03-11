@@ -156,7 +156,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         Whenever the current proposal or the date changes we need to update the canvas.
         """
 
-        TOMsMessageLog.logMessage('Entering updateMapCanvas', level=Qgis.Info)
+        TOMsMessageLog.logMessage('Entering updateMapCanvas', level=Qgis.Warning)
 
         dateString = self.__date.toString('dd-MM-yyyy')
         currProposalID = self.currentProposal()

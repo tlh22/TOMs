@@ -139,7 +139,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
     def shutDownNodeTool(self):
 
-        TOMsMessageLog.logMessage("In TOMsNodeTool:shutDownNodeTool .... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsNodeTool:shutDownNodeTool .... ", level=Qgis.Warning)
 
         # TODO: May need to disconnect geometryChange and featureDeleted signals
         self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
@@ -760,7 +760,7 @@ class TOMsLabelTool(TOMsNodeTool):
 
         self.restrictionTransaction.commitTransactionGroup(self.origLayer)
 
-        self.origLayer.deselect(self.origFeature.getFeature().id())
+        self.origLayer.deselect(self.origFeature.getFeature().id())  # TODO: Also deselect label layers
 
         self.shutDownNodeTool()
 

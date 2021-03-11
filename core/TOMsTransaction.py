@@ -56,7 +56,7 @@ from ..constants import (
     singleton
 )
 
-@singleton
+#@singleton
 class TOMsTransaction(QObject):
     transactionCompleted = pyqtSignal()
     """Signal will be emitted, when the transaction is finished - either committed or rollback"""
@@ -64,6 +64,8 @@ class TOMsTransaction(QObject):
     def __init__(self, iface, proposalsManager):
 
         QObject.__init__(self)
+
+        TOMsMessageLog.logMessage("In TOMsTransaction. init: ", level=Qgis.Warning)
 
         self.iface = iface
 
@@ -145,7 +147,7 @@ class TOMsTransaction(QObject):
             self.modified = False
             self.errorOccurred = False
 
-            self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
+            #self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
 
             return
 
@@ -191,7 +193,7 @@ class TOMsTransaction(QObject):
                                  level=Qgis.Warning)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        currMapTool = self.iface.mapCanvas().mapTool()
+        #currMapTool = self.iface.mapCanvas().mapTool()
         # currMapTool.deactivate()
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
         self.mapTool = None
@@ -207,12 +209,22 @@ class TOMsTransaction(QObject):
             self.rollBackTransactionGroup()
             return False
 
+        commitStatus = False
+
         for layer in self.setTransactionGroup:
 
             TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Considering: " + layer.name(),
                                      level=Qgis.Warning)
+            if layer.dataProvider().transaction:
+                TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Transaction is active for " + layer.name(),
+                                          level=Qgis.Warning)
+                try:
+                    layer.commitChanges()
+                    commitStatus = True
+                except Exception as e:
+                    TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. error: ... {}".format(e),
+                                              level=Qgis.Warning)
 
-            commitStatus = layer.commitChanges()
 
             if commitStatus == False:
                 reply = QMessageBox.information(None, "Error",
@@ -245,11 +257,11 @@ class TOMsTransaction(QObject):
 
             if self.currTransactionGroup.modified():
                 TOMsMessageLog.logMessage("In TOMsTransaction:deleteTransactionGroup. Transaction contains edits ... NOT deleting",
-                                         level=Qgis.Info)
+                                         level=Qgis.Warning)
                 return
 
             self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
-            self.currTransactionGroup = None
+            #self.currTransactionGroup = None
 
         pass
 
@@ -262,14 +274,15 @@ class TOMsTransaction(QObject):
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        self.mapTool = None
 
         try:
             self.tableNames.setLayer(self.TOMsTransactionList[0]).rollBack()  # could be any table ...
             TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. Transaction rolled back correctly ...",
                                      level=Qgis.Info)
-        except:
-            TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. error: ...",
-                                     level=Qgis.Info)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. error: ... {}".format(e),
+                                     level=Qgis.Warning)
 
         self.modified = False
         self.errorOccurred = False

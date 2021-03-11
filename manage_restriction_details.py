@@ -218,8 +218,6 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         # print tool
         #self.toolButton.setEnabled(False)
 
-        pass
-
     def doSelectRestriction(self):
         """ Select point and then display details
         """
@@ -858,7 +856,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                         self.proposalsManager, self.restrictionTransaction)
             self.mapTool.setAction(self.actionEditLabels)
             self.iface.mapCanvas().setMapTool(self.mapTool)
-            self.canvas.mapToolSet.connect(self.saveLabelChanges)
+            #self.canvas.mapToolSet.connect(self.saveLabelChanges)
             self.labelMapToolSet = True
             #self.mapTool.deactivated.connect(self.stopEditLabels)
             self.actionEditLabels.setChecked(True)
@@ -867,7 +865,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             # zoom to the bounding box
             box.scale(1.5)
-            self.iface.mapCanvas().setExtent(box)
+            #self.iface.mapCanvas().setExtent(box)   # TH: removed zoom (210311)
             self.iface.mapCanvas().refresh()
 
         else:

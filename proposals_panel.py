@@ -203,6 +203,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         # Create a transaction object for the Proposals
 
         self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+        self.proposalTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
 
         self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
         self.searchBar.enableSearchBar()
@@ -232,7 +233,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         try:
             self.proposalTransaction.rollBackTransactionGroup()
-            del self.proposalTransaction  # There is another call to this function from the dock.close()
+            self.proposalTransaction.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
+            #del self.proposalTransaction  # There is another call to this function from the dock.close()
         except Exception as e:
             TOMsMessageLog.logMessage('closeTOMsTools: issue with transactions {}'.format(e), level=Qgis.Info)
 
