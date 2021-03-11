@@ -51,7 +51,7 @@ class CadNodeToolPlugin:
 
     def onCurrentLayerChanged(self):
 
-        TOMsMessageLog.logMessage("In NodeTool:onCurrentLayerChanged", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:onCurrentLayerChanged", level=Qgis.Warning)
 
         if isinstance(self.current_layer, QgsVectorLayer):
             self.current_layer.editingStarted.disconnect(self.onEditingStartStop)
@@ -64,6 +64,6 @@ class CadNodeToolPlugin:
 
     def onEditingStartStop(self):
 
-        TOMsMessageLog.logMessage("In NodeTool:onEditingStartStop", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In NodeTool:onEditingStartStop", level=Qgis.Warning)
 
         self.action.setEnabled(self.tool.can_use_current_layer())

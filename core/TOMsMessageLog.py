@@ -34,6 +34,8 @@ from qgis.core import (
 
 class TOMsMessageLog(QgsMessageLog):
 
+    filename = ''
+
     def __init__(self):
         super().__init__()
 
@@ -64,6 +66,11 @@ class TOMsMessageLog(QgsMessageLog):
 
         if messageLevel >= debug_level:
             QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
+            #TOMsMessageLog.write_log_message(args[0], messageLevel, "TOMs Panel", debug_level)
+            with open(TOMsMessageLog.filename, 'a') as logfile:
+                logfile.write(
+                    '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
+                                                                          tag='TOMs Panel', level=debug_level, message=args[0]))
 
     def setLogFile(self):
 
@@ -76,12 +83,12 @@ class TOMsMessageLog(QgsMessageLog):
             QgsMessageLog.logMessage("LogFilePath: " + str(logFilePath), tag="TOMs Panel", level=Qgis.Info)
 
             logfile = 'qgis_' + datetime.date.today().strftime("%Y%m%d") + '.log'
-            self.filename = os.path.join(logFilePath, logfile)
+            TOMsMessageLog.filename = os.path.join(logFilePath, logfile)
             QgsMessageLog.logMessage("Sorting out log file" + self.filename, tag="TOMs Panel", level=Qgis.Info)
-            QgsApplication.messageLog().messageReceived.connect(self.write_log_message)
+            #QgsApplication.messageLog().messageReceived.connect(self.write_log_message)
 
-    def write_log_message(self, message, tag, level):
-        with open(self.filename, 'a') as logfile:
+        """def write_log_message(self, *args, **kwargs):
+        with open(TOMsMessageLog.filename, 'a') as logfile:
             logfile.write(
                 '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
-                                                                      tag=tag, level=level, message=message))
+                                                                      tag=tag, level=level, message=message))"""

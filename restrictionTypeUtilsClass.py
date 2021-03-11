@@ -541,6 +541,8 @@ class RestrictionTypeUtilsMixin():
     def onSaveRestrictionDetails(self, currRestriction, currRestrictionLayer, dialog, restrictionTransaction):
         TOMsMessageLog.logMessage("In onSaveRestrictionDetails: " + str(currRestriction.attribute("GeometryID")), level=Qgis.Info)
 
+        self.restrictionTransaction = restrictionTransaction
+
         #currRestrictionLayer.startEditing()
 
         currProposalID = int(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CurrentProposal'))
@@ -606,20 +608,20 @@ class RestrictionTypeUtilsMixin():
                     status = self.addRestrictionToProposal(str(currRestriction[idxRestrictionID]), currRestrictionLayerTableID,
                                              currProposalID, RestrictionAction.OPEN)  # Open = 1
 
-                    TOMsMessageLog.logMessage(
+                    """TOMsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Transaction Status 1: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
-                        level=Qgis.Info)
+                        level=Qgis.Info)"""
 
                     """ attributeForm saves to the layer. Has the feature been added to the layer?"""
 
                     status = dialog.attributeForm().save()  # this issues a commit on the transaction?
                     #dialog.accept()
                     #TOMsMessageLog.logMessage("Form accepted", level=Qgis.Info)
-                    TOMsMessageLog.logMessage(
+                    """TOMsMessageLog.logMessage(
                         "In onSaveRestrictionDetails. Transaction Status 2: " + str(
                             restrictionTransaction.currTransactionGroup.modified()),
-                        level=Qgis.Info)
+                        level=Qgis.Info)"""
                     #currRestrictionLayer.updateFeature(currRestriction)  # TH (added for v3)
                     currRestrictionLayer.addFeature(currRestriction)  # TH (added for v3)
 
@@ -688,17 +690,18 @@ class RestrictionTypeUtilsMixin():
             # only when the event loop runs into the next iteration to avoid
             # problems
 
-            TOMsMessageLog.logMessage(
+            """TOMsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 3: " + str(
-                    restrictionTransaction.currTransactionGroup.modified()),
-                level=Qgis.Info)
+                    self.restrictionTransaction.currTransactionGroup.modified()),
+                level=Qgis.Warning)"""
 
             commitStatus = restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
             #restrictionTransaction.deleteTransactionGroup()
-            TOMsMessageLog.logMessage(
+            """TOMsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 4: " + str(
                     restrictionTransaction.currTransactionGroup.modified()),
-                level=Qgis.Info)
+                level=Qgis.Warning)"""
+            del self.restrictionTransaction
             # Trying to unset map tool to force updates ...
             #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
             #dialog.accept()
@@ -1061,6 +1064,7 @@ class RestrictionTypeUtilsMixin():
 
                 if not currProposalObject.acceptProposal():
                     proposalTransaction.rollBackTransactionGroup()
+                    del proposalTransaction
                     proposalsDialog.reject()
                     reply = QMessageBox.information(None, "Error", "Error in accepting proposal ...",
                                                     QMessageBox.Ok)
@@ -1085,6 +1089,7 @@ class RestrictionTypeUtilsMixin():
 
                 if not currProposalObject.rejectProposal():
                     proposalTransaction.rollBackTransactionGroup()
+                    del proposalTransaction
                     proposalsDialog.reject()
                     TOMsMessageLog.logMessage(
                         "In onSaveProposalFormDetails. Error in transaction", level=Qgis.Info)
@@ -1130,6 +1135,7 @@ class RestrictionTypeUtilsMixin():
         #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
         proposalTransaction.commitTransactionGroup(self.Proposals)
+        del proposalTransaction
 
         status = proposalsDialog.close()
 

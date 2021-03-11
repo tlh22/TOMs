@@ -202,10 +202,11 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # Create a transaction object for the Proposals
 
-        self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
-        self.proposalTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
+        #self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+        #self.proposalTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
 
-        self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
+        #self.RestrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
+        self.RestrictionTools.enableTOMsToolbarItems()
         self.searchBar.enableSearchBar()
         # print tool
         self.toolButton.setEnabled(True)
@@ -231,12 +232,12 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         # TODO: Delete any objects that are no longer needed
 
-        try:
+        """try:
             self.proposalTransaction.rollBackTransactionGroup()
-            self.proposalTransaction.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
-            #del self.proposalTransaction  # There is another call to this function from the dock.close()
+            self.proposalTransaction.transactionCompleted.disconnect()
+            del self.proposalTransaction  # There is another call to this function from the dock.close()
         except Exception as e:
-            TOMsMessageLog.logMessage('closeTOMsTools: issue with transactions {}'.format(e), level=Qgis.Info)
+            TOMsMessageLog.logMessage('closeTOMsTools: issue with transactions {}'.format(e), level=Qgis.Warning)"""
 
         # Now disable the items from the Toolbar
 
@@ -303,6 +304,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onNewProposal", level=Qgis.Info)
 
         # set up a transaction
+        self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+        self.proposalTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
         self.proposalTransaction.startTransactionGroup()
 
         # create a new Proposal
@@ -343,7 +346,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
 
         #self.createProposalcb()
-        pass
 
     def onNewProposalCreated(self, proposal):
         TOMsMessageLog.logMessage("In onNewProposalCreated. New proposal = " + str(proposal), level=Qgis.Info)
@@ -373,7 +375,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         #self.rollbackCurrentEdits()
 
         self.proposalTransaction.rollBackTransactionGroup()
-
+        del self.proposalTransaction
 
         pass
 
@@ -381,6 +383,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onProposalDetails", level=Qgis.Info)
 
         # set up transaction
+        self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+        self.proposalTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
         self.proposalTransaction.startTransactionGroup()
 
         # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
@@ -413,8 +417,6 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.proposalDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2, self.currProposal, self.Proposals))
 
         self.proposalDialog.show()
-
-        pass
 
     def onProposalListIndexChanged(self):
         TOMsMessageLog.logMessage("In onProposalListIndexChanged.", level=Qgis.Info)

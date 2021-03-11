@@ -117,12 +117,12 @@ class TOMs:
 
         #TOMsMessageLog.logMessage("Finished init", level=Qgis.Warning)
 
-    def write_log_message(self, message, tag, level):
+        """def write_log_message(self, message, tag, level):
         TOMsMessageLog.logMessage("In write_log_message ... " + self.filename, level=Qgis.Info)
         with open(self.filename, 'a') as logfile:
             logfile.write(
                 '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
-                                                                      tag=tag, level=level, message=message))
+                                                                      tag=tag, level=level, message=message))"""
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
