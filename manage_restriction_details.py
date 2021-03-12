@@ -229,6 +229,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
 
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
+
         #self.proposalsManager.TOMsToolChanged.emit()
 
         if not self.actionSelectRestriction.isChecked():
@@ -326,6 +332,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
 
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
+
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
@@ -394,6 +406,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
 
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
+
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
@@ -456,6 +474,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
 
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
+
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
@@ -515,6 +539,12 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
+
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
@@ -619,6 +649,17 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.mapTool = None
 
+        # We start by unsetting all tools
+        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+        self.mapTool = None
+
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
+
         # Get the current proposal from the session variables
         self.currProposalID = self.proposalsManager.currentProposal()
 
@@ -706,7 +747,16 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        # We start by unsetting all tools
+        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
         self.mapTool = None
+
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
@@ -968,6 +1018,16 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         #self.proposalsManager.TOMsToolChanged.emit()
 
         self.mapTool = None
+        # We start by unsetting all tools
+        if hasattr(self, 'mapTool'):  # FIXME: not in __init__ ?!
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+        self.mapTool = None
+
+        # stop any current transaction ...
+        try:
+            self.restrictionTransaction.rollBackTransactionGroup()
+        except:
+            None
 
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
@@ -988,7 +1048,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     if currRestrictionLayer.selectedFeatureCount() > 0:
 
-                        self.restrictionTransaction.startTransactionGroup()
+                        self.restrictionTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+                        self.restrictionTransaction.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
 
                         """currRestriction = currRestrictionLayer.selectedFeatures()[0]
                         restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)

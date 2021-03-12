@@ -733,7 +733,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         #self.dialog = dialog
         self.restrictionTransaction = restrictionTransaction
         self.proposalsManager = proposalsManager
-        self.currTransaction.startTransactionGroup()  # start editing
+        self.restrictionTransaction.startTransactionGroup()  # start editing
         #self.blade = QgsMapToolEdit.createRubberBand(canvas)
 
         TOMsMessageLog.logMessage(("In TOMsSplitRestrictionTool - geometryType: " + str(self.layer.geometryType())), level=Qgis.Info)

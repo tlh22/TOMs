@@ -1124,10 +1124,10 @@ class RestrictionTypeUtilsMixin():
 
             proposalsDialog.reject()
 
-            TOMsMessageLog.logMessage(
+            """TOMsMessageLog.logMessage(
                 "In onSaveProposalFormDetails. ProposalTransaction modified Status: " + str(
                     proposalTransaction.currTransactionGroup.modified()),
-            level=Qgis.Info)
+            level=Qgis.Info)"""
 
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails. Before save. " + str(currProposalTitle) + " Status: " + str(currProposalStatusID), level=Qgis.Info)
 

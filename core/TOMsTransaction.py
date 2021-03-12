@@ -181,7 +181,14 @@ class TOMsTransaction(QObject):
         TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup. {}".format(self.setTransactionGroup), level=Qgis.Warning)
         #QgsProject.instance().setAutoTransaction(True)
         self.currTransactionGroup = QgsTransaction.create(self.setTransactionGroup)
-        self.currTransactionGroup.begin()
+        try:
+            self.currTransactionGroup.begin()
+        except Exception as e:
+            reply = QMessageBox.information(None, "Error",
+                                            "Error occurred starting transaction. {}".format(e), QMessageBox.Ok)
+            self.rollBackTransactionGroup()
+            return
+
         for l in self.setTransactionGroup:
             l.startEditing()
 
@@ -297,9 +304,7 @@ class TOMsTransaction(QObject):
 
     def rollBackTransactionGroup(self):
 
-        TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup {}".format(
-                self.currTransactionGroup.objectName),
-                                 level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup", level=Qgis.Warning)
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
         #self.mapTool = None
@@ -328,6 +333,9 @@ class TOMsTransaction(QObject):
         for l in self.setTransactionGroup:
             l.rollBack()
 
-        commitStatus = self.currTransactionGroup.rollback()
+        try:
+            commitStatus = self.currTransactionGroup.rollback()
+        except:
+            None
 
         return
