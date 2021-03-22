@@ -89,9 +89,9 @@ The test project file sets capabilities for WMS and WFS services.
 ## **Usage** <a name="usage"></a>
 ### Video
 
-[![TOMs](https://img.youtube.com/vi/_sG7226QziE/0.jpg)](https://www.youtube.com/watch?v=_sG7226QziE)
+[![TOMs](https://youtu.be/rdHxQcI2aLw)
 
-< This video was the original concept. More details required here >
+< This video gives a brief introduction to TOMs. Videos on additional subjects to be added. >
 
 ## **Contributing** <a name="contributing"></a>
 Contributions are welcome - whether it be coding, documenting or moral support!. If you are willing/able to assist, please contact the developer(s) to discuss things further.
