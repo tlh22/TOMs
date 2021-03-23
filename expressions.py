@@ -30,7 +30,8 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
-    QgsExpression, QgsGeometry, QgsPointXY
+    QgsExpression, QgsGeometry, QgsPointXY,
+    QgsFeature
 )
 import math
 import random
@@ -541,15 +542,8 @@ class TOMsExpressions():
 
         res = None
 
-        try:
-            geomShowingSpaces = ElementGeometryFactory.getElementGeometry(feature)
-        except Exception as e:
-            TOMsMessageLog.logMessage('generateDemandPoints: error in expression function: {}'.format(e),
-                              level=Qgis.Warning)
-            return None
-
         TOMsMessageLog.logMessage('generateDemandPoints: {}'.format(feature.attribute("GeometryID")),
-                              level=Qgis.Info)
+                                  level=Qgis.Info)
 
         # generate "template" indicating how to populute
         # know capacity - "NrBays" - and "Demand" - "Demand"
@@ -558,45 +552,70 @@ class TOMsExpressions():
         if demand == 0:
             return None
 
-        nrBays = feature.attribute("NrBays")
+        capacity = feature.attribute("Capacity")
 
         try:
             nrSpaces = int(feature.attribute("Demand_nspaces"))
         except Exception as e:
             TOMsMessageLog.logMessage('generateDemandPoints: error converting spaces: {}'.format(e),
-                              level=Qgis.Warning)
+                                      level=Qgis.Warning)
             nrSpaces = 0
 
-        TOMsMessageLog.logMessage('generateDemandPoints: {}; {}; {}'.format(nrBays, nrSpaces, demand),
-                                  level=Qgis.Info)
-
-        nrSpaces = nrBays - demand
+        nrSpaces = capacity - demand
         if nrSpaces < 0:
             nrSpaces = 0
 
-        TOMsMessageLog.logMessage('generateDemandPoints 3: {}; {}'.format(nrBays, nrSpaces),
+        TOMsMessageLog.logMessage('generateDemandPoints: capacity: {}; nrSpaces: {}; demand: {}'.format(capacity, nrSpaces, demand),
                                   level=Qgis.Info)
+
+        # now get geometry for demand locations
+
+        """
+        #newFeature = QgsFeature(feature)
+        currGeomShapeID = feature.attribute("GeomShapeID")
+        if currGeomShapeID < 10:
+            currGeomShapeID = currGeomShapeID + 20
+        if currGeomShapeID >= 10 and currGeomShapeID < 20:
+            currGeomShapeID = 21
+
+        #newFeature.setAttribute("GeomShapeID", currGeomShapeID)"""
+
+        try:
+            #geomShowingSpaces = ElementGeometryFactory.getElementGeometry(newFeature)  # TODO: for some reason the details from newFeature are not "saved" and used
+            #geomShowingSpaces = ElementGeometryFactory.getElementGeometry(feature, currGeomShapeID)
+            geomShowingSpaces = ElementGeometryFactory.getElementGeometry(feature)
+        except Exception as e:
+            TOMsMessageLog.logMessage('generateDemandPoints: error in expression function: {}'.format(e),
+                              level=Qgis.Warning)
+            return None
 
         random.seed(1234)  # need to ramdomise, but it needs to be repeatable?!?, i.e., when you pan, they stay in the same place
         listBaysToDelete = []
-        listBaysToDelete = random.sample(range(nrBays), k=math.ceil(nrSpaces))
+        listBaysToDelete = random.sample(range(capacity), k=math.ceil(nrSpaces))
 
-        TOMsMessageLog.logMessage('generateDemandPoints: {}'.format(listBaysToDelete),
+
+        # deal with split geometries - half on/half off
+        if feature.attribute("GeomShapeID") == 22:
+            for i in range(capacity, (capacity*2)):  # NB: range stop one before end ...
+                listBaysToDelete.append(i)
+
+        TOMsMessageLog.logMessage('generateDemandPoints: bays to delete {}'.format(listBaysToDelete),
                                   level=Qgis.Info)
 
         centroidGeomList = []
         counter = 0
         for polygonGeom in geomShowingSpaces.parts():
-            TOMsMessageLog.logMessage('generateDemandPoints: adding a part {}'.format(polygonGeom.asWkt()),
+            TOMsMessageLog.logMessage('generateDemandPoints: considering part {}'.format(counter),
                                       level=Qgis.Info)
             if not counter in listBaysToDelete:
+                centrePt = QgsPointXY(polygonGeom.centroid())
+                TOMsMessageLog.logMessage(
+                    'generateDemandPoints: adding centroid for {}: {}'.format(counter, centrePt.asWkt()),
+                    level=Qgis.Info)
                 try:
-                    centrePt = QgsPointXY(polygonGeom.centroid())
-                    TOMsMessageLog.logMessage('generateDemandPoints: centroid {}'.format(centrePt.asWkt()),
-                                              level=Qgis.Info)
                     centroidGeomList.append(centrePt)
                 except Exception as e:
-                    TOMsMessageLog.logMessage('generateDemandPoints: error add centroids: {}'.format(e),
+                    TOMsMessageLog.logMessage('generateDemandPoints: error adding centroid for counter {}: {}'.format(counter, e),
                                               level=Qgis.Warning)
             counter = counter + 1
 
