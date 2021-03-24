@@ -538,28 +538,16 @@ class TOMsExpressions():
 
     @qgsfunction(args='auto', group='TOMsDemand', usesgeometry=False, register=True)
     def generateDemandPoints(feature, parent):
-        # Returns the text to label the feature
-
-        res = None
+        # Returns the location of points representing demand
 
         TOMsMessageLog.logMessage('generateDemandPoints: {}'.format(feature.attribute("GeometryID")),
                                   level=Qgis.Info)
 
-        # generate "template" indicating how to populute
-        # know capacity - "NrBays" - and "Demand" - "Demand"
-
-        demand = feature.attribute("Demand_Demand")  # Need better naming ...
+        demand = feature.attribute("Demand")
         if demand == 0:
             return None
 
         capacity = feature.attribute("Capacity")
-
-        try:
-            nrSpaces = int(feature.attribute("Demand_nspaces"))
-        except Exception as e:
-            TOMsMessageLog.logMessage('generateDemandPoints: error converting spaces: {}'.format(e),
-                                      level=Qgis.Warning)
-            nrSpaces = 0
 
         nrSpaces = capacity - demand
         if nrSpaces < 0:
@@ -593,10 +581,9 @@ class TOMsExpressions():
         listBaysToDelete = []
         listBaysToDelete = random.sample(range(capacity), k=math.ceil(nrSpaces))
 
-
         # deal with split geometries - half on/half off
         if feature.attribute("GeomShapeID") == 22:
-            for i in range(capacity, (capacity*2)):  # NB: range stop one before end ...
+            for i in range(capacity, (capacity*2)):  # NB: range stops one before end ...
                 listBaysToDelete.append(i)
 
         TOMsMessageLog.logMessage('generateDemandPoints: bays to delete {}'.format(listBaysToDelete),
