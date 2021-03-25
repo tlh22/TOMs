@@ -66,13 +66,13 @@ BEGIN
                           END CASE;
                  WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
                  ELSE
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-0.5) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
             END CASE;
         ELSE
             CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225) THEN
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-0.5) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
                  ELSE NEW."Capacity" = 0;
