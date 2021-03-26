@@ -1,0 +1,234 @@
+<Composer title="Sketch Map A3" visible="1">
+ <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="" alignmentSnap="1" printResolution="300" paperWidth="420" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="5" printAsRaster="0" generateWorldFile="0" paperHeight="297" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
+  <symbol alpha="1" clip_to_extent="1" type="fill" name="">
+   <layer pass="0" class="SimpleFill" locked="0">
+    <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="color" v="255,255,255,255"/>
+    <prop k="joinstyle" v="miter"/>
+    <prop k="offset" v="0,0"/>
+    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="offset_unit" v="MM"/>
+    <prop k="outline_color" v="0,0,0,255"/>
+    <prop k="outline_style" v="no"/>
+    <prop k="outline_width" v="0.26"/>
+    <prop k="outline_width_unit" v="MM"/>
+    <prop k="style" v="solid"/>
+   </layer>
+  </symbol>
+  <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="true" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
+   <Extent ymin="673800.47499983094166964" xmin="325310.62399973801802844" ymax="674131.91300016886088997" xmax="325824.37400026200339198"/>
+   <LayerSet>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='GeometryID' srid=27700 type=Polygon table=&quot;public&quot;.&quot;RestrictionPolygons&quot; (geom) sql=&quot;OpenDate&quot; &lt;= to_date('04-12-2018', 'dd-MM-yyyy') AND ((&quot;CloseDate&quot; > to_date('04-12-2018', 'dd-MM-yyyy')  OR &quot;CloseDate&quot;  IS  NULL))" name="RestrictionPolygons">RestrictionPolygons20181021150149024</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='GeometryID' srid=27700 type=LineString table=&quot;public&quot;.&quot;Bays&quot; (geom) sql=&quot;OpenDate&quot; &lt;= to_date('04-12-2018', 'dd-MM-yyyy') AND ((&quot;CloseDate&quot; > to_date('04-12-2018', 'dd-MM-yyyy')  OR &quot;CloseDate&quot;  IS  NULL))" name="Bays">Bays20181021150149181</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='GeometryID' srid=27700 type=LineString table=&quot;public&quot;.&quot;Lines&quot; (geom) sql=&quot;OpenDate&quot; &lt;= to_date('04-12-2018', 'dd-MM-yyyy') AND ((&quot;CloseDate&quot; > to_date('04-12-2018', 'dd-MM-yyyy')  OR &quot;CloseDate&quot;  IS  NULL))" name="Lines">Lines20181021150149096</Layer>
+    <Layer provider="memory" source="memory?geometry=LineString&amp;crs=EPSG:27700" name="ConstructionLines">ConstructionLines20181021235512146</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=Polygon table=&quot;public&quot;.&quot;ControlledParkingZones&quot; (geom) sql=" name="CPZs">ControlledParkingZones20181021150204260</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' srid=27700 type=Polygon table=&quot;public&quot;.&quot;ParkingTariffAreas&quot; (geom) sql=" name="ParkingTariffAreas">ParkingTariffAreas20181021150204193</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;ActionOnProposalAcceptanceTypes&quot; sql=" name="ActionOnProposalAcceptanceTypes">ActionOnProposalAcceptanceTypes20181021160243483</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;BayLinesFadedTypes&quot; sql=" name="BayLinesFadedTypes">BayLinesFadedTypes20181021160243383</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;BaysLines_SignIssueTypes&quot; sql=" name="BaysLines_SignIssueTypes">BaysLines_SignIssueTypes20181021160243020</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;baysWordingTypes&quot; sql=" name="baysWordingTypes">baysWordingTypes20181021160242844</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' table=&quot;public&quot;.&quot;baytypes&quot; sql=" name="baytypes">baytypes20181021160242595</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;LengthOfTime&quot; sql=" name="LengthOfTime">LengthOfTime20181021160242420</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' table=&quot;public&quot;.&quot;linetypes&quot; sql=" name="linetypes">linetypes20181021160242084</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;PaymentTypes&quot; sql=" name="PaymentTypes">PaymentTypes20181021160241858</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='ProposalID' table=&quot;public&quot;.&quot;Proposals&quot; sql=" name="Proposals">Proposals20181109062505333</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;ProposalStatusTypes&quot; sql=" name="ProposalStatusTypes">ProposalStatusTypes20181021160241599</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;RestrictionLayers&quot; sql=" name="RestrictionLayers">RestrictionLayers20181021160241536</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;RestrictionPolygonTypes&quot; sql=" name="RestrictionPolygonTypes">RestrictionPolygonTypes20181021160241458</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;RestrictionShapeTypes&quot; sql=" name="RestrictionShapeTypes">RestrictionShapeTypes20181021160241302</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='ProposalID,RestrictionTableID,RestrictionID' table=&quot;public&quot;.&quot;RestrictionsInProposals&quot; sql=" name="RestrictionsInProposals">RestrictionsInProposals20181021160241231</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;RestrictionStatus&quot; sql=" name="RestrictionStatus">RestrictionStatus20181021160241132</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;RestrictionTypes&quot; sql=" name="RestrictionTypes">RestrictionTypes20181021160240889</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;SignAttachmentTypes&quot; sql=" name="SignAttachmentTypes">SignAttachmentTypes20181021160240715</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;SignFadedTypes&quot; sql=" name="SignFadedTypes">SignFadedTypes20181021160240598</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;SignMountTypes&quot; sql=" name="SignMountTypes">SignMountTypes20181021160240501</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;SignObscurredTypes&quot; sql=" name="SignObscurredTypes">SignObscurredTypes20181021160240344</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;SignTypes&quot; sql=" name="SignTypes">SignTypes20181021160240168</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='Code' table=&quot;public&quot;.&quot;Surveyors&quot; sql=" name="Surveyors">Surveyors20181021160239871</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;TicketMachineIssueTypes&quot; sql=" name="TicketMachineIssueTypes">TicketMachineIssueTypes20181021160239696</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' table=&quot;public&quot;.&quot;TimePeriods&quot; sql=" name="TimePeriods">TimePeriods20181021160239166</Layer>
+    <Layer provider="postgres" source="dbname='EDI_VM_Check' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' srid=27700 type=MultiPolygon table=&quot;public&quot;.&quot;MapGrid&quot; (geom) sql=" name="MapGrid">MapGrid20181021150348408</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=MultiLineString table=&quot;public&quot;.&quot;StreetGazetteerRecords_171231_USRN&quot; (geom) sql=" name="StreetGazetteerRecords">StreetGazetteerRecords_171231_USRN20181120123729100</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=MultiLineString table=&quot;public&quot;.&quot;edi_cartotext&quot; (geom) sql=" name="OS MasterMap Text">edi_cartotext20181120123729293</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=MultiPolygon table=&quot;public&quot;.&quot;edi_mm&quot; (geom) sql=" name="OS Mastermap (Map Schedule Style)">OS_MasterMap_copy20181120123855198</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=MultiPolygon table=&quot;public&quot;.&quot;city_of_edinburgh_area&quot; (geom) sql=" name="city_of_edinburgh_area">city_of_edinburgh_area20181021153324156</Layer>
+    <Layer provider="wms" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=https://mt1.google.com/vt/lyrs%3Dm%26x%3D%7Bx%7D%26y%3D%7By%7D%26z%3D%7Bz%7D" name="Google Roads">Google_Roads20181021153506796</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='gid' srid=27700 type=MultiLineString table=&quot;public&quot;.&quot;edi_itn_roadcentreline&quot; (geom) sql=" name="RoadCentreLine">edi_itn_roadcentreline20181120123729264</Layer>
+    <Layer provider="postgres" source="dbname='EDI1_VM' host=10.132.0.5 port=5432 user='edi_operator' sslmode=disable key='id' srid=27700 type=LineString table=&quot;public&quot;.&quot;EDI_RC_with_USRN_StreetNames&quot; (geom) sql=" name="RoadCasement">EDI_RC_with_USRN_StreetNames20181021150502136</Layer>
+   </LayerSet>
+   <Grid/>
+   <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{f7893d44-3757-449b-9d76-fee01ef4153a}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grid 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+    <lineStyle>
+     <symbol alpha="1" clip_to_extent="1" type="line" name="">
+      <layer pass="0" class="SimpleLine" locked="0">
+       <prop k="capstyle" v="square"/>
+       <prop k="customdash" v="5;2"/>
+       <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="customdash_unit" v="MM"/>
+       <prop k="draw_inside_polygon" v="0"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="line_color" v="0,0,0,255"/>
+       <prop k="line_style" v="solid"/>
+       <prop k="line_width" v="0"/>
+       <prop k="line_width_unit" v="MM"/>
+       <prop k="offset" v="0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="use_custom_dash" v="0"/>
+       <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+      </layer>
+     </symbol>
+    </lineStyle>
+    <markerStyle>
+     <symbol alpha="1" clip_to_extent="1" type="marker" name="">
+      <layer pass="0" class="SimpleMarker" locked="0">
+       <prop k="angle" v="0"/>
+       <prop k="color" v="0,0,0,255"/>
+       <prop k="horizontal_anchor_point" v="1"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="name" v="circle"/>
+       <prop k="offset" v="0,0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="outline_color" v="0,0,0,255"/>
+       <prop k="outline_style" v="solid"/>
+       <prop k="outline_width" v="0"/>
+       <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="outline_width_unit" v="MM"/>
+       <prop k="scale_method" v="diameter"/>
+       <prop k="size" v="2"/>
+       <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="size_unit" v="MM"/>
+       <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+     </symbol>
+    </markerStyle>
+    <annotationFontProperties description="Sans Serif,9,-1,5,50,0,0,0,0,0" style=""/>
+   </ComposerMapGrid>
+   <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
+   <ComposerItem pagey="5" page="1" id="" lastValidViewScaleFactor="2.40773" positionMode="0" positionLock="false" x="5" y="5" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="411" outlineWidth="0.3" excludeFromExports="0" uuid="{4bf24e14-5b91-41cc-8481-793eddd761f3}" height="265.15" itemRotation="0" frame="true" pagex="5">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <dataDefinedMapScale expr="1250" field="" active="true" useExpr="true"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerMap>
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="6.65128" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Map Schedules/Map Templates/North Arrow.png" northOffset="0" pictureHeight="20.1884" mapId="0" anchorPoint="4">
+   <ComposerItem pagey="270.784" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="340.424" y="270.784" visibility="1" zValue="13" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="10.5572" outlineWidth="0.3" excludeFromExports="0" uuid="{f127c5b7-cd00-4780-a02d-e465a81a9b5f}" height="20.1884" itemRotation="0" frame="false" pagex="340.424">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerPicture>
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="57.4165" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Map Schedules/Map Templates/Edinburgh Logo.svg" northOffset="0" pictureHeight="9.89108" mapId="0" anchorPoint="4">
+   <ComposerItem pagey="271.525" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="7.03816" y="271.525" visibility="1" zValue="12" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.4165" outlineWidth="0.3" excludeFromExports="0" uuid="{17f5b330-98f6-4f1a-9d47-55e3d74c7d82}" height="18.5215" itemRotation="0" frame="false" pagex="7.03816">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerPicture>
+  <ComposerLabel valign="128" marginX="2" marginY="1" labelText="" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.011" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="65.7701" y="270.011" visibility="1" zValue="11" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="208.667" outlineWidth="0.3" excludeFromExports="0" uuid="{2cc7f9b8-282b-4970-b514-f96f9bef19cf}" height="21.9721" itemRotation="0" frame="true" pagex="65.7701">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="This map is based upon Ordnance Survey material with the permission of Ordnance Surveyon behalf of HMSO Crown copyright and database right. All rights reserved. Licence number - 100023420" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,6,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.028" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="274.428" y="270.028" visibility="1" zValue="10" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="64.9289" outlineWidth="0.3" excludeFromExports="0" uuid="{b1ff5384-a288-4e60-8172-d089d5ff673c}" height="21.9721" itemRotation="0" frame="true" pagex="274.428">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="" htmlState="0" halign="1">
+   <LabelFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.011" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="5" y="270.011" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="334.357" outlineWidth="0.3" excludeFromExports="0" uuid="{ddabd32f-ffae-410d-9e9f-90745d36f17d}" height="21.9891" itemRotation="0" frame="true" pagex="5">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Scale at A3" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.039" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="351.781" y="270.039" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{a21fa37e-e5d6-4685-b418-39dfe113683a}" height="7.44691" itemRotation="0" frame="true" pagex="351.781">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Status" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="284.536" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="351.781" y="284.536" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{863f0377-7f07-4b7e-a1bb-627538805f19}" height="7.44691" itemRotation="0" frame="true" pagex="351.781">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Print Date" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="277.311" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="351.781" y="277.311" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{db5b9b0f-3057-4881-96ec-b83fac653e59}" height="7.44691" itemRotation="0" frame="true" pagex="351.781">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="1:1250" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.011" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="383.826" y="270.011" visibility="1" zValue="5" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{4b546963-653c-4cc6-81ee-1399b5590054}" height="7.44691" itemRotation="0" frame="true" pagex="383.826">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="" htmlState="0" halign="1">
+   <LabelFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="270.028" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="339.273" y="270.028" visibility="1" zValue="4" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="12.6206" outlineWidth="0.3" excludeFromExports="0" uuid="{e5468dd3-098e-40ee-a3c3-df87bdd94364}" height="21.9721" itemRotation="0" frame="true" pagex="339.273">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Sketch" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="284.508" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="383.826" y="284.508" visibility="1" zValue="3" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{c6c18d1d-e017-4805-9acc-9e329439a51c}" height="7.44691" itemRotation="0" frame="true" pagex="383.826">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="24/05/2018" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,9,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="277.283" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="383.826" y="277.283" visibility="1" zValue="2" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="32.1739" outlineWidth="0.3" excludeFromExports="0" uuid="{7e15fc14-b066-4e92-b61d-363c75bf0954}" height="7.44691" itemRotation="0" frame="true" pagex="383.826">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="" htmlState="0" halign="1">
+   <LabelFont description="Sans Serif,10,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="5" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="5" y="5" visibility="1" zValue="1" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="411" outlineWidth="0.3" excludeFromExports="0" uuid="{9fe9d305-871d-49af-9daf-da056ba3a024}" height="287" itemRotation="0" frame="true" pagex="5">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <customproperties/>
+ </Composition>
+</Composer>
