@@ -52,6 +52,9 @@ d. Map Tiles. A map tile is versioned according to the open/close date for any r
 <a name="installation"></a>
 ## **Installation** 
 
+This video gives a briefly looks at the different setup aspects - https://youtu.be/32ajR6F6vmo
+< Further details required here >
+
 ### **QGIS** <a name="qgis"></a>
 
 TOMs is a python plugin that makes use of and extends tools within QGIS. TOMs follows the LTR (Long Term Release) of QGIS. 
@@ -86,9 +89,6 @@ The test project file sets capabilities for WMS and WFS services.
 
 There are compose files available for setting up the postgres/postgis, qgis-server and guacamole within Docker.
 
-This video gives a brief overview of the different setup aspects.
-https://youtu.be/32ajR6F6vmo
-< Further details required here >
 
 ## **Usage** <a name="usage"></a>
 ### Video
