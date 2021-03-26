@@ -84,6 +84,10 @@ The test project file is found within the QGIS folder. This project file uses a 
 
 The test project file sets capabilities for WMS and WFS services.
 
+There are compose files available for setting up the postgres/postgis, qgis-server and guacamole within Docker.
+
+This video gives a brief overview of the different setup aspects.
+https://youtu.be/32ajR6F6vmo
 < Further details required here >
 
 ## **Usage** <a name="usage"></a>
@@ -103,7 +107,6 @@ The development is carried out by MHTC Ltd. On-going support has been provided b
 GNU GPLv3
 
 Git revision : $Format:%H$
-
 
 ## Setting up the database
 
