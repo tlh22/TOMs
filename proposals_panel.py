@@ -34,6 +34,7 @@ from qgis.core import (
 )
 
 import functools
+import re
 
 from TOMs.ui.ProposalPanel_dockwidget import ProposalPanelDockWidget
 #from proposal_details_dialog import proposalDetailsDialog
@@ -208,6 +209,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.searchBar.enableSearchBar()
         # print tool
         self.toolButton.setEnabled(True)
+        self.setLabelUpdateTriggers()
 
         # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
@@ -244,6 +246,8 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         self.toolButton.setEnabled(False)
 
         self.actionProposalsPanel.setChecked(False)
+
+        self.unsetLabelUpdateTriggers()
 
         # Now close the proposals panel
 
@@ -514,3 +518,32 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
 
         pass
 
+    def setLabelUpdateTriggers(self):
+        TOMsMessageLog.logMessage("In setLabelUpdateTriggers ...", level=Qgis.Info)
+
+        # find any layers with the name "%.label%"
+        # https://gis.stackexchange.com/questions/312040/stuck-on-how-to-list-loaded-layers-in-qgis-3-via-python
+
+        layerList = QgsProject.instance().layerTreeRoot().findLayers()
+
+        for layer in layerList:
+            if re.findall(".label", layer.name()):
+                try:
+                    layer.layer().setRefreshOnNotifyEnabled(True)
+                except Exception as e:
+                    TOMsMessageLog.logMessage("Error in setLabelUpdateTriggers ...{}".format(e), level=Qgis.Warning)
+
+    def unsetLabelUpdateTriggers(self):
+        TOMsMessageLog.logMessage("In setLabelUpdateTriggers ...", level=Qgis.Info)
+
+        # find any layers with the name "%.label%"
+        # https://gis.stackexchange.com/questions/312040/stuck-on-how-to-list-loaded-layers-in-qgis-3-via-python
+
+        layerList = QgsProject.instance().layerTreeRoot().findLayers()
+
+        for layer in layerList:
+            if re.findall(".label", layer.name()):
+                try:
+                    layer.layer().setRefreshOnNotifyEnabled(False)
+                except Exception as e:
+                    TOMsMessageLog.logMessage("Error in setLabelUpdateTriggers ...{}".format(e), level=Qgis.Warning)
