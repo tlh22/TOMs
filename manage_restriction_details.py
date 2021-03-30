@@ -866,9 +866,9 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             # TODO: Need to set a filter so that node tool can only pick up label/leader layers
 
             # zoom to the bounding box
-            box.scale(1.5)
-            self.iface.mapCanvas().setExtent(box)
-            self.iface.mapCanvas().refresh()
+            #box.scale(1.5)
+            #self.iface.mapCanvas().setExtent(box)
+            #self.iface.mapCanvas().refresh()
 
         else:
 
