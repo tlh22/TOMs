@@ -537,7 +537,6 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
 
         return is_endpoint_at_vertex_index(geom, match.vertexIndex())
 
-
     def position_for_endpoint_marker(self, match):
         geom = self.cached_geometry(match.layer(), match.featureId())
 
@@ -733,6 +732,9 @@ class NodeTool(QgsMapToolAdvancedDigitizing):
         TOMsMessageLog.logMessage("In start_dragging_move_vertex ...", level=Qgis.Info)
 
         geom = self.cached_geometry(m.layer(), m.featureId())
+
+        if not geom:
+            return # don't continue ...
 
         # start dragging of snapped point of current layer
         self.dragging = Vertex(m.layer(), m.featureId(), m.vertexIndex())

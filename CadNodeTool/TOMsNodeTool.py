@@ -537,6 +537,33 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return label_layers_names
 
+    def getCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        if currRestrictionLayer.name() == 'Bays':
+            label_layers_names = ['Bays.label_ldr']
+        if currRestrictionLayer.name() == 'Lines':
+            label_layers_names = ['Lines.label_ldr', 'Lines.label_loading_ldr']
+        if currRestrictionLayer.name() == 'Signs':
+            label_layers_names = []
+        if currRestrictionLayer.name() == 'RestrictionPolygons':
+            label_layers_names = ['RestrictionPolygons.label_ldr']
+        if currRestrictionLayer.name() == 'CPZs':
+            label_layers_names = ['CPZs.label_ldr']
+        if currRestrictionLayer.name() == 'ParkingTariffAreas':
+            label_layers_names = ['ParkingTariffAreas.label_ldr']
+
+        if len(label_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
+
+        return label_layers_names
+
+
     def snap_to_editable_layer(self, e):
         """ Temporarily override snapping config and snap to vertices and edges
          of any editable vector layer, to allow selection of node for editing
@@ -625,6 +652,17 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return
 
+    def is_match_at_endpoint(self, match):
+        # inherited to check for geom not found
+        geom = self.cached_geometry(match.layer(), match.featureId())
+        if not geom:  # TH: check that geom is found ...
+            return False
+        if geom.type() != QgsWkbTypes.LineGeometry:
+            return False
+
+        return NodeTool.is_endpoint_at_vertex_index(geom, match.vertexIndex())
+
+
     def onFinishEditing(self):
 
         self.finishEdit = True
@@ -647,9 +685,9 @@ class TOMsLabelTool(TOMsNodeTool):
     def onGeometryChanged(self, currRestriction):
         # Added by TH to deal with RestrictionsInProposals
         # When a geometry is changed; we need to check whether or not the feature is part of the current proposal
-        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. fid: " + str(currRestriction.id()) + " GeometryID: " + str(currRestriction.attribute("GeometryID")), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. fid: " + str(currRestriction.id()) + " GeometryID: " + str(currRestriction.attribute("GeometryID")), level=Qgis.Warning)
 
-        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. Layer: " + str(self.origLayer.name()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsLabelTool:onGeometryChanged. Layer: " + str(self.origLayer.name()), level=Qgis.Warning)
 
         idxRestrictionID = self.origLayer.fields().indexFromName("RestrictionID")
 
@@ -762,6 +800,23 @@ class TOMsLabelTool(TOMsNodeTool):
 
         self.origLayer.deselect(self.origFeature.getFeature().id())
 
+        # also deselect any label layers
+        for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
+            labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
+            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
+            TOMsMessageLog.logMessage(
+                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
+                level=Qgis.Info)
+            labelLayer.deselect(labelLayerFeature.id())
+
+        for label_layer_name in self.getCurrLabelLeaderLayerNames(self.origLayer):
+            labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
+            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
+            TOMsMessageLog.logMessage(
+                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
+                level=Qgis.Info)
+            labelLayer.deselect(labelLayerFeature.id())
+
         self.shutDownNodeTool()
 
         return
@@ -819,7 +874,7 @@ class TOMsLabelTool(TOMsNodeTool):
         expression = '"{}" = \'{}\''.format(pkFieldName, pkFieldValue)
         TOMsMessageLog.logMessage(
             "In getLabelLayerFeature: expression: {}".format(expression),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         featureIterator = labelLayer.getFeatures(expression)
         try:
