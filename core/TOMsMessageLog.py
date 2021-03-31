@@ -46,7 +46,6 @@ class TOMsMessageLog(QgsMessageLog):
             try:
                 currLoggingLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level')
             except Exception as e:
-
                 QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... {}".format(e), tag="TOMs Panel")
 
 
@@ -59,7 +58,7 @@ class TOMsMessageLog(QgsMessageLog):
         try:
             messageLevel = int(kwargs.get('level'))
         except Exception as e:
-            QgsMessageLog.logMessage("Error in TOMsMessageLog level in message not found...{}".format(e), tag="TOMs Panel", level=Qgis.Info)
+            QgsMessageLog.logMessage("Error in TOMsMessageLog. Level in message not found...{}".format(e), tag="TOMs Panel")
             messageLevel = Qgis.Info
 
         #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
