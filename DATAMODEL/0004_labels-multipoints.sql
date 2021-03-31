@@ -1,6 +1,8 @@
 /*"""*/
 /* DATAMODEL diff to enable multiple labels per sheet */
 
+CREATE OR REPLACE PROCEDURAL LANGUAGE "plpython3u";
+ALTER PROCEDURAL LANGUAGE "plpython3u" OWNER TO "postgres";
 
 -- Add label position and leader fields
 ALTER TABLE toms."Lines" ADD COLUMN "label_pos" geometry(MultiPoint, 27700);
