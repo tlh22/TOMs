@@ -457,9 +457,9 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
                                  level=Qgis.Info)
     def acceptMatch(self, match):
 
-        TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
+        """TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
                                                                                                    match.layer().getFeature(match.featureId()).attribute(self.pkFieldName)),
-                                 level=Qgis.Info)
+                                 level=Qgis.Info)"""  # fails on pk for some reason ...
         # need to check whether it is in the layer or any of the child layers
         """return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
                    and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue"""
@@ -470,7 +470,7 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
             level=Qgis.Info)
         if self.reqd_label_layer_name == labelLayerName:
             try:
-                return (match.layer().name() == labelLayerName \
+                return (match.layer().name() == labelLayerName) \
                    and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue
             except:
                 return False
@@ -524,6 +524,7 @@ class TOMsLabelTool(TOMsNodeTool):
         # can we choose Lines layer label here ??
 
         self.label_layers_names = self.setCurrLabelLayerNames(self.origLayer)
+        self.label_leader_layers_names = self.setCurrLabelLeaderLayerNames(self.origLayer)
 
     def setCurrLabelLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
@@ -534,9 +535,13 @@ class TOMsLabelTool(TOMsNodeTool):
 
         if currRestrictionLayer.name() == 'Bays':
             label_layers_names = ['Bays.label_pos']
+            self.lines_label_layer = 'Bays.label_pos'
         if currRestrictionLayer.name() == 'Lines':
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
+
             msgBox = QMessageBox()
-            msgBox.setWindowTitle("Which labels do you want edit?")
+            msgBox.setWindowTitle("Query")
+            msgBox.setText("Which labels do you want edit?")
             waitingBtn = msgBox.addButton(QPushButton("Waiting"), QMessageBox.YesRole)
             loadingBtn = msgBox.addButton(QPushButton("Loading"), QMessageBox.NoRole)
             btn_clicked = msgBox.exec_()
@@ -549,20 +554,24 @@ class TOMsLabelTool(TOMsNodeTool):
                 level=Qgis.Warning)
 
             if msgBox.clickedButton().text() == "Waiting":
-                lines_label_layer = 'Lines.label_pos'
+                self.lines_label_layer = 'Lines.label_pos'
             else: # msgBox.clickedButton().text() == "Loading":
-                lines_label_layer = 'Lines.label_loading_pos'
+                self.lines_label_layer = 'Lines.label_loading_pos'
 
-            label_layers_names = [lines_label_layer]
+            label_layers_names = [self.lines_label_layer]
 
         if currRestrictionLayer.name() == 'Signs':
             label_layers_names = []
+            self.lines_label_layer = ''
         if currRestrictionLayer.name() == 'RestrictionPolygons':
             label_layers_names = ['RestrictionPolygons.label_pos']
+            self.lines_label_layer = 'RestrictionPolygons.label_pos'
         if currRestrictionLayer.name() == 'CPZs':
             label_layers_names = ['CPZs.label_pos']
+            self.lines_label_layer = 'CPZs.label_pos'
         if currRestrictionLayer.name() == 'ParkingTariffAreas':
             label_layers_names = ['ParkingTariffAreas.label_pos']
+            self.lines_label_layer = 'ParkingTariffAreas.label_pos'
 
         if len(label_layers_names) == 0:
             alert_box("No labels for this restriction type")
@@ -576,7 +585,7 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return self.label_layers_names
 
-    def getCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+    def setCurrLabelLeaderLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
@@ -586,7 +595,7 @@ class TOMsLabelTool(TOMsNodeTool):
         if currRestrictionLayer.name() == 'Bays':
             label_leader_layers_names = ['Bays.label_ldr']
         if currRestrictionLayer.name() == 'Lines':
-            label_leader_layers_names = [self.lines_leader_layer]
+            label_leader_layers_names = ['Lines.label_ldr', 'Lines.label_loading_ldr']
         if currRestrictionLayer.name() == 'Signs':
             label_leader_layers_names = []
         if currRestrictionLayer.name() == 'RestrictionPolygons':
@@ -602,6 +611,8 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return label_leader_layers_names
 
+    def getCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+        return self.label_leader_layers_names
 
     def snap_to_editable_layer(self, e):
         """ Temporarily override snapping config and snap to vertices and edges
