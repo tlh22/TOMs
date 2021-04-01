@@ -95,16 +95,16 @@ import plpy
 OLD = TD["old"] # this contains the feature before modifications
 NEW = TD["new"] # this contains the feature after modifications
 
-#plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
+plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
 
 def ensure_labels_points(main_geom, label_geom, initial_rotation):
     """
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
     if OLD is not None:
-        # plpy.info('ensure_label_points 0: GeometryID:{})'.format(OLD["GeometryID"]))
+        plpy.info('ensure_label_points 0: GeometryID:{})'.format(OLD["GeometryID"]))
         pass
-    # plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
+    plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
     if label_geom is None:
@@ -121,7 +121,7 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
         results = plpy.execute(plan, [label_geom, old_label_geom])
         label_geom = results[0]['g']
 
-    #plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
+    plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
 
     # We select all sheets that intersect with the feature but not with the label
     # multipoints to obtain all sheets that miss a label point
@@ -129,7 +129,7 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     results = plpy.execute(plan, [main_geom, label_geom])
     sheets_geoms = [r['geom'] for r in results]
 
-    #plpy.info("{} new label points will be created".format(len(sheets_geoms)))
+    plpy.info("{} new label points will be created".format(len(sheets_geoms)))
 
     # For these sheets, we add points at the center of the intersection
     point = None
@@ -171,8 +171,8 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
         plan = plpy.prepare('SELECT ST_LINEINTERPOLATEPOINT($1::geometry, $2 + 0.0001) as p', ['text', 'float8'])
         next_point = plpy.execute(plan, [main_geom, point_location])[0]['p']
 
-        #plpy.info('ensure_label_points 3a: point:{})'.format(point))
-        #plpy.info('ensure_label_points 3b: next_point:{})'.format(next_point))
+        plpy.info('ensure_label_points 3a: point:{})'.format(point))
+        plpy.info('ensure_label_points 3b: next_point:{})'.format(next_point))
 
         # We compute the angle
 
