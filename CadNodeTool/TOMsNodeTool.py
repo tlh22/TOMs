@@ -16,7 +16,7 @@ import math
 #from qgis.PyQt.QtCore import *
 
 from qgis.PyQt.QtWidgets import (
-    QDockWidget, QMessageBox
+    QDockWidget, QMessageBox, QPushButton
 )
 
 from qgis.PyQt.QtGui import (
@@ -443,7 +443,7 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
 class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
     """ a filter to allow just one particular feature """
-    def __init__(self, layer, fid):
+    def __init__(self, layer, fid, label_layer_name):
         QgsPointLocator.MatchFilter.__init__(self)
         self.currLayer = layer
         self.primaryLayer = self.getPrimaryLabelLayer(layer)
@@ -451,25 +451,35 @@ class OneFeatureLabelFilter(QgsPointLocator.MatchFilter):
         self.pkFieldName = self.primaryKeyFieldName(layer)
         self.pkFieldValue = layer.getFeature(fid).attribute(self.pkFieldName)
 
+        self.reqd_label_layer_name = label_layer_name[0]
+
         TOMsMessageLog.logMessage("In OneFeatureLabelFilter: Layer {}:{} | {}:{}".format(self.currLayer.name(), self.primaryLayer.name(), str(fid), self.pkFieldValue),
                                  level=Qgis.Info)
     def acceptMatch(self, match):
-        try:
-            TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
-                                                                                                       match.layer().getFeature(match.featureId()).attribute(self.pkFieldName)),
-                                     level=Qgis.Info)
-            # need to check whether it is in the layer or any of the child layers
-            """return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
-                       and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue"""
-            labelLayerName = '{}.label_pos'.format(self.primaryLayer.name())
-            loadingLabelLayerName = '{}.label_loading_pos'.format(self.primaryLayer.name())
-            TOMsMessageLog.logMessage(
-                "In OneFeatureLabelFilter: labelLayerName: {}; loadingLabelLayerName: {}; matchname: {}".format(labelLayerName, loadingLabelLayerName, self.getPrimaryLabelLayer(match.layer()).name()),
-                level=Qgis.Info)
-            return (match.layer().name() == labelLayerName  or match.layer().name() == loadingLabelLayerName) \
+
+        """TOMsMessageLog.logMessage("In OneFeatureLabelFilter: matchLayer {} | {} with pk {}".format(match.layer().name(), match.featureId(),
+                                                                                                   match.layer().getFeature(match.featureId()).attribute(self.pkFieldName)),
+                                 level=Qgis.Info)"""  # fails on pk for some reason ...
+        # need to check whether it is in the layer or any of the child layers
+        """return self.getPrimaryLabelLayer(match.layer()) == self.primaryLayer and len(match.layer().name()) > len(self.primaryLayer.name()) \
+                   and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue"""
+        labelLayerName = '{}.label_pos'.format(self.primaryLayer.name())
+        loadingLabelLayerName = '{}.label_loading_pos'.format(self.primaryLayer.name())
+        TOMsMessageLog.logMessage(
+            "In OneFeatureLabelFilter: labelLayerName: {}; loadingLabelLayerName: {}; matchname: {}".format(labelLayerName, loadingLabelLayerName, self.getPrimaryLabelLayer(match.layer()).name()),
+            level=Qgis.Info)
+        if self.reqd_label_layer_name == labelLayerName:
+            try:
+                return (match.layer().name() == labelLayerName) \
+                   and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue
+            except:
+                return False
+        else:
+            try:
+                return (match.layer().name() == loadingLabelLayerName) \
                        and match.layer().getFeature(match.featureId()).attribute(self.pkFieldName) == self.pkFieldValue
-        except:
-            return False
+            except:
+                return False
 
     def getPrimaryLabelLayer(self, currLayer):
         # given a layer work out the primary layer
@@ -511,7 +521,12 @@ class TOMsLabelTool(TOMsNodeTool):
 
         TOMsMessageLog.logMessage("In TOMsLabelTool: origLayer: {}".format(self.origLayer), level=Qgis.Warning)
 
-    def getCurrLabelLayerNames(self, currRestrictionLayer):
+        # can we choose Lines layer label here ??
+
+        self.label_layers_names = self.setCurrLabelLayerNames(self.origLayer)
+        self.label_leader_layers_names = self.setCurrLabelLeaderLayerNames(self.origLayer)
+
+    def setCurrLabelLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
@@ -520,16 +535,43 @@ class TOMsLabelTool(TOMsNodeTool):
 
         if currRestrictionLayer.name() == 'Bays':
             label_layers_names = ['Bays.label_pos']
+            self.lines_label_layer = 'Bays.label_pos'
         if currRestrictionLayer.name() == 'Lines':
             label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
+
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("Query")
+            msgBox.setText("Which labels do you want edit?")
+            waitingBtn = msgBox.addButton(QPushButton("Waiting"), QMessageBox.YesRole)
+            loadingBtn = msgBox.addButton(QPushButton("Loading"), QMessageBox.NoRole)
+            btn_clicked = msgBox.exec_()
+
+            TOMsMessageLog.logMessage(
+                "In doEditLabels - possibilities: {}. {}".format(waitingBtn, loadingBtn),
+                level=Qgis.Warning)
+            TOMsMessageLog.logMessage(
+                "In doEditLabels - result: {}. {}".format(msgBox.clickedButton().text(), btn_clicked),
+                level=Qgis.Warning)
+
+            if msgBox.clickedButton().text() == "Waiting":
+                self.lines_label_layer = 'Lines.label_pos'
+            else: # msgBox.clickedButton().text() == "Loading":
+                self.lines_label_layer = 'Lines.label_loading_pos'
+
+            label_layers_names = [self.lines_label_layer]
+
         if currRestrictionLayer.name() == 'Signs':
             label_layers_names = []
+            self.lines_label_layer = ''
         if currRestrictionLayer.name() == 'RestrictionPolygons':
             label_layers_names = ['RestrictionPolygons.label_pos']
+            self.lines_label_layer = 'RestrictionPolygons.label_pos'
         if currRestrictionLayer.name() == 'CPZs':
             label_layers_names = ['CPZs.label_pos']
+            self.lines_label_layer = 'CPZs.label_pos'
         if currRestrictionLayer.name() == 'ParkingTariffAreas':
             label_layers_names = ['ParkingTariffAreas.label_pos']
+            self.lines_label_layer = 'ParkingTariffAreas.label_pos'
 
         if len(label_layers_names) == 0:
             alert_box("No labels for this restriction type")
@@ -537,7 +579,13 @@ class TOMsLabelTool(TOMsNodeTool):
 
         return label_layers_names
 
-    def getCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+    def getCurrLabelLayerNames(self, currRestrictionLayer):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        return self.label_layers_names
+
+    def setCurrLabelLeaderLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
@@ -545,24 +593,26 @@ class TOMsLabelTool(TOMsNodeTool):
             QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
 
         if currRestrictionLayer.name() == 'Bays':
-            label_layers_names = ['Bays.label_ldr']
+            label_leader_layers_names = ['Bays.label_ldr']
         if currRestrictionLayer.name() == 'Lines':
-            label_layers_names = ['Lines.label_ldr', 'Lines.label_loading_ldr']
+            label_leader_layers_names = ['Lines.label_ldr', 'Lines.label_loading_ldr']
         if currRestrictionLayer.name() == 'Signs':
-            label_layers_names = []
+            label_leader_layers_names = []
         if currRestrictionLayer.name() == 'RestrictionPolygons':
-            label_layers_names = ['RestrictionPolygons.label_ldr']
+            label_leader_layers_names = ['RestrictionPolygons.label_ldr']
         if currRestrictionLayer.name() == 'CPZs':
-            label_layers_names = ['CPZs.label_ldr']
+            label_leader_layers_names = ['CPZs.label_ldr']
         if currRestrictionLayer.name() == 'ParkingTariffAreas':
-            label_layers_names = ['ParkingTariffAreas.label_ldr']
+            label_leader_layers_names = ['ParkingTariffAreas.label_ldr']
 
-        if len(label_layers_names) == 0:
+        if len(label_leader_layers_names) == 0:
             alert_box("No labels for this restriction type")
             return
 
-        return label_layers_names
+        return label_leader_layers_names
 
+    def getCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+        return self.label_leader_layers_names
 
     def snap_to_editable_layer(self, e):
         """ Temporarily override snapping config and snap to vertices and edges
@@ -613,7 +663,7 @@ class TOMsLabelTool(TOMsNodeTool):
         # so the highlight does not jump around at nodes where features are joined
         ### TH: Amend to choose only from selected feature (and layer)
 
-        filter_last = OneFeatureLabelFilter(self.origLayer, self.origFeature.getFeature().id())
+        filter_last = OneFeatureLabelFilter(self.origLayer, self.origFeature.getFeature().id(), self.label_layers_names)
         # m = snap_util.snapToMap(map_point, filter_last)
         """if m_last.isValid() and m_last.distance() <= m.distance():
             m = m_last"""
@@ -803,19 +853,28 @@ class TOMsLabelTool(TOMsNodeTool):
         # also deselect any label layers
         for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
             labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
-            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
             TOMsMessageLog.logMessage(
-                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
-                level=Qgis.Info)
-            labelLayer.deselect(labelLayerFeature.id())
+                "In TOMsLabelTool:onGeometryChanged. deselecting from layer {}".format(labelLayer.name()),
+                level=Qgis.Warning)
+            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
+
+            if labelLayerFeature:
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(),
+                                                                                               labelLayer.name()),
+                    level=Qgis.Info)
+                labelLayer.deselect(labelLayerFeature.id())
 
         for label_layer_name in self.getCurrLabelLeaderLayerNames(self.origLayer):
             labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
             labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
-            TOMsMessageLog.logMessage(
-                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
-                level=Qgis.Info)
-            labelLayer.deselect(labelLayerFeature.id())
+
+            if labelLayerFeature:
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(),
+                                                                                               labelLayer.name()),
+                    level=Qgis.Info)
+                labelLayer.deselect(labelLayerFeature.id())
 
         self.shutDownNodeTool()
 

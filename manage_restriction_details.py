@@ -29,7 +29,7 @@ from qgis.PyQt.QtWidgets import (
     QAction,
     QDialogButtonBox,
     QLabel,
-    QDockWidget
+    QDockWidget, QPushButton
 )
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
@@ -799,8 +799,29 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             # get the corresponding label layer
             if currRestrictionLayer.name() == 'Bays':
                 label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+
             if currRestrictionLayer.name() == 'Lines':
-                label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos', 'Lines.label_ldr', 'Lines.label_loading_ldr']
+                """
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Which labels do you want edit?")
+                waitingBtn = msgBox.addButton(QPushButton("Waiting"), QMessageBox.YesRole)
+                loadingBtn = msgBox.addButton(QPushButton("Loading"), QMessageBox.NoRole)
+                cancelBtn = msgBox.addButton(QPushButton("Cancel"), QMessageBox.RejectRole)
+                btn_clicked = msgBox.exec_()
+
+                TOMsMessageLog.logMessage("In doEditLabels - possibilities: {}. {}. {}".format(waitingBtn, loadingBtn, cancelBtn),
+                                          level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In doEditLabels - result: {}. {}".format(msgBox.clickedButton().text(), btn_clicked), level=Qgis.Warning)
+
+                if msgBox.clickedButton().text() == "Waiting":
+                    label_layers_names = ['Lines.label_pos', 'Lines.label_ldr']
+                elif msgBox.clickedButton().text() == "Loading":
+                    label_layers_names = ['Lines.label_loading_pos', 'Lines.label_loading_ldr']
+                else:
+                    return
+                """
+                label_layers_names = ['Lines.label_pos', 'Lines.label_ldr', 'Lines.label_loading_pos', 'Lines.label_loading_ldr']
+
             if currRestrictionLayer.name() == 'Signs':
                 label_layers_names = []
             if currRestrictionLayer.name() == 'RestrictionPolygons':
@@ -840,7 +861,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 label_layer.selectByExpression(selected_expression)
 
                 # add the selection to the boudingbox (for zooming)
-                box.combineExtentWith(label_layer.boundingBoxOfSelected())
+                #box.combineExtentWith(label_layer.boundingBoxOfSelected())
 
                 # toggle edit mode
                 #label_layer.startEditing()  # already started with transaction
