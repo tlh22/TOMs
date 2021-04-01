@@ -853,19 +853,28 @@ class TOMsLabelTool(TOMsNodeTool):
         # also deselect any label layers
         for label_layer_name in self.getCurrLabelLayerNames(self.origLayer):
             labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
-            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
             TOMsMessageLog.logMessage(
-                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
-                level=Qgis.Info)
-            labelLayer.deselect(labelLayerFeature.id())
+                "In TOMsLabelTool:onGeometryChanged. deselecting from layer {}".format(labelLayer.name()),
+                level=Qgis.Warning)
+            labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
+
+            if labelLayerFeature:
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(),
+                                                                                               labelLayer.name()),
+                    level=Qgis.Info)
+                labelLayer.deselect(labelLayerFeature.id())
 
         for label_layer_name in self.getCurrLabelLeaderLayerNames(self.origLayer):
             labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
             labelLayerFeature = self.getLabelLayerFeature(currRestriction, labelLayer)
-            TOMsMessageLog.logMessage(
-                "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(), labelLayer.name()),
-                level=Qgis.Info)
-            labelLayer.deselect(labelLayerFeature.id())
+
+            if labelLayerFeature:
+                TOMsMessageLog.logMessage(
+                    "In TOMsLabelTool:onGeometryChanged. deselecting fid: {}; layer {}".format(labelLayerFeature.id(),
+                                                                                               labelLayer.name()),
+                    level=Qgis.Info)
+                labelLayer.deselect(labelLayerFeature.id())
 
         self.shutDownNodeTool()
 
