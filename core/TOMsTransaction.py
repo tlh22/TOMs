@@ -218,6 +218,9 @@ class TOMsTransaction(QObject):
                 reply = QMessageBox.information(None, "Error",
                                                 "Changes to " + layer.name() + " failed: " + str(
                                                     layer.commitErrors()), QMessageBox.Ok)
+                TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Changes to " + layer.name() + " failed: "
+                                          + str(layer.commitErrors()),
+                                          level=Qgis.Critical)
                 commitErrors = layer.rollBack()
 
             break

@@ -879,7 +879,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                         self.proposalsManager, self.restrictionTransaction)
             self.mapTool.setAction(self.actionEditLabels)
             self.iface.mapCanvas().setMapTool(self.mapTool)
-            self.canvas.mapToolSet.connect(self.saveLabelChanges)
+            #self.canvas.mapToolSet.connect(self.saveLabelChanges)
             self.labelMapToolSet = True
             #self.mapTool.deactivated.connect(self.stopEditLabels)
             self.actionEditLabels.setChecked(True)
