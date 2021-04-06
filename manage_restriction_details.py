@@ -895,7 +895,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Info)
 
-    def saveLabelChanges(self, newTool, oldTool):
+    def saveLabelChanges(self, newTool, oldTool):  # Not currently used ...
         TOMsMessageLog.logMessage("In saveLabelChanges ...", level=Qgis.Warning)
 
         if self.labelMapToolSet:
