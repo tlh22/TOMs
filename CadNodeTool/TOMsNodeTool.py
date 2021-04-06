@@ -142,10 +142,14 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
         TOMsMessageLog.logMessage("In TOMsNodeTool:shutDownNodeTool .... ", level=Qgis.Info)
 
         # TODO: May need to disconnect geometryChange and featureDeleted signals
-        self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
-        self.origLayer.featureDeleted.disconnect(self.on_cached_geometry_deleted)
-
-        self.proposalsManager.TOMsToolChanged.disconnect()
+        try:
+            self.origLayer.geometryChanged.disconnect(self.on_cached_geometry_changed)
+            self.origLayer.featureDeleted.disconnect(self.on_cached_geometry_deleted)
+            self.proposalsManager.TOMsToolChanged.disconnect()
+        except Exception as e:
+            TOMsMessageLog.logMessage('shutDownNodeTool: error: {}'.format(e),
+                                      level=Qgis.Warning)
+        # TODO: catch not connected signal and ignore
 
         self.set_highlighted_nodes([])
         self.remove_temporary_rubber_bands()

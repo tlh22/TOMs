@@ -879,7 +879,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                         self.proposalsManager, self.restrictionTransaction)
             self.mapTool.setAction(self.actionEditLabels)
             self.iface.mapCanvas().setMapTool(self.mapTool)
-            self.canvas.mapToolSet.connect(self.saveLabelChanges)
+            #self.canvas.mapToolSet.connect(self.saveLabelChanges)
             self.labelMapToolSet = True
             #self.mapTool.deactivated.connect(self.stopEditLabels)
             self.actionEditLabels.setChecked(True)
@@ -895,7 +895,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             TOMsMessageLog.logMessage("In doEditLabels - should now be finished", level=Qgis.Info)
 
-    def saveLabelChanges(self, newTool, oldTool):
+    def saveLabelChanges(self, newTool, oldTool):  # Not currently used ...
         TOMsMessageLog.logMessage("In saveLabelChanges ...", level=Qgis.Warning)
 
         if self.labelMapToolSet:
