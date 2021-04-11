@@ -24,7 +24,7 @@ from qgis.core import (
     Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry, QgsGeometryUtils,
     QgsFeatureRequest,
-    QgsRectangle, QgsPointXY, QgsWkbTypes
+    QgsRectangle, QgsPointXY, QgsWkbTypes, NULL
 )
 
 from ..constants import (
@@ -65,6 +65,12 @@ class TOMsGeometryElement(QObject):
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
             self.nrBays = float(currFeature.attribute("NrBays"))
             self.currBayOrientation = currFeature.attribute("BayOrientation")
+            thisBayWidth = currFeature.attribute("BayWidth")
+
+            if thisBayWidth != NULL:  # https://gis.stackexchange.com/questions/216018/importing-null-in-pyqgis
+                self.BayWidth = float(thisBayWidth)
+                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: changing BayWidth to {}".format(thisBayWidth),
+                                          level=Qgis.Info)
 
         TOMsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", level=Qgis.Info)
 
