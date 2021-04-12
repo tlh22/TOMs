@@ -24,7 +24,7 @@ from qgis.core import (
     Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry, QgsGeometryUtils,
     QgsFeatureRequest,
-    QgsRectangle, QgsPointXY, QgsWkbTypes
+    QgsRectangle, QgsPointXY, QgsWkbTypes, NULL
 )
 
 from ..constants import (
@@ -63,8 +63,27 @@ class TOMsGeometryElement(QObject):
         TOMsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", level=Qgis.Info)
 
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
-            self.nrBays = float(currFeature.attribute("NrBays"))
-            self.currBayOrientation = currFeature.attribute("BayOrientation")
+            # NrBays
+            try:
+                self.nrBays = float(currFeature.attribute("NrBays"))
+            except KeyError as e:
+                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: NrBays not present {}".format(e),
+                                          level=Qgis.Warning)
+                self.nrBays = -1
+
+            # BayOrientation
+            try:
+                self.currBayOrientation = currFeature.attribute("BayOrientation")
+            except KeyError as e:
+                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: BayOrientation not present {}".format(e),
+                                      level=Qgis.Warning)
+                self.currBayOrientation = 0
+
+            thisBayWidth = currFeature.attribute("BayWidth")
+            if thisBayWidth != NULL:  # https://gis.stackexchange.com/questions/216018/importing-null-in-pyqgis
+                self.BayWidth = float(thisBayWidth)
+                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: changing BayWidth to {}".format(thisBayWidth),
+                                          level=Qgis.Info)
 
         TOMsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", level=Qgis.Info)
 
