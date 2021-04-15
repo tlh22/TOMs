@@ -55,10 +55,14 @@ class TOMsGeometryElement(QObject):
         self.CrossoverShapeWidth = float(params.setParam("CrossoverShapeWidth"))
 
         self.currRestGeomType = currFeature.attribute("GeomShapeID")
-        self.currAzimuthToCentreLine = float(currFeature.attribute("AzimuthToRoadCentreLine"))
+
+        try:
+            self.currAzimuthToCentreLine = float(currFeature.attribute("AzimuthToRoadCentreLine"))
+        except Exception as e:
+            self.currAzimuthToCentreLine = 0.0
 
         self.nrBays = 0
-        self.currBayOrientation = 0
+        self.currBayOrientation = 0.0
 
         TOMsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", level=Qgis.Info)
 
