@@ -83,7 +83,13 @@ class TOMsGeometryElement(QObject):
                                       level=Qgis.Warning)
                 self.currBayOrientation = 0
 
-            thisBayWidth = currFeature.attribute("BayWidth")
+            try:
+                thisBayWidth = currFeature.attribute("BayWidth")
+            except KeyError as e:
+                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: BayWidth not present {}".format(e),
+                                      level=Qgis.Warning)
+                thisBayWidth = NULL
+
             if thisBayWidth != NULL:  # https://gis.stackexchange.com/questions/216018/importing-null-in-pyqgis
                 self.BayWidth = float(thisBayWidth)
                 TOMsMessageLog.logMessage("In TOMsGeometryElement.init: changing BayWidth to {}".format(thisBayWidth),
