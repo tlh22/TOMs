@@ -20,6 +20,9 @@ ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
 ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
     ADD CONSTRAINT "Restrictions_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
 
+ALTER TABLE ONLY "highways_network"."MHTC_RoadLinks"
+    ADD CONSTRAINT "Restrictions_ComplianceRestrictionSignIssue_fkey" FOREIGN KEY ("ComplianceRestrictionSignIssue") REFERENCES "compliance_lookups"."Restriction_SignIssueTypes"("Code");
+
 -- RestrictionRoadMarkingsFadedTypes
 
 ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
@@ -40,6 +43,9 @@ ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
 ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
     ADD CONSTRAINT "Restrictions_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
 
+ALTER TABLE ONLY "highways_network"."MHTC_RoadLinks"
+    ADD CONSTRAINT "Restrictions_ComplianceRoadMarkingsFaded_fkey" FOREIGN KEY ("ComplianceRoadMarkingsFaded") REFERENCES "compliance_lookups"."RestrictionRoadMarkingsFadedTypes"("Code");
+
 -- MHTC_CheckIssueTypes
 
 ALTER TABLE ONLY "moving_traffic"."AccessRestrictions"
@@ -58,4 +64,7 @@ ALTER TABLE ONLY "moving_traffic"."SpecialDesignations"
     ADD CONSTRAINT "Restrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "moving_traffic"."TurnRestrictions"
+    ADD CONSTRAINT "Restrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+
+ALTER TABLE ONLY "highways_network"."MHTC_RoadLinks"
     ADD CONSTRAINT "Restrictions_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
