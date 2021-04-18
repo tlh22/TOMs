@@ -22,7 +22,8 @@ GRANT USAGE ON SCHEMA compliance_lookups TO toms_public, toms_operator, toms_adm
 
 REVOKE ALL ON ALL TABLES IN SCHEMA export FROM toms_public, toms_operator, toms_admin;
 GRANT SELECT ON ALL TABLES IN SCHEMA export TO toms_public, toms_operator, toms_admin;
-GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA export TO toms_public, toms_operator, toms_admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA export TO toms_admin;
+GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA export TO toms_operator, toms_admin;
 GRANT USAGE ON SCHEMA export TO toms_public, toms_operator, toms_admin;
 
 REVOKE ALL ON ALL TABLES IN SCHEMA highways_network FROM toms_public, toms_operator, toms_admin;
