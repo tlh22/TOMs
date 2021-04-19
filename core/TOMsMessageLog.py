@@ -55,21 +55,22 @@ class TOMsMessageLog(QgsMessageLog):
 
         debug_level = currentLoggingLevel()
 
-        try:
-            messageLevel = int(kwargs.get('level'))
-        except Exception as e:
-            QgsMessageLog.logMessage("Error in TOMsMessageLog. Level in message not found...{}".format(e), tag="TOMs Panel")
-            messageLevel = Qgis.Info
+        if TOMsMessageLog.filename:
+            try:
+                messageLevel = int(kwargs.get('level'))
+            except Exception as e:
+                QgsMessageLog.logMessage("Error in TOMsMessageLog. Level in message not found...{}".format(e), tag="TOMs Panel")
+                messageLevel = Qgis.Info
 
-        #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
+            #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
 
-        if messageLevel >= debug_level:
-            QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
-            #TOMsMessageLog.write_log_message(args[0], messageLevel, "TOMs Panel", debug_level)
-            with open(TOMsMessageLog.filename, 'a') as logfile:
-                logfile.write(
-                    '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
-                                                                          tag='TOMs Panel', level=debug_level, message=args[0]))
+            if messageLevel >= debug_level:
+                QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
+                #TOMsMessageLog.write_log_message(args[0], messageLevel, "TOMs Panel", debug_level)
+                with open(TOMsMessageLog.filename, 'a') as logfile:
+                    logfile.write(
+                        '{dateDetails}[{tag}]: {level} :: {message}\n'.format(dateDetails=time.strftime("%Y%m%d:%H%M%S"),
+                                                                              tag='TOMs Panel', level=debug_level, message=args[0]))
 
     def setLogFile(self):
 
