@@ -11,10 +11,16 @@ SET "RestrictionTypeID" = cast(t."CurrCode" AS int)
 FROM "LookupCodeTransfers_Lines" t
 WHERE r."RestrictionTypeID" = cast(t."Aug2018_Code" AS int);
 
+ALTER TABLE public."Bays"
+    DROP CONSTRAINT IF EXISTS "Bays_RestrictionTypeID_fkey";
+
 ALTER TABLE public."Bays" ADD CONSTRAINT "Bays_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
         REFERENCES public."BayLineTypesInUse" ("Code") MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
+
+ALTER TABLE public."Lines"
+    DROP CONSTRAINT IF EXISTS "Lines_RestrictionTypeID_fkey";
 
 ALTER TABLE public."Lines" ADD CONSTRAINT "Lines_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
         REFERENCES public."BayLineTypesInUse" ("Code") MATCH SIMPLE

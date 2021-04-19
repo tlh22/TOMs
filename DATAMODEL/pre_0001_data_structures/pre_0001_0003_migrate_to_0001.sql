@@ -1659,6 +1659,13 @@ ALTER TABLE toms."Bays"
 CREATE INDEX "idx_Bays_PayTypeID"
     ON toms."Bays"("PayTypeID");
 
+ALTER TABLE toms."Bays"
+    DROP CONSTRAINT IF EXISTS "Bays_RestrictionTypeID_fkey";
+
+ALTER TABLE ONLY "toms"."Bays"
+    ADD CONSTRAINT "Bays_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
+    REFERENCES "toms_lookups"."BayTypesInUse"("Code");
+
 -- *** ControlledParkingZones
 ALTER TABLE toms."ControlledParkingZones" DROP COLUMN gid;
 
@@ -1944,6 +1951,13 @@ CREATE INDEX "idx_Lines_UnacceptableTypeID"
     ON toms."Lines"("UnacceptableTypeID");
 
 DROP INDEX toms."Lines_EDI_180124_idx";
+
+ALTER TABLE toms."Lines"
+    DROP CONSTRAINT IF EXISTS "Lines_RestrictionTypeID_fkey";
+
+ALTER TABLE ONLY "toms"."Lines"
+    ADD CONSTRAINT "Lines_RestrictionTypeID_fkey" FOREIGN KEY ("RestrictionTypeID")
+    REFERENCES "toms_lookups"."LineTypesInUse"("Code");
 
 -- MapGrid
 ALTER TABLE toms."MapGrid" RENAME COLUMN "RevisionNr" TO "CurrRevisionNr";
