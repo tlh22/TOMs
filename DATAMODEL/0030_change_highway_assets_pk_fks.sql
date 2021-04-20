@@ -12,108 +12,108 @@ ALTER TABLE ONLY "highway_assets"."HighwayAssets"
 --  add FKs for AssetConditionTypes
 
 ALTER TABLE ONLY "highway_assets"."Benches"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "Benches_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."Bins"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "Bins_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."Bollards"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "Bollards_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."BusShelters"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "BusShelters_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CCTV_Cameras"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "CCTV_Cameras_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CommunicationCabinets"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "CommunicationCabinets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CrossingPoints"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "CrossingPoints_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CycleParking"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "CycleParking_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."DisplayBoards"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "DisplayBoards_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."EV_ChargingPoints"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "EV_ChargingPoints_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."EndOfStreetMarkings"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "EndOfStreetMarkings_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."PedestrianRailings"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "PedestrianRailings_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."StreetNamePlates"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "StreetNamePlates_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."SubterraneanFeatures"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "SubterraneanFeatures_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."TrafficCalming"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "TrafficCalming_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."TrafficSignals"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "TrafficSignals_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."VehicleBarriers"
-    ADD CONSTRAINT "HighwayAssets_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
+    ADD CONSTRAINT "VehicleBarriers_AssetConditionTypeID_fkey" FOREIGN KEY ("AssetConditionTypeID") REFERENCES "highway_asset_lookups"."AssetConditionTypes"("Code");
 
 --  add FKs for MHTC_CheckIssueTypes
 
 ALTER TABLE ONLY "highway_assets"."Benches"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "Benches_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."Bins"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "Bins_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."Bollards"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "Bollards_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."BusShelters"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "BusShelters_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CCTV_Cameras"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "CCTV_Cameras_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CommunicationCabinets"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "CommunicationCabinets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CrossingPoints"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "CrossingPoints_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."CycleParking"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "CycleParking_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."DisplayBoards"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "DisplayBoards_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."EV_ChargingPoints"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "EV_ChargingPoints_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."EndOfStreetMarkings"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "EndOfStreetMarkings_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."PedestrianRailings"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "PedestrianRailings_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."StreetNamePlates"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "StreetNamePlates_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."SubterraneanFeatures"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "SubterraneanFeatures_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."TrafficCalming"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "TrafficCalming_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."TrafficSignals"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "TrafficSignals_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 ALTER TABLE ONLY "highway_assets"."VehicleBarriers"
-   ADD CONSTRAINT "HighwayAssets_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
+   ADD CONSTRAINT "VehicleBarriers_MHTC_CheckIssueTypeID_fkey" FOREIGN KEY ("MHTC_CheckIssueTypeID") REFERENCES "compliance_lookups"."MHTC_CheckIssueTypes"("Code");
 
 
 
