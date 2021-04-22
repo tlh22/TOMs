@@ -39,7 +39,7 @@ WITH relevant_tables AS (
       select concat(table_schema, '.', quote_ident(table_name)) AS full_table_name
       from information_schema.columns
       where column_name = 'Photos_01'
-      AND table_schema NOT IN ('quarantine')
+      AND table_schema NOT IN ('quarantine', 'export')
     )
 
     SELECT mhtc_operations.getPhotosFromTable(full_table_name)
