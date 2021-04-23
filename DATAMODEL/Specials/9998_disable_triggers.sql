@@ -15,3 +15,6 @@ ALTER TABLE moving_traffic."SpecialDesignations" DISABLE TRIGGER all;
 ALTER TABLE highway_assets."CrossingPoints" DISABLE TRIGGER all;
 ALTER TABLE highway_assets."PedestrianRailings" DISABLE TRIGGER all;
 ALTER TABLE highway_assets."TrafficCalming" DISABLE TRIGGER all;
+
+-- ISL Assets
+ALTER TABLE local_authority."ISL_Electrical_Items" DISABLE TRIGGER all;
