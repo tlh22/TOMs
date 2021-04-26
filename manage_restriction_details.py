@@ -58,6 +58,7 @@ from .constants import (
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
 from TOMs.importRestrictions.TOMs_Import_Restrictions_dialog import (TOMsImportRestrictionsDialog)
+from TOMs.importRestrictions.restriction_to_import import (restrictionToImport)
 
 import functools
 
@@ -1076,7 +1077,6 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 dlg = TOMsImportRestrictionsDialog()
                 cb_restrictionLayers = dlg.findChild(QgsFeatureListComboBox, "cb_RestrictionLayers")
 
-                #cb = QgsFeatureListComboBox()
                 cb_restrictionLayers.setSourceLayer(RestrictionLayers)
                 cb_restrictionLayers.setIdentifierFields(['Code'])
                 cb_restrictionLayers.setIdentifierValues(['Code'])
@@ -1090,16 +1090,17 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     indexImportLayer = dlg.importLayer.currentIndex()
                     importLayer = dlg.importLayer.currentLayer()
-                    onlySelectedRestrictions = False
+                    """onlySelectedRestrictions = False
                     if dlg.onlySelectedRestrictions.isChecked():
-                        onlySelectedRestrictions = True
+                        onlySelectedRestrictions = True"""
                     nameRestrictionLayer = dlg.cb_RestrictionLayers.currentModelIndex().data()  # provides name of layer
 
-                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                            "Importing from {} into {} - selected details {}".format(importLayer.name(), nameRestrictionLayer, onlySelectedRestrictions),
-                                            QMessageBox.Ok)
+                    currRestrictionLayerTableID = dlg.cb_RestrictionLayers.identifierValue()
+                    outputLayer = QgsProject.instance().mapLayersByName(nameRestrictionLayer)[0]
 
-                    currRestrictionLayerID = self.getRestrictionLayerTableID(nameRestrictionLayer)
+                    """reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                            "Importing from {} into {} as {} - selected details for another time".format(importLayer.name(), outputLayer.name(), currRestrictionLayerTableID),
+                                            QMessageBox.Ok)"""
 
                     """
                     Now need to 
@@ -1109,6 +1110,32 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                     4. addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
                     5. commit
                     """
+
+                    self.restrictionTransaction.startTransactionGroup()
+
+                    transactionError = False
+                    for currFeature in importLayer.getFeatures():  # TODO: include getSelectedFeatures when checkbox is used
+                        importRestriction = restrictionToImport(currFeature, outputLayer)
+                        newRestriction = importRestriction.prepareTOMsRestriction()
+                        if newRestriction:
+                            try:
+                                outputLayer.addFeature(newRestriction)
+                            except Exception as e:
+                                TOMsMessageLog.logMessage('doImportRestrictions: error: {}'.format(e),
+                                                      level=Qgis.Warning)
+                                transactionError = True
+                                break
+                            status = self.addRestrictionToProposal(str(newRestriction.attribute("RestrictionID")), currRestrictionLayerTableID,
+                                             currProposalID, RestrictionAction.OPEN)
+                            TOMsMessageLog.logMessage("In doImportRestrictions - adding restriction {}".format(newRestriction.attribute("RestrictionID")), level=Qgis.Info)
+
+                    if transactionError:
+                        self.restrictionTransaction.rollBackTransactionGroup()
+                    else:
+                        self.restrictionTransaction.commitTransactionGroup()
+
+                    # deactivate action ...
+                    self.actionImportRestrictions.setChecked(False)
 
             else:
 
