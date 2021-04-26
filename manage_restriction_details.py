@@ -41,7 +41,7 @@ from qgis.core import (
     QgsFeature,
     QgsGeometry
 )
-from qgis.gui import QgsMapToolPan, QgsMapLayerComboBox
+from qgis.gui import QgsMapToolPan, QgsMapLayerComboBox, QgsFeatureListComboBox
 
 import os
 
@@ -1070,16 +1070,16 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                 """
                 Need to confirm layer/selected items to be imported - and the layer into which they are to be imported
                 """
-                #RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
-                RestrictionsLayers = self.proposalsManager.tableNames.setLayer('RestrictionsLayers')
+                RestrictionLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
+                #RestrictionsLayers = self.proposalsManager.tableNames.setLayer('RestrictionsLayers')
 
                 dlg = TOMsImportRestrictionsDialog()
-                cb_restrictionsLayers = dlg.findChild(QgsMapLayerComboBox, "cb_RestrictionsLayers")
+                cb_restrictionLayers = dlg.findChild(QgsFeatureListComboBox, "cb_RestrictionLayers")
 
                 #cb = QgsFeatureListComboBox()
-                cb_restrictionsLayers.setSourceLayer(RestrictionsLayers)
-                cb_restrictionsLayers.setIdentifierFields('Code')
-                #cb_restrictionsLayers.setIdentifierValues(tp.id())
+                cb_restrictionLayers.setSourceLayer(RestrictionLayers)
+                cb_restrictionLayers.setIdentifierFields(['Code'])
+                cb_restrictionLayers.setIdentifierValues(['Code'])
 
                 dlg.show()
 
@@ -1090,12 +1090,25 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     indexImportLayer = dlg.importLayer.currentIndex()
                     importLayer = dlg.importLayer.currentLayer()
-                    onlySelectedRestrictions = dlg.onlySelectedRestrictions
-                    indexRestrictionsLayers = dlg.cb_restrictionsLayers.currentIndex()
+                    onlySelectedRestrictions = False
+                    if dlg.onlySelectedRestrictions.isChecked():
+                        onlySelectedRestrictions = True
+                    nameRestrictionLayer = dlg.cb_RestrictionLayers.currentModelIndex().data()  # provides name of layer
 
                     reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                            "Importing from {} into {}".format(importLayer.name(), indexRestrictionsLayers),
+                                            "Importing from {} into {} - selected details {}".format(importLayer.name(), nameRestrictionLayer, onlySelectedRestrictions),
                                             QMessageBox.Ok)
+
+                    currRestrictionLayerID = self.getRestrictionLayerTableID(nameRestrictionLayer)
+
+                    """
+                    Now need to 
+                    1. start transaction
+                    2. generate all the relevant TOMs fields (RestrictionID, ...)
+                    3. add the feature to the relevant layer and  
+                    4. addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
+                    5. commit
+                    """
 
             else:
 
