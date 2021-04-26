@@ -29,7 +29,7 @@ from qgis.PyQt.QtWidgets import (
     QAction,
     QDialogButtonBox,
     QLabel,
-    QDockWidget, QPushButton
+    QDockWidget, QPushButton, QComboBox
 )
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
@@ -41,7 +41,7 @@ from qgis.core import (
     QgsFeature,
     QgsGeometry
 )
-from qgis.gui import QgsMapToolPan
+from qgis.gui import QgsMapToolPan, QgsMapLayerComboBox
 
 import os
 
@@ -57,6 +57,7 @@ from .constants import (
 
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .core.TOMsTransaction import (TOMsTransaction)
+from TOMs.importRestrictions.TOMs_Import_Restrictions_dialog import (TOMsImportRestrictionsDialog)
 
 import functools
 
@@ -136,6 +137,10 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                                self.iface.mainWindow())
         self.actionCreateConstructionLine.setCheckable(True)
 
+        self.actionImportRestrictions = QAction(QIcon(""),
+                               QCoreApplication.translate("MyPlugin", "Import Restrictions"),
+                               self.iface.mainWindow())
+        self.actionImportRestrictions.setCheckable(True)
 
         # Add actions to the toolbar
         self.TOMsToolbar.addAction(self.actionSelectRestriction)
@@ -149,6 +154,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.TOMsToolbar.addAction(self.actionSplitRestriction)
         self.TOMsToolbar.addAction(self.actionEditLabels)
         self.TOMsToolbar.addAction(self.actionCreateConstructionLine)
+        self.TOMsToolbar.addAction(self.actionImportRestrictions)
 
         # Connect action signals to slots
         self.actionSelectRestriction.triggered.connect(self.doSelectRestriction)
@@ -162,6 +168,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionSplitRestriction.triggered.connect(self.doSplitRestriction)
         self.actionEditLabels.triggered.connect(self.doEditLabels)
         self.actionCreateConstructionLine.triggered.connect(self.doCreateConstructionLine)
+        self.actionImportRestrictions.triggered.connect(self.doImportRestrictions)
 
         # deal with saving label changes ...
         self.labelMapToolSet = False
@@ -181,6 +188,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionSplitRestriction.setEnabled(True)
         self.actionEditLabels.setEnabled(True)
         self.actionCreateConstructionLine.setEnabled(True)
+        self.actionImportRestrictions.setEnabled(True)
 
         # print tool
         #self.toolButton.setEnabled(True)
@@ -214,6 +222,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionSplitRestriction.setEnabled(False)
         self.actionEditLabels.setEnabled(False)
         self.actionCreateConstructionLine.setEnabled(False)
+        self.actionImportRestrictions.setEnabled(False)
 
         # print tool
         #self.toolButton.setEnabled(False)
@@ -1040,4 +1049,66 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doSplitRestriction - leaving", level=Qgis.Info)
 
         pass
+
+    def doImportRestrictions(self):
+
+        TOMsMessageLog.logMessage("In doImportRestrictions - starting", level=Qgis.Info)
+
+        #self.proposalsManager.TOMsToolChanged.emit()
+
+        self.mapTool = None
+
+        # Get the current proposal from the session variables
+        currProposalID = self.proposalsManager.currentProposal()
+
+        if currProposalID > 0:
+
+            if self.actionImportRestrictions.isChecked():
+
+                TOMsMessageLog.logMessage("In doImportRestrictions - tool being activated", level=Qgis.Info)
+
+                """
+                Need to confirm layer/selected items to be imported - and the layer into which they are to be imported
+                """
+                #RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[0]
+                RestrictionsLayers = self.proposalsManager.tableNames.setLayer('RestrictionsLayers')
+
+                dlg = TOMsImportRestrictionsDialog()
+                cb_restrictionsLayers = dlg.findChild(QgsMapLayerComboBox, "cb_RestrictionsLayers")
+
+                #cb = QgsFeatureListComboBox()
+                cb_restrictionsLayers.setSourceLayer(RestrictionsLayers)
+                cb_restrictionsLayers.setIdentifierFields('Code')
+                #cb_restrictionsLayers.setIdentifierValues(tp.id())
+
+                dlg.show()
+
+                # Run the dialog event loop
+                result = dlg.exec_()
+                # See if OK was pressed
+                if result:
+
+                    indexImportLayer = dlg.importLayer.currentIndex()
+                    importLayer = dlg.importLayer.currentLayer()
+                    onlySelectedRestrictions = dlg.onlySelectedRestrictions
+                    indexRestrictionsLayers = dlg.cb_restrictionsLayers.currentIndex()
+
+                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                            "Importing from {} into {}".format(importLayer.name(), indexRestrictionsLayers),
+                                            QMessageBox.Ok)
+
+            else:
+
+                TOMsMessageLog.logMessage("In doImportRestrictions - tool deactivated", level=Qgis.Info)
+                self.actionImportRestrictions.setChecked(False)
+
+        else:
+
+            reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                            "Changes to current data are not allowed. Changes are made via Proposals",
+                                            QMessageBox.Ok)
+            self.actionImportRestrictions.setChecked(False)
+
+        TOMsMessageLog.logMessage("In doImportRestrictions - leaving", level=Qgis.Info)
+
 
