@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis saveDateTime="2021-04-27T09:46:55" version="3.16.5-Hannover" saveUser="marie_000" saveUserFull="Marie Hancock" projectname="">
+<qgis saveDateTime="2021-04-27T09:44:04" version="3.16.5-Hannover" saveUser="marie_000" saveUserFull="Marie Hancock" projectname="">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -20,7 +20,7 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-group name="Restrictions" checked="Qt::Checked" expanded="0">
+    <layer-tree-group name="Restrictions" checked="Qt::Checked" expanded="1">
       <customproperties/>
       <layer-tree-layer id="Bays_6edf2e11_0109_4240_80e2_f97f527961cf" name="Bays" providerKey="postgres" checked="Qt::Checked" expanded="0" patch_size="0,0" legend_split_behavior="0" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Bays&quot; (geom) sql=&quot;RestrictionID&quot;  IN ('254bdb0f-cc6d-47fc-a4b5-14dc4d244c1d') OR (&quot;OpenDate&quot; &lt;= to_date('28-05-2020', 'dd-MM-yyyy') AND ((&quot;CloseDate&quot; > to_date('28-05-2020', 'dd-MM-yyyy')  OR &quot;CloseDate&quot; IS NULL)))" legend_exp="">
         <customproperties/>
@@ -315,7 +315,7 @@
   </mapcanvas>
   <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendgroup open="false" name="Restrictions" checked="Qt::Checked">
+    <legendgroup open="true" name="Restrictions" checked="Qt::Checked">
       <legendlayer open="false" drawingOrder="-1" name="Bays" checked="Qt::Checked" showFeatureCount="0">
         <filegroup open="false" hidden="false">
           <legendlayerfile isInOverview="0" layerid="Bays_6edf2e11_0109_4240_80e2_f97f527961cf" visible="1"/>
@@ -1510,7 +1510,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -3518,8 +3518,8 @@ def my_form_open(dialog, layer, feature):
         </symbols>
       </renderer-v2>
       <labeling type="rule-based">
-        <rules key="{0ed6ef24-40d8-41a0-a361-9ee2652e039a}">
-          <rule filter="&quot;RestrictionTypeID&quot; IN (103)" key="{0481a1be-5547-4372-85f0-4f9b5b5ba882}" description="Pay &amp; Display details">
+        <rules key="{2fdea70c-5f3b-41d9-bbaf-13ebc9349682}">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (103)" key="{1ade4934-abe3-43b2-9aa4-842acb6656ec}" description="Pay &amp; Display details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getBayLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="255,255,255,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -3616,7 +3616,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (105,133,134,135)" key="{7a6705a3-2444-4b65-b721-9165952f92d7}" description="Shared Use details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (105,133,134,135)" key="{149f291c-3bc4-4575-a943-016b2fb07289}" description="Shared Use details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getBayLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="255,255,255,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -3713,7 +3713,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (126)" key="{1d09b085-1702-4ae7-9349-f03b1db00445}" description="Limited Waiting details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (126)" key="{1e91e6eb-0fce-46bc-9da1-6253d8d602af}" description="Limited Waiting details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getBayLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="255,255,255,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -3810,7 +3810,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (114)" key="{afe4c4d2-3bdb-479c-9493-361fe06fa989}" description="Loading Bay details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (114)" key="{10cb5e0b-9691-421a-b611-16e0a57823f6}" description="Loading Bay details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getBayLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -3907,7 +3907,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (101, 102,131)" key="{daf63027-4420-4a5b-bd99-f07e04179135}" description="Permit holder details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (101, 102,131)" key="{0e896f6a-eec1-4ece-9c7d-d4700238af38}" description="Permit holder details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getBayTimePeriodLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -4004,7 +4004,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (168)" key="{16b5169f-5b2f-4eba-b253-7b0004c5bf6b}" description="RNLI Permit holder details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (168)" key="{7fc43f08-eb67-4c7e-b7f7-639d538398ce}" description="RNLI Permit holder details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="'RNLI permit holders only;At any time'" allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -4101,7 +4101,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter="&quot;RestrictionTypeID&quot; IN (109)" key="{423acc04-6d80-4375-b6e1-a2fca636f2a3}" description="Bus Parking Bay details">
+          <rule filter="&quot;RestrictionTypeID&quot; IN (109)" key="{2c711092-ddd3-4b27-a27c-7aa3fc8319a7}" description="Bus Parking Bay details">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="'Charge Band A;;' + getBayLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -4570,11 +4570,10 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="DateTime">
             <config>
               <Option type="Map">
-                <Option value="false" name="allow_null" type="bool"/>
-                <Option value="false" name="calendar_popup" type="bool"/>
+                <Option value="0" name="allow_null" type="QString"/>
+                <Option value="0" name="calendar_popup" type="QString"/>
                 <Option value="dd-MM-yyyy" name="display_format" type="QString"/>
                 <Option value="dd-MM-yyyy" name="field_format" type="QString"/>
-                <Option value="false" name="field_iso_format" type="bool"/>
               </Option>
             </config>
           </editWidget>
@@ -4861,7 +4860,7 @@ def my_form_open(dialog, layer, feature):
           </editWidget>
         </field>
         <field name="BayWidth" configurationFlags="None">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
@@ -5092,7 +5091,6 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="CreatePerson" type="field" hidden="0"/>
           <column width="-1" name="Capacity" type="field" hidden="0"/>
           <column width="-1" name="MatchDayEventDayZone" type="field" hidden="0"/>
-          <column width="-1" name="BayWidth" type="field" hidden="0"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -5128,7 +5126,6 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="AdditionalConditionID"/>
         <field editable="1" name="AzimuthToRoadCentreLine"/>
         <field editable="1" name="BayOrientation"/>
-        <field editable="1" name="BayWidth"/>
         <field editable="1" name="BaysGeometry"/>
         <field editable="1" name="BaysWordingID"/>
         <field editable="1" name="Bays_DateTime"/>
@@ -5137,7 +5134,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="Bays_Photos_02"/>
         <field editable="1" name="CPZ"/>
         <field editable="1" name="Capacity"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="Compl_Bays_Faded"/>
         <field editable="1" name="Compl_Bays_SignIssue"/>
         <field editable="1" name="ComplianceNotes"/>
@@ -5159,7 +5156,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="NoReturnID"/>
         <field editable="1" name="Notes"/>
         <field editable="1" name="NrBays"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="OriginalGeomShapeID"/>
         <field editable="1" name="ParkingTariffArea"/>
         <field editable="1" name="PayParkingAreaID"/>
@@ -5187,7 +5184,6 @@ def my_form_open(dialog, layer, feature):
         <field name="AdditionalConditionID" labelOnTop="0"/>
         <field name="AzimuthToRoadCentreLine" labelOnTop="0"/>
         <field name="BayOrientation" labelOnTop="0"/>
-        <field name="BayWidth" labelOnTop="0"/>
         <field name="BaysGeometry" labelOnTop="0"/>
         <field name="BaysWordingID" labelOnTop="0"/>
         <field name="Bays_DateTime" labelOnTop="0"/>
@@ -7212,7 +7208,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -7292,7 +7288,7 @@ def my_form_open(dialog, layer, feature):
             </dd_properties>
             <substitutions/>
           </text-style>
-          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="0" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
+          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="4294967295" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
           <placement repeatDistanceUnits="MM" overrunDistance="0" overrunDistanceUnit="MM" placementFlags="10" distMapUnitScale="3x:0,0,0,0,0,0" geometryGeneratorEnabled="1" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" placement="0" polygonPlacementFlags="2" priority="10" offsetUnits="MapUnit" overrunDistanceMapUnitScale="3x:0,0,0,0,0,0" centroidInside="1" quadOffset="4" maxCurvedCharAngleIn="25" layerType="PolygonGeometry" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" distUnits="MM" rotationAngle="0" offsetType="0" repeatDistance="0" geometryGeneratorType="PointGeometry" yOffset="0" preserveRotation="1" centroidWhole="0" dist="0" xOffset="0" fitInPolygonOnly="0" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" maxCurvedCharAngleOut="-25" geometryGenerator="geom_from_wkt(&#xd;&#xa;&#x9;substr(&#xd;&#xa;&#x9;&#x9;&quot;label_pos&quot;,&#xd;&#xa;&#x9;&#x9;strpos( &quot;label_pos&quot;, ';')+1&#xd;&#xa;&#x9;)&#xd;&#xa;)" lineAnchorPercent="0.5" lineAnchorType="0"/>
           <rendering drawLabels="1" fontMaxPixelSize="10000" displayAll="1" mergeLines="0" fontMinPixelSize="3" scaleVisibility="1" limitNumLabels="0" upsidedownLabels="0" maxNumLabels="2000" obstacleFactor="2" zIndex="0" labelPerPart="0" scaleMax="10000" obstacle="1" obstacleType="1" scaleMin="1" fontLimitPixelSize="0" minFeatureSize="0"/>
           <dd_properties>
@@ -7511,14 +7507,14 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
-                <Option value="false" name="IsMultiline" type="bool"/>
-                <Option value="false" name="UseHtml" type="bool"/>
+                <Option value="0" name="IsMultiline" type="QString"/>
+                <Option value="0" name="UseHtml" type="QString"/>
               </Option>
             </config>
           </editWidget>
         </field>
         <field name="EDZ" configurationFlags="None">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
@@ -7774,6 +7770,7 @@ def my_form_open(dialog, layer, feature):
       <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
         <columns>
           <column width="-1" type="actions" hidden="1"/>
+          <column width="-1" name="CPZ" type="field" hidden="0"/>
           <column width="-1" name="RestrictionID" type="field" hidden="0"/>
           <column width="-1" name="GeometryID" type="field" hidden="0"/>
           <column width="-1" name="RestrictionTypeID" type="field" hidden="0"/>
@@ -7800,7 +7797,6 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="label_ldr" type="field" hidden="0"/>
           <column width="-1" name="CreateDateTime" type="field" hidden="0"/>
           <column width="-1" name="CreatePerson" type="field" hidden="0"/>
-          <column width="-1" name="EDZ" type="field" hidden="0"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -7833,13 +7829,12 @@ def my_form_open(dialog, layer, feature):
       <editorlayout>uifilelayout</editorlayout>
       <editable>
         <field editable="1" name="CPZ"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="ComplianceNotes"/>
         <field editable="1" name="ComplianceRestrictionSignIssue"/>
         <field editable="1" name="ComplianceRoadMarkingsFaded"/>
         <field editable="1" name="CreateDateTime"/>
         <field editable="1" name="CreatePerson"/>
-        <field editable="1" name="EDZ"/>
         <field editable="1" name="GeometryID"/>
         <field editable="1" name="LabelText"/>
         <field editable="1" name="LastUpdateDateTime"/>
@@ -7848,7 +7843,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="MHTC_CheckNotes"/>
         <field editable="1" name="MatchDayTimePeriodID"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="Photos_01"/>
         <field editable="1" name="Photos_02"/>
         <field editable="1" name="Photos_03"/>
@@ -7870,7 +7865,6 @@ def my_form_open(dialog, layer, feature):
         <field name="ComplianceRoadMarkingsFaded" labelOnTop="0"/>
         <field name="CreateDateTime" labelOnTop="0"/>
         <field name="CreatePerson" labelOnTop="0"/>
-        <field name="EDZ" labelOnTop="0"/>
         <field name="GeometryID" labelOnTop="0"/>
         <field name="LabelText" labelOnTop="0"/>
         <field name="LastUpdateDateTime" labelOnTop="0"/>
@@ -8248,7 +8242,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -8328,7 +8322,7 @@ def my_form_open(dialog, layer, feature):
             </dd_properties>
             <substitutions/>
           </text-style>
-          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="0" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
+          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="4294967295" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
           <placement repeatDistanceUnits="MM" overrunDistance="0" overrunDistanceUnit="MM" placementFlags="10" distMapUnitScale="3x:0,0,0,0,0,0" geometryGeneratorEnabled="1" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" placement="0" polygonPlacementFlags="2" priority="10" offsetUnits="MapUnit" overrunDistanceMapUnitScale="3x:0,0,0,0,0,0" centroidInside="1" quadOffset="4" maxCurvedCharAngleIn="25" layerType="PolygonGeometry" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" distUnits="MM" rotationAngle="0" offsetType="0" repeatDistance="0" geometryGeneratorType="PointGeometry" yOffset="0" preserveRotation="1" centroidWhole="0" dist="0" xOffset="0" fitInPolygonOnly="0" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" maxCurvedCharAngleOut="-25" geometryGenerator="geom_from_wkt(&#xd;&#xa;&#x9;substr(&#xd;&#xa;&#x9;&#x9;&quot;label_pos&quot;,&#xd;&#xa;&#x9;&#x9;strpos( &quot;label_pos&quot;, ';')+1&#xd;&#xa;&#x9;)&#xd;&#xa;)" lineAnchorPercent="0.5" lineAnchorType="0"/>
           <rendering drawLabels="1" fontMaxPixelSize="10000" displayAll="1" mergeLines="0" fontMinPixelSize="3" scaleVisibility="1" limitNumLabels="0" upsidedownLabels="0" maxNumLabels="2000" obstacleFactor="2" zIndex="0" labelPerPart="0" scaleMax="10000" obstacle="1" obstacleType="1" scaleMin="1" fontLimitPixelSize="0" minFeatureSize="0"/>
           <dd_properties>
@@ -8885,6 +8879,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="MHTC_CheckNotes" type="field" hidden="0"/>
           <column width="-1" name="label_pos" type="field" hidden="0"/>
           <column width="-1" name="label_ldr" type="field" hidden="0"/>
+          <column width="-1" name="MatchDayTimePeriodID" type="field" hidden="0"/>
           <column width="-1" name="CreateDateTime" type="field" hidden="0"/>
           <column width="-1" name="CreatePerson" type="field" hidden="0"/>
         </columns>
@@ -8919,7 +8914,7 @@ def my_form_open(dialog, layer, feature):
       <editorlayout>uifilelayout</editorlayout>
       <editable>
         <field editable="1" name="CPZ"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="ComplianceNotes"/>
         <field editable="1" name="ComplianceRestrictionSignIssue"/>
         <field editable="1" name="ComplianceRoadMarkingsFaded"/>
@@ -8933,7 +8928,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="MHTC_CheckNotes"/>
         <field editable="1" name="MatchDayTimePeriodID"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="Photos_01"/>
         <field editable="1" name="Photos_02"/>
         <field editable="1" name="Photos_03"/>
@@ -11004,7 +10999,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -11815,8 +11810,8 @@ def my_form_open(dialog, layer, feature):
         </symbols>
       </renderer-v2>
       <labeling type="rule-based">
-        <rules key="{027e4e2a-6ed8-4ef2-bd85-6a113018efad}">
-          <rule filter=" &quot;RestrictionTypeID&quot; IN (201, 221, 224)" key="{1d48fae9-798c-400a-9654-ec6de34b10be}" description="Waiting Restrictions">
+        <rules key="{4a714f31-6b7a-432a-9f07-6c3651b2fca0}">
+          <rule filter=" &quot;RestrictionTypeID&quot; IN (201, 221, 224)" key="{d49eea19-6952-4469-9ad9-63b148e07828}" description="Waiting Restrictions">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName=" getWaitingRestrictionLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -11913,7 +11908,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule filter=" &quot;RestrictionTypeID&quot; IN (201, 202, 221, 224) AND  &quot;NoLoadingTimeID&quot; IS NOT NULL AND  &quot;NoLoadingTimeID&quot; > 1" key="{573bfd67-cdd8-441b-b254-bf6949c63af1}" description="Loading Restrictions">
+          <rule filter=" &quot;RestrictionTypeID&quot; IN (201, 202, 221, 224) AND  &quot;NoLoadingTimeID&quot; IS NOT NULL AND  &quot;NoLoadingTimeID&quot; > 1" key="{b9a6d288-af84-4a5f-ae5e-6409fe285420}" description="Loading Restrictions">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="getLoadingRestrictionLabelText() " allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="7.5" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -12399,11 +12394,10 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="DateTime">
             <config>
               <Option type="Map">
-                <Option value="true" name="allow_null" type="bool"/>
-                <Option value="false" name="calendar_popup" type="bool"/>
+                <Option value="1" name="allow_null" type="QString"/>
+                <Option value="0" name="calendar_popup" type="QString"/>
                 <Option value="dd-MM-yyyy" name="display_format" type="QString"/>
                 <Option value="dd-MM-yyyy" name="field_format" type="QString"/>
-                <Option value="false" name="field_iso_format" type="bool"/>
               </Option>
             </config>
           </editWidget>
@@ -12934,7 +12928,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="AzimuthToRoadCentreLine"/>
         <field editable="1" name="CPZ"/>
         <field editable="1" name="Capacity"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="Compl_Lines_Faded"/>
         <field editable="1" name="Compl_Lines_SignIssue"/>
         <field editable="1" name="Compl_NoL_Faded"/>
@@ -12962,7 +12956,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="NoLoadingTimeID"/>
         <field editable="1" name="NoWaitingTimeID"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="ParkingTariffArea"/>
         <field editable="1" name="Photos_01"/>
         <field editable="1" name="Photos_02"/>
@@ -17875,7 +17869,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -17955,7 +17949,7 @@ def my_form_open(dialog, layer, feature):
             </dd_properties>
             <substitutions/>
           </text-style>
-          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="0" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
+          <text-format decimals="3" placeDirectionSymbol="0" rightDirectionSymbol=">" wrapChar="" autoWrapLength="0" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" multilineAlign="4294967295" plussign="0" leftDirectionSymbol="&lt;" formatNumbers="0" reverseDirectionSymbol="0"/>
           <placement repeatDistanceUnits="MM" overrunDistance="0" overrunDistanceUnit="MM" placementFlags="10" distMapUnitScale="3x:0,0,0,0,0,0" geometryGeneratorEnabled="1" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" placement="0" polygonPlacementFlags="2" priority="10" offsetUnits="MapUnit" overrunDistanceMapUnitScale="3x:0,0,0,0,0,0" centroidInside="1" quadOffset="4" maxCurvedCharAngleIn="25" layerType="PolygonGeometry" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" distUnits="MM" rotationAngle="0" offsetType="0" repeatDistance="0" geometryGeneratorType="PointGeometry" yOffset="0" preserveRotation="0" centroidWhole="0" dist="5" xOffset="0" fitInPolygonOnly="0" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" maxCurvedCharAngleOut="-25" geometryGenerator="geom_from_wkt(&#xd;&#xa;&#x9;substr(&#xd;&#xa;&#x9;&#x9;&quot;label_pos&quot;,&#xd;&#xa;&#x9;&#x9;strpos( &quot;label_pos&quot;, ';')+1&#xd;&#xa;&#x9;)&#xd;&#xa;)" lineAnchorPercent="0.5" lineAnchorType="0"/>
           <rendering drawLabels="1" fontMaxPixelSize="10000" displayAll="1" mergeLines="0" fontMinPixelSize="3" scaleVisibility="1" limitNumLabels="0" upsidedownLabels="0" maxNumLabels="2000" obstacleFactor="0" zIndex="0" labelPerPart="0" scaleMax="3000" obstacle="1" obstacleType="0" scaleMin="1" fontLimitPixelSize="0" minFeatureSize="0"/>
           <dd_properties>
@@ -18174,8 +18168,8 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
-                <Option value="false" name="IsMultiline" type="bool"/>
-                <Option value="false" name="UseHtml" type="bool"/>
+                <Option value="0" name="IsMultiline" type="QString"/>
+                <Option value="0" name="UseHtml" type="QString"/>
               </Option>
             </config>
           </editWidget>
@@ -18313,14 +18307,14 @@ def my_form_open(dialog, layer, feature):
           </editWidget>
         </field>
         <field name="CreateDateTime" configurationFlags="None">
-          <editWidget type="DateTime">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
           </editWidget>
         </field>
         <field name="CreatePerson" configurationFlags="None">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
@@ -18499,8 +18493,6 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="ParkingTariffArea" type="field" hidden="0"/>
           <column width="-1" name="label_pos" type="field" hidden="0"/>
           <column width="-1" name="label_ldr" type="field" hidden="0"/>
-          <column width="-1" name="CreateDateTime" type="field" hidden="0"/>
-          <column width="-1" name="CreatePerson" type="field" hidden="0"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -18533,12 +18525,10 @@ def my_form_open(dialog, layer, feature):
       <editorlayout>generatedlayout</editorlayout>
       <editable>
         <field editable="1" name="CPZ"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="ComplianceNotes"/>
         <field editable="1" name="ComplianceRestrictionSignIssue"/>
         <field editable="1" name="ComplianceRoadMarkingsFaded"/>
-        <field editable="1" name="CreateDateTime"/>
-        <field editable="1" name="CreatePerson"/>
         <field editable="1" name="GeometryID"/>
         <field editable="1" name="LabelText"/>
         <field editable="1" name="LastUpdateDateTime"/>
@@ -18548,7 +18538,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="MaxStayID"/>
         <field editable="1" name="NoReturnID"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="ParkingTariffArea"/>
         <field editable="1" name="Photos_01"/>
         <field editable="1" name="Photos_02"/>
@@ -18569,8 +18559,6 @@ def my_form_open(dialog, layer, feature):
         <field name="ComplianceNotes" labelOnTop="0"/>
         <field name="ComplianceRestrictionSignIssue" labelOnTop="0"/>
         <field name="ComplianceRoadMarkingsFaded" labelOnTop="0"/>
-        <field name="CreateDateTime" labelOnTop="0"/>
-        <field name="CreatePerson" labelOnTop="0"/>
         <field name="GeometryID" labelOnTop="0"/>
         <field name="LabelText" labelOnTop="0"/>
         <field name="LastUpdateDateTime" labelOnTop="0"/>
@@ -21238,7 +21226,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -21432,8 +21420,8 @@ def my_form_open(dialog, layer, feature):
         </symbols>
       </renderer-v2>
       <labeling type="rule-based">
-        <rules key="{ed896cff-d709-41a9-af8a-fbd5745953ee}">
-          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; = 1" scalemindenom="1" key="{d8b9cd31-27aa-4a6b-9735-e67f1399138a}" description="Greenway">
+        <rules key="{8103ad43-52db-4f98-9833-3f22c31d860a}">
+          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; = 1" scalemindenom="1" key="{6edbc57d-b7d7-4a4f-8b95-16ec65c25311}" description="Greenway">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="LabelText" allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="10" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="0" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -21530,7 +21518,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; IN (2,4)" scalemindenom="1" key="{2fc09aa7-dac7-4255-82bc-8b446d53041c}" description="Permit Parking Areas">
+          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; IN (2,4)" scalemindenom="1" key="{381973c0-43c6-4cc9-917b-c389837457c5}" description="Permit Parking Areas">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="AreaPermitCode" allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="10" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="0" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -21627,7 +21615,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; IN (3)" scalemindenom="1" key="{8a1989c1-310d-4d73-89a4-646f5585fa2b}" description="Pedestrian Areas">
+          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; IN (3)" scalemindenom="1" key="{15a2b17d-d691-4207-bc5e-ce51357cee16}" description="Pedestrian Areas">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="format ('PEDESTRIAN ZONE. %1%2', if(attribute($currentfeature, 'NoWaitingTimeID') IS NOT NULL, 'No waiting: ' + getWaitingRestrictionLabelText(), ''),  if(attribute($currentfeature, 'NoLoadingTimeID') IS NOT NULL, ';No Loading: ' + getLoadingRestrictionLabelText(), ''))" allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="255,255,255,255" useSubstitutions="0" fontSize="10" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="1" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -21724,7 +21712,7 @@ def my_form_open(dialog, layer, feature):
               </callout>
             </settings>
           </rule>
-          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; = 6" scalemindenom="1" key="{e42f8d3e-be5f-49e3-9407-16a41881892d}" description="Construction">
+          <rule scalemaxdenom="1250" filter=" &quot;RestrictionTypeID&quot; = 6" scalemindenom="1" key="{c809b23a-1c2e-42d7-afd4-a1e9469d5ca9}" description="Construction">
             <settings calloutType="simple">
               <text-style fontSizeMapUnitScale="3x:0,0,0,0,0,0" blendMode="0" multilineHeight="1" fontItalic="0" fontWeight="50" fieldName="LabelText" allowHtml="0" fontUnderline="0" fontLetterSpacing="0" textColor="0,0,0,255" useSubstitutions="0" fontSize="10" capitalization="0" fontWordSpacing="0" fontSizeUnit="Point" textOrientation="horizontal" fontStrikeout="0" isExpression="0" fontKerning="1" previewBkgrdColor="255,255,255,255" fontFamily="MS Shell Dlg 2" namedStyle="Regular" textOpacity="1">
                 <text-buffer bufferBlendMode="0" bufferJoinStyle="128" bufferOpacity="1" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferSizeUnits="MM" bufferSize="1" bufferDraw="0" bufferColor="255,255,255,255" bufferNoFill="0"/>
@@ -22170,11 +22158,10 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="DateTime">
             <config>
               <Option type="Map">
-                <Option value="false" name="allow_null" type="bool"/>
-                <Option value="false" name="calendar_popup" type="bool"/>
+                <Option value="0" name="allow_null" type="QString"/>
+                <Option value="0" name="calendar_popup" type="QString"/>
                 <Option value="dd-MM-yyyy" name="display_format" type="QString"/>
                 <Option value="yyyy-MM-dd" name="field_format" type="QString"/>
-                <Option value="false" name="field_iso_format" type="bool"/>
               </Option>
             </config>
           </editWidget>
@@ -22634,7 +22621,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="AdditionalConditionID"/>
         <field editable="1" name="AreaPermitCode"/>
         <field editable="1" name="CPZ"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="ComplianceNotes"/>
         <field editable="1" name="ComplianceRestrictionSignIssue"/>
         <field editable="1" name="ComplianceRoadMarkingsFaded"/>
@@ -22652,7 +22639,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="NoLoadingTimeID"/>
         <field editable="1" name="NoWaitingTimeID"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="Orientation"/>
         <field editable="1" name="Photos_01"/>
         <field editable="1" name="Photos_02"/>
@@ -25040,7 +25027,7 @@ def my_form_open(dialog, layer, feature):
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="OpenDate" endField="OpenDate" enabled="0" fixedDuration="0" startExpression="" endExpression="">
+      <temporal durationField="" mode="0" durationUnit="min" accumulate="0" startField="" endField="" enabled="0" fixedDuration="0" startExpression="" endExpression="">
         <fixedRange>
           <start></start>
           <end></end>
@@ -25419,7 +25406,7 @@ def my_form_open(dialog, layer, feature):
           </editWidget>
         </field>
         <field name="SignsAttachmentTypeID" configurationFlags="None">
-          <editWidget type="Range">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
@@ -25631,21 +25618,21 @@ def my_form_open(dialog, layer, feature):
           </editWidget>
         </field>
         <field name="AssetReference" configurationFlags="None">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
           </editWidget>
         </field>
         <field name="CreateDateTime" configurationFlags="None">
-          <editWidget type="DateTime">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
           </editWidget>
         </field>
         <field name="CreatePerson" configurationFlags="None">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option/>
             </config>
@@ -25828,6 +25815,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="SignType_3" type="field" hidden="0"/>
           <column width="-1" name="Signs_Mount" type="field" hidden="0"/>
           <column width="-1" name="TicketMachine_Nr" type="field" hidden="0"/>
+          <column width="-1" name="Signs_Attachment" type="field" hidden="0"/>
           <column width="-1" name="Compl_Signs_Faded" type="field" hidden="0"/>
           <column width="-1" name="Compl_Signs_Obscured" type="field" hidden="0"/>
           <column width="-1" name="Compl_Signs_Obsolete" type="field" hidden="0"/>
@@ -25858,10 +25846,6 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" name="SignOrientationTypeID" type="field" hidden="0"/>
           <column width="-1" name="MHTC_CheckIssueTypeID" type="field" hidden="0"/>
           <column width="-1" name="MHTC_CheckNotes" type="field" hidden="0"/>
-          <column width="-1" name="SignsAttachmentTypeID" type="field" hidden="0"/>
-          <column width="-1" name="AssetReference" type="field" hidden="0"/>
-          <column width="-1" name="CreateDateTime" type="field" hidden="0"/>
-          <column width="-1" name="CreatePerson" type="field" hidden="0"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -25893,9 +25877,8 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>uifilelayout</editorlayout>
       <editable>
-        <field editable="1" name="AssetReference"/>
         <field editable="1" name="CPZ"/>
-        <field editable="0" name="CloseDate"/>
+        <field editable="1" name="CloseDate"/>
         <field editable="1" name="Compl_Sign_Direction"/>
         <field editable="1" name="Compl_Signs_Direction"/>
         <field editable="1" name="Compl_Signs_Faded"/>
@@ -25905,8 +25888,6 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="Compl_Signs_TicketMachines"/>
         <field editable="1" name="ComplianceNotes"/>
         <field editable="1" name="ComplianceRestrictionSignIssue"/>
-        <field editable="1" name="CreateDateTime"/>
-        <field editable="1" name="CreatePerson"/>
         <field editable="1" name="GeometryID"/>
         <field editable="1" name="GeometryID_181017"/>
         <field editable="1" name="LastUpdateDateTime"/>
@@ -25914,7 +25895,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="MHTC_CheckIssueTypeID"/>
         <field editable="1" name="MHTC_CheckNotes"/>
         <field editable="1" name="Notes"/>
-        <field editable="0" name="OpenDate"/>
+        <field editable="1" name="OpenDate"/>
         <field editable="1" name="ParkingTariffArea"/>
         <field editable="1" name="PhotoTaken"/>
         <field editable="1" name="Photos_01"/>
@@ -25933,7 +25914,6 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="SignType_2"/>
         <field editable="1" name="SignType_3"/>
         <field editable="1" name="SignType_4"/>
-        <field editable="1" name="SignsAttachmentTypeID"/>
         <field editable="1" name="Signs_Attachment"/>
         <field editable="1" name="Signs_DateTime"/>
         <field editable="1" name="Signs_Mount"/>
@@ -25948,7 +25928,6 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="original_geom_wkt"/>
       </editable>
       <labelOnTop>
-        <field name="AssetReference" labelOnTop="0"/>
         <field name="CPZ" labelOnTop="0"/>
         <field name="CloseDate" labelOnTop="0"/>
         <field name="Compl_Sign_Direction" labelOnTop="0"/>
@@ -25960,8 +25939,6 @@ def my_form_open(dialog, layer, feature):
         <field name="Compl_Signs_TicketMachines" labelOnTop="0"/>
         <field name="ComplianceNotes" labelOnTop="0"/>
         <field name="ComplianceRestrictionSignIssue" labelOnTop="0"/>
-        <field name="CreateDateTime" labelOnTop="0"/>
-        <field name="CreatePerson" labelOnTop="0"/>
         <field name="GeometryID" labelOnTop="0"/>
         <field name="GeometryID_181017" labelOnTop="0"/>
         <field name="LastUpdateDateTime" labelOnTop="0"/>
@@ -25988,7 +25965,6 @@ def my_form_open(dialog, layer, feature):
         <field name="SignType_2" labelOnTop="0"/>
         <field name="SignType_3" labelOnTop="0"/>
         <field name="SignType_4" labelOnTop="0"/>
-        <field name="SignsAttachmentTypeID" labelOnTop="0"/>
         <field name="Signs_Attachment" labelOnTop="0"/>
         <field name="Signs_DateTime" labelOnTop="0"/>
         <field name="Signs_Mount" labelOnTop="0"/>
