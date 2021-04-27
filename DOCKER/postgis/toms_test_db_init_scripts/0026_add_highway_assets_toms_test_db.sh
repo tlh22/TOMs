@@ -8,7 +8,6 @@ psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0012_highway_assets_permiss
 #psql -U postgres -d "TOMs_Test" -a -f "/io/test/data/0013_populate_ISL_items_plus.sql"
 #psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0014_ISL_table_structures_after_population.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0017_add_highway_assets_create_date.sql"
-psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0020_add_advanced_stop_line_details.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0020_highway_assets_additional_details.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/DATAMODEL/0026_add_motorcycle_parking_facilities_to_highway_assets.sql"
 psql -U postgres -d "TOMs_Test" -a -f "/io/test/data/0026_motorcycle_parking_facilities_lookup_data.sql"
