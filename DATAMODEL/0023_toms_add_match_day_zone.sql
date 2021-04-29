@@ -19,11 +19,8 @@ ALTER SEQUENCE toms."MatchDayEventDayZones_id_seq"
     OWNER TO postgres;
 
 GRANT ALL ON SEQUENCE toms."MatchDayEventDayZones_id_seq" TO postgres;
-
 GRANT SELECT, USAGE ON SEQUENCE toms."MatchDayEventDayZones_id_seq" TO toms_admin;
-
 GRANT SELECT, USAGE ON SEQUENCE toms."MatchDayEventDayZones_id_seq" TO toms_operator;
-
 GRANT SELECT, USAGE ON SEQUENCE toms."MatchDayEventDayZones_id_seq" TO toms_public;
 
 -- Table: toms.MatchDayEventDayZones
