@@ -46,7 +46,7 @@ CREATE TABLE toms."MatchDayEventDayZones"
     "label_TextChanged" character varying(254) COLLATE pg_catalog."default",
     "OpenDate" date,
     "CloseDate" date,
-    "EDZ" character varying(40) COLLATE pg_catalog."default",
+    "EDZ" character varying(40) COLLATE pg_catalog."default" NOT NULL,
     "LastUpdateDateTime" timestamp without time zone NOT NULL,
     "LastUpdatePerson" character varying(255) COLLATE pg_catalog."default" NOT NULL,
     "LabelText" character varying(254) COLLATE pg_catalog."default",
