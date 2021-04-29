@@ -376,18 +376,31 @@ INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") V
 -- Data for Name: RestrictionPolygonTypes; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
-INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (1, 'Greenway');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (1, 'Red Route / Greenway');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (2, 'Permit Parking Areas');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (3, 'Pedestrian Area');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (4, 'Residential mews area');
-INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (2, 'Permit Parking Areas');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (5, 'Pedestrian Area - occasional');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (6, 'Area under construction');
-INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (20, 'Controlled Parking Zone');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (7, 'Lorry waiting restriction zone');
 INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (8, 'Half-on/Half-off prohbited zone');
-INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (22, 'Parking Tariff Area');
-INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (21, 'Priority Parking Area');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (9, 'Pedestrian and cycle zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (10, 'Restricted Zone');
 
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (11, 'Play Street');
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (20, 'Controlled Parking Zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (21, 'Priority Parking Area');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (22, 'Parking Tariff Area');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (23, 'Congestion Charging Zone');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (24, 'Ultra Low Emissions Zone');
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (25, 'Car Park');
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (30, 'Council Housing Estate');
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (31, 'Area with significant change since survey');
+
+INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VALUES (50, 'Box junction');
 
 --
 -- TOC entry 4469 (class 0 OID 294861)
@@ -395,18 +408,14 @@ INSERT INTO "toms_lookups"."RestrictionPolygonTypes" ("Code", "Description") VAL
 -- Data for Name: RestrictionPolygonTypesInUse; Type: TABLE DATA; Schema: toms_lookups; Owner: postgres
 --
 
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (1, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (2, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (3, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (4, 'Polygon', NULL);
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (2, 'Polygon', NULL);
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (5, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (6, 'Polygon', NULL);
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (9, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (20, 'Polygon', NULL);
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (7, 'Polygon', NULL);
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (8, 'Polygon', NULL);
-INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (21, 'Polygon', NULL);
 INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (22, 'Polygon', NULL);
-
+INSERT INTO "toms_lookups"."RestrictionPolygonTypesInUse" ("Code", "GeomShapeGroupType", "StyleDetails") VALUES (25, 'Polygon', NULL);
 
 --
 -- TOC entry 4473 (class 0 OID 294878)
