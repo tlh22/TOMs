@@ -41,3 +41,51 @@ ALTER TABLE toms."RestrictionPolygons"
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "FieldCheckCompleted" BOOLEAN NOT NULL DEFAULT FALSE;
 
+
+/**
+DROP these columns
+---
+
+ALTER TABLE highway_assets."HighwayAssets"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE highway_assets."HighwayAssets"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+ALTER TABLE highway_assets."HighwayAssets"
+    DROP COLUMN "FieldCheckCompleted";
+
+ALTER TABLE moving_traffic."Restrictions"
+    DROP COLUMN "FieldCheckCompleted";
+ALTER TABLE moving_traffic."Restrictions"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE moving_traffic."Restrictions"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+
+ALTER TABLE toms."Bays"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE toms."Bays"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+ALTER TABLE toms."Bays"
+    DROP COLUMN "FieldCheckCompleted";
+
+ALTER TABLE toms."Lines"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE toms."Lines"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+ALTER TABLE toms."Lines"
+    DROP COLUMN "FieldCheckCompleted";
+
+ALTER TABLE toms."Signs"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE toms."Signs"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+ALTER TABLE toms."Signs"
+    DROP COLUMN "FieldCheckCompleted";
+
+ALTER TABLE toms."RestrictionPolygons"
+    DROP COLUMN "Last_MHTC_Check_UpdateDateTime";
+ALTER TABLE toms."RestrictionPolygons"
+    DROP COLUMN "Last_MHTC_Check_UpdatePerson";
+ALTER TABLE toms."RestrictionPolygons"
+    DROP COLUMN "FieldCheckCompleted";
+
+**/
