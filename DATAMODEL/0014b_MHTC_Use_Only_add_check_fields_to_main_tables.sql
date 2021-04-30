@@ -41,6 +41,29 @@ ALTER TABLE toms."RestrictionPolygons"
 ALTER TABLE toms."RestrictionPolygons"
     ADD COLUMN "FieldCheckCompleted" BOOLEAN NOT NULL DEFAULT FALSE;
 
+/**
+Change FieldCheckCompleted to NULL
+-- TODO: Need to ensure that this field is added to tables
+
+ALTER TABLE highway_assets."HighwayAssets"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+ALTER TABLE moving_traffic."Restrictions"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+ALTER TABLE toms."Bays"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+ALTER TABLE toms."Lines"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+ALTER TABLE toms."Signs"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+ALTER TABLE toms."RestrictionPolygons"
+    ALTER COLUMN "FieldCheckCompleted" DROP NOT NULL;
+
+**/
 
 /**
 DROP these columns
