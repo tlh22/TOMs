@@ -105,6 +105,12 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         testLineString4 = QgsGeometry.fromPolylineXY(
             [QgsPointXY(1, 1), QgsPointXY(2, 1)]
         )
+
+        testLineString10 = QgsGeometry.fromPolylineXY(
+            [QgsPointXY(4, 2), QgsPointXY(1, 2), QgsPointXY(2, 2), QgsPointXY(2, 1), QgsPointXY(2, 4)]
+        )
+
+
         testProviderA.addAttributes(
             [QgsField("GeometryID", QVariant.String)
              ])
