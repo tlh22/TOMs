@@ -70,7 +70,7 @@ ALTER SEQUENCE "local_authority"."CPZ_Test_Import_id_seq" OWNED BY "local_author
 -- Name: CPZ_Test_Import id; Type: DEFAULT; Schema: public; Owner: toms.admin
 --
 
-ALTER TABLE ONLY "local_authority"."CPZ_Test_Import" ALTER COLUMN "id" SET DEFAULT "nextval"('"public"."CPZ_Test_Import_id_seq"'::"regclass");
+ALTER TABLE ONLY "local_authority"."CPZ_Test_Import" ALTER COLUMN "id" SET DEFAULT "nextval"('"local_authority"."CPZ_Test_Import_id_seq"'::"regclass");
 
 
 --

@@ -326,7 +326,7 @@ class TOMsGeometryElement(QObject):
                 #TOMsMessageLog.logMessage("In generate_display_geometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), level=Qgis.Info)
 
                 newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
-
+                newAzOffset, distOffset = generateGeometryUtils.calcBisector(prevAz, Az, Turn, offset)
                 # TOMsMessageLog.logMessage("In generate_display_geometry: newAz: " + str(newAz), level=Qgis.Info)
 
                 cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
@@ -334,14 +334,14 @@ class TOMsGeometryElement(QObject):
                     QgsPointXY(line[i].x() + (float(distWidth) * cosa), line[i].y() + (float(distWidth) * cosb)))
 
                 # issue when kerbline is horizontal causing difference in signs between distWidth and offset ...
-                #TOMsMessageLog.logMessage("In generate_display_geometry: line[{}]: x: {}; y: {}; dist {}; offset {}".format(i, line[i].x(), line[i].y(), distWidth, offset), level=Qgis.Info)
-                #TOMsMessageLog.logMessage("In generate_display_geometry: newAz: {}; diffEchelonAz; {}; cosa: {}; cosb: {} ".format(newAz, diffEchelonAz, cosa, cosb), level=Qgis.Info)
-                #TOMsMessageLog.logMessage("In generate_display_geometry: different signs for cos: {}".format(generateGeometryUtils.same_sign(cosa, initial_cosa)), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: line[{}]: x: {}; y: {}; dist {}; offset {}".format(i, line[i].x(), line[i].y(), distWidth, distOffset), level=Qgis.Warning)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: newAz: {}; diffEchelonAz; {}; cosa: {}; cosb: {} ".format(newAz, diffEchelonAz, cosa, cosb), level=Qgis.Warning)
+                #TOMsMessageLog.logMessage("In generate_display_geometry: different signs for cos: {}".format(generateGeometryUtils.same_sign(cosa, initial_cosa)), level=Qgis.Warning)
 
-                this_offset = offset
+                this_offset = distOffset
                 if distWidth < 0.0:
-                    if not generateGeometryUtils.same_sign(distWidth, offset):
-                        this_offset = generateGeometryUtils.change_sign(offset)
+                    if not generateGeometryUtils.same_sign(distWidth, distOffset):
+                        this_offset = generateGeometryUtils.change_sign(distOffset)
 
                 parallelPtsList.append(
                     QgsPointXY(line[i].x() + (float(this_offset) * cosa), line[i].y() + (float(this_offset) * cosb)))
@@ -349,7 +349,7 @@ class TOMsGeometryElement(QObject):
 
             prevAz = Az
 
-            # TOMsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In generate_display_geometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), level=Qgis.Warning)
 
             # have reached the end of the feature. Now need to deal with last point.
             # Use Azimuth from last segment but change the points
@@ -375,8 +375,16 @@ class TOMsGeometryElement(QObject):
                                 line[len(line) - 1].y() + (float(offset) * cosb)))
 
         newLine = QgsGeometry.fromPolylineXY(ptsList)
+        if not newLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: newLine is self-intersecting. Resolving ... ", level=Qgis.Warning)
+            newLine = self.resolveSelfIntersections(ptsList)
+
         #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
+        if not parallelLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: parallelLine is self-intersecting. Resolving ... ",
+                                      level=Qgis.Warning)
+            parallelLine = self.resolveSelfIntersections(parallelPtsList)
 
         # TOMsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), level=Qgis.Info)
         # TOMsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), level=Qgis.Info)
@@ -389,6 +397,71 @@ class TOMsGeometryElement(QObject):
             return True
         except:
             return False
+
+    def resolveSelfIntersections(self, ptsList):
+        """
+        Deal with any self-intersecting lines. Process is:
+        Loop through all line segments
+            get last intersection in list
+            add last intersection point to list and ignore all points from startVertex to here.
+            new line is intersection point to end vertex of intersected line
+        """
+        nrPts = len(ptsList)
+        #print("Nr pts: {}".format(nrPts))
+        TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Nr pts: {}".format(nrPts),
+                                  level=Qgis.Info)
+        currStartVertexNr = 0
+        currLineStartVertex = ptsList[0]
+        newPtsList = []
+
+        newPtsList.append(QgsPointXY(currLineStartVertex))
+
+        while True:
+            currLine = QgsGeometry.fromPolylineXY([currLineStartVertex, ptsList[currStartVertexNr + 1]])
+            intersectLineStartVertexNr = -1
+
+            #print("Starting {} ... ".format(currStartVertexNr))
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Starting {} ... ".format(currStartVertexNr),
+                                      level=Qgis.Info)
+
+            for testVertexNr in range(currStartVertexNr + 1, nrPts - 1):
+                print("StartPt {}: EndPt: {}".format(testVertexNr, testVertexNr + 1))
+                testLine = QgsGeometry.fromPolylineXY([ptsList[testVertexNr], ptsList[testVertexNr + 1]])
+                intersectPt = currLine.intersection(testLine)
+                if intersectPt:
+                    intersectLineStartVertexNr = testVertexNr
+                    nextPt = intersectPt
+
+            #print("Finished line intersection check: {} ... ".format(intersectLineStartVertexNr))
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Finished line intersection check: {} ... ".format(intersectLineStartVertexNr),
+                                      level=Qgis.Info)
+
+            if intersectLineStartVertexNr > 0:
+                # intersect was found
+                newPt = nextPt.asPoint()
+                newPtsList.append(newPt)
+                currLineStartVertex = newPt
+                currStartVertexNr = intersectLineStartVertexNr
+            else:
+                newPtsList.append(ptsList[currStartVertexNr + 1])
+                currStartVertexNr = currStartVertexNr + 1
+                currLineStartVertex = ptsList[currStartVertexNr]
+
+            #print("Added {} ...".format(currStartVertexNr))
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Added {} ...".format(currStartVertexNr),
+                                      level=Qgis.Info)
+
+            if currStartVertexNr == nrPts - 1:  # check to see if the end point of the test line is the end of the line ...
+                break
+
+        #print("Finished checking ...")
+        TOMsMessageLog.logMessage(
+            "In TOMsGeometryElement.resolveSelfIntersections: Finished checking ...",
+            level=Qgis.Info)
+
+        newGeom = QgsGeometry.fromPolylineXY(newPtsList)
+
+        return newGeom
 
     def getZigZag(self, wavelength=None, shpExtent=None):
 
