@@ -75,18 +75,21 @@ class restrictionToImport(QObject, snapTraceUtilsMixin):
                                       level=Qgis.Warning)
             return None
 
-        if currRestrictionTypeID < 100:
+        if currRestrictionTypeID:
             # geometry type
             new_geom = self.currGeometry
 
-        elif currRestrictionTypeID > 100:
+            """
+            # pre-process import layers. Don't try to do it here ...
+            
+            elif currRestrictionTypeID > 100:
 
             geomShapeID = 10 # line
             # check feature type - based on "RestrictionTypeID"
             if currRestrictionTypeID < 200:
                 new_geom, geomShapeID = self.reduceBayShape()
             else:
-                new_geom = self.reduceLineShape()
+                new_geom = self.reduceLineShape()"""
 
 
         if new_geom:
