@@ -156,9 +156,9 @@ class TOMsConfigFile(QObject):
     TOMsConfigFileNotFound = pyqtSignal()
     """ signal will be emitted if TOMs config file is not found """
 
-    def __init__(self, iface):
+    def __init__(self):
         QObject.__init__(self)
-        self.iface = iface
+        #self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
 
