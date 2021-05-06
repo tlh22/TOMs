@@ -151,7 +151,7 @@ class proposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onInitProposalsPanel. Checking tables", level=Qgis.Info)
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
 
-        self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
+        self.TOMsConfigFileObject = TOMsConfigFile()
         self.TOMsConfigFileObject.TOMsConfigFileNotFound.connect(self.setCloseTOMsFlag)
         self.TOMsConfigFileObject.initialiseTOMsConfigFile()
 

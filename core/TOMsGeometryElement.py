@@ -35,8 +35,8 @@ from ..constants import (
 )
 
 from abc import ABCMeta, abstractstaticmethod, abstractmethod
-from ..restrictionTypeUtilsClass import TOMsParams
-from ..generateGeometryUtils import generateGeometryUtils
+from TOMs.restrictionTypeUtilsClass import TOMsParams, TOMsConfigFile
+from TOMs.generateGeometryUtils import generateGeometryUtils
 
 class TOMsGeometryElement(QObject):
     def __init__(self, currFeature):
@@ -46,6 +46,9 @@ class TOMsGeometryElement(QObject):
 
         params = TOMsParams()
         params.getParams()
+
+        self.configFileObject = TOMsConfigFile()
+        self.configFileObject.initialiseTOMsConfigFile()
 
         self.currFeature = currFeature
         self.BayWidth = float(params.setParam("BayWidth"))
@@ -68,26 +71,32 @@ class TOMsGeometryElement(QObject):
 
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
             # NrBays
-            try:
-                self.nrBays = float(currFeature.attribute("NrBays"))
-            except KeyError as e:
-                TOMsMessageLog.logMessage("In TOMsGeometryElement.init: NrBays not present {}".format(e),
-                                          level=Qgis.Warning)
+
+            # TODO: Include configuration item - ShowBayDivisions
+
+            if self.getShowBayDivisions() == False:
                 self.nrBays = -1
+            else:
+                try:
+                    self.nrBays = float(currFeature.attribute("NrBays"))
+                except KeyError as e:
+                    TOMsMessageLog.logMessage("In TOMsGeometryElement.init: NrBays not present {}".format(e),
+                                              level=Qgis.Warning)
+                    self.nrBays = -1
 
             # BayOrientation
             try:
                 self.currBayOrientation = currFeature.attribute("BayOrientation")
             except KeyError as e:
                 TOMsMessageLog.logMessage("In TOMsGeometryElement.init: BayOrientation not present {}".format(e),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
                 self.currBayOrientation = 0
 
             try:
                 thisBayWidth = currFeature.attribute("BayWidth")
             except KeyError as e:
                 TOMsMessageLog.logMessage("In TOMsGeometryElement.init: BayWidth not present {}".format(e),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
                 thisBayWidth = NULL
 
             if thisBayWidth != NULL:  # https://gis.stackexchange.com/questions/216018/importing-null-in-pyqgis
@@ -100,6 +109,12 @@ class TOMsGeometryElement(QObject):
     @abstractmethod
     def getElementGeometry(self):
         """ This is the final shape - uses functions below. It really is abstract """
+
+    def getShowBayDivisions(self):
+        value = self.configFileObject.getTOMsConfigElement('TOMsLayers', 'ShowBayDivisions')
+        if value == 'True':
+            return True
+        return False
 
     def checkFeatureIsBay(self, restGeomType):   # possibly put at Element level ...
         #TOMsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), level=Qgis.Info)
