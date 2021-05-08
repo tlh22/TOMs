@@ -171,14 +171,14 @@ class TOMsConfigFile(QObject):
         try:
             config_path = os.environ.get('TOMs_CONFIG_PATH')
         except None:
-            TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Info)
             # config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
 
         if config_path is None:
             config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_home')
 
         config_file = os.path.abspath(os.path.join(config_path, 'TOMs.conf'))
-        TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Info)
 
         if not os.path.isfile(config_file):
             reply = QMessageBox.information(None, "Information", "TOMs configuration file not found. Stopping ...",
