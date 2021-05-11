@@ -204,7 +204,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         for (layerID, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage("Clearing filter for layer: " + layerName, level=Qgis.Info)
             try:
-                self.tableNames.setLayer(layerName).dataProvider().setSubsetString('')
+                self.tableNames.setLayer(layerName).dataProvider().setSubsetString(None)
             except Exception as e:
                 TOMsMessageLog.logMessage('clearRestrictionFilters: error in layer {}: {}'.format(layerName, e),
                                           level=Qgis.Warning)
@@ -231,7 +231,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             TOMsMessageLog.logMessage(
                 "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: " + thisLayer.name() + " restrictionID: " + str(currentRestrictionDetails["RestrictionID"]),
                 level=Qgis.Info)
-            currRestriction = ProposalElementFactory.getProposalElement(self, layerID,
+            currRestriction = ProposalElementFactory.getProposalElement(self, layerID, thisLayer,
                                                                         currentRestrictionDetails["RestrictionID"])
             restrictionList.append([currentRestrictionDetails["RestrictionID"], currRestriction])
 

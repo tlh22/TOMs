@@ -24,7 +24,10 @@ from qgis.core import (
     Qgis,
     QgsMessageLog, QgsFeature, QgsGeometry,
     QgsFeatureRequest,
-    QgsRectangle
+    QgsRectangle,
+    QgsExpressionContext,
+    QgsExpressionContextUtils,
+
 )
 
 from ..constants import (
@@ -38,7 +41,7 @@ from TOMs.core.TOMsTile import (TOMsTile)
 
 class TOMsProposalElement(QObject):
     #def __init__(self, proposalsManager, layerID, restriction, restrictionID):
-    def __init__(self, proposalsManager, layerID, restrictionID):
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
         super().__init__()
         # restriction is restriction record ??
         TOMsMessageLog.logMessage("In TOMsProposalElement ... {proposal}:{layer}:{restrictionID}".format(proposal=proposalsManager.currentProposal(), layer=layerID, restrictionID=restrictionID), level=Qgis.Info)
@@ -46,6 +49,7 @@ class TOMsProposalElement(QObject):
         self.currProposal = self.proposalsManager.currentProposalObject()
         self.tableNames = self.proposalsManager.tableNames
         self.layerID = layerID
+        self.thisLayer = restrictionLayer
 
         self.setElement(restrictionID)
 
@@ -53,18 +57,31 @@ class TOMsProposalElement(QObject):
         return self.thisElement["GeometryID"]
 
     def setThisLayer(self):
+        # this is not used - see issue #305
         self.thisLayer = self.proposalsManager.getRestrictionLayerFromID(self.layerID)
         if self.thisLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposalElement:setThisLayer. layer NOT set !!! for " + str(self.layerID), level=Qgis.Info)
-        TOMsMessageLog.logMessage("In TOMsProposalElement:setThisLayer ... ", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposalElement:setThisLayer. layer NOT set !!! for " + str(self.layerID), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In TOMsProposalElement:setThisLayer ... {}".format(self.thisLayer.name()), level=Qgis.Info)
 
     def setElement(self, restrictionID):
         self.thisRestrictionID = restrictionID
-        self.setThisLayer()
+        #self.setThisLayer()
+
+        # need to save and then clear the current filter
+        """
+        TOMsMessageLog.logMessage(
+            "In TOMsProposalElement.setElement. filter is now: {}. ".format(
+                self.thisLayer.subsetString()), level=Qgis.Info)
+                """
 
         query = '\"RestrictionID\" = \'{restrictionID}\''.format(restrictionID=restrictionID)
+        #context = QgsExpressionContext()
+        #context.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.thisLayer))
+
         request = QgsFeatureRequest().setFilterExpression(query)
+
         for element in self.thisLayer.getFeatures(request):
+            #context.setFeature(element)
             self.thisElement = element  # make assumption that only one row
             TOMsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), level=Qgis.Info)
             return True
@@ -159,17 +176,17 @@ class TOMsProposalElement(QObject):
 
 
 class TOMsRestriction(TOMsProposalElement):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
-        TOMsMessageLog.logMessage("In factory. Creating TOMsRestriction ... ", level=Qgis.Info)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
+        TOMsMessageLog.logMessage("In factory. Creating TOMsRestriction ... {}".format(restrictionID), level=Qgis.Info)
 
     def getDisplayGeometry(self):
         # TODO: ...
         pass
 
 class Bay(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("Creating BAY ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -179,8 +196,8 @@ class Bay(TOMsRestriction):
         pass
 
 class Line(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating LINE ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -190,8 +207,8 @@ class Line(TOMsRestriction):
         pass
 
 class Sign(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating SIGN ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -201,8 +218,8 @@ class Sign(TOMsRestriction):
         pass
 
 class TOMsPolygonRestriction(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating POLYGON ... ", level=Qgis.Info)
 
     def getZoneType(self):
@@ -212,8 +229,8 @@ class TOMsPolygonRestriction(TOMsRestriction):
         self.displayGeometry = self.featureGeometry
 
 class PedestrianZone(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating PedestrianZone ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -224,8 +241,8 @@ class PedestrianZone(TOMsRestriction):
 
 
 class CPZ(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating CPZ ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -235,8 +252,8 @@ class CPZ(TOMsRestriction):
         pass
 
 class PTA(TOMsRestriction):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating PTA ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -246,8 +263,8 @@ class PTA(TOMsRestriction):
         pass
 
 class TOMsLabel(TOMsProposalElement):
-    def __init__(self, proposalsManager, layerID, restrictionID):
-        super().__init__(proposalsManager, layerID, restrictionID)
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating Label ... ", level=Qgis.Info)
 
     def getGeometryID(self):
@@ -256,22 +273,22 @@ class TOMsLabel(TOMsProposalElement):
 class ProposalElementFactory():
 
     @staticmethod
-    def getProposalElement(proposalsManager, proposalElementType, RestrictionID):
+    def getProposalElement(proposalsManager, proposalElementType, restrictionLayer, RestrictionID):
         TOMsMessageLog.logMessage("In factory. getProposalElement ... " + str(proposalElementType) + ";" + str(RestrictionID), level=Qgis.Info)
         try:
             if proposalElementType == RestrictionLayers.BAYS:
-                return Bay(proposalsManager, proposalElementType, RestrictionID)
+                return Bay(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.LINES:
-                return Line(proposalsManager, proposalElementType, RestrictionID)
+                return Line(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.SIGNS:
-                return Sign(proposalsManager, proposalElementType,  RestrictionID)
+                return Sign(proposalsManager, proposalElementType,  restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.RESTRICTION_POLYGONS:
-                return Sign(proposalsManager, proposalElementType, RestrictionID)
+                return Sign(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
                 # return RestrictionPolygonFactory.getProposalElement(proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.CPZS:
-                return CPZ(proposalsManager, proposalElementType, RestrictionID)
+                return CPZ(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.PTAS:
-                return PTA(proposalsManager, proposalElementType, RestrictionID)
+                return PTA(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             raise AssertionError("Restriction Type NOT found")
         except AssertionError as _e:
             TOMsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ", level=Qgis.Info)

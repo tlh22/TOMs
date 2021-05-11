@@ -191,7 +191,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     TOMsMessageLog.logMessage("In getProposalBoundingBox. (" + layerName + ") filter:" + layerFilterString, level=Qgis.Info)
                     if not currLayer.dataProvider().setSubsetString(None):
                         TOMsMessageLog.logMessage(
-                            "In TOMsProposal:getProposalBoundingBox. (" + layerName + ") filter error ....", level=Qgis.Info)
+                            "In TOMsProposal:getProposalBoundingBox. (" + layerName + ") filter error ....", level=Qgis.Warning)
 
                     query = '"RestrictionID" IN ({restrictions})'.format(restrictions=restrictionStr)
 
@@ -224,16 +224,22 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             for (layerID, layerName) in self.getRestrictionLayersList():
 
                 # clear filter
-                currFilter = self.tableNames.setLayer(layerName).subsetString()
-                self.tableNames.setLayer(layerName).dataProvider().setSubsetString('')
+                thisLayer = self.tableNames.setLayer(layerName)
+                thisLayerProvider = thisLayer.dataProvider()
+                currFilter = thisLayerProvider.subsetString()
+                #TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. currFilter: {}".format(currFilter), level=Qgis.Info)
+
+                filterStatus = thisLayerProvider.setSubsetString(None)
+                #TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
 
                 for (currRestrictionID, restrictionInProposalObject) in self.__getRestrictionsInProposalForLayerForAction(layerID):
 
-                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, currRestrictionID)
+                    currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, thisLayer, currRestrictionID)
                     dictTilesInProposal.update(currRestriction.getTilesForRestrictionForDate(revisionDate))
 
                 # reset filter
-                self.tableNames.setLayer(layerName).dataProvider().setSubsetString(currFilter)
+                filterStatus = thisLayerProvider.setSubsetString(currFilter)
+                #TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate (2). filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
 
         else:
 
@@ -272,7 +278,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             # set Open/Close date for restrictions in Proposal
             for (currlayerID, currlayerName) in self.getRestrictionLayersList():
                 currLayer = self.tableNames.setLayer(currlayerName)
-                if not currLayer.dataProvider().setSubsetString(''):   # need to use data provider ??
+                if not currLayer.dataProvider().setSubsetString(None):   # need to use data provider ??
                     TOMsMessageLog.logMessage("In TOMsProposal.acceptProposal - problem clearing filter for layer {}:{}:{}".format(currlayerName, currLayer.name(), currLayer),
                                               level=Qgis.Info)
                     return False
