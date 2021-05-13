@@ -543,7 +543,7 @@ class TOMsExpressions():
         TOMsMessageLog.logMessage('generateDemandPoints: {}'.format(feature.attribute("GeometryID")),
                                   level=Qgis.Info)
 
-        demand = feature.attribute("Demand")
+        demand = math.ceil(float(feature.attribute("Demand")))
 
         TOMsMessageLog.logMessage(
             'generateDemandPoints: demand: {}'.format(demand),
