@@ -552,7 +552,7 @@ class TOMsExpressions():
         if demand == 0:
             return None
 
-        capacity = int(feature.attribute("Capacity"))
+        capacity = int(feature.attribute("NrBays"))
 
         nrSpaces = capacity - demand
         if nrSpaces < 0:
