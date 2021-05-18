@@ -128,7 +128,7 @@ class TOMs:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         TOMsMessageLog.logMessage("Registering expression functions ... ", level=Qgis.Info)
         self.expressionsObject =  TOMsExpressions()
-        self.expressionsObject.registerFunctions()   # Register the Expression functions that we need
+        #self.expressionsObject.registerFunctions()   # Register the Expression functions that we need
 
         # Add toolbar 
         self.TOMsToolbar = self.iface.addToolBar("TOMs Toolbar")
@@ -137,7 +137,7 @@ class TOMs:
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
-        self.expressionsObject.unregisterFunctions()  # unregister all the Expression functions used
+        #self.expressionsObject.unregisterFunctions()  # unregister all the Expression functions used
 
         # TODO: Check whether or not there are any current map tools
         TOMsMessageLog.logMessage("Unload comnpleted ... ", level=Qgis.Info)
