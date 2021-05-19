@@ -70,7 +70,7 @@ BEGIN
 	WHEN 'CarriagewayMarkings' THEN
 		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_RoadLinks' THEN
-		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
+		   SELECT concat('J_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 
 	ELSE
 	    nextSeqVal = 'U';
@@ -1854,7 +1854,7 @@ CREATE TABLE "highways_network"."MHTC_RoadLinks"
 (
     notes character varying(255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
-    "GeometryID" character varying(12) DEFAULT ('L_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), 'FM0000000'::"text"))
+    "GeometryID" character varying(12) DEFAULT ('J_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), 'FM0000000'::"text"))
 	)
 INHERITS ("moving_traffic"."Restrictions");
 
