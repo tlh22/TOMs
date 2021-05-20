@@ -391,13 +391,13 @@ class TOMsGeometryElement(QObject):
 
         newLine = QgsGeometry.fromPolylineXY(ptsList)
         if not newLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: newLine is self-intersecting. Resolving ... ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: newLine is self-intersecting for {}. Resolving ... ".format(self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
             newLine = self.resolveSelfIntersections(ptsList)
 
         #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
         if not parallelLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: parallelLine is self-intersecting. Resolving ... ",
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: parallelLine is self-intersecting for {}. Resolving ... ".format(self.currFeature.attribute("GeometryID")),
                                       level=Qgis.Warning)
             parallelLine = self.resolveSelfIntersections(parallelPtsList)
 
@@ -444,8 +444,10 @@ class TOMsGeometryElement(QObject):
                 testLine = QgsGeometry.fromPolylineXY([ptsList[testVertexNr], ptsList[testVertexNr + 1]])
                 intersectPt = currLine.intersection(testLine)
                 if intersectPt:
-                    intersectLineStartVertexNr = testVertexNr
-                    nextPt = intersectPt
+                    # TODO: deal with situation where intersection is a line, i.e., colinear ...
+                    if intersectPt.type() == QgsWkbTypes.PointGeometry:
+                        intersectLineStartVertexNr = testVertexNr
+                        nextPt = intersectPt
 
             #print("Finished line intersection check: {} ... ".format(intersectLineStartVertexNr))
             TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Finished line intersection check: {} ... ".format(intersectLineStartVertexNr),
