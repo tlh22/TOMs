@@ -444,8 +444,10 @@ class TOMsGeometryElement(QObject):
                 testLine = QgsGeometry.fromPolylineXY([ptsList[testVertexNr], ptsList[testVertexNr + 1]])
                 intersectPt = currLine.intersection(testLine)
                 if intersectPt:
-                    intersectLineStartVertexNr = testVertexNr
-                    nextPt = intersectPt
+                    # TODO: deal with situation where intersection is a line, i.e., colinear ...
+                    if intersectPt.type() == QgsWkbTypes.PointGeometry:
+                        intersectLineStartVertexNr = testVertexNr
+                        nextPt = intersectPt
 
             #print("Finished line intersection check: {} ... ".format(intersectLineStartVertexNr))
             TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Finished line intersection check: {} ... ".format(intersectLineStartVertexNr),
