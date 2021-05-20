@@ -391,13 +391,13 @@ class TOMsGeometryElement(QObject):
 
         newLine = QgsGeometry.fromPolylineXY(ptsList)
         if not newLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: newLine is self-intersecting. Resolving ... ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: newLine is self-intersecting for {}. Resolving ... ".format(self.currFeature.attribute("GeometryID")), level=Qgis.Warning)
             newLine = self.resolveSelfIntersections(ptsList)
 
         #parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
         if not parallelLine.isSimple():    # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: parallelLine is self-intersecting. Resolving ... ",
+            TOMsMessageLog.logMessage("In TOMsGeometryElement.getShape: parallelLine is self-intersecting for {}. Resolving ... ".format(self.currFeature.attribute("GeometryID")),
                                       level=Qgis.Warning)
             parallelLine = self.resolveSelfIntersections(parallelPtsList)
 
