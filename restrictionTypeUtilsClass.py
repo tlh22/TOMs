@@ -204,7 +204,7 @@ class TOMsConfigFile(QObject):
         try:
             item = self.config[section][value]
         except KeyError:
-            TOMsMessageLog.logMessage("In getTOMsConfigElement. not able to find: {}:{}".format(section, value), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In getTOMsConfigElement. not able to find: {}:{}".format(section, value), level=Qgis.Info)
 
         return item
 
