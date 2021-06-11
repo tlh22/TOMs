@@ -2,11 +2,12 @@
 Check CPZ times
 */
 
-SELECT "CPZ", r."TimePeriodID", t."Description"
+SELECT "CPZ", r."TimePeriodID", t."Description", r."OpenDate"
 FROM toms."ControlledParkingZones" r, toms_lookups."TimePeriods" t
 WHERE r."TimePeriodID" = t."Code"
 AND "OpenDate" IS NOT NULL
-AND "CloseDate" IS NULL;
+AND "CloseDate" IS NULL
+ORDER BY "CPZ";
 
 /*
 Check timeperiods
@@ -37,3 +38,43 @@ WHERE "Code" IN (12, 14, 33, 39, 97, 98, 99, 120, 121, 155, 159, 213, 217)
 toms_lookups."TimePeriods" t1, toms_lookups."TimePeriods" t2
 WHERE c."Code" = t1."Code"
 AND c."ChangedTo" = t2."Code";
+
+/*
+Find bays after Sunday parking details
+*/
+
+SELECT r."GeometryID", r."CPZ", r."TimePeriodID", t."Description", r."OpenDate"
+FROM toms."Bays" r, toms_lookups."TimePeriods" t
+WHERE r."TimePeriodID" = t."Code"
+AND "OpenDate" IS NOT NULL
+AND "CloseDate" IS NULL
+AND "CPZ" IN ('1', '1A', '2', '3', '4')
+AND "OpenDate" > '2020-11-09'
+ORDER BY "CPZ";
+
+SELECT r."GeometryID", r."CPZ", r."NoWaitingTimeID", t."Description", r."OpenDate"
+FROM toms."Lines" r, toms_lookups."TimePeriods" t
+WHERE r."NoWaitingTimeID" = t."Code"
+AND "OpenDate" IS NOT NULL
+AND "CloseDate" IS NULL
+AND "CPZ" IN ('1', '1A', '2', '3', '4')
+AND "OpenDate" > '2020-11-09'
+ORDER BY "CPZ";
+
+SELECT r."GeometryID", r."CPZ", r."TimePeriodID", t."Description", r."OpenDate"
+FROM toms."RestrictionPolygons" r, toms_lookups."TimePeriods" t
+WHERE r."TimePeriodID" = t."Code"
+AND "OpenDate" IS NOT NULL
+AND "CloseDate" IS NULL
+AND "CPZ" IN ('1', '1A', '2', '3', '4')
+AND "OpenDate" > '2020-11-09'
+ORDER BY "CPZ";
+
+SELECT r."GeometryID", r."CPZ", r."NoWaitingTimeID", t."Description", r."OpenDate"
+FROM toms."RestrictionPolygons" r, toms_lookups."TimePeriods" t
+WHERE r."NoWaitingTimeID" = t."Code"
+AND "OpenDate" IS NOT NULL
+AND "CloseDate" IS NULL
+AND "CPZ" IN ('1', '1A', '2', '3', '4')
+AND "OpenDate" > '2020-11-09'
+ORDER BY "CPZ";
