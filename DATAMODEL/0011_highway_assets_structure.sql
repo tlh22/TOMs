@@ -1581,7 +1581,7 @@ CREATE SEQUENCE "highway_assets"."Bridges_id_seq"
 ALTER TABLE "highway_assets"."Bridges_id_seq" OWNER TO "postgres";
 
 CREATE TABLE "highway_assets"."Bridges" (
-    "GeometryID" character varying(12) DEFAULT ('TP_'::"text" || "to_char"("nextval"('"highway_assets"."Bridges_id_seq"'::"regclass"), 'FM0000000'::"text")),
+    "GeometryID" character varying(12) DEFAULT ('BR_'::"text" || "to_char"("nextval"('"highway_assets"."Bridges_id_seq"'::"regclass"), 'FM0000000'::"text")),
     "BridgeTypeID" integer NOT NULL,
     "geom_point" "public"."geometry"(Polygon,27700)
 )

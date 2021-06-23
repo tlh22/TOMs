@@ -1,5 +1,6 @@
 -- Allow highway_assets to be loaded into QGIS
 
+/** This adds a new constraint to all the Highway Assets tables - that causes issues. Now removing ...
 ALTER TABLE highway_assets."HighwayAssets"
     ADD COLUMN id SERIAL;
 
@@ -8,6 +9,7 @@ ALTER TABLE highway_assets."HighwayAssets"
 
 ALTER TABLE ONLY "highway_assets"."HighwayAssets"
     ADD CONSTRAINT "HighwayAssets_pkey" PRIMARY KEY ("id");
+**/
 
 --  add FKs for AssetConditionTypes
 
