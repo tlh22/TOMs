@@ -706,6 +706,10 @@ class TOMsGeometryElement(QObject):
 
     def addBayPolygonDividers(self, outputGeometry, bayShapeGeom, parallelShapeGeom, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
+        TOMsMessageLog.logMessage(
+            "In factory. addBayPolygonDividers ... shpExtent: {}; Az: {} ".format(shpExtent, AzimuthToCentreLine),
+            level=Qgis.Info)
+
         # split output polygon(s) to show bay dividers
         bayDividers = self.getBayDividers(bayShapeGeom=bayShapeGeom, parallelShapeGeom=parallelShapeGeom, shpExtent=shpExtent, AzimuthToCentreLine=AzimuthToCentreLine, offset=offset)
         if bayDividers is not None:
@@ -713,7 +717,7 @@ class TOMsGeometryElement(QObject):
             outputGeometries = [outputGeometry]
 
             TOMsMessageLog.logMessage(
-                "In factory. generatedGeometryBayPolygonType ... nr dividers: {}".format(len(bayDividers)),
+                "In factory. addBayPolygonDividers ... nr dividers: {}".format(len(bayDividers)),
                 level=Qgis.Info)
             for divider in bayDividers:
                 # divGeometry = QgsGeometry()
@@ -731,7 +735,7 @@ class TOMsGeometryElement(QObject):
                         newGeomsList.append(geom)
                 outputGeometries = newGeomsList
                 TOMsMessageLog.logMessage(
-                    "In factory. generatedGeometryBayPolygonType ... nr outputGeometries: {}".format(
+                    "In factory. addBayPolygonDividers ... nr outputGeometries: {}".format(
                         len(outputGeometries)),
                     level=Qgis.Info)
 
@@ -999,11 +1003,12 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
     def getElementGeometry(self):
 
         outputGeometry1, parallelLine1 = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-        #outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        #return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        return self.generatePolygon([(outputGeometry1, parallelLine1)])
-        #outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+        #return self.generatePolygon([(outputGeometry1, parallelLine1)])
+        outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
+
+        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... Az: {}".format(self.currAzimuthToCentreLine),
+                                  level=Qgis.Info)
 
         if self.nrBays > 0:
             outputGeometry = self.addBayPolygonDividers(outputGeometry, outputGeometry1, parallelLine1, self.BayLength,
