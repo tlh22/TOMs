@@ -45,6 +45,10 @@ from qgis.core import (
     QgsProject
 )
 
+from qgis.PyQt.QtSql import (
+    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate,QSqlTableModel
+)
+
 from qgis.gui import *
 import functools
 import time
@@ -151,7 +155,10 @@ class TOMsTransaction(QObject):
 
     def startTransactionGroup(self):
 
-        TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup.", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup. ProposalNr={}".format(self.proposalsManager.currentProposal()), level=Qgis.Info)
+
+        # Create/Update an sql session variable
+        self.setProposalSessionVariable(self.proposalsManager.currentProposal())
 
         if self.currTransactionGroup.isEmpty():
             TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup. Currently empty adding layers", level=Qgis.Info)
@@ -188,6 +195,11 @@ class TOMsTransaction(QObject):
     def commitTransactionGroup(self, currRestrictionLayer=None):
 
         TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup",
+                                 level=Qgis.Warning)
+
+        checkProposalNr = self.checkProposalNr()
+
+        TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Proposal Nr = {}".format(checkProposalNr),
                                  level=Qgis.Warning)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
@@ -232,6 +244,40 @@ class TOMsTransaction(QObject):
         self.transactionCompleted.emit()
 
         return commitStatus
+
+
+    def setProposalSessionVariable(self, ProposalID):
+
+        self.dbConn = self.getDbConn("Proposals")
+        if not self.dbConn.open():
+            TOMsMessageLog.logMessage(
+                "In TOMsTransaction:setProposalSessionVariable ... problem opening db: lastError:{}".format(self.dbConn.lastError().text()),
+                level=Qgis.Warning)
+
+            return False
+        queryText = 'SET SESSION "toms.proposal_nr" TO \'{}\''.format(ProposalID)
+        query = QSqlQuery()
+        status = query.exec(queryText)
+
+        TOMsMessageLog.logMessage("In TOMsTransaction:setProposalSessionVariable ... queryText: {}; lastError:{}".format(queryText, query.lastError().text()), level=Qgis.Warning)
+
+        return status
+
+    def checkProposalNr(self):
+
+        queryText = 'SELECT current_setting(\'toms.proposal_nr\', true);'
+        query = QSqlQuery()
+        query.exec(queryText)
+        status = query.next()
+
+        result = query.value(0)
+
+        TOMsMessageLog.logMessage(
+            "In TOMsTransaction:setProposalSessionVariable ... queryText: {}; status: {}; result:{}".format(queryText, status,
+                                                                                                   result),
+            level=Qgis.Warning)
+
+        return result
 
     def layersInTransaction(self):
         return self.setTransactionGroup
@@ -279,3 +325,44 @@ class TOMsTransaction(QObject):
         self.errorMessage = None
 
         return
+
+    def getDbConn(self, testLayerName):
+
+        # new get the connection details for testLayer
+        try:
+            testLayer = QgsProject.instance().mapLayersByName(testLayerName)[0]
+            provider = testLayer.dataProvider()
+            TOMsMessageLog.logMessage("In getDbConn: db type is {}".format(provider.name()), level=Qgis.Warning)
+        except Exception as e:
+            #QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Error opening test layer {}".format(e)))
+            TOMsMessageLog.logMessage("In getDbConn: error opening test layer {}".format(e), level=Qgis.Warning)
+            return None
+
+        testUriName = testLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
+
+        if provider.name() == 'postgres':
+            # get the URI containing the connection parameters
+            # create a PostgreSQL connection using QSqlDatabase
+            dbConn = QSqlDatabase.addDatabase('QPSQL')
+            TOMsMessageLog.logMessage("In getDbConn. uri: {}".format(testUriName), level=Qgis.Warning)
+            # check to see if it is valid
+            if dbConn.isValid():
+                # set the parameters needed for the connection
+                if len(provider.uri().service()) > 0:
+                    dbConn.setConnectOptions("service={}".format(provider.uri().service()))
+                else:
+                    # need to get the details of the connection ...
+                    dbConn.setHostName(provider.uri().host())
+                    dbConn.setDatabaseName(provider.uri().database())
+                    dbConn.setPort(int(provider.uri().port()))
+                    dbConn.setUserName(provider.uri().username)
+                    dbConn.setPassword(provider.uri().password)
+
+        else:
+            dbName = testUriName[:testUriName.find('|')]
+            TOMsMessageLog.logMessage("In getDbConn. dbName: {}".format(dbName), level=Qgis.Warning)
+
+            dbConn = QSqlDatabase.addDatabase("QSQLITE")
+            dbConn.setDatabaseName(dbName)
+
+        return dbConn
