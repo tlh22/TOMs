@@ -291,7 +291,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 restrictionList = self.__getRestrictionsInProposalForLayerForAction(currlayerID)
 
                 for currRestrictionID, currRestrictionInProposalDetails in restrictionList:
-                    currRestrictionInProposal = TOMsProposalElement(self.proposalsManager, currlayerID, currRestrictionID)
+                    currRestrictionInProposal = TOMsProposalElement(self.proposalsManager, currlayerID, currLayer, currRestrictionID)
                     if currRestrictionInProposal is None:
                         return False
                     status = currRestrictionInProposal.acceptActionOnProposalElement(currRestrictionInProposalDetails.attribute("ActionOnProposalAcceptance")) # Finding the correct action could go to ProposalElement
