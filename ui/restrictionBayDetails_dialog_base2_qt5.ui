@@ -52,6 +52,7 @@
        </property>
        <property name="font">
         <font>
+         <family>Arial</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -64,6 +65,7 @@
       <widget class="QLineEdit" name="GeometryID">
        <property name="font">
         <font>
+         <family>Arial</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -82,6 +84,13 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
+     <item row="1" column="0">
+      <widget class="QDialogButtonBox" name="button_box">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
        <property name="minimumSize">
@@ -92,6 +101,7 @@
        </property>
        <property name="font">
         <font>
+         <family>Arial</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -125,6 +135,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -150,6 +161,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -171,6 +183,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -192,6 +205,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -213,6 +227,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -255,6 +270,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -332,6 +348,7 @@
           <widget class="QLabel" name="label_5">
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -379,6 +396,7 @@
           <widget class="QLineEdit" name="RestrictionLength">
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -397,6 +415,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -418,6 +437,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -439,6 +459,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -467,6 +488,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -495,6 +517,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -530,6 +553,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -548,6 +572,7 @@
            </property>
            <property name="font">
             <font>
+             <family>Arial</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -568,6 +593,13 @@
          </item>
          <item row="5" column="4">
           <widget class="QLineEdit" name="Capacity"/>
+         </item>
+         <item row="7" column="4">
+          <widget class="QCheckBox" name="DisplayLabel">
+           <property name="text">
+            <string>Display label</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -622,6 +654,7 @@
            <property name="font">
             <font>
              <family>Sans Serif</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="autoFillBackground">
@@ -664,13 +697,6 @@
          </property>
         </widget>
        </widget>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QDialogButtonBox" name="button_box">
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
       </widget>
      </item>
     </layout>
