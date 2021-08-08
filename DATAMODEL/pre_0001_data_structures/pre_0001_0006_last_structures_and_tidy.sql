@@ -332,3 +332,7 @@ DROP TABLE public.signs;
 DROP TABLE public."RestrictionTypes";
 DROP TABLE public."RoadCentreLine";
 DROP TABLE public."Surveyors";
+
+-- Change ownership
+ALTER TABLE toms."MapGrid"
+    OWNER to postgres;
