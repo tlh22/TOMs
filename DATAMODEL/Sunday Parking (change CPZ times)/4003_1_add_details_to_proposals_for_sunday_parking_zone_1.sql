@@ -230,15 +230,13 @@ BEGIN
      -- Set Close Date on original CPZ
      UPDATE toms."ControlledParkingZones"
      SET "CloseDate" = '2020-11-09'
-     WHERE "RestrictionID" = 3;
+     WHERE "RestrictionID" = '3';
 
      -- Set Open Date on new CPZ
      UPDATE toms."ControlledParkingZones"
      SET "OpenDate" = '2020-11-09'
-     WHERE "RestrictionID" = 36;
+     WHERE "RestrictionID" = '36';
+
 
 END;
 $do$;
-
-
--- *** Consider MapGrid ... (need to check that any tile within Zone 1 is included - and need to ensure that version is correct

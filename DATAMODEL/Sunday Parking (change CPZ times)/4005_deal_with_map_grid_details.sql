@@ -19,7 +19,7 @@ FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p,
 ) AS x
 WHERE x.id = TiP."TileNr"
 AND TiP."ProposalID" = p."ProposalID"
-ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
+ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID";
 
 
 /***** manually entered details *******/
@@ -230,3 +230,130 @@ UPDATE toms."MapGrid"
 SET "CurrRevisionNr" = 4
 WHERE id = 1750;
 
+/*** PTAs  ***/
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1278, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1279, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1280, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1335, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1336, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1337, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1341, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1393, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1394, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1397, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1512, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1516, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1630, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1635, 2);
+
+-- 1689 ** something strange here ... somehow version numbers are out of sync with dates ...
+
+UPDATE toms."TilesInAcceptedProposals"  -- Version number incremented
+SET "RevisionNr" = 3
+WHERE "ProposalID" = 59
+AND "TileNr" = 1689;
+
+UPDATE toms."TilesInAcceptedProposals"  -- Version number incremented
+SET "RevisionNr" = 4
+WHERE "ProposalID" = 69
+AND "TileNr" = 1689;
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 4
+WHERE id = 1689;
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1689, 3);
+
+-- 1690 ** something strange here ... somehow version numbers are out of sync with dates ...
+
+UPDATE toms."TilesInAcceptedProposals"  -- Version number incremented
+SET "RevisionNr" = 3
+WHERE "ProposalID" = 59
+AND "TileNr" = 1690;
+
+UPDATE toms."TilesInAcceptedProposals"  -- Version number incremented
+SET "RevisionNr" = 4
+WHERE "ProposalID" = 69
+AND "TileNr" = 1690;
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 4
+WHERE id = 1690;
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1690, 3);
+
+--
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1691, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1694, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1749, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1750, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1751, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1752, 2);
+
+INSERT INTO toms."TilesInAcceptedProposals"(
+	"ProposalID", "TileNr", "RevisionNr")
+	VALUES (205, 1753, 2);
