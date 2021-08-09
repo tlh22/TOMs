@@ -156,7 +156,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         Whenever the current proposal or the date changes we need to update the canvas.
         """
 
-        TOMsMessageLog.logMessage('Entering updateMapCanvas', level=Qgis.Info)
+        TOMsMessageLog.logMessage('Entering updateMapCanvas ... ', level=Qgis.Warning)
 
         dateString = self.__date.toString('dd-MM-yyyy')
         currProposalID = self.currentProposal()
@@ -170,8 +170,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         for (layerID, layerName) in self.getRestrictionLayersList():
-            TOMsMessageLog.logMessage(
-                "Considering layer: " + layerName, level=Qgis.Info)
+            TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(layerName), level=Qgis.Warning)
 
             layerFilterString = filterString
 
@@ -191,23 +190,83 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             else:
                 layerFilterString = layerFilterString + ")"
 
-            TOMsMessageLog.logMessage("In updateMapCanvas. Layer: " + layerName + " Date Filter: " + layerFilterString, level=Qgis.Info)
+            TOMsMessageLog.logMessage("In updateMapCanvas. Layer: {} Date Filter: {}".format(layerName, layerFilterString), level=Qgis.Warning)
             try:
                 self.tableNames.setLayer(layerName).dataProvider().setSubsetString(layerFilterString)
             except Exception as e:
                 TOMsMessageLog.logMessage('updateMapCanvas: error in layer {}: {}'.format(layerName, e),
                                           level=Qgis.Warning)
+                return False
+
+            # *** deal with labels ...
+            # get the corresponding label layers
+            if layerName == 'Bays':
+                label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+            if layerName == 'Lines':
+                label_layers_names = ['Lines.label_pos', 'Lines.label_ldr', 'Lines.label_loading_pos',
+                                      'Lines.label_loading_ldr']
+            if layerName == 'RestrictionPolygons':
+                label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
+            if layerName == 'CPZs':
+                label_layers_names = ['CPZs.label_pos', 'CPZs.label_ldr']
+            if layerName == 'ParkingTariffAreas':
+                label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
+
+            # now apply the filter to the labels ...
+
+            for label_layers_name in label_layers_names:
+                # get the label layer
+                TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(label_layers_name), level=Qgis.Warning)
+                try:
+                    QgsProject.instance().mapLayersByName(label_layers_name)[0].dataProvider().setSubsetString(layerFilterString)
+                except Exception as e:
+                    TOMsMessageLog.logMessage('updateMapCanvas: error in layer {}: {}'.format(label_layers_name, e),
+                                              level=Qgis.Warning)
+                    return False
+
+        return True
 
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
+        TOMsMessageLog.logMessage('Entering clearRestrictionFilters ... ', level=Qgis.Warning)
+
         for (layerID, layerName) in self.getRestrictionLayersList():
-            TOMsMessageLog.logMessage("Clearing filter for layer: " + layerName, level=Qgis.Info)
+            TOMsMessageLog.logMessage("Clearing filter for layer: {}".format(layerName), level=Qgis.Warning)
             try:
                 self.tableNames.setLayer(layerName).dataProvider().setSubsetString(None)
             except Exception as e:
                 TOMsMessageLog.logMessage('clearRestrictionFilters: error in layer {}: {}'.format(layerName, e),
                                           level=Qgis.Warning)
+                return False
+
+           # *** deal with labels ...
+            # get the corresponding label layers
+            if layerName == 'Bays':
+                label_layers_names = ['Bays.label_pos', 'Bays.label_ldr']
+            if layerName == 'Lines':
+                label_layers_names = ['Lines.label_pos', 'Lines.label_ldr', 'Lines.label_loading_pos',
+                                      'Lines.label_loading_ldr']
+            if layerName == 'RestrictionPolygons':
+                label_layers_names = ['RestrictionPolygons.label_pos', 'RestrictionPolygons.label_ldr']
+            if layerName == 'CPZs':
+                label_layers_names = ['CPZs.label_pos', 'CPZs.label_ldr']
+            if layerName == 'ParkingTariffAreas':
+                label_layers_names = ['ParkingTariffAreas.label_pos', 'ParkingTariffAreas.label_ldr']
+
+            # now apply the filter to the labels ...
+
+            for label_layers_name in label_layers_names:
+                # get the label layer
+                TOMsMessageLog.logMessage("clearRestrictionFilters: Clearing filter for layer: {}".format(label_layers_name), level=Qgis.Warning)
+                try:
+                    QgsProject.instance().mapLayersByName(label_layers_name)[0].dataProvider().setSubsetString(None)
+                except Exception as e:
+                    TOMsMessageLog.logMessage('clearRestrictionFilters: error in layer {}: {}'.format(label_layers_name, e),
+                                              level=Qgis.Warning)
+                    return False
+
+        return True
 
     def getCurrentRestrictionsForLayerAtDate(self, layerID, dateString=None):  # TODO: possibly better with Proposal
 
