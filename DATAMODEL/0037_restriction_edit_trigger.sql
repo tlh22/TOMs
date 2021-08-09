@@ -32,7 +32,7 @@ CREATE POLICY "deleteRestrictions" ON toms."Bays"
     --WITH CHECK ("OpenDate" IS NULL);
 
 DROP POLICY IF EXISTS "updateRestrictions_operator" ON toms."Bays";
-CREATE POLICY "updateRestrictions" ON toms."Bays"
+CREATE POLICY "updateRestrictions_operator" ON toms."Bays"
     FOR UPDATE TO toms_operator
     USING (true)
     WITH CHECK ("OpenDate" IS NULL);
@@ -67,7 +67,7 @@ CREATE POLICY "deleteRestrictions" ON toms."Lines"
     --WITH CHECK ("OpenDate" IS NULL);
 
 DROP POLICY IF EXISTS "updateRestrictions_operator" ON toms."Lines";
-CREATE POLICY "updateRestrictions" ON toms."Lines"
+CREATE POLICY "updateRestrictions_operator" ON toms."Lines"
     FOR UPDATE TO toms_operator
     USING (true)
     WITH CHECK ("OpenDate" IS NULL);
