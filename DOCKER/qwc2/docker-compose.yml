@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+    nginx:
+        restart: always
+        build:
+            context: ./nginx
+        volumes:
+        - ./qwc/prod:/usr/share/nginx/html
+        ports:
+            - "8080:80"
