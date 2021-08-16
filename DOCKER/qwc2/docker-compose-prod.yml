@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+    nginx:
+        restart: always
+        environment:
+        - 'LETSENCRYPT_EMAIL=thancock@mhtc.co.uk'
+        - 'LETSENCRYPT_HOST=qwc.mhtc.co.uk'
+        - 'VIRTUAL_HOST=qwc.mhtc.co.uk'
+        ports:
+        - "127.0.0.1:8012:80"
+        networks:
+        - qgis-net
+
+networks:
+  qgis-net:
+    external: true

@@ -8,3 +8,9 @@ services:
         - ./qwc/prod:/usr/share/nginx/html
         ports:
             - "8080:80"
+    networks:
+      toms_net:
+
+networks:
+  toms_net:
+    external: true
