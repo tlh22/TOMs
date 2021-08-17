@@ -42,4 +42,4 @@ ALTER TABLE ONLY "moving_traffic"."CarriagewayMarkings"
     ALTER COLUMN "GeometryID" SET DEFAULT ('M_'::"text" || "to_char"("nextval"('"moving_traffic"."CarriagewayMarkings_id_seq"'::"regclass"), 'FM0000000'::"text"));
 
 ALTER TABLE ONLY "highways_network"."MHTC_RoadLinks"
-    ALTER COLUMN "GeometryID" SET DEFAULT ('L_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), 'FM0000000'::"text"));
+    ALTER COLUMN "GeometryID" SET DEFAULT ('J_'::"text" || "to_char"("nextval"('"highways_network"."MHTC_RoadLinks_id_seq"'::"regclass"), 'FM0000000'::"text"));
