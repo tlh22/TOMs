@@ -4,6 +4,11 @@ INSERT INTO toms_lookups."SignTypes"(
 	"Code", "Description")
 	VALUES (9999, 'Street Scene');
 
+-- Update sign name
+UPDATE toms_lookups."SignTypes"
+	SET "Description"='Zone - Permit Parking Zone (PPZ) (start)'
+	WHERE "Code" = 40;
+
 -- Add generic SRL type
 INSERT INTO toms_lookups."BayLineTypes"(
 	"Code", "Description")
@@ -21,7 +26,6 @@ INSERT INTO toms_lookups."BayLineTypes"(
 	"Code", "Description")
 	VALUES (229, 'Unmarked Area within PPZ');
 
--- Update sign name
-UPDATE toms_lookups."SignTypes"
-	SET "Description"='Zone - Permit Parking Zone (PPZ) (start)'
-	WHERE "Code" = 40;
+INSERT INTO toms_lookups."BayLineTypes"(
+	"Code", "Description")
+	VALUES (147, 'Unmarked parking area');
