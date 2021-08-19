@@ -5,12 +5,11 @@ services:
         build:
             context: ./nginx
         volumes:
-        - ./qwc/prod:/usr/share/nginx/html
+            - ./qwc/test:/usr/share/nginx/html
         ports:
             - "8080:80"
-    networks:
-      toms_net:
 
 networks:
-  toms_net:
+  default:
     external: true
+    name: toms_net

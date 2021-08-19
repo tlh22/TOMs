@@ -2,6 +2,8 @@ version: "3.8"
 services:
     nginx:
         restart: always
+        volumes:
+        - ./qwc/prod-trdc:/usr/share/nginx/html
         environment:
         - 'LETSENCRYPT_EMAIL=thancock@mhtc.co.uk'
         - 'LETSENCRYPT_HOST=qwc.mhtc.co.uk'
@@ -12,5 +14,6 @@ services:
         - qgis-net
 
 networks:
-  qgis-net:
+  default:
     external: true
+    name: qgis-net
