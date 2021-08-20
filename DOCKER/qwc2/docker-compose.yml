@@ -7,7 +7,7 @@ services:
         volumes:
             - ./qwc/test:/usr/share/nginx/html
         ports:
-            - "8080:80"
+            - "8012:80"
 
 networks:
   default:
