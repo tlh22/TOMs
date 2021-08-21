@@ -4,6 +4,9 @@
 
 # This directory is optional, but will use it to keep the CA root key safe
 mkdir -p /home/pg_config
+
+cd /home/pg_config
+
 mkdir keys certs
 chmod og-rwx keys certs
 
