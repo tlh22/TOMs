@@ -871,7 +871,7 @@ class generateGeometryUtils (QObject):
             else:
                 waitDesc = "{}".format(additionalConditionDesc)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(" + geometryID + "): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText({}); waiting: {}; loading: {}".format(geometryID, waitDesc, loadDesc), level=Qgis.Info)
         return waitDesc, loadDesc
 
     @staticmethod
