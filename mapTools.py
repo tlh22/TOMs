@@ -598,6 +598,8 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         # set up function to be called when capture is complete
         #self.onCreateRestriction = onCreateRestriction
 
+        TOMsMessageLog.logMessage(("In CreateRestrictionTool. Finished init."), level=Qgis.Info)
+        
     def cadCanvasReleaseEvent(self, event):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
         TOMsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), level=Qgis.Info)
