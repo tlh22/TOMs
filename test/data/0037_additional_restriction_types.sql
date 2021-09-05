@@ -33,4 +33,11 @@ INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (150, 'Par
 INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (151, 'Market Trading Bay');
 INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (152, 'Unmarked parking area');
 
+--
+
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (154, 'Unmarked parking area (within controlled area)');
+
+INSERT INTO toms_lookups."BayTypesInUse"(
+	"Code", "GeomShapeGroupType")
+	VALUES (154, 'LineString');
 
