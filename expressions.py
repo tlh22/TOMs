@@ -543,11 +543,16 @@ class TOMsExpressions():
         TOMsMessageLog.logMessage('generateDemandPoints: {}'.format(feature.attribute("GeometryID")),
                                   level=Qgis.Info)
 
-        demand = feature.attribute("Demand")
+        demand = math.ceil(float(feature.attribute("Demand")))
+
+        TOMsMessageLog.logMessage(
+            'generateDemandPoints: demand: {}'.format(demand),
+            level=Qgis.Info)
+
         if demand == 0:
             return None
 
-        capacity = feature.attribute("Capacity")
+        capacity = int(feature.attribute("NrBays"))
 
         nrSpaces = capacity - demand
         if nrSpaces < 0:

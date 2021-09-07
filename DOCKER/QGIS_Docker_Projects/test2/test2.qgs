@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="" version="3.10.9-A Coruña">
+<qgis saveUser="marie_000" projectname="" version="3.16.7-Hannover" saveUserFull="Marie Hancock" saveDateTime="2021-08-17T10:30:52">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -7,50 +7,56 @@
   <trust active="0"/>
   <projectCrs>
     <spatialrefsys>
-      <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
-      <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-      <srsid>3452</srsid>
-      <srid>4326</srid>
-      <authid>EPSG:4326</authid>
-      <description>WGS 84</description>
-      <projectionacronym>longlat</projectionacronym>
-      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
-      <geographicflag>true</geographicflag>
+      <wkt>PROJCRS["OSGB 1936 / British National Grid",BASEGEOGCRS["OSGB 1936",DATUM["OSGB 1936",ELLIPSOID["Airy 1830",6377563.396,299.3249646,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4277]],CONVERSION["British National Grid",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-2,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996012717,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",400000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",-100000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["UK - Britain and UKCS 49°46'N to 61°01'N, 7°33'W to 3°33'E"],BBOX[49.75,-9.2,61.14,2.88]],ID["EPSG",27700]]</wkt>
+      <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</proj4>
+      <srsid>2437</srsid>
+      <srid>27700</srid>
+      <authid>EPSG:27700</authid>
+      <description>OSGB 1936 / British National Grid</description>
+      <projectionacronym>tmerc</projectionacronym>
+      <ellipsoidacronym>EPSG:7001</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
     </spatialrefsys>
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="OpenStreetMap" id="OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0" source="type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0" checked="Qt::Checked" providerKey="wms" expanded="1" legend_exp="">
+    <layer-tree-layer id="Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b" legend_split_behavior="0" checked="Qt::Checked" legend_exp="" name="Bays.geom" source="service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table=&quot;toms&quot;.&quot;Bays&quot; (geom)" expanded="1" patch_size="-1,-1" providerKey="postgres">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer id="OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0" legend_split_behavior="0" checked="Qt::Checked" legend_exp="" name="OpenStreetMap" source="crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0" expanded="1" patch_size="0,0" providerKey="wms">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
       <item>OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0</item>
+      <item>Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings mode="2" unit="1" type="1" enabled="0" tolerance="12" intersection-snapping="0">
-    <individual-layer-settings/>
+  <snapping-settings self-snapping="0" type="1" mode="2" unit="1" tolerance="12" minScale="0" intersection-snapping="0" maxScale="0" enabled="0" scaleDependencyMode="0">
+    <individual-layer-settings>
+      <layer-setting id="Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b" type="1" units="1" tolerance="12" minScale="0" maxScale="0" enabled="0"/>
+    </individual-layer-settings>
   </snapping-settings>
   <relations/>
   <mapcanvas name="theMapCanvas" annotationsVisible="1">
-    <units>degrees</units>
+    <units>meters</units>
     <extent>
-      <xmin>-189</xmin>
-      <ymin>-89.30368521879694299</ymin>
-      <xmax>189</xmax>
-      <ymax>89.30368521879691457</ymax>
+      <xmin>325301.34121976210735738</xmin>
+      <ymin>673847.19223850208800286</ymin>
+      <xmax>325558.47652397281490266</xmax>
+      <ymax>674247.84698263893369585</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
       <spatialrefsys>
-        <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
+        <wkt>PROJCRS["OSGB 1936 / British National Grid",BASEGEOGCRS["OSGB 1936",DATUM["OSGB 1936",ELLIPSOID["Airy 1830",6377563.396,299.3249646,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4277]],CONVERSION["British National Grid",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-2,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996012717,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",400000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",-100000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["UK - Britain and UKCS 49°46'N to 61°01'N, 7°33'W to 3°33'E"],BBOX[49.75,-9.2,61.14,2.88]],ID["EPSG",27700]]</wkt>
+        <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</proj4>
+        <srsid>2437</srsid>
+        <srid>27700</srid>
+        <authid>EPSG:27700</authid>
+        <description>OSGB 1936 / British National Grid</description>
+        <projectionacronym>tmerc</projectionacronym>
+        <ellipsoidacronym>EPSG:7001</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
@@ -58,16 +64,688 @@
   </mapcanvas>
   <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer name="OpenStreetMap" showFeatureCount="0" checked="Qt::Checked" drawingOrder="-1" open="true">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" open="true" name="Bays.geom">
       <filegroup open="true" hidden="false">
-        <legendlayerfile layerid="OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0" visible="1" isInOverview="0"/>
+        <legendlayerfile isInOverview="0" layerid="Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" open="true" name="OpenStreetMap">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0" visible="1"/>
       </filegroup>
     </legendlayer>
   </legend>
   <mapViewDocks/>
   <mapViewDocks3D/>
+  <main-annotation-layer autoRefreshEnabled="0" autoRefreshTime="0" type="annotation" refreshOnNotifyMessage="" refreshOnNotifyEnabled="0">
+    <id>Annotations_fa3ae9ee_e3d0_4782_a3a9_696dfbcecdbb</id>
+    <datasource></datasource>
+    <keywordList>
+      <value></value>
+    </keywordList>
+    <layername></layername>
+    <srs>
+      <spatialrefsys>
+        <wkt></wkt>
+        <proj4></proj4>
+        <srsid>0</srsid>
+        <srid>0</srid>
+        <authid></authid>
+        <description></description>
+        <projectionacronym></projectionacronym>
+        <ellipsoidacronym></ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </srs>
+    <resourceMetadata>
+      <identifier></identifier>
+      <parentidentifier></parentidentifier>
+      <language></language>
+      <type></type>
+      <title></title>
+      <abstract></abstract>
+      <links/>
+      <fees></fees>
+      <encoding></encoding>
+      <crs>
+        <spatialrefsys>
+          <wkt></wkt>
+          <proj4></proj4>
+          <srsid>0</srsid>
+          <srid>0</srid>
+          <authid></authid>
+          <description></description>
+          <projectionacronym></projectionacronym>
+          <ellipsoidacronym></ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </crs>
+      <extent/>
+    </resourceMetadata>
+    <items/>
+    <layerOpacity>1</layerOpacity>
+  </main-annotation-layer>
   <projectlayers>
-    <maplayer autoRefreshTime="0" minScale="1e+08" autoRefreshEnabled="0" refreshOnNotifyMessage="" hasScaleBasedVisibilityFlag="0" maxScale="0" styleCategories="AllStyleCategories" type="raster" refreshOnNotifyEnabled="0">
+    <maplayer simplifyDrawingTol="1" autoRefreshTime="0" wkbType="LineString" labelsEnabled="0" readOnly="0" type="vector" minScale="100000000" styleCategories="AllStyleCategories" simplifyMaxScale="1" autoRefreshEnabled="0" refreshOnNotifyMessage="" simplifyLocal="1" maxScale="0" geometry="Line" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" simplifyDrawingHints="1">
+      <extent>
+        <xmin>325307.46348890999797732</xmin>
+        <ymin>673856.73163717205170542</ymin>
+        <xmax>325552.35425482498249039</xmax>
+        <ymax>674238.30758396896999329</ymax>
+      </extent>
+      <id>Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b</id>
+      <datasource>service='TOMs_Test' sslmode=disable key='RestrictionID' srid=27700 type=LineString checkPrimaryKeyUnicity='1' table="toms"."Bays" (geom)</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Bays.geom</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCRS["OSGB 1936 / British National Grid",BASEGEOGCRS["OSGB 1936",DATUM["OSGB 1936",ELLIPSOID["Airy 1830",6377563.396,299.3249646,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4277]],CONVERSION["British National Grid",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-2,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996012717,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",400000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",-100000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["UK - Britain and UKCS 49°46'N to 61°01'N, 7°33'W to 3°33'E"],BBOX[49.75,-9.2,61.14,2.88]],ID["EPSG",27700]]</wkt>
+          <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</proj4>
+          <srsid>2437</srsid>
+          <srid>27700</srid>
+          <authid>EPSG:27700</authid>
+          <description>OSGB 1936 / British National Grid</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>EPSG:7001</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCRS["OSGB 1936 / British National Grid",BASEGEOGCRS["OSGB 1936",DATUM["OSGB 1936",ELLIPSOID["Airy 1830",6377563.396,299.3249646,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4277]],CONVERSION["British National Grid",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-2,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996012717,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",400000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",-100000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["UK - Britain and UKCS 49°46'N to 61°01'N, 7°33'W to 3°33'E"],BBOX[49.75,-9.2,61.14,2.88]],ID["EPSG",27700]]</wkt>
+            <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</proj4>
+            <srsid>2437</srsid>
+            <srid>27700</srid>
+            <authid>EPSG:27700</authid>
+            <description>OSGB 1936 / British National Grid</description>
+            <projectionacronym>tmerc</projectionacronym>
+            <ellipsoidacronym>EPSG:7001</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <temporal fixedDuration="0" mode="0" startExpression="" startField="" endExpression="" endField="OpenDate" accumulate="0" durationField="" enabled="0" durationUnit="min">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
+      <renderer-v2 forceraster="0" type="singleSymbol" symbollevels="0" enableorderby="0">
+        <symbols>
+          <symbol type="line" clip_to_extent="1" force_rhr="0" alpha="1" name="0">
+            <layer pass="0" locked="0" class="SimpleLine" enabled="1">
+              <prop k="align_dash_pattern" v="0"/>
+              <prop k="capstyle" v="square"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="dash_pattern_offset" v="0"/>
+              <prop k="dash_pattern_offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="dash_pattern_offset_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="line_color" v="196,60,57,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="ring_filter" v="0"/>
+              <prop k="tweak_dash_pattern_on_corners" v="0"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" value="" name="name"/>
+                  <Option name="properties"/>
+                  <Option type="QString" value="collection" name="type"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+        <activeChecks type="StringList">
+          <Option type="QString" value=""/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <legend type="default-vector"/>
+      <referencedLayers/>
+      <fieldConfiguration>
+        <field configurationFlags="None" name="RestrictionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="GeometryID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="RestrictionLength">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="RestrictionTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="GeomShapeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="AzimuthToRoadCentreLine">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="Notes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="Photos_01">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="Photos_02">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="Photos_03">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="RoadName">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="USRN">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_Rotation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_TextChanged">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="OpenDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="CloseDate">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="CPZ">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="LastUpdateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="LastUpdatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="BayOrientation">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="NrBays">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="TimePeriodID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="PayTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="MaxStayID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="NoReturnID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ParkingTariffArea">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="AdditionalConditionID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ComplianceRoadMarkingsFaded">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ComplianceRestrictionSignIssue">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ComplianceNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="MHTC_CheckIssueTypeID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="MHTC_CheckNotes">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="PermitCode">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="MatchDayTimePeriodID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="PayParkingAreaID">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="CreateDateTime">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="CreatePerson">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="Capacity">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_pos">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_ldr">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="MatchDayEventDayZone">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="BayWidth">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias index="0" name="" field="RestrictionID"/>
+        <alias index="1" name="" field="GeometryID"/>
+        <alias index="2" name="" field="RestrictionLength"/>
+        <alias index="3" name="" field="RestrictionTypeID"/>
+        <alias index="4" name="" field="GeomShapeID"/>
+        <alias index="5" name="" field="AzimuthToRoadCentreLine"/>
+        <alias index="6" name="" field="Notes"/>
+        <alias index="7" name="" field="Photos_01"/>
+        <alias index="8" name="" field="Photos_02"/>
+        <alias index="9" name="" field="Photos_03"/>
+        <alias index="10" name="" field="RoadName"/>
+        <alias index="11" name="" field="USRN"/>
+        <alias index="12" name="" field="label_Rotation"/>
+        <alias index="13" name="" field="label_TextChanged"/>
+        <alias index="14" name="" field="OpenDate"/>
+        <alias index="15" name="" field="CloseDate"/>
+        <alias index="16" name="" field="CPZ"/>
+        <alias index="17" name="" field="LastUpdateDateTime"/>
+        <alias index="18" name="" field="LastUpdatePerson"/>
+        <alias index="19" name="" field="BayOrientation"/>
+        <alias index="20" name="" field="NrBays"/>
+        <alias index="21" name="" field="TimePeriodID"/>
+        <alias index="22" name="" field="PayTypeID"/>
+        <alias index="23" name="" field="MaxStayID"/>
+        <alias index="24" name="" field="NoReturnID"/>
+        <alias index="25" name="" field="ParkingTariffArea"/>
+        <alias index="26" name="" field="AdditionalConditionID"/>
+        <alias index="27" name="" field="ComplianceRoadMarkingsFaded"/>
+        <alias index="28" name="" field="ComplianceRestrictionSignIssue"/>
+        <alias index="29" name="" field="ComplianceNotes"/>
+        <alias index="30" name="" field="MHTC_CheckIssueTypeID"/>
+        <alias index="31" name="" field="MHTC_CheckNotes"/>
+        <alias index="32" name="" field="PermitCode"/>
+        <alias index="33" name="" field="MatchDayTimePeriodID"/>
+        <alias index="34" name="" field="PayParkingAreaID"/>
+        <alias index="35" name="" field="CreateDateTime"/>
+        <alias index="36" name="" field="CreatePerson"/>
+        <alias index="37" name="" field="Capacity"/>
+        <alias index="38" name="" field="label_pos"/>
+        <alias index="39" name="" field="label_ldr"/>
+        <alias index="40" name="" field="MatchDayEventDayZone"/>
+        <alias index="41" name="" field="BayWidth"/>
+      </aliases>
+      <defaults>
+        <default applyOnUpdate="0" expression="" field="RestrictionID"/>
+        <default applyOnUpdate="0" expression="" field="GeometryID"/>
+        <default applyOnUpdate="0" expression="" field="RestrictionLength"/>
+        <default applyOnUpdate="0" expression="" field="RestrictionTypeID"/>
+        <default applyOnUpdate="0" expression="" field="GeomShapeID"/>
+        <default applyOnUpdate="0" expression="" field="AzimuthToRoadCentreLine"/>
+        <default applyOnUpdate="0" expression="" field="Notes"/>
+        <default applyOnUpdate="0" expression="" field="Photos_01"/>
+        <default applyOnUpdate="0" expression="" field="Photos_02"/>
+        <default applyOnUpdate="0" expression="" field="Photos_03"/>
+        <default applyOnUpdate="0" expression="" field="RoadName"/>
+        <default applyOnUpdate="0" expression="" field="USRN"/>
+        <default applyOnUpdate="0" expression="" field="label_Rotation"/>
+        <default applyOnUpdate="0" expression="" field="label_TextChanged"/>
+        <default applyOnUpdate="0" expression="" field="OpenDate"/>
+        <default applyOnUpdate="0" expression="" field="CloseDate"/>
+        <default applyOnUpdate="0" expression="" field="CPZ"/>
+        <default applyOnUpdate="0" expression="" field="LastUpdateDateTime"/>
+        <default applyOnUpdate="0" expression="" field="LastUpdatePerson"/>
+        <default applyOnUpdate="0" expression="" field="BayOrientation"/>
+        <default applyOnUpdate="0" expression="" field="NrBays"/>
+        <default applyOnUpdate="0" expression="" field="TimePeriodID"/>
+        <default applyOnUpdate="0" expression="" field="PayTypeID"/>
+        <default applyOnUpdate="0" expression="" field="MaxStayID"/>
+        <default applyOnUpdate="0" expression="" field="NoReturnID"/>
+        <default applyOnUpdate="0" expression="" field="ParkingTariffArea"/>
+        <default applyOnUpdate="0" expression="" field="AdditionalConditionID"/>
+        <default applyOnUpdate="0" expression="" field="ComplianceRoadMarkingsFaded"/>
+        <default applyOnUpdate="0" expression="" field="ComplianceRestrictionSignIssue"/>
+        <default applyOnUpdate="0" expression="" field="ComplianceNotes"/>
+        <default applyOnUpdate="0" expression="" field="MHTC_CheckIssueTypeID"/>
+        <default applyOnUpdate="0" expression="" field="MHTC_CheckNotes"/>
+        <default applyOnUpdate="0" expression="" field="PermitCode"/>
+        <default applyOnUpdate="0" expression="" field="MatchDayTimePeriodID"/>
+        <default applyOnUpdate="0" expression="" field="PayParkingAreaID"/>
+        <default applyOnUpdate="0" expression="" field="CreateDateTime"/>
+        <default applyOnUpdate="0" expression="" field="CreatePerson"/>
+        <default applyOnUpdate="0" expression="" field="Capacity"/>
+        <default applyOnUpdate="0" expression="" field="label_pos"/>
+        <default applyOnUpdate="0" expression="" field="label_ldr"/>
+        <default applyOnUpdate="0" expression="" field="MatchDayEventDayZone"/>
+        <default applyOnUpdate="0" expression="" field="BayWidth"/>
+      </defaults>
+      <constraints>
+        <constraint unique_strength="1" exp_strength="0" constraints="3" notnull_strength="1" field="RestrictionID"/>
+        <constraint unique_strength="1" exp_strength="0" constraints="3" notnull_strength="1" field="GeometryID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="RestrictionLength"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="RestrictionTypeID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="GeomShapeID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="AzimuthToRoadCentreLine"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="Notes"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="Photos_01"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="Photos_02"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="Photos_03"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="RoadName"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="USRN"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="label_Rotation"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="label_TextChanged"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="OpenDate"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="CloseDate"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="CPZ"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="LastUpdateDateTime"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="LastUpdatePerson"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="BayOrientation"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="NrBays"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="TimePeriodID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="PayTypeID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="MaxStayID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="NoReturnID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="ParkingTariffArea"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="AdditionalConditionID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="ComplianceRoadMarkingsFaded"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="ComplianceRestrictionSignIssue"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="ComplianceNotes"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="MHTC_CheckIssueTypeID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="MHTC_CheckNotes"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="PermitCode"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="MatchDayTimePeriodID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="PayParkingAreaID"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="CreateDateTime"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="1" notnull_strength="1" field="CreatePerson"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="Capacity"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="label_pos"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="label_ldr"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="MatchDayEventDayZone"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" notnull_strength="0" field="BayWidth"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint exp="" field="RestrictionID" desc=""/>
+        <constraint exp="" field="GeometryID" desc=""/>
+        <constraint exp="" field="RestrictionLength" desc=""/>
+        <constraint exp="" field="RestrictionTypeID" desc=""/>
+        <constraint exp="" field="GeomShapeID" desc=""/>
+        <constraint exp="" field="AzimuthToRoadCentreLine" desc=""/>
+        <constraint exp="" field="Notes" desc=""/>
+        <constraint exp="" field="Photos_01" desc=""/>
+        <constraint exp="" field="Photos_02" desc=""/>
+        <constraint exp="" field="Photos_03" desc=""/>
+        <constraint exp="" field="RoadName" desc=""/>
+        <constraint exp="" field="USRN" desc=""/>
+        <constraint exp="" field="label_Rotation" desc=""/>
+        <constraint exp="" field="label_TextChanged" desc=""/>
+        <constraint exp="" field="OpenDate" desc=""/>
+        <constraint exp="" field="CloseDate" desc=""/>
+        <constraint exp="" field="CPZ" desc=""/>
+        <constraint exp="" field="LastUpdateDateTime" desc=""/>
+        <constraint exp="" field="LastUpdatePerson" desc=""/>
+        <constraint exp="" field="BayOrientation" desc=""/>
+        <constraint exp="" field="NrBays" desc=""/>
+        <constraint exp="" field="TimePeriodID" desc=""/>
+        <constraint exp="" field="PayTypeID" desc=""/>
+        <constraint exp="" field="MaxStayID" desc=""/>
+        <constraint exp="" field="NoReturnID" desc=""/>
+        <constraint exp="" field="ParkingTariffArea" desc=""/>
+        <constraint exp="" field="AdditionalConditionID" desc=""/>
+        <constraint exp="" field="ComplianceRoadMarkingsFaded" desc=""/>
+        <constraint exp="" field="ComplianceRestrictionSignIssue" desc=""/>
+        <constraint exp="" field="ComplianceNotes" desc=""/>
+        <constraint exp="" field="MHTC_CheckIssueTypeID" desc=""/>
+        <constraint exp="" field="MHTC_CheckNotes" desc=""/>
+        <constraint exp="" field="PermitCode" desc=""/>
+        <constraint exp="" field="MatchDayTimePeriodID" desc=""/>
+        <constraint exp="" field="PayParkingAreaID" desc=""/>
+        <constraint exp="" field="CreateDateTime" desc=""/>
+        <constraint exp="" field="CreatePerson" desc=""/>
+        <constraint exp="" field="Capacity" desc=""/>
+        <constraint exp="" field="label_pos" desc=""/>
+        <constraint exp="" field="label_ldr" desc=""/>
+        <constraint exp="" field="MatchDayEventDayZone" desc=""/>
+        <constraint exp="" field="BayWidth" desc=""/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+      </attributeactions>
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <dataDefinedFieldProperties/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" type="raster" hasScaleBasedVisibilityFlag="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" refreshOnNotifyEnabled="0" minScale="1e+08" maxScale="0">
       <extent>
         <xmin>-20037508.34278924390673637</xmin>
         <ymin>-20037508.34278925508260727</ymin>
@@ -75,7 +753,7 @@
         <ymax>20037508.34278924390673637</ymax>
       </extent>
       <id>OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0</id>
-      <datasource>type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0</datasource>
+      <datasource>crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -106,14 +784,14 @@
         <crs>
           <spatialrefsys>
             <wkt></wkt>
-            <proj4></proj4>
+            <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
             <srsid>0</srsid>
             <srid>0</srid>
             <authid></authid>
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -128,13 +806,22 @@
       <flags>
         <Identifiable>1</Identifiable>
         <Removable>1</Removable>
-        <Searchable>1</Searchable>
+        <Searchable>0</Searchable>
       </flags>
+      <temporal mode="0" fetchMode="0" enabled="0">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
       <customproperties>
-        <property value="Undefined" key="identify/format"/>
+        <property key="identify/format" value="Undefined"/>
       </customproperties>
       <pipe>
-        <rasterrenderer opacity="1" band="1" alphaBand="-1" type="singlebandcolordata">
+        <provider>
+          <resampling zoomedOutResamplingMethod="nearestNeighbour" zoomedInResamplingMethod="nearestNeighbour" enabled="false" maxOversampling="2"/>
+        </provider>
+        <rasterrenderer type="singlebandcolordata" band="1" opacity="1" nodataColor="" alphaBand="-1">
           <rasterTransparency/>
           <minMaxOrigin>
             <limits>None</limits>
@@ -145,17 +832,30 @@
             <stdDevFactor>2</stdDevFactor>
           </minMaxOrigin>
         </rasterrenderer>
-        <brightnesscontrast contrast="0" brightness="0"/>
-        <huesaturation colorizeOn="0" saturation="0" colorizeRed="255" colorizeGreen="128" colorizeBlue="128" colorizeStrength="100" grayscaleMode="0"/>
+        <brightnesscontrast gamma="1" contrast="0" brightness="0"/>
+        <huesaturation colorizeBlue="128" colorizeOn="0" colorizeStrength="100" colorizeGreen="128" colorizeRed="255" saturation="0" grayscaleMode="0"/>
         <rasterresampler maxOversampling="2"/>
+        <resamplingStage>resamplingFilter</resamplingStage>
       </pipe>
       <blendMode>0</blendMode>
     </maplayer>
   </projectlayers>
   <layerorder>
     <layer id="OpenStreetMap_309f342d_7b52_4c39_925c_7f7d0e0b0ab0"/>
+    <layer id="Bays_geom_b3eb7eac_f6e9_4ef5_9140_64b2f90bcd5b"/>
   </layerorder>
   <properties>
+    <DefaultStyles>
+      <ColorRamp type="QString"></ColorRamp>
+      <Fill type="QString"></Fill>
+      <Line type="QString"></Line>
+      <Marker type="QString"></Marker>
+      <Opacity type="double">1</Opacity>
+      <RandomColors type="bool">true</RandomColors>
+    </DefaultStyles>
+    <Digitizing>
+      <AvoidIntersectionsMode type="int">2</AvoidIntersectionsMode>
+    </Digitizing>
     <Gui>
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
       <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
@@ -168,8 +868,11 @@
     <Legend>
       <filterByMap type="bool">false</filterByMap>
     </Legend>
+    <Macros>
+      <pythonCode type="QString"></pythonCode>
+    </Macros>
     <Measure>
-      <Ellipsoid type="QString">EPSG:7030</Ellipsoid>
+      <Ellipsoid type="QString">EPSG:7001</Ellipsoid>
     </Measure>
     <Measurement>
       <AreaUnits type="QString">m2</AreaUnits>
@@ -177,10 +880,13 @@
     </Measurement>
     <PAL>
       <CandidatesLine type="int">50</CandidatesLine>
+      <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
       <CandidatesPoint type="int">16</CandidatesPoint>
       <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
       <DrawRectOnly type="bool">false</DrawRectOnly>
       <DrawUnplaced type="bool">false</DrawUnplaced>
+      <PlacementEngineVersion type="int">0</PlacementEngineVersion>
       <SearchMethod type="int">0</SearchMethod>
       <ShowingAllLabels type="bool">false</ShowingAllLabels>
       <ShowingCandidates type="bool">false</ShowingCandidates>
@@ -194,8 +900,73 @@
     <PositionPrecision>
       <Automatic type="bool">true</Automatic>
       <DecimalPlaces type="int">2</DecimalPlaces>
+      <DegreeFormat type="QString">MU</DegreeFormat>
     </PositionPrecision>
+    <SpatialRefSys>
+      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+    </SpatialRefSys>
+    <WCSLayers type="QStringList"/>
+    <WCSUrl type="QString"></WCSUrl>
+    <WFSLayers type="QStringList"/>
+    <WFSTLayers>
+      <Delete type="QStringList"/>
+      <Insert type="QStringList"/>
+      <Update type="QStringList"/>
+    </WFSTLayers>
+    <WFSUrl type="QString"></WFSUrl>
+    <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+    <WMSContactMail type="QString"></WMSContactMail>
+    <WMSContactOrganization type="QString"></WMSContactOrganization>
+    <WMSContactPerson type="QString"></WMSContactPerson>
+    <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSContactPosition type="QString"></WMSContactPosition>
+    <WMSDefaultMapUnitsPerMm type="double">0.001</WMSDefaultMapUnitsPerMm>
+    <WMSFees type="QString">conditions unknown</WMSFees>
+    <WMSImageQuality type="int">90</WMSImageQuality>
+    <WMSKeywordList type="QStringList">
+      <value></value>
+    </WMSKeywordList>
+    <WMSMaxAtlasFeatures type="int">1</WMSMaxAtlasFeatures>
+    <WMSOnlineResource type="QString"></WMSOnlineResource>
+    <WMSPrecision type="QString">8</WMSPrecision>
+    <WMSRootName type="QString"></WMSRootName>
+    <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
+    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
+    <WMSTileBuffer type="int">0</WMSTileBuffer>
+    <WMSUrl type="QString"></WMSUrl>
+    <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
+    <WMTSGrids>
+      <CRS type="QStringList"/>
+      <Config type="QStringList"/>
+    </WMTSGrids>
+    <WMTSJpegLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSJpegLayers>
+    <WMTSLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSLayers>
+    <WMTSMinScale type="int">5000</WMTSMinScale>
+    <WMTSPngLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSPngLayers>
+    <WMTSUrl type="QString"></WMTSUrl>
   </properties>
+  <dataDefinedServerProperties>
+    <Option type="Map">
+      <Option type="QString" value="" name="name"/>
+      <Option name="properties"/>
+      <Option type="QString" value="collection" name="type"/>
+    </Option>
+  </dataDefinedServerProperties>
   <visibility-presets/>
   <transformContext>
     <srcDest allowFallback="0" coordinateOp="+proj=pipeline +step +inv +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +step +proj=hgridshift +grids=OSTN15_NTv2_OSGBtoETRS.gsb +step +proj=unitconvert +xy_in=rad +xy_out=deg">
@@ -290,6 +1061,15 @@
     <type></type>
     <title></title>
     <abstract></abstract>
+    <contact>
+      <name></name>
+      <organization></organization>
+      <position></position>
+      <voice></voice>
+      <fax></fax>
+      <email></email>
+      <role></role>
+    </contact>
     <links/>
     <author>Marie Hancock</author>
     <creation>2021-02-06T15:54:53</creation>
@@ -299,5 +1079,33 @@
   <Bookmarks/>
   <ProjectViewSettings UseProjectScales="0">
     <Scales/>
+    <DefaultViewExtent ymin="673847.19223850208800286" xmin="325133.54220083681866527" ymax="674247.84698263893369585" xmax="325726.27554289810359478">
+      <spatialrefsys>
+        <wkt>PROJCRS["OSGB 1936 / British National Grid",BASEGEOGCRS["OSGB 1936",DATUM["OSGB 1936",ELLIPSOID["Airy 1830",6377563.396,299.3249646,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4277]],CONVERSION["British National Grid",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-2,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996012717,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",400000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",-100000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["UK - Britain and UKCS 49°46'N to 61°01'N, 7°33'W to 3°33'E"],BBOX[49.75,-9.2,61.14,2.88]],ID["EPSG",27700]]</wkt>
+        <proj4>+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +units=m +no_defs</proj4>
+        <srsid>2437</srsid>
+        <srid>27700</srid>
+        <authid>EPSG:27700</authid>
+        <description>OSGB 1936 / British National Grid</description>
+        <projectionacronym>tmerc</projectionacronym>
+        <ellipsoidacronym>EPSG:7001</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </DefaultViewExtent>
   </ProjectViewSettings>
+  <ProjectTimeSettings frameRate="1" timeStepUnit="h" timeStep="1" cumulativeTemporalRange="0"/>
+  <ProjectDisplaySettings>
+    <BearingFormat id="bearing">
+      <Option type="Map">
+        <Option type="QChar" value="" name="decimal_separator"/>
+        <Option type="int" value="6" name="decimals"/>
+        <Option type="int" value="0" name="direction_format"/>
+        <Option type="int" value="0" name="rounding_type"/>
+        <Option type="bool" value="false" name="show_plus"/>
+        <Option type="bool" value="true" name="show_thousand_separator"/>
+        <Option type="bool" value="false" name="show_trailing_zeros"/>
+        <Option type="QChar" value="" name="thousand_separator"/>
+      </Option>
+    </BearingFormat>
+  </ProjectDisplaySettings>
 </qgis>

@@ -215,7 +215,7 @@ BEGIN
 	WHEN 'CarriagewayMarkings' THEN
 		   SELECT concat('M_', to_char(nextval('moving_traffic."CarriagewayMarkings_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_RoadLinks' THEN
-		   SELECT concat('L_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
+		   SELECT concat('J_', to_char(nextval('highways_network."MHTC_RoadLinks_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MHTC_Kerblines' THEN
 		   SELECT concat('K_', to_char(nextval('mhtc_operations."MHTC_Kerbline_id_seq"'::regclass), 'FM0000000'::"text")) INTO nextSeqVal;
 	WHEN 'MatchDayEventDayZones' THEN

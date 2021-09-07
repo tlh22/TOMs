@@ -1,0 +1,422 @@
+{
+  "themes": {
+    "title": "root",
+    "subdirs": [],
+    "items": [
+      {
+        "url": "http://localhost:8011/ogc/toms_test",
+        "id": "toms_test",
+        "name": "TOMs_Test",
+        "title": "TOMs Test",
+        "description": "Existing and proposed traffic orders - test environment",
+        "attribution": {
+          "Title": "MHTC",
+          "OnlineResource": "https://www.mhtc.co.uk/"
+        },
+        "abstract": "",
+        "keywords": "",
+        "onlineResource": "http://localhost:8011/ogc/toms_test",
+        "contact": {
+          "person": "Tim Hancock",
+          "organization": "MHTC Ltd",
+          "position": "",
+          "phone": "+44 779 157 6880",
+          "email": "thancock@mhtc.co.uk"
+        },
+        "availableFormats": [
+          "image/jpeg",
+          "image/png",
+          "image/png; mode=16bit",
+          "image/png; mode=8bit",
+          "image/png; mode=1bit",
+          "application/dxf"
+        ],
+        "version": "1.3.0",
+        "infoFormats": [
+          "text/plain",
+          "text/html",
+          "text/xml",
+          "application/vnd.ogc.gml",
+          "application/vnd.ogc.gml/3.1.1",
+          "application/json",
+          "application/geo+json"
+        ],
+        "bbox": {
+          "crs": "EPSG:4326",
+          "bounds": [
+            -3.208059,
+            55.950891,
+            -3.177246,
+            55.957404
+          ]
+        },
+        "initialBbox": {
+          "crs": "EPSG:27700",
+          "bounds": [
+            325065,
+            674000,
+            325765,
+            674270
+          ]
+        },
+        "scales": [
+          150000,
+          125000,
+          100000,
+          80000,
+          50000,
+          25000,
+          10000,
+          5000,
+          2500,
+          1250,
+          1000,
+          500,
+          250,
+          100
+        ],
+        "printScales": [
+          1000,
+          500
+        ],
+        "printResolutions": [
+          300,
+          600
+        ],
+        "sublayers": [
+          {
+            "name": "Restrictions",
+            "title": "Restrictions",
+            "mutuallyExclusive": false,
+            "sublayers": [
+              {
+                "name": "Bays",
+                "title": "Bays",
+                "geometryType": "LineString",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "GeometryID",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.197809,
+                    55.95191,
+                    -3.193781,
+                    55.955377
+                  ]
+                }
+              },
+              {
+                "name": "Lines",
+                "title": "Lines",
+                "geometryType": "LineString",
+                "visibility": false,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.197965,
+                    55.951851,
+                    -3.193439,
+                    55.955451
+                  ]
+                }
+              },
+              {
+                "name": "RestrictionPolygons",
+                "title": "RestrictionPolygons",
+                "geometryType": "Polygon",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.196844,
+                    55.952772,
+                    -3.193787,
+                    55.953348
+                  ]
+                }
+              },
+              {
+                "name": "Signs",
+                "title": "Signs",
+                "geometryType": "Point",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.194693,
+                    55.9549,
+                    -3.194692,
+                    55.954901
+                  ]
+                }
+              }
+            ],
+            "expanded": true
+          },
+          {
+            "name": "Zones",
+            "title": "Zones",
+            "mutuallyExclusive": false,
+            "sublayers": [
+              {
+                "name": "CPZs",
+                "title": "CPZs",
+                "geometryType": "Polygon",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 45000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.198045,
+                    55.952059,
+                    -3.193367,
+                    55.955496
+                  ]
+                }
+              },
+              {
+                "name": "ParkingTariffAreas",
+                "title": "ParkingTariffAreas",
+                "geometryType": "Polygon",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 100000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.194965,
+                    55.953847,
+                    -3.194099,
+                    55.954119
+                  ]
+                }
+              }
+            ],
+            "expanded": true
+          },
+          {
+            "name": "Map Schedule Grids",
+            "title": "Map Schedule Grids",
+            "mutuallyExclusive": false,
+            "sublayers": [
+              {
+                "name": "MapGrid",
+                "title": "MapGrid",
+                "geometryType": "MultiPolygon",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 35000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.201175,
+                    55.950021,
+                    -3.181755,
+                    55.956945
+                  ]
+                }
+              }
+            ],
+            "expanded": true
+          },
+          {
+            "name": "Background Mapping",
+            "title": "Background Mapping",
+            "mutuallyExclusive": false,
+            "sublayers": [
+              {
+                "name": "RoadCasement",
+                "title": "RoadCasement",
+                "geometryType": "LineString",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "StreetName",
+                "opacity": 255,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.199711,
+                    55.951445,
+                    -3.191838,
+                    55.956043
+                  ]
+                }
+              },
+              {
+                "name": "StreetGazetteerRecords",
+                "title": "StreetGazetteerRecords",
+                "geometryType": "MultiLineString",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.199646,
+                    55.951482,
+                    -3.191903,
+                    55.956006
+                  ]
+                }
+              },
+              {
+                "name": "RoadCentreLine",
+                "title": "RoadCentreLine",
+                "geometryType": "MultiLineString",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "maptip",
+                "opacity": 255,
+                "minScale": 0,
+                "maxScale": 5000,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.199646,
+                    55.951482,
+                    -3.191903,
+                    55.956006
+                  ]
+                }
+              },
+              {
+                "name": "SiteArea",
+                "title": "SiteArea",
+                "geometryType": "MultiPolygon",
+                "visibility": true,
+                "queryable": true,
+                "displayField": "name",
+                "opacity": 255,
+                "bbox": {
+                  "crs": "EPSG:4326",
+                  "bounds": [
+                    -3.20001,
+                    55.951118,
+                    -3.185294,
+                    55.957179
+                  ]
+                }
+              }
+            ],
+            "expanded": true
+          }
+        ],
+        "expanded": true,
+        "externalLayers": [],
+        "searchProviders": [
+          "coordinates",
+          "nominatim"
+        ],
+        "mapCrs": "EPSG:27700",
+        "print": [
+          {
+            "name": "Map Schedules",
+            "map": {
+              "name": "map0",
+              "width": 411,
+              "height": 265.15
+            },
+            "labels": [
+              "printTypeDetails",
+              "revisionNr",
+              "effectiveDate",
+              "proposalStatus"
+            ]
+          }
+        ],
+        "drawingOrder": [
+          "SiteArea",
+          "RoadCentreLine",
+          "StreetGazetteerRecords",
+          "RoadCasement",
+          "MapGrid",
+          "ParkingTariffAreas",
+          "CPZs",
+          "Signs",
+          "RestrictionPolygons",
+          "Lines",
+          "Bays"
+        ],
+        "legendUrl": "http://localhost:8011/ogc/toms_test?",
+        "featureInfoUrl": "http://localhost:8011/ogc/toms_test?",
+        "printUrl": "http://localhost:8011/ogc/toms_test?",
+        "editConfig": null,
+        "thumbnail": "img/genmapthumbs/toms_test.png"
+      }
+    ],
+    "defaultTheme": "toms_test",
+    "defaultScales": [
+      4000000,
+      2000000,
+      1000000,
+      400000,
+      200000,
+      150000,
+      125000,
+      100000,
+      80000,
+      50000,
+      25000,
+      10000,
+      5000,
+      2500,
+      1250,
+      1000,
+      500,
+      250,
+      100
+    ],
+    "defaultPrintGrid": [
+      {
+        "s": 10000,
+        "x": 1000,
+        "y": 1000
+      },
+      {
+        "s": 1000,
+        "x": 100,
+        "y": 100
+      },
+      {
+        "s": 100,
+        "x": 10,
+        "y": 10
+      }
+    ],
+    "externalLayers": [],
+    "backgroundLayers": [],
+    "defaultWMSVersion": "1.3.0"
+  }
+}

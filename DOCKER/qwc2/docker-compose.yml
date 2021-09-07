@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+    nginx:
+        restart: always
+        build:
+            context: ./nginx
+        volumes:
+            - ./qwc/test:/usr/share/nginx/html
+        ports:
+            - "8012:80"
+
+networks:
+  default:
+    external: true
+    name: toms_net
