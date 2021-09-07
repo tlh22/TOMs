@@ -75,8 +75,12 @@ ORDER BY "TileNr" )
 
 
 
-SELECT * FROM toms."Proposals"
-WHERE "ProposalTitle" LIKE "%TRO-19-29%"
+SELECT "ProposalID", "ProposalTitle", "ProposalStatusTypes"."Description" AS "ProposalStatus", "ProposalOpenDate"
+FROM toms."Proposals" As p
+LEFT JOIN "toms_lookups"."ProposalStatusTypes" AS "ProposalStatusTypes" ON p."ProposalStatusID" is not distinct from "ProposalStatusTypes"."Code"
+WHERE "ProposalTitle" LIKE '%TRO-19-29%'
+
+
 
 
 
