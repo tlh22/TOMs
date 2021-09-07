@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  nginx:
+    restart: always
+    environment:
+      - 'LETSENCRYPT_EMAIL=thancock@mhtc.co.uk'
+      - 'LETSENCRYPT_HOST=qgis-server.mhtc.co.uk'
+      - 'VIRTUAL_HOST=qgis-server.mhtc.co.uk'
+
+  qgis_server:
+    restart: always
+    volumes:
+      - /home/QGIS/pg_service:/io/pg_service:ro
+      - /home/QGIS/projects:/io/data:ro
+      - /home/QGIS/plugins:/io/plugins
