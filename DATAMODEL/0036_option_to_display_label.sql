@@ -14,7 +14,7 @@ ALTER TABLE toms."RestrictionPolygons"
 ALTER TABLE toms."ControlledParkingZones"
     ADD COLUMN "DisplayLabel" boolean DEFAULT TRUE NOT NULL;
 
-ALTER TABLE toms."ControlledParkingZones"
+ALTER TABLE toms."ParkingTariffAreas"
     ADD COLUMN "DisplayLabel" boolean DEFAULT TRUE NOT NULL;
 
 ALTER TABLE toms."MatchDayEventDayZones"
