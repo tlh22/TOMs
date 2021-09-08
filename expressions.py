@@ -295,7 +295,7 @@ class TOMsExpressions():
     def getWaitingRestrictionLabelText(feature, parent):
         # Returns the text to label the feature
 
-        #TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText:", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText: Feature:{}".format(feature.attributes()), level=Qgis.Info)
 
         try:
             waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
@@ -321,6 +321,8 @@ class TOMsExpressions():
     @qgsfunction(args='auto', group='TOMs2', usesgeometry=False, register=True)
     def getLoadingRestrictionLabelText(feature, parent):
         # Returns the text to label the feature
+
+        TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: Feature:{}".format(feature.attributes()), level=Qgis.Info)
 
         try:
             waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
