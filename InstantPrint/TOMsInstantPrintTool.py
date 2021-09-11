@@ -385,7 +385,11 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 composerEffectiveDate.setText(
                     '{date}'.format(date=tileWithDetails.getLastRevisionDate_AtDate().toString('dd-MMM-yyyy')))
             else:
-                composerRevisionNr.setText(str(tileWithDetails.getCurrentRevisionNr() + 1))
+                try:
+                    composerRevisionNr.setText(str(int(tileWithDetails.getCurrentRevisionNr()) + 1))
+                except Exception as e:
+                    composerRevisionNr.setText('1')
+
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
                     '{date}'.format(date=currProposalOpenDate.toString('dd-MMM-yyyy')))
