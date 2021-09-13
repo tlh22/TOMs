@@ -55,7 +55,7 @@ SET session_replication_role = DEFAULT;  -- Enable all triggers
 
 -- set to NOT NULL and set up trigger
 
-CREATE FUNCTION public.set_create_details()
+CREATE OR REPLACE FUNCTION public.set_create_details()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
