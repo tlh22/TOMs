@@ -188,9 +188,12 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         #currFeature = currRestriction
         newGeometry = QgsGeometry(self.feature_band.asGeometry())
-
         TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom incoming: " + newGeometry.asWkt(),
                                  level=Qgis.Info)
+
+        # 10/9/21 for some reason, not creating multi type instead of single for polygons - giving postgis error
+        if newGeometry.type() == QgsWkbTypes.PolygonGeometry:
+            status = newGeometry.convertToSingleType()
 
         TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(currRestriction[idxRestrictionID]), level=Qgis.Info)
 
