@@ -55,8 +55,17 @@ BEGIN
         RETURN OLD;
     END IF;
 
+    -- Deal with short bays
+
+    IF NEW."RestrictionTypeID" < 200 AND
+             NEW."NrBays" < 0 AND
+             NEW."GeomShapeID" IN (1, 2, 3, 21, 22, 23) AND
+             public.ST_Length (NEW."geom") <= vehicleLength THEN   -- all the parallel bay types
+                NEW."Capacity" = 1;
+                NEW."NrBays" = 1;
+    END IF;
+
     CASE
-        WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 146, 147, 150, 151) THEN NEW."Capacity" = 0;
         /**
         107 = Bus Stop
         116 = Cycle Hire Bay
