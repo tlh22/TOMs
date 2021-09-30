@@ -5,19 +5,19 @@
   "preserveExtentOnThemeSwitch": true,
   "preserveBackgroundOnThemeSwitch": true,
   "preserveNonThemeLayersOnThemeSwitch": true,
-  "allowReorderingLayers": true,
+  "allowReorderingLayers": false,
   "preventSplittingGroupsWhenReordering": false,
   "allowLayerTreeSeparators": false,
-  "allowRemovingThemeLayers": true,
+  "allowRemovingThemeLayers": false,
   "globallyDisableDockableDialogs": false,
   "searchThemes": true,
-  "allowAddingOtherThemes": true,
+  "allowAddingOtherThemes": false,
   "allowFractionalZoom": true,
   "localeAwareNumbers": false,
   "identifyTool": "Identify",
   "wmsDpi": 96,
   "wmsHidpi": false,
-  "qgisServerVersion": 2,
+  "qgisServerVersion": 3,
   "defaultFeatureStyle": {
     "strokeColor": [0, 0, 255, 1],
     "strokeWidth": 1,
@@ -28,9 +28,6 @@
     "textStroke": "white",
     "textFont": "11pt sans-serif"
   },
-  "importLayerUrlPresets": [
-      {"label": "Swisstopo WMTS", "value": "https://wmts10.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml"}
-  ],
   "projections": [
     {
       "code": "EPSG:27700",
@@ -50,7 +47,7 @@
           "cfg": {
             "mapOptions": {
               "zoomDuration": 250,
-              "enableRotation": true
+              "enableRotation": false
             },
             "toolsOptions": {
               "OverviewSupport": {
@@ -93,11 +90,7 @@
                 {"key": "Share", "icon": "share"},
                 {"key": "Tools", "icon": "tools", "subitems": [
                   {"key": "Identify", "icon": "identify_region", "mode": "Region"},
-                  {"key": "Measure", "icon": "measure"},
-                  {"key": "Redlining", "icon": "draw"},
-                  {"key": "Editing", "icon": "editing"},
-                  {"key": "DxfExport", "icon": "dxfexport"},
-                  {"key": "RasterExport", "icon": "rasterexport"}
+                  {"key": "Measure", "icon": "measure"}
                 ]},
                 {"key": "Print", "icon": "print"},
                 {"key": "Help", "icon": "info"}
@@ -106,7 +99,7 @@
                 "minScaleDenom": 1000,
                 "showProviderSelection": true,
                 "providerSelectionAllowAll": true,
-                "zoomToLayers": false,
+                "zoomToLayers": true,
                 "showProvidersInPlaceholder": false
               },
               "appMenuClearsTask": true,
@@ -144,7 +137,7 @@
               "feature_count": 20,
               "region_feature_count": 100
             },
-            "enableExport": true,
+            "enableExport": false,
             "longAttributesDisplay": "wrap",
             "displayResultTree": false,
             "featureInfoReturnsLayerName": true
@@ -178,37 +171,18 @@
           "name": "LayerTree",
           "cfg": {
             "showLegendIcons": true,
-            "showRootEntry": true,
+            "showRootEntry": false,
             "showQueryableIcon": true,
             "allowMapTips": true,
-            "allowCompare": true,
-            "allowImport": true,
+            "allowCompare": false,
+            "allowImport": false,
             "groupTogglesSublayers": false,
             "grayUnchecked": false,
             "layerInfoWindowSize": {"width": 480, "height": 400},
-            "bboxDependentLegend": true,
+            "bboxDependentLegend": false,
             "scaleDependentLegend": "theme"
           },
           "mapClickAction": "unset"
-        },
-        {
-          "name": "DxfExport"
-        },
-        {
-          "name": "RasterExport",
-          "cfg": {
-            "dpis": [96, 300],
-            "exportExternalLayers": true
-          }
-        },
-        {
-          "name": "Redlining"
-        },
-        {
-          "name": "Editing"
-        },
-        {
-          "name": "MapCompare"
         },
         {
           "name": "HeightProfile",
@@ -236,7 +210,7 @@
           "cfg": {
             "mapOptions": {
               "zoomDuration": 250,
-              "enableRotation": true
+              "enableRotation": false
             },
             "toolsOptions": {
               "OverviewSupport": {
@@ -315,7 +289,7 @@
                 "minScaleDenom": 1000,
                 "showProviderSelection": true,
                 "providerSelectionAllowAll": true,
-                "zoomToLayers": false,
+                "zoomToLayers": true,
                 "showProvidersInPlaceholder": false
               },
               "appMenuClearsTask": true,
@@ -346,15 +320,15 @@
           "name": "LayerTree",
           "cfg": {
             "showLegendIcons": true,
-            "showRootEntry": true,
+            "showRootEntry": false,
             "showQueryableIcon": true,
-            "allowMapTips": true,
-            "allowCompare": true,
-            "allowImport": true,
+            "allowMapTips": false,
+            "allowCompare": false,
+            "allowImport": false,
             "groupTogglesSublayers": true,
             "grayUnchecked": false,
             "layerInfoWindowSize": {"width": 480, "height": 400},
-            "bboxDependentLegend": true,
+            "bboxDependentLegend": false,
             "scaleDependentLegend": "theme",
             "showToggleAllLayersCheckbox": true
           },
@@ -407,25 +381,6 @@
           "cfg": {
               "showThemeCopyrightOnly": true
           }
-        },
-        {
-          "name": "DxfExport"
-        },
-        {
-          "name": "RasterExport",
-          "cfg": {
-            "dpis": [96, 300],
-            "exportExternalLayers": true
-          }
-        },
-        {
-          "name": "Redlining"
-        },
-        {
-          "name": "Editing"
-        },
-        {
-          "name": "MapCompare"
         },
         {
           "name": "HeightProfile",
