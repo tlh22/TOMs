@@ -74,3 +74,6 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6
 
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (2507, 'Parking - Direction to Car Parking', 'UK_traffic_sign_2507.svg');
 
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (100, 'Supplementary plate - Except taxis and permit holders', NULL);
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (101, 'Supplementary plate - Except local buses, taxis and cycles', NULL);
+
