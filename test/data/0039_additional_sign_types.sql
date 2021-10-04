@@ -77,3 +77,8 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (2
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (100, 'Supplementary plate - Except taxis and permit holders', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (101, 'Supplementary plate - Except local buses, taxis and cycles', NULL);
 
+-- Tidy speed limits
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = CONCAT('Speed - ', "Description")
+WHERE "Description" LIKE '%MPH%';
+

@@ -40,10 +40,11 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Descrip
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (7, '15 MPH (Max)', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (8, 'Turn Right', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (9, 'Turn Left', NULL);
-INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (10, 'Straight on', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (10, 'Ahead Only', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (11, 'No Entry', NULL);
-
-
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (12, 'Cycle symbol', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (13, 'Bus Lane', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (14, 'Bus Gate', NULL);
 --
 -- TOC entry 4708 (class 0 OID 516441)
 -- Dependencies: 502
@@ -61,7 +62,9 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VAL
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (9);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (10);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (11);
-
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (12);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (13);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (14);
 
 REFRESH MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View";
 
