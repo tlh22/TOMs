@@ -82,3 +82,4 @@ UPDATE "toms_lookups"."SignTypes"
 SET "Description" = CONCAT('Speed - ', "Description")
 WHERE "Description" LIKE '%MPH%';
 
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Zone - School Street', NULL);
