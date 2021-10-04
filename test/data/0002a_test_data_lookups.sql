@@ -355,7 +355,7 @@ INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") V
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (35, 'Dropped Kerb (Crossover)');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (50, 'Polygon');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (2, 'Half on/Half off Bay (LineString)');
-INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (3, 'On Pavement Bay ((LineString)');
+INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (3, 'On Pavement Bay (LineString)');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (4, 'Perpendicular Bay (LineString)');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (5, 'Echelon Bay (LineString)');
 INSERT INTO "toms_lookups"."RestrictionGeomShapeTypes" ("Code", "Description") VALUES (1, 'Parallel Bay (LineString)');
