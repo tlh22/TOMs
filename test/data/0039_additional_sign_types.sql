@@ -77,3 +77,9 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (2
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (100, 'Supplementary plate - Except taxis and permit holders', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (101, 'Supplementary plate - Except local buses, taxis and cycles', NULL);
 
+-- Red routes
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6424, 'Parking - No Stopping - Red Route Clearway', 'UK_traffic_sign_CW701.svg');
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Icon" = 'UK_traffic_sign_SR504'
+WHERE "Code" = 38;
