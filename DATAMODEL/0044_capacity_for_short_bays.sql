@@ -33,12 +33,13 @@ BEGIN
 
     -- Deal with short bays
 
-    IF NEW."RestrictionTypeID" < 200 AND
-             NEW."NrBays" < 0 AND
+    IF NEW."RestrictionTypeID" < 200 THEN
+	    IF NEW."NrBays" < 0 AND
              NEW."GeomShapeID" IN (1, 2, 3, 21, 22, 23) AND
              public.ST_Length (NEW."geom") <= vehicleLength THEN   -- all the parallel bay types
                 NEW."Capacity" = 1;
                 NEW."NrBays" = 1;
+		END IF;
     END IF;
 
     CASE
