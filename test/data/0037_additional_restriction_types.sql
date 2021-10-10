@@ -41,3 +41,8 @@ INSERT INTO toms_lookups."BayTypesInUse"(
 	"Code", "GeomShapeGroupType")
 	VALUES (154, 'LineString');
 
+INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (155, 'Red Route/Greenway - Electric Vehicle Charging Bay');
+
+/**
+Change Description on bay types for red routes to be "Red Route/Greenway - ..."
+**/

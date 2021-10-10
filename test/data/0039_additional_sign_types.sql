@@ -83,3 +83,10 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6
 UPDATE "toms_lookups"."SignTypes"
 SET "Icon" = 'UK_traffic_sign_SR504'
 WHERE "Code" = 38;
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (5311, 'Warning - Available headroom at arch bridge', 'UK_traffic_sign_531.1M.svg');
+
+/**
+Change Description on sign type for red routes to be "Parking - Red Route/Greenway - "
+**/
