@@ -77,8 +77,48 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (2
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (100, 'Supplementary plate - Except taxis and permit holders', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (101, 'Supplementary plate - Except local buses, taxis and cycles', NULL);
 
+/**
+Change Description on sign type for red routes to be "Parking - Red Route/Greenway - "
+**/
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Parking - Red Route/Greenway No stopping'
+WHERE "Code" = 38;
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Parking - Red Route/Greenway Limited Waiting Bay'
+WHERE "Code" = 43;
+
+DO
+$do$
+DECLARE
+   row RECORD;
+   simple_description text;
+BEGIN
+
+    FOR row IN SELECT "Code", "Description"
+               FROM toms_lookups."SignTypes"
+               WHERE "Description" LIKE 'Parking - Red Route/Greenway%'
+    LOOP
+
+        SELECT REPLACE(row."Description", 'Parking - Red Route/Greenway ', 'Parking - Red Route/Greenway - ')
+        INTO simple_description;
+
+        RAISE NOTICE '***** row.Code(%); original (%); simple_description (%)', row."Code", row."Description", simple_description;
+
+        -- Get description without ending
+
+        UPDATE toms_lookups."SignTypes"
+        SET "Description" = REPLACE(row."Description", 'Parking - Red Route/Greenway ', 'Parking - Red Route/Greenway - ')
+        WHERE "Code" = row."Code";
+
+    END LOOP;
+
+END
+$do$;
+
 -- Red routes
-INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6424, 'Parking - No Stopping - Red Route Clearway', 'UK_traffic_sign_CW701.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6424, 'Parking - Red Route/Greenway - No Stopping - Clearway', 'UK_traffic_sign_CW701.svg');
 
 UPDATE "toms_lookups"."SignTypes"
 SET "Icon" = 'UK_traffic_sign_SR504'
@@ -86,7 +126,3 @@ WHERE "Code" = 38;
 
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (5311, 'Warning - Available headroom at arch bridge', 'UK_traffic_sign_531.1M.svg');
-
-/**
-Change Description on sign type for red routes to be "Parking - Red Route/Greenway - "
-**/

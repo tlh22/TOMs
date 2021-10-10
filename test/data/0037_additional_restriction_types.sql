@@ -46,3 +46,31 @@ INSERT INTO toms_lookups."BayLineTypes"("Code", "Description") VALUES (155, 'Red
 /**
 Change Description on bay types for red routes to be "Red Route/Greenway - ..."
 **/
+
+DO
+$do$
+DECLARE
+   row RECORD;
+   simple_description text;
+BEGIN
+
+    FOR row IN SELECT "Code", "Description"
+               FROM toms_lookups."BayLineTypes"
+               WHERE "Description" LIKE '%(Red Route)'
+    LOOP
+
+        SELECT REPLACE(row."Description", ' (Red Route)', '')
+        INTO simple_description;
+
+        RAISE NOTICE '***** row.Code(%); original (%); simple_description (%)', row."Code", row."Description", simple_description;
+
+        -- Get description without ending
+
+        UPDATE toms_lookups."BayLineTypes"
+        SET "Description" = CONCAT('Red Route/Greenway - ', simple_description)
+        WHERE "Code" = row."Code";
+
+    END LOOP;
+
+END
+$do$;
