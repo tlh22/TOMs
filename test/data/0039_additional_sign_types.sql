@@ -126,3 +126,26 @@ WHERE "Code" = 38;
 
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (5311, 'Warning - Available headroom at arch bridge', 'UK_traffic_sign_531.1M.svg');
+
+-- Route signs
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (103, 'Route - Weight restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (104, 'Route - Weight restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (105, 'Route - Weight restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (106, 'Route - Height restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (107, 'Route - Height restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (108, 'Route - Height restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (109, 'Route - Width restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (110, 'Route - Width restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (111, 'Route - Width restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Route - Advisory Sign (see photo)', "Icon" = 'UK_traffic_sign_818.4.svg'
+WHERE "Code" = 401;
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Route - Unsuitable for long vehicles', "Icon" = 'UK_traffic_sign_820V4.svg'
+WHERE "Code" = 74;
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (112, 'Route - Unsuitable for Heavy Goods Vehicles', 'UK_traffic_sign_820V2.svg')
