@@ -62,17 +62,12 @@ BEGIN
                           END CASE;
                  WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
                  ELSE
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-0.5) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
             END CASE;
         ELSE
-            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226) THEN
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-0.5) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
-                          END CASE;
-                 ELSE NEW."Capacity" = 0;
-                 END CASE;
+
              /**
              201 = SYL (Acceptable)
              216 = Unmarked Area (Acceptable)
@@ -80,7 +75,17 @@ BEGIN
              224 = SYL
              225 = Unmarked Area
              226 = SRL
+             227 = Unmarked Kerbline within PPZ (Acceptable)
+             229 = Unmarked Kerbline within PPZ
              **/
+
+            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229) THEN
+                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                          END CASE;
+                 ELSE NEW."Capacity" = 0;
+                 END CASE;
+
         END CASE;
 
 	RETURN NEW;
