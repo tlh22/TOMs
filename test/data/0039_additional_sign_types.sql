@@ -83,3 +83,79 @@ SET "Description" = CONCAT('Speed - ', "Description")
 WHERE "Description" LIKE '%MPH%';
 
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Zone - School Street', NULL);
+
+/**
+Change Description on sign type for red routes to be "Parking - Red Route/Greenway - "
+**/
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Parking - Red Route/Greenway No stopping'
+WHERE "Code" = 38;
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Parking - Red Route/Greenway Limited Waiting Bay'
+WHERE "Code" = 43;
+
+DO
+$do$
+DECLARE
+   row RECORD;
+   simple_description text;
+BEGIN
+
+    FOR row IN SELECT "Code", "Description"
+               FROM toms_lookups."SignTypes"
+               WHERE "Description" LIKE 'Parking - Red Route/Greenway%'
+    LOOP
+
+        SELECT REPLACE(row."Description", 'Parking - Red Route/Greenway ', 'Parking - Red Route/Greenway - ')
+        INTO simple_description;
+
+        RAISE NOTICE '***** row.Code(%); original (%); simple_description (%)', row."Code", row."Description", simple_description;
+
+        -- Get description without ending
+
+        UPDATE toms_lookups."SignTypes"
+        SET "Description" = REPLACE(row."Description", 'Parking - Red Route/Greenway ', 'Parking - Red Route/Greenway - ')
+        WHERE "Code" = row."Code";
+
+    END LOOP;
+
+END
+$do$;
+
+-- Red routes
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (6424, 'Parking - Red Route/Greenway - No Stopping - Clearway', 'UK_traffic_sign_CW701.svg');
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Icon" = 'UK_traffic_sign_SR504'
+WHERE "Code" = 38;
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (5311, 'Warning - Available headroom at arch bridge', 'UK_traffic_sign_531.1M.svg');
+
+-- Route signs
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (103, 'Route - Weight restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (104, 'Route - Weight restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (105, 'Route - Weight restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (106, 'Route - Height restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (107, 'Route - Height restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (108, 'Route - Height restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (109, 'Route - Width restriction - Blue background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (110, 'Route - Width restriction - Green background', 'UK_traffic_sign_818.4.svg');
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (111, 'Route - Width restriction - White background', 'UK_traffic_sign_818.4.svg');
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Route - Advisory Sign (see photo)', "Icon" = 'UK_traffic_sign_818.4.svg'
+WHERE "Code" = 401;
+
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = 'Route - Unsuitable for long vehicles', "Icon" = 'UK_traffic_sign_820V4.svg'
+WHERE "Code" = 74;
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (112, 'Route - Unsuitable for Heavy Goods Vehicles', 'UK_traffic_sign_820V2.svg')
+
+-- More Red Route ...
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (113, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
+
