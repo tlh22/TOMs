@@ -48,6 +48,7 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Descrip
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (15, 'Bus Only', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (16, 'Other', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (17, 'Roundabout', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (18, 'One Way', NULL);
 --
 -- TOC entry 4708 (class 0 OID 516441)
 -- Dependencies: 502
@@ -71,6 +72,7 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VAL
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (15);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (16);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (17);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (18);
 
 REFRESH MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View";
 
