@@ -77,6 +77,13 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (2
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (100, 'Supplementary plate - Except taxis and permit holders', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (101, 'Supplementary plate - Except local buses, taxis and cycles', NULL);
 
+-- Tidy speed limits
+UPDATE "toms_lookups"."SignTypes"
+SET "Description" = CONCAT('Speed - ', "Description")
+WHERE "Description" LIKE '%MPH%';
+
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Zone - School Street', NULL);
+
 /**
 Change Description on sign type for red routes to be "Parking - Red Route/Greenway - "
 **/
@@ -124,7 +131,6 @@ UPDATE "toms_lookups"."SignTypes"
 SET "Icon" = 'UK_traffic_sign_SR504'
 WHERE "Code" = 38;
 
-INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (102, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (5311, 'Warning - Available headroom at arch bridge', 'UK_traffic_sign_531.1M.svg');
 
 -- Route signs
@@ -149,3 +155,7 @@ SET "Description" = 'Route - Unsuitable for long vehicles', "Icon" = 'UK_traffic
 WHERE "Code" = 74;
 
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (112, 'Route - Unsuitable for Heavy Goods Vehicles', 'UK_traffic_sign_820V2.svg')
+
+-- More Red Route ...
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (113, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
+
