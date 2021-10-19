@@ -15,3 +15,7 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (12, 'Community Hall vehicles only');
 
 SELECT pg_catalog.setval('"toms_lookups"."AdditionalConditionTypes_Code_seq"', 1, false);
+
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (13, 'No Stopping 7.00am-7.00pm;Except 7.00am-4.00pm;Loading max 20 min;Disabled max 3 hours');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (14, 'No Stopping 7.00am-7.00pm;Except 7.00am-4.00pm');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (15, 'No Stopping 7.00am-7.00pm;Except 10.00am-7.00pm');
