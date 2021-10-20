@@ -248,6 +248,9 @@ INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Descriptio
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (10, 'Field visit - Item missed - confirm location and details');
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (11, 'Field visit - Photo missing or needs to be retaken');
 INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (15, 'Field visit - Check details (see notes)');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (16, 'Further office involvement required');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (17, 'Item checked - Client involvement required');
+INSERT INTO "compliance_lookups"."MHTC_CheckIssueTypes_upd" ("Code", "Description") VALUES (18, 'Item checked - not within survey area');
 
 DELETE FROM "compliance_lookups"."MHTC_CheckIssueTypes"
 WHERE "Code" NOT IN (SELECT "Code" FROM "compliance_lookups"."MHTC_CheckIssueTypes_upd");
