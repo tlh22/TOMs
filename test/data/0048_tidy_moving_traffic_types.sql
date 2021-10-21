@@ -192,7 +192,7 @@ ALTER TABLE ONLY moving_traffic."AccessRestrictions"
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
 
-ALTER TABLE moving_traffic."RestrictionsForVehicles"
+ALTER TABLE moving_traffic."AccessRestrictions"
     ALTER COLUMN "AccessRestrictionTypeID" SET NOT NULL;
 
 -- ** RestrictionsForVehicles

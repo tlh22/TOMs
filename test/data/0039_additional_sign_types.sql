@@ -154,7 +154,7 @@ UPDATE "toms_lookups"."SignTypes"
 SET "Description" = 'Route - Unsuitable for long vehicles', "Icon" = 'UK_traffic_sign_820V4.svg'
 WHERE "Code" = 74;
 
-INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (112, 'Route - Unsuitable for Heavy Goods Vehicles', 'UK_traffic_sign_820V2.svg')
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (112, 'Route - Unsuitable for Heavy Goods Vehicles', 'UK_traffic_sign_820V2.svg');
 
 -- More Red Route ...
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (113, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
