@@ -8,31 +8,19 @@ Tidy ...
 -- CycleFacilityValues
 ALTER TABLE ONLY moving_traffic_lookups."CycleFacilityValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."CycleFacilityValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('ASL - without approach or gate');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('ASL - with gate');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('ASL - with approach');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('Advisory Cycle Lane Along Road');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('Mandatory Cycle Lane Along Road');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('Physically Segregated Cycle Lane Along Road');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('Unknown Type of Cycle Route Along Road');
-INSERT INTO moving_traffic_lookups."CycleFacilityValues" ("Description")
-VALUES('Signed Cycle Route');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (1, 'ASL - without approach or gate');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (2, 'ASL - with gate');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (3, 'ASL - with approach');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (4, 'Advisory Cycle Lane Along Road');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (5, 'Mandatory Cycle Lane Along Road');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (6, 'Physically Segregated Cycle Lane Along Road');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (7, 'Unknown Type of Cycle Route Along Road');
+INSERT INTO "moving_traffic_lookups"."CycleFacilityValues" ("Code", "Description") VALUES (8, 'Signed Cycle Route');
 
-INSERT INTO moving_traffic_lookups."SpecialDesignationTypes" ("Description")
-VALUES('Bus Lane');
-INSERT INTO moving_traffic_lookups."SpecialDesignationTypes" ("Description")
-VALUES('Cycle Lane');
-INSERT INTO moving_traffic_lookups."SpecialDesignationTypes" ("Description")
-VALUES('Advanced Stop Line');
-INSERT INTO moving_traffic_lookups."SpecialDesignationTypes" ("Description")
-VALUES('Signal controlled cycle crossing');
+INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (1, 'Bus Lane');
+INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (2, 'Cycle Lane');
+INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (3, 'Advanced Stop Line');
+INSERT INTO "moving_traffic_lookups"."SpecialDesignationTypes" ("Code", "Description") VALUES (4, 'Cycle crossing');
 
 -- migrate to new lookups
 ALTER TABLE moving_traffic."SpecialDesignations"
@@ -79,14 +67,10 @@ ALTER TABLE ONLY moving_traffic."SpecialDesignations"
 -- ** TurnRestrictions
 ALTER TABLE ONLY moving_traffic_lookups."TurnRestrictionValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."TurnRestrictionValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."TurnRestrictionValues" ("Description")
-VALUES('Mandatory Turn');
-INSERT INTO moving_traffic_lookups."TurnRestrictionValues" ("Description")
-VALUES('No Turn');
-INSERT INTO moving_traffic_lookups."TurnRestrictionValues" ("Description")
-VALUES('One Way');
-INSERT INTO moving_traffic_lookups."TurnRestrictionValues" ("Description")
-VALUES('Priority to on-coming vehicles');
+INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (1, 'Mandatory Turn');
+INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (2, 'No Turn');
+INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (3, 'One Way');
+INSERT INTO "moving_traffic_lookups"."TurnRestrictionValues" ("Code", "Description") VALUES (4, 'Priority to on-coming vehicles');
 
 -- migrate to new lookup
 ALTER TABLE moving_traffic."TurnRestrictions"
@@ -114,24 +98,15 @@ ALTER TABLE moving_traffic."TurnRestrictions"
 -- ** HighwayDedications
 ALTER TABLE ONLY moving_traffic_lookups."DedicationValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."DedicationValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('All Vehicles');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Bridleway');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Byway Open To All Traffic');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Cycle Track Or Cycle Way');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Motorway');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('No Dedication Or Dedication Unknown');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Pedestrian Way Or Footpath');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Restricted Byway');
-INSERT INTO moving_traffic_lookups."DedicationValues" ("Description")
-VALUES('Separated track and path for cyclists and pedestrians');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (1, 'All Vehicles');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (2, 'Bridleway');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (3, 'Byway Open To All Traffic');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (4, 'Cycle Track Or Cycle Way');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (5, 'Motorway');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (6, 'No Dedication Or Dedication Unknown');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (7, 'Pedestrian Way Or Footpath');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (8, 'Restricted Byway');
+INSERT INTO "moving_traffic_lookups"."DedicationValues" ("Code", "Description") VALUES (9, 'Separated track and path for cyclists and pedestrians');
 
 -- migrate to new lookup
 ALTER TABLE moving_traffic."HighwayDedications"
@@ -159,18 +134,12 @@ ALTER TABLE moving_traffic."HighwayDedications"
 -- ** AccessRestrictions
 ALTER TABLE ONLY moving_traffic_lookups."AccessRestrictionValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."AccessRestrictionValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('seasonal');
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('publicAccess');
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('private');
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('physicallyImpossible');
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('forbiddenLegally');
-INSERT INTO moving_traffic_lookups."AccessRestrictionValues" ("Description")
-VALUES('toll');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (1, 'seasonal');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (2, 'publicAccess');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (3, 'private');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (4, 'physicallyImpossible');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (5, 'forbiddenLegally');
+INSERT INTO "moving_traffic_lookups"."AccessRestrictionValues" ("Code", "Description") VALUES (6, 'toll');
 
 -- migrate to new lookup
 ALTER TABLE moving_traffic."AccessRestrictions"
@@ -198,55 +167,32 @@ ALTER TABLE moving_traffic."AccessRestrictions"
 -- ** RestrictionsForVehicles
 ALTER TABLE ONLY moving_traffic_lookups."RestrictionTypeValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."RestrictionTypeValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumDoubleAxleWeight');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumHeight');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumLength');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumSingleAxleWeight');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumTotalWeight');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumTripleAxleWeight');
-INSERT INTO moving_traffic_lookups."RestrictionTypeValues" ("Description")
-VALUES('maximumWidth');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (1, 'maximumDoubleAxleWeight');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (2, 'maximumHeight');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (3, 'maximumLength');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (4, 'maximumSingleAxleWeight');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (5, 'maximumTotalWeight');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (6, 'maximumTripleAxleWeight');
+INSERT INTO "moving_traffic_lookups"."RestrictionTypeValues" ("Code", "Description") VALUES (7, 'maximumWidth');
 
 ALTER TABLE ONLY moving_traffic_lookups."StructureTypeValues" ALTER COLUMN "Code" SET DEFAULT nextval('moving_traffic_lookups."StructureTypeValues_Code_seq"'::regclass);
 
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Barrier');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Bridge Under Road');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Bridge Over Road');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Gate');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Level Crossing Fully Barriered');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Level Crossing Part Barriered');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Level Crossing Unbarriered');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Moveable barrier');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Pedestrian Crossing');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Rising Bollards');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Street Lighting');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Structure');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Traffic Calming');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Traffic Signal');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Toll Indicator');
-INSERT INTO moving_traffic_lookups."StructureTypeValues" ("Description")
-VALUES('Tunnel');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (1, 'Barrier');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (2, 'Bridge Under Road');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (3, 'Bridge Over Road');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (4, 'Gate');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (5, 'Level Crossing Fully Barriered');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (6, 'Level Crossing Part Barriered');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (7, 'Level Crossing Unbarriered');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (8, 'Moveable barrier');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (9, 'Pedestrian Crossing');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (10, 'Rising Bollards');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (11, 'Street Lighting');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (12, 'Structure');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (13, 'Traffic Calming');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (14, 'Traffic Signal');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (15, 'Toll Indicator');
+INSERT INTO "moving_traffic_lookups"."StructureTypeValues" ("Code", "Description") VALUES (16, 'Tunnel');
 
 -- migrate to new lookup
 ALTER TABLE moving_traffic."RestrictionsForVehicles"
@@ -284,3 +230,14 @@ ALTER TABLE ONLY moving_traffic."RestrictionsForVehicles"
         REFERENCES moving_traffic_lookups."StructureTypeValues"  ("Code") MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
+
+
+** Need to ensure that Codes are explicitly set !
+Need to add VehicleTypeValues
+
+-- Add vehicleQualifiers
+ALTER TYPE "moving_traffic_lookups"."vehicleTypeValue" ADD VALUE 'Permit Holders';
+ALTER TYPE "moving_traffic_lookups"."vehicleTypeValue" ADD VALUE 'Taxis';
+
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (16, 'Buses, Taxis and Pedal Cycles', '{Buses,Taxis, "Pedal Cycles"}', NULL, NULL);
+INSERT INTO "moving_traffic_lookups"."vehicleQualifiers" ("Code", "Description", "vehicle", "use", "load") VALUES (17, 'Taxis and Permit Holders', '{Taxis, "Permit Holders"}', NULL, NULL);
