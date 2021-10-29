@@ -159,3 +159,5 @@ INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (1
 -- More Red Route ...
 INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (113, 'Parking - Red Route/Greenway - Electric Vehicle Charging Bay', NULL);
 
+-- More speeds
+INSERT INTO "toms_lookups"."SignTypes" ("Code", "Description", "Icon") VALUES (67015, 'Speed - 15 MPH (Max)', 'UK_traffic_sign_670V15.svg');
