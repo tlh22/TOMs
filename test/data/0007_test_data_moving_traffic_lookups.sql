@@ -60,7 +60,7 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Descrip
 
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (1);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (2);
-INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (3);
+--INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (3);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (4);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (5);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (6);
