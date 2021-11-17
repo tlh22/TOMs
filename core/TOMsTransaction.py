@@ -117,7 +117,7 @@ class TOMsTransaction(QObject):
             # restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
 
             self.setTransactionGroup.append(self.tableNames.setLayer(layer))
-            TOMsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsTransaction.prepareLayerSet. Adding " + layer, level=Qgis.Info)
 
     def createTransactionGroup(self):
 
@@ -133,7 +133,7 @@ class TOMsTransaction(QObject):
                 except Exception as e:
                     TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup: adding {}. error: {}".format(layer, e), level=Qgis.Warning)
 
-                TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup. Adding " + str(layer.name()), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In TOMsTransaction:createTransactionGroup. Adding " + str(layer.name()), level=Qgis.Info)
 
                 #layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
                 #layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
