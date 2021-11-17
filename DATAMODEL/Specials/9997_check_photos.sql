@@ -3,7 +3,7 @@ To work out files missing (or that can be deleted), the steps are:
 1. generate a list of the photos within the tables. See script below
 2. generate list of files within the photos directory use $ ls /home/QGIS/projects/Islington/Mapping/photos -X > /home/tim/Documents/photo_check/photos_in_directory_201127.txt
 3a. grep -v -f  photos_in_database.csv photos_in_directory.txt (this will show the photos that are not required)
-3b. grep -v -f  photos_in_directory_201127.txt photos_in_database.csv (this will show the photos not yet uploaded)
+    3b. grep -v -f  photos_in_directory_201127.txt photos_in_database.csv (this will show the photos not yet uploaded)
 
 grep -v -f fileA fileB (finds lines in fileB that are not present in fileA)
 
