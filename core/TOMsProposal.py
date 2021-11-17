@@ -265,7 +265,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     def acceptProposal(self):
 
         currProposalID = self.thisProposalNr
-        TOMsMessageLog.logMessage("In TOMsProposal.acceptProposal - " + str(self.thisProposalNr), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsProposal.acceptProposal - " + str(self.thisProposalNr), level=Qgis.Warning)
 
         """ Steps in acceptance are:
         1. Set new open/close dates for restrictions ( remember to clear filter )
@@ -280,12 +280,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 currLayer = self.tableNames.setLayer(currlayerName)
                 if not currLayer.dataProvider().setSubsetString(None):   # need to use data provider ??
                     TOMsMessageLog.logMessage("In TOMsProposal.acceptProposal - problem clearing filter for layer {}:{}:{}".format(currlayerName, currLayer.name(), currLayer),
-                                              level=Qgis.Info)
+                                              level=Qgis.Warning)
                     return False
 
                 TOMsMessageLog.logMessage(
                     "In TOMsProposal:acceptProposal. Considering layer: {}".format(currlayerName),
-                    level=Qgis.Info)
+                    level=Qgis.Warning)
 
                 restrictionList = []
                 restrictionList = self.__getRestrictionsInProposalForLayerForAction(currlayerID)
@@ -299,24 +299,24 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                         TOMsMessageLog.logMessage(
                             "In TOMsProposal:acceptProposal. " + str(
                                 currRestrictionID) + " error on Action",
-                            level=Qgis.Info)
+                            level=Qgis.Warning)
                         return status
 
             # Now update tile revision nrs
             TOMsMessageLog.logMessage("In TOMsProposal:acceptProposal. Updating tile revision nrs",
-                level=Qgis.Info)
+                level=Qgis.Warning)
             proposalTileDictionary = self.getProposalTileDictionaryForDate()
 
             for tileNr, currTile in proposalTileDictionary.items():
                 TOMsMessageLog.logMessage("In TOMsProposal.acceptProposal: current tile " + str(currTile.tileNr()) + " current RevisionNr: " + str(
-                    currTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(currTile.getLastRevisionDate_AtDate()), level=Qgis.Info)
+                    currTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(currTile.getLastRevisionDate_AtDate()), level=Qgis.Warning)
                 #currTile = TOMsTile(self.proposalsManager, tileNr)
 
                 if not currTile.updateTileDetailsOnProposalAcceptance(self.proposalsManager):
                     TOMsMessageLog.logMessage(
                         "In TOMsProposal:acceptProposal. " + str(
                             tileNr) + " error updating tile revision details",
-                        level=Qgis.Info)
+                        level=Qgis.Warning)
                     return status
 
             # Now update Proposal

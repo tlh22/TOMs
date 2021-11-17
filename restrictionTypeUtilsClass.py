@@ -258,7 +258,7 @@ class TOMsLayers(QObject):
 
             self.formPath = self.getTOMsFormPathFromConfigFile(configFileObject)
             TOMsMessageLog.logMessage("In TOMsLayers:getLayers. formPath is {} ...".format(self.formPath),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
 
             # check that path exists
             if not os.path.isdir(self.formPath):
@@ -274,7 +274,7 @@ class TOMsLayers(QObject):
                     layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
                     ui_path = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage("In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(layer, ui_path),
-                                              level=Qgis.Warning)
+                                              level=Qgis.Info)
                     if len(self.formPath)>0 and len(ui_path)>0:
                         # try to get basename - doesn't seem to work on Linux
                         #base_ui_path = os.path.basename(ui_path)
@@ -913,7 +913,7 @@ class RestrictionTypeUtilsMixin():
             projectPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
             path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
-        TOMsMessageLog.logMessage("In photoDetails. path_absolute: {}".format(path_absolute), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In photoDetails. path_absolute: {}".format(path_absolute), level=Qgis.Info)
         # check that the path exists
         if not os.path.isdir(path_absolute):
             reply = QMessageBox.information(None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok)
@@ -934,12 +934,12 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName1 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
             pixmap1 = QPixmap(newPhotoFileName1)
             if not pixmap1.isNull():
                 FIELD1.setPixmap(pixmap1)
                 FIELD1.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In photoDetails. Photo1: " + str(newPhotoFileName1), level=Qgis.Info)
 
             if cv2_available:
                 try:
@@ -962,12 +962,12 @@ class RestrictionTypeUtilsMixin():
             else:
                 newPhotoFileName2 = None
 
-            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In photoDetails. A. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
             pixmap2 = QPixmap(newPhotoFileName2)
             if not pixmap2.isNull():
                 FIELD2.setPixmap(pixmap2)
                 FIELD2.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In photoDetails. Photo2: " + str(newPhotoFileName2), level=Qgis.Info)
 
             if cv2_available:
                 try:
@@ -994,7 +994,7 @@ class RestrictionTypeUtilsMixin():
             if not pixmap3.isNull():
                 FIELD3.setPixmap(pixmap3)
                 FIELD3.setScaledContents(True)
-                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("In photoDetails. Photo3: " + str(newPhotoFileName3), level=Qgis.Info)
 
             if cv2_available:
                 try:
@@ -1337,5 +1337,5 @@ class RestrictionTypeUtilsMixin():
             primaryLayerName = currLayerName[:pointLocation]
             TOMsMessageLog.logMessage(
                 "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
-                level=Qgis.Warning)
+                level=Qgis.Info)
             return QgsProject.instance().mapLayersByName(primaryLayerName)[0]

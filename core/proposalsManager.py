@@ -170,7 +170,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         for (layerID, layerName) in self.getRestrictionLayersList():
-            TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(layerName), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(layerName), level=Qgis.Info)
 
             layerFilterString = filterString
 
@@ -190,7 +190,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             else:
                 layerFilterString = layerFilterString + ")"
 
-            TOMsMessageLog.logMessage("In updateMapCanvas. Layer: {} Date Filter: {}".format(layerName, layerFilterString), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In updateMapCanvas. Layer: {} Date Filter: {}".format(layerName, layerFilterString), level=Qgis.Info)
             try:
                 self.tableNames.setLayer(layerName).dataProvider().setSubsetString(layerFilterString)
             except Exception as e:
@@ -216,7 +216,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
             for label_layers_name in label_layers_names:
                 # get the label layer
-                TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(label_layers_name), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(label_layers_name), level=Qgis.Info)
                 try:
                     QgsProject.instance().mapLayersByName(label_layers_name)[0].dataProvider().setSubsetString(layerFilterString)
                 except Exception as e:
@@ -229,10 +229,10 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     def clearRestrictionFilters(self):
         # This is to be used at the close of the plugin to clear any filters that have been set
 
-        TOMsMessageLog.logMessage('Entering clearRestrictionFilters ... ', level=Qgis.Warning)
+        TOMsMessageLog.logMessage('Entering clearRestrictionFilters ... ', level=Qgis.Info)
 
         for (layerID, layerName) in self.getRestrictionLayersList():
-            TOMsMessageLog.logMessage("Clearing filter for layer: {}".format(layerName), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("Clearing filter for layer: {}".format(layerName), level=Qgis.Info)
             try:
                 self.tableNames.setLayer(layerName).dataProvider().setSubsetString(None)
             except Exception as e:
@@ -258,7 +258,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
             for label_layers_name in label_layers_names:
                 # get the label layer
-                TOMsMessageLog.logMessage("clearRestrictionFilters: Clearing filter for layer: {}".format(label_layers_name), level=Qgis.Warning)
+                TOMsMessageLog.logMessage("clearRestrictionFilters: Clearing filter for layer: {}".format(label_layers_name), level=Qgis.Info)
                 try:
                     QgsProject.instance().mapLayersByName(label_layers_name)[0].dataProvider().setSubsetString(None)
                 except Exception as e:
