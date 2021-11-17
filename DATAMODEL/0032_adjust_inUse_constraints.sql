@@ -14,3 +14,6 @@ ALTER TABLE toms_lookups."RestrictionPolygonTypesInUse"
 
 ALTER TABLE toms_lookups."TimePeriodsInUse"
     ADD CONSTRAINT "TimePeriodsInUse_TimePeriods_fkey" FOREIGN KEY ("Code") REFERENCES toms_lookups."TimePeriods" ("Code") MATCH SIMPLE;
+
+ALTER TABLE moving_traffic_lookups."CarriagewayMarkingTypesInUse"
+    ADD CONSTRAINT "CarriagewayMarkingTypesInUse_CarriagewayMarkingTypes_fkey" FOREIGN KEY ("Code") REFERENCES moving_traffic_lookups."CarriagewayMarkingTypes" ("Code") MATCH SIMPLE;

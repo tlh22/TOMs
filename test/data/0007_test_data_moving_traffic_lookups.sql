@@ -49,6 +49,9 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Descrip
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (16, 'Other', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (17, 'Roundabout', NULL);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (18, 'One Way', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (19, 'No Left Turn', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (20, 'No Right Turn', NULL);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Description", "Icon") VALUES (21, 'Pedestrian symbol', NULL);
 --
 -- TOC entry 4708 (class 0 OID 516441)
 -- Dependencies: 502
@@ -57,7 +60,7 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypes" ("Code", "Descrip
 
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (1);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (2);
-INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (3);
+--INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (3);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (4);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (5);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (6);
@@ -73,6 +76,9 @@ INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VAL
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (16);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (17);
 INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (18);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (19);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (20);
+INSERT INTO "moving_traffic_lookups"."CarriagewayMarkingTypesInUse" ("Code") VALUES (21);
 
 REFRESH MATERIALIZED VIEW "moving_traffic_lookups"."CarriagewayMarkingTypesInUse_View";
 
