@@ -43,7 +43,7 @@ class TOMsTile(QObject):
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Warning)
         else:
             self.tileLayerFields = self.tilesLayer.fields()
             self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
@@ -53,7 +53,7 @@ class TOMsTile(QObject):
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesInAcceptedProposalsLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Warning)
         TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Info)
 
     def setTile(self, tileNr):
@@ -73,7 +73,7 @@ class TOMsTile(QObject):
                 return True
 
         TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile NOT found ",
-                                         level=Qgis.Info)
+                                         level=Qgis.Warning)
         return False # either not found or 0
 
     def tile(self):
@@ -86,7 +86,7 @@ class TOMsTile(QObject):
         return self.thisTile.attribute("CurrRevisionNr")
 
     def setRevisionNr(self, value):
-        TOMsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:setRevisionNr newRevisionNr: " + str(value), level=Qgis.Warning)
         status = self.tilesLayer.changeAttributeValue(self.thisTile.id(), self.idxRevisionNr, value)
         return status
 
@@ -135,7 +135,7 @@ class TOMsTile(QObject):
             if proposalStatus == False:
                 TOMsMessageLog.logMessage(
                     "In getTileRevisionNrAtDate: not able to see proposal for " + str(lastProposalID) + "; " + str(lastRevisionNr),
-                    level=Qgis.Info)
+                    level=Qgis.Warning)
                 break
 
             lastProposalOpendate = tileProposal.getProposalOpenDate()
@@ -158,7 +158,7 @@ class TOMsTile(QObject):
 
     def updateTileDetailsOnProposalAcceptance(self, currProposalID):
 
-        TOMsMessageLog.logMessage("In TOMsTile:updateTileDetailsOnProposalAcceptance...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:updateTileDetailsOnProposalAcceptance...", level=Qgis.Warning)
         if currProposalID is None:
             return False
 
@@ -169,23 +169,23 @@ class TOMsTile(QObject):
 
         if not self.addRecordToTilesInAcceptedProposal(currProposal):
             return False
-        TOMsMessageLog.logMessage("In TOMsTile:updateTileDetailsOnProposalAcceptance... Success ...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:updateTileDetailsOnProposalAcceptance... Success ...", level=Qgis.Warning)
         return True
 
     def updateTileRevisionNr(self, currProposal):
 
-        TOMsMessageLog.logMessage("In TOMsTile:updateTileRevisionNr...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:updateTileRevisionNr...", level=Qgis.Warning)
 
         # This will update the revision number within "Tiles" and add a record to "TilesWithinAcceptedProposals"
 
         TOMsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.getCurrentRevisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), level=Qgis.Info)
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " currRevNr: " + str(self.getCurrentRevisionNr()) + " ProposalID: " + str(currProposal.getProposalNr()), level=Qgis.Warning)
 
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
             TOMsMessageLog.logMessage(
                 "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync",
-                level=Qgis.Info)
+                level=Qgis.Warning)
             QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
         #lastRevisionNr, lastProposalOpendate = self.getTileRevisionNrAtDate(self.currProposal.getProposalOpenDate())
@@ -196,7 +196,7 @@ class TOMsTile(QObject):
             self.revisionNrForProposal = self.getCurrentRevisionNr() + 1
 
         TOMsMessageLog.logMessage(
-            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(self.revisionNrForProposal) + " revisionDate: " + str(currProposal.getProposalOpenDate()), level=Qgis.Info)
+            "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(self.revisionNrForProposal) + " revisionDate: " + str(currProposal.getProposalOpenDate()), level=Qgis.Warning)
 
         if not self.setRevisionNr(self.revisionNrForProposal):
             return False
@@ -207,7 +207,7 @@ class TOMsTile(QObject):
 
     def addRecordToTilesInAcceptedProposal(self, currProposal):
         # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
-        TOMsMessageLog.logMessage("In TOMsTile:addRecordToTilesInAcceptedProposal...", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:addRecordToTilesInAcceptedProposal...", level=Qgis.Warning)
 
         newRecord = QgsFeature(self.tilesInAcceptedProposalsLayer.fields())
 
