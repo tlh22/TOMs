@@ -49,12 +49,12 @@ class TOMsTile(QObject):
             self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
             self.idxRevisionNr = self.tilesLayer.fields().indexFromName("CurrRevisionNr")
             self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", level=Qgis.Warning)
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesInAcceptedProposalsLayer is None:
             TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Warning)
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Warning)
 
     def setTile(self, tileNr):
 
@@ -68,8 +68,8 @@ class TOMsTile(QObject):
             request = QgsFeatureRequest().setFilterExpression(query)
             for tile in self.tilesLayer.getFeatures(request):
                 self.thisTile = tile  # make assumption that only one row
-                TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile found ",
-                                         level=Qgis.Info)
+                TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile found: id: {} revNr: {}".format(self.thisTile.attribute("id"), self.thisTile.attribute("CurrRevisionNr")),
+                                         level=Qgis.Warning)
                 return True
 
         TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile NOT found ",
