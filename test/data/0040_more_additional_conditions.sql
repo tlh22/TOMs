@@ -21,3 +21,4 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (15, 'No Stopping 7.00am-7.00pm;Except 10.00am-7.00pm');
 
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (16, 'Resident Doctor and permit holders only');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (17, 'except Ambulances');
