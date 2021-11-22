@@ -23,3 +23,5 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (16, 'Resident Doctor and permit holders only');
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (17, 'except Ambulances');
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (18, 'except permit holders');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (19, 'except for access');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (20, 'except for loading');
