@@ -25,3 +25,4 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (18, 'except permit holders');
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (19, 'except for access');
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (20, 'except for loading');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (21, 'except ambulances');
