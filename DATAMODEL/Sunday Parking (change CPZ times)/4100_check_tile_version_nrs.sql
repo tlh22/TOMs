@@ -2,7 +2,7 @@
 List of all tiles and their latest version numbers
 ***/
 
-SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate", p."ProposalID", TiP."TileNr", TiP."RevisionNr"
+SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate", p."ProposalID",  p."ProposalOpenDate", TiP."TileNr", TiP."RevisionNr"
 FROM toms."MapGrid" m, toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
 WHERE m.id = TiP."TileNr"
 AND TiP."ProposalID" = p."ProposalID"
