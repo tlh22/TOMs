@@ -10,7 +10,7 @@ AND TiP."TileNr" = m."id"
 ORDER BY m.id, m."CurrRevisionNr", p."ProposalID"
 
 -- Find any changes on the same date that are using different revision numbers
-SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."TileNr", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
+SELECT TiP_1."TileNr", TiP_1."ProposalID", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."ProposalID", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
 FROM (
 SELECT TiP."TileNr", TiP."RevisionNr", p."ProposalID", p."ProposalTitle", p."ProposalOpenDate"
 FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
@@ -26,6 +26,7 @@ ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
 WHERE TiP_1."TileNr" = TiP_2."TileNr"
 AND TiP_1."ProposalOpenDate" = TiP_2."ProposalOpenDate"
 AND TiP_1."RevisionNr" <> TiP_2."RevisionNr"
+ORDER BY TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalID"
 
 -- Find any changes for different proposals that are using the same version number
 SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."TileNr", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
