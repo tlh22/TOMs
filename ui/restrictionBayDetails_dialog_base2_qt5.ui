@@ -173,6 +173,16 @@
          <item row="1" column="1">
           <widget class="QComboBox" name="TimePeriodID"/>
          </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Match Day Time Period:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="MatchDayTimePeriodID"/>
+         </item>
          <item row="3" column="0">
           <widget class="QLabel" name="lbl_MaxStay">
            <property name="minimumSize">
@@ -243,22 +253,15 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
-          <widget class="QComboBox" name="ParkingTariffArea">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="editable">
-            <bool>false</bool>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lbl_permitCode">
+           <property name="text">
+            <string>Permit Code:</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
-          <widget class="QComboBox" name="AdditionalConditionID">
-           <property name="currentIndex">
-            <number>-1</number>
-           </property>
-          </widget>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="PermitCode"/>
          </item>
          <item row="8" column="0">
           <widget class="QLabel" name="lbl_PaymentType_2">
@@ -279,35 +282,65 @@
            </property>
           </widget>
          </item>
+         <item row="8" column="1">
+          <widget class="QComboBox" name="AdditionalConditionID1">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QgsCheckableComboBox" name="AdditionalConditionID"/>
+         </item>
          <item row="10" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>PTA:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="0">
-          <widget class="QLabel" name="lbl_OpenDate">
-           <property name="text">
-            <string>Effective Date:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
           <widget class="QLabel" name="lbl_CPZ">
            <property name="text">
             <string>CPZ</string>
            </property>
           </widget>
          </item>
-         <item row="9" column="1">
+         <item row="10" column="1">
           <widget class="QComboBox" name="CPZ">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
-         <item row="15" column="1">
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>PTA:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QComboBox" name="ParkingTariffArea">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Pay By Phone Location Code:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1">
+          <widget class="QComboBox" name="PayParkingAreaID"/>
+         </item>
+         <item row="16" column="0">
+          <widget class="QLabel" name="lbl_OpenDate">
+           <property name="text">
+            <string>Effective Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="1">
           <widget class="QgsDateTimeEdit" name="OpenDate">
            <property name="enabled">
             <bool>false</bool>
@@ -316,36 +349,6 @@
             <bool>true</bool>
            </property>
           </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Match Day Time Period:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="MatchDayTimePeriodID"/>
-         </item>
-         <item row="12" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Pay By Phone Location Code:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="1">
-          <widget class="QComboBox" name="PayParkingAreaID"/>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="lbl_permitCode">
-           <property name="text">
-            <string>Permit Code:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="PermitCode"/>
          </item>
         </layout>
        </widget>
@@ -724,6 +727,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QgsCheckableComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgscheckablecombobox.h</header>
+  </customwidget>
   <customwidget>
    <class>QgsDateTimeEdit</class>
    <extends>QDateTimeEdit</extends>
