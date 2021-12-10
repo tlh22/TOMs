@@ -32,8 +32,9 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (24, 'Loading max 20 min;Disabled max 3 hours');
 
-INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (25, 'Except 10.00am-4.00pm;Loading max 20 min');
-INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (26, 'Except 1.00pm-4.00pm;Loading max 20 min');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (25, 'No Stopping Mon-Sat 7.00am-7.00pm;Except 10.00am-4.00pm;Loading max 20 min');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (26, 'No Stopping Mon-Sat 7.00am-7.00pm;Except 1.00pm-4.00pm;Loading max 20 min');
 
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (27, 'except disabled');
-INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (27, 'except e-taxis');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (28, 'except e-taxis');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (29, 'No Stopping Mon-Sat 7.00am-7.00pm;Except 10.00am-7.00pm;Loading max 20 min');
