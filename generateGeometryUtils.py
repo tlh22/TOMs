@@ -1576,5 +1576,17 @@ class generateGeometryUtils (QObject):
             return row # make assumption that only one row
         return None
 
+    @staticmethod
+    def resetLabelPosition(feature):
 
+        TOMsMessageLog.logMessage('resetLabelPosition ...', level=Qgis.Warning)
 
+        # get the centre point  NB: will have to deal with map grids in the future ...
+        geom = feature.geometry()
+        new_label_pos = geom.interpolate(geom.length()/2.0)
+
+        TOMsMessageLog.logMessage('resetLabelPosition new pos: {}'.format(new_label_pos.asWkt()), level=Qgis.Warning)
+        # now set the attribute
+        #feature.setAttribute("label_pos", new_label_pos.asMultiPoint())
+
+        return new_label_pos.asMultiPoint()

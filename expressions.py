@@ -77,7 +77,8 @@ class TOMsExpressions():
             self.getPTA, self.prepareSignLine,
             self.prepareSignIconLocation,
             self.prepareSignIcon, self.prepareSignOrientation,
-            self.generateDemandPoints
+            self.generateDemandPoints,
+            self.resetLabelPos
         ]
 
     @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
@@ -623,6 +624,20 @@ class TOMsExpressions():
                                       level=Qgis.Warning)
 
         return demandPoints
+
+    @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
+    def resetLabelPos(feature, parent):
+        newPosition = QgsGeometry().asMultiPoint()
+        try:
+            newPosition = generateGeometryUtils.resetLabelPosition(feature)
+        except Exception as e:
+            QgsMessageLog.logMessage('resetLabelPos {}'.format(e), tag="TOMs Panel")
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            QgsMessageLog.logMessage(
+                'resetLabelPos: error in expression function: ' + str(
+                    repr(traceback.extract_tb(exc_traceback))),
+                tag="TOMs Panel")
+        return newPosition
 
     def registerFunctions(self):
 
