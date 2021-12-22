@@ -40,3 +40,4 @@ INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VA
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (29, 'No Stopping Mon-Sat 7.00am-7.00pm;Except 10.00am-7.00pm;Loading max 20 min');
 
 INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (30, 'on event days');
+INSERT INTO "toms_lookups"."AdditionalConditionTypes" ("Code", "Description") VALUES (31, 'Electric vehicle recharging point only');
