@@ -1,5 +1,5 @@
 /***
-Update trigger to deal with short bays
+Update trigger to deal with short bays - and bays in front of crossovers
 ***/
 
 -- main trigger
@@ -31,9 +31,13 @@ BEGIN
         RETURN OLD;
     END IF;
 
-    -- Deal with short bays
+    -- Deal with short bays and crossovers in front of bays
 
     IF NEW."RestrictionTypeID" < 200 THEN
+        IF NEW."UnacceptableTypeID" IN (1,4) THEN
+                NEW."Capacity" = 0;
+                NEW."NrBays" = 0;
+		END IF;
 	    IF NEW."NrBays" < 0 AND
              NEW."GeomShapeID" IN (1, 2, 3, 21, 22, 23) AND
              public.ST_Length (NEW."geom") <= vehicleLength THEN   -- all the parallel bay types
