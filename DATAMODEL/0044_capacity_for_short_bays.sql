@@ -12,6 +12,7 @@ DECLARE
 	 vehicleWidth real := 0.0;
 	 motorcycleWidth real := 0.0;
 	 restrictionLength real := 0.0;
+	 fieldCheck boolean := false;
 BEGIN
 
     select "Value" into vehicleLength
@@ -34,10 +35,25 @@ BEGIN
     -- Deal with short bays and crossovers in front of bays
 
     IF NEW."RestrictionTypeID" < 200 THEN
-        IF NEW."UnacceptableTypeID" IN (1,4) THEN
-                NEW."Capacity" = 0;
-                NEW."NrBays" = 0;
+
+        -- Check that there is a column called "UnacceptableTypeID"
+
+		--RAISE NOTICE '***** In TG_TABLE_SCHEMA (%)', TG_TABLE_SCHEMA;
+		--RAISE NOTICE '***** In TG_TABLE_NAME (%)', TG_TABLE_NAME;
+
+        SELECT TRUE INTO fieldCheck
+        FROM information_schema.columns
+        WHERE table_schema = quote_ident(TG_TABLE_SCHEMA)
+        AND table_name = quote_ident(TG_TABLE_NAME)
+        AND column_name = 'UnacceptableTypeID';
+
+        IF fieldCheck THEN
+            IF NEW."UnacceptableTypeID" IN (1,4) THEN
+                    NEW."Capacity" = 0;
+                    NEW."NrBays" = 0;
+            END IF;
 		END IF;
+
 	    IF NEW."NrBays" < 0 AND
              NEW."GeomShapeID" IN (1, 2, 3, 21, 22, 23) AND
              public.ST_Length (NEW."geom") <= vehicleLength THEN   -- all the parallel bay types
