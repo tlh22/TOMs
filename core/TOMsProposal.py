@@ -317,7 +317,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                         "In TOMsProposal:acceptProposal. " + str(
                             tileNr) + " error updating tile revision details",
                         level=Qgis.Warning)
-                    return status
+                    return False
 
             # Now update Proposal
             if not self.setProposalStatusID(ProposalStatus.ACCEPTED):
