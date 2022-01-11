@@ -184,16 +184,20 @@ class TOMsTile(QObject):
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
             TOMsMessageLog.logMessage(
-                "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync",
+                "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers would be out of sync. Accept date of current Proposal is before last revision of this tile.",
                 level=Qgis.Warning)
             QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
         #lastRevisionNr, lastProposalOpendate = self.getTileRevisionNrAtDate(self.currProposal.getProposalOpenDate())
 
-        if self.getCurrentRevisionNr() is None or self.getCurrentRevisionNr() == NULL or self.getCurrentRevisionNr() == 0:
+        currRevisionNr = self.getCurrentRevisionNr()
+
+        # Check this value within TilesInAcceptedProposals
+
+        if currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
             self.revisionNrForProposal = 1
         else:
-            self.revisionNrForProposal = self.getCurrentRevisionNr() + 1
+            self.revisionNrForProposal = currRevisionNr + 1
 
         TOMsMessageLog.logMessage(
             "In TOMsTile:updateTileRevisionNr. tile " + str(self.thisTileNr) + " newRevisionNr: " + str(self.revisionNrForProposal) + " revisionDate: " + str(currProposal.getProposalOpenDate()), level=Qgis.Warning)

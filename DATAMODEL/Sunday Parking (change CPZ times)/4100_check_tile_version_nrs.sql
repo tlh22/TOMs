@@ -55,3 +55,40 @@ UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 3
 WHERE "TileNr" = 1276
 AND "RevisionNr" = 4;
+
+
+-- Check that the latest revision nr within MapGrid matches the last revision in TilesWithinAcceptedProposals
+
+DO
+$do$
+DECLARE
+    tiles RECORD;
+    proposalID INTEGER = 0;
+	revisionNr INTEGER;
+	proposalOpenDate DATE;
+	proposalTitle TEXT;
+BEGIN
+
+    FOR tiles IN
+        SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate"
+        FROM toms."MapGrid" m
+    LOOP
+
+        SELECT p."ProposalID", p."ProposalTitle", p."ProposalOpenDate", TiP."RevisionNr"
+		INTO proposalID, proposalTitle, proposalOpenDate, revisionNr
+        FROM toms."Proposals" p, toms."TilesInAcceptedProposals" TiP
+        WHERE tiles.id = TiP."TileNr"
+        AND TiP."ProposalID" = p."ProposalID"
+        ORDER BY TiP."RevisionNr" desc
+        LIMIT 1;
+
+		IF tiles."CurrRevisionNr" <> revisionNr THEN
+
+			raise notice 'Tile % -  has different revision nrs - % vs %. Last update from Proposal % (%)', tiles.id, tiles."CurrRevisionNr", revisionNr, proposalID, proposalTitle;
+
+		END IF;
+
+    END LOOP;
+
+END;
+$do$;
