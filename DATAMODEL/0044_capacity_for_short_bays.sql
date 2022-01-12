@@ -43,12 +43,12 @@ BEGIN
 
         SELECT TRUE INTO fieldCheck
         FROM information_schema.columns
-        WHERE table_schema = quote_ident(TG_TABLE_SCHEMA)
-        AND table_name = quote_ident(TG_TABLE_NAME)
+        WHERE table_schema = TG_TABLE_SCHEMA
+        AND table_name = TG_TABLE_NAME
         AND column_name = 'UnacceptableTypeID';
 
         IF fieldCheck THEN
-            IF NEW."UnacceptableTypeID" IN (1,4) THEN
+            IF NEW."UnacceptableTypeID" IN (1,4,11) THEN
                     NEW."Capacity" = 0;
                     NEW."NrBays" = 0;
             END IF;
@@ -74,7 +74,7 @@ BEGIN
         **/
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
-            CASE WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
+            CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
                  ELSE
                      CASE WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 146, 147, 150, 151) THEN
                         NEW."Capacity" = 0;
