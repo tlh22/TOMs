@@ -67,13 +67,18 @@ NEW = TD["new"] # this contains the feature after modifications
 plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
 plpy.info('Acting on new: {}'.format(NEW["GeometryID"]))
 
+# Check to see if considering a current feature
+if NEW["OpenDate"] and not NEW["CloseDate"]:
+    plpy.info('Current feature. Returning without processing ...')
+    return
+
 def getCPZ(feature):
     # get cpz given feature
     plan = plpy.prepare('SELECT * FROM toms.get_cpz($1::geometry)', ['text'])
     cpz_rec = plpy.execute(plan, [feature["geom"]])
 
-    if cpz_rec.nrows() > 0:
-        plpy.info('In getCPZ. TimePeriodID: {}'.format(cpz_rec[0]))
+    #if cpz_rec.nrows() > 0:
+    #    plpy.info('In getCPZ. CPZ record: {}'.format(cpz_rec[0]))
 
     return cpz_rec
 
@@ -82,8 +87,8 @@ def getPTA(feature):
     plan = plpy.prepare('SELECT * FROM toms.get_pta($1::geometry)', ['text'])
     pta_rec = plpy.execute(plan, [feature["geom"]])
 
-    if pta_rec.nrows() > 0:
-        plpy.info('In getPTA. TimePeriodID: {}'.format(pta_rec[0]))
+    #if pta_rec.nrows() > 0:
+    #    plpy.info('In getPTA. PTA record: {}'.format(pta_rec[0]))
 
     return pta_rec
 
@@ -92,10 +97,11 @@ def getMDEDZ(feature):
     plan = plpy.prepare('SELECT * FROM toms.get_mdedz($1::geometry)', ['text'])
     mdedz_rec = plpy.execute(plan, [feature["geom"]])
 
-    if mdedz_rec.nrows() > 0:
-        plpy.info('In getMDEDZ. TimePeriodID: {}'.format(mdedz_rec[0]))
+    #if mdedz_rec.nrows() > 0:
+    #    plpy.info('In getMDEDZ. MDEDZ record: {}'.format(mdedz_rec[0]))
 
     return mdedz_rec
+
 
 def getBayRestrictionLabelText(feature):
 
@@ -243,27 +249,34 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     """
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
-    if OLD is not None:
-        # plpy.info('ensure_label_points 0: GeometryID:{})'.format(OLD["GeometryID"]))
-        pass
-    # plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
+
+    plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
     if label_geom is None:
         plan = plpy.prepare("SELECT ST_SetSRID(ST_GeomFromEWKT('MULTIPOINT EMPTY'), Find_SRID('"+TD["table_schema"]+"', '"+TD["table_name"]+"', 'geom')) as p")
         label_geom = plpy.execute(plan)[0]["p"]
+
     elif OLD is not None:
         # We remove multipoints that have not been moved from the calculated position
         # so they will still be attached on the geometry
         # To do so, we generate label positions on the OLD geometry (reusing this same function).
         # We substract those old generated positions from the new ones, so they are deleted from
         # the label multipoints, and will be regenerated exactly on the geometry.
+
         old_label_geom, _ = ensure_labels_points(OLD["geom"], None, None)
         plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, $2::geometry),1)) as g', ['text', 'text'])
         results = plpy.execute(plan, [label_geom, old_label_geom])
         label_geom = results[0]['g']
 
-    #plpy.info('ensure_label_points 2: label_geom:{})'.format(label_geom))
+    # Need to consider situation where restriction has changed such that it no longer intersects with one of the map tiles
+
+    plan = plpy.prepare('SELECT ST_Multi(ST_CollectionExtract(ST_Difference($1::geometry, m.geom),1)) as g FROM toms."MapGrid" m WHERE ST_Intersects($1::geometry, m.geom) AND NOT ST_Intersects($2::geometry, m.geom)', ['text', 'text'])
+    results = plpy.execute(plan, [label_geom, main_geom])
+
+    if results:
+        plpy.info('ensure_label_points 2: results:{})'.format(results[0]['g']))
+        label_geom = results[0]['g']
 
     # We select all sheets that intersect with the feature but not with the label
     # multipoints to obtain all sheets that miss a label point
@@ -395,13 +408,15 @@ if TD["table_name"] == 'Lines':
         NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
+        return "MODIFY"
+
     if loadingDesc is None:
         # reset the leader
         plpy.info('resetting loading label position and leader for {}'.format(NEW["GeometryID"]))
         NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
-    return "MODIFY"
+        return "MODIFY"
 
 plpy.info('continuing with NEW {}'.format(NEW["GeometryID"]))
 NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
