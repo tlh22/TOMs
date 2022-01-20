@@ -673,6 +673,17 @@ class RestrictionTypeUtilsMixin():
                     currRestriction = self.origFeature.getFeature()
                     currRestrictionLayer.updateFeature(currRestriction)
 
+                    # if there are label layers, update those so that new feature is available
+
+                    #label_layers_names = self.setCurrLabelLayerNames(currRestrictionLayer)
+                    #label_leader_layers_names = self.setCurrLabelLeaderLayerNames(currRestrictionLayer)
+                    layerDetails = TOMsLabelLayerNames(currRestrictionLayer)
+
+                    for label_layer_name in layerDetails.getCurrLabelLayerNames():
+                        labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
+                        labelLayer.reload()
+
+
                 pass
 
             # Now commit changes and redraw
@@ -1339,3 +1350,75 @@ class RestrictionTypeUtilsMixin():
                 "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
                 level=Qgis.Info)
             return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
+
+class TOMsLabelLayerNames(QObject):
+
+    def __init__(self, currRestrictionLayer):
+        QObject.__init__(self)
+        self.iface = iface
+
+        TOMsMessageLog.logMessage("In TOMsLabelLayerName:initialising .... {}".format(currRestrictionLayer), level=Qgis.Warning)
+
+        self.label_layers_names = self.setCurrLabelLayerNames(currRestrictionLayer)
+        self.label_leader_layers_names = self.setCurrLabelLeaderLayerNames(currRestrictionLayer)
+
+    def setCurrLabelLayerNames(self, currRestrictionLayer):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        if currRestrictionLayer.name() == 'Bays':
+            label_layers_names = ['Bays.label_pos']
+        if currRestrictionLayer.name() == 'Lines':
+            label_layers_names = ['Lines.label_pos', 'Lines.label_loading_pos']
+        if currRestrictionLayer.name() == 'Signs':
+            label_layers_names = []
+        if currRestrictionLayer.name() == 'RestrictionPolygons':
+            label_layers_names = ['RestrictionPolygons.label_pos']
+        if currRestrictionLayer.name() == 'CPZs':
+            label_layers_names = ['CPZs.label_pos']
+        if currRestrictionLayer.name() == 'ParkingTariffAreas':
+            label_layers_names = ['ParkingTariffAreas.label_pos']
+
+        if len(label_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
+
+        return label_layers_names
+
+    def getCurrLabelLayerNames(self):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        return self.label_layers_names
+
+    def setCurrLabelLeaderLayerNames(self, currRestrictionLayer):
+        # given a layer return the associated layer with label geometry
+        # get the corresponding label layer
+
+        def alert_box(text):
+            QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
+
+        if currRestrictionLayer.name() == 'Bays':
+            label_leader_layers_names = ['Bays.label_ldr']
+        if currRestrictionLayer.name() == 'Lines':
+            label_leader_layers_names = ['Lines.label_ldr', 'Lines.label_loading_ldr']
+        if currRestrictionLayer.name() == 'Signs':
+            label_leader_layers_names = []
+        if currRestrictionLayer.name() == 'RestrictionPolygons':
+            label_leader_layers_names = ['RestrictionPolygons.label_ldr']
+        if currRestrictionLayer.name() == 'CPZs':
+            label_leader_layers_names = ['CPZs.label_ldr']
+        if currRestrictionLayer.name() == 'ParkingTariffAreas':
+            label_leader_layers_names = ['ParkingTariffAreas.label_ldr']
+
+        if len(label_leader_layers_names) == 0:
+            alert_box("No labels for this restriction type")
+            return
+
+        return label_leader_layers_names
+
+    def getCurrLabelLeaderLayerNames(self):
+        return self.label_leader_layers_names
