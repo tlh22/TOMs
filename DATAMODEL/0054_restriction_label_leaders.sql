@@ -64,8 +64,8 @@ import plpy
 OLD = TD["old"] # this contains the feature before modifications
 NEW = TD["new"] # this contains the feature after modifications
 
-plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
-plpy.info('Acting on new: {}'.format(NEW["GeometryID"]))
+#plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
+plpy.info('Considering lables for: {}'.format(NEW["GeometryID"]))
 
 # Check to see if considering a current feature
 if NEW["OpenDate"] and not NEW["CloseDate"]:
@@ -116,7 +116,7 @@ def getBayRestrictionLabelText(feature):
     additionalConditionID = feature["AdditionalConditionID"]
     permitCode = feature["PermitCode"]
 
-    plpy.info('TimePeriodID: {}'.format(timePeriodID))
+    #plpy.info('TimePeriodID: {}'.format(timePeriodID))
 
     restrictionCPZ = feature["CPZ"]
     restrictionEDZ = feature["MatchDayEventDayZone"]
@@ -137,7 +137,7 @@ def getBayRestrictionLabelText(feature):
         else:
             timePeriodDesc = timePeriodID
 
-    plpy.info('In getBayRestrictionLabelText. 2 timePeriodDesc: {} {} {}'.format(timePeriodID, CPZWaitingTimeID, timePeriodDesc))
+    #plpy.info('In getBayRestrictionLabelText. 2 timePeriodDesc: {} {} {}'.format(timePeriodID, CPZWaitingTimeID, timePeriodDesc))
 
     pta_rec = getPTA(feature)
     if pta_rec:
@@ -161,7 +161,7 @@ def getBayRestrictionLabelText(feature):
             if TariffZoneNoReturnID == noReturnID:
                 noReturnDesc = None
 
-    plpy.info('In getBayRestrictionLabelText. 3 TariffZoneTimePeriodID: {}'.format(TariffZoneTimePeriodID))
+    #plpy.info('In getBayRestrictionLabelText. 3 TariffZoneTimePeriodID: {}'.format(TariffZoneTimePeriodID))
 
     if matchDayTimePeriodID:
         mdedz_rec = getMDEDZ(feature)
@@ -250,7 +250,7 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     This function ensures that at least one label point exists on every sheet on which the geometry appears
     """
 
-    plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
+    #plpy.info('ensure_label_points 1: label_geom:{})'.format(label_geom))
 
     # Let's just start by making an empty multipoint if label_geom is NULL, so we don't have to deal with NULL afterwards
     if label_geom is None:
@@ -275,7 +275,7 @@ def ensure_labels_points(main_geom, label_geom, initial_rotation):
     results = plpy.execute(plan, [label_geom, main_geom])
 
     if results:
-        plpy.info('ensure_label_points 2: results:{})'.format(results[0]['g']))
+        #plpy.info('ensure_label_points 2: results:{})'.format(results[0]['g']))
         label_geom = results[0]['g']
 
     # We select all sheets that intersect with the feature but not with the label
@@ -389,7 +389,7 @@ def update_leader_lines(main_geom, label_geom):
 ## Check if label is required
 if TD["table_name"] == 'Bays':
     maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
-    plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
+    #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
 
     if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
         # reset the leader
@@ -400,7 +400,7 @@ if TD["table_name"] == 'Bays':
 
 if TD["table_name"] == 'Lines':
     waitingDesc, loadingDesc = getWaitingLoadingRestrictionLabelText(NEW)
-    plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
+    #plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
 
     if waitingDesc is None:
         # reset the leader
@@ -408,17 +408,16 @@ if TD["table_name"] == 'Lines':
         NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
-        return "MODIFY"
-
     if loadingDesc is None:
         # reset the leader
         plpy.info('resetting loading label position and leader for {}'.format(NEW["GeometryID"]))
         NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
+    if waitingDesc is None or loadingDesc is None:
         return "MODIFY"
 
-plpy.info('continuing with NEW {}'.format(NEW["GeometryID"]))
+plpy.info('Preparing label leaders for {}'.format(NEW["GeometryID"]))
 NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
@@ -429,6 +428,7 @@ if OLD is not None:
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
+    plpy.info('Preparing loading label leaders for NEW {}'.format(NEW["GeometryID"]))
     NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"], NEW["labelLoading_Rotation"])
     NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
@@ -455,7 +455,7 @@ DROP TRIGGER IF EXISTS insert_mngmt ON toms."Lines";
 DROP TRIGGER IF EXISTS z_insert_mngmt ON toms."Lines";
 
 CREATE TRIGGER z_insert_mngmt
-    BEFORE INSERT OR UPDATE OF "NoWaitingTimeID", "NoLoadingTimeID", "MatchDayTimePeriodID", "AdditionalConditionID", "geom", "label_pos"
+    BEFORE INSERT OR UPDATE OF "NoWaitingTimeID", "NoLoadingTimeID", "MatchDayTimePeriodID", "AdditionalConditionID", "geom", "label_pos", "label_loading_pos"
     ON toms."Lines"
     FOR EACH ROW
     EXECUTE FUNCTION toms.labelling_for_restrictions();
