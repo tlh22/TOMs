@@ -232,8 +232,8 @@ ALTER TABLE ONLY moving_traffic."RestrictionsForVehicles"
         ON DELETE NO ACTION;
 
 
-** Need to ensure that Codes are explicitly set !
-Need to add VehicleTypeValues
+--** Need to ensure that Codes are explicitly set !
+--Need to add VehicleTypeValues
 
 -- Add vehicleQualifiers
 ALTER TYPE "moving_traffic_lookups"."vehicleTypeValue" ADD VALUE 'Permit Holders';

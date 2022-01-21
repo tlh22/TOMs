@@ -83,7 +83,12 @@ AS $BODY$
 $BODY$;
 
 DROP TRIGGER IF EXISTS "set_bay_geom_type_trigger" ON "toms"."Bays";
-CREATE TRIGGER "set_bay_geom_type_trigger" BEFORE INSERT OR UPDATE ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."set_bay_geom_type"();
+
+CREATE TRIGGER "set_bay_geom_type_trigger"
+    BEFORE INSERT OR UPDATE OF "RestrictionTypeID", "GeomShapeID"
+    ON "toms"."Bays"
+    FOR EACH ROW
+    EXECUTE FUNCTION "public"."set_bay_geom_type"();
 
 -- Allow admin to update details in LOOKUPs
 REVOKE ALL ON ALL TABLES IN SCHEMA toms_lookups FROM toms_public, toms_operator, toms_admin;
