@@ -65,7 +65,7 @@ OLD = TD["old"] # this contains the feature before modifications
 NEW = TD["new"] # this contains the feature after modifications
 
 #plpy.info('Trigger {} was run ({} {} on "{}")'.format(TD["name"], TD["when"], TD["event"], TD["table_name"]))
-plpy.info('Considering lables for: {}'.format(NEW["GeometryID"]))
+plpy.info('Considering labels for: {}'.format(NEW["GeometryID"]))
 
 # Check to see if considering a current feature
 if NEW["OpenDate"] and not NEW["CloseDate"]:
@@ -130,8 +130,7 @@ def getBayRestrictionLabelText(feature):
 
     if timePeriodID == 1:  # 'At Any Time'
         timePeriodDesc = None
-
-    if CPZWaitingTimeID:
+    elif CPZWaitingTimeID:
         if CPZWaitingTimeID == timePeriodID:
             timePeriodDesc = None
         else:
@@ -212,8 +211,7 @@ def getWaitingLoadingRestrictionLabelText(feature):
 
     if waitingTimeID == 1:  # 'At Any Time'
         waitDesc = None
-
-    if CPZWaitingTimeID:
+    elif CPZWaitingTimeID:
         if CPZWaitingTimeID == waitingTimeID:
             waitDesc = None
         else:
@@ -239,7 +237,10 @@ def getWaitingLoadingRestrictionLabelText(feature):
             waitDesc = "{}".format(additionalConditionID)
 
     if loadingTimeID:
-        loadDesc = loadingTimeID
+        if loadingTimeID == 1:  # 'At Any Time'
+            loadDesc = None
+        else:
+            loadDesc = loadingTimeID
 
     return waitDesc, loadDesc
 
@@ -385,8 +386,10 @@ def update_leader_lines(main_geom, label_geom):
 
     return result
 
-# Logic for the primary label
-## Check if label is required
+##### Logic for the primary label
+
+# Check if label is required
+
 if TD["table_name"] == 'Bays':
     maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
     #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
@@ -414,7 +417,7 @@ if TD["table_name"] == 'Lines':
         NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
-    if waitingDesc is None or loadingDesc is None:
+    if waitingDesc is None and loadingDesc is None:
         return "MODIFY"
 
 plpy.info('Preparing label leaders for {}'.format(NEW["GeometryID"]))
@@ -428,7 +431,7 @@ if OLD is not None:
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
-    plpy.info('Preparing loading label leaders for NEW {}'.format(NEW["GeometryID"]))
+    plpy.info('Preparing loading label leaders for {}'.format(NEW["GeometryID"]))
     NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_loading_pos"], NEW["labelLoading_Rotation"])
     NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
