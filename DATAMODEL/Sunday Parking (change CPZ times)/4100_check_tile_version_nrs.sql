@@ -2,7 +2,7 @@
 List of all tiles and their latest version numbers
 ***/
 
-SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate", p."ProposalID", TiP."TileNr", TiP."RevisionNr"
+SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate", p."ProposalID",  p."ProposalOpenDate", TiP."TileNr", TiP."RevisionNr"
 FROM toms."MapGrid" m, toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
 WHERE m.id = TiP."TileNr"
 AND TiP."ProposalID" = p."ProposalID"
@@ -10,7 +10,7 @@ AND TiP."TileNr" = m."id"
 ORDER BY m.id, m."CurrRevisionNr", p."ProposalID"
 
 -- Find any changes on the same date that are using different revision numbers
-SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."TileNr", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
+SELECT TiP_1."TileNr", TiP_1."ProposalID", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."ProposalID", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
 FROM (
 SELECT TiP."TileNr", TiP."RevisionNr", p."ProposalID", p."ProposalTitle", p."ProposalOpenDate"
 FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
@@ -26,6 +26,7 @@ ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
 WHERE TiP_1."TileNr" = TiP_2."TileNr"
 AND TiP_1."ProposalOpenDate" = TiP_2."ProposalOpenDate"
 AND TiP_1."RevisionNr" <> TiP_2."RevisionNr"
+ORDER BY TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalID"
 
 -- Find any changes for different proposals that are using the same version number
 SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."TileNr", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
@@ -54,3 +55,40 @@ UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 3
 WHERE "TileNr" = 1276
 AND "RevisionNr" = 4;
+
+
+-- Check that the latest revision nr within MapGrid matches the last revision in TilesWithinAcceptedProposals
+
+DO
+$do$
+DECLARE
+    tiles RECORD;
+    proposalID INTEGER = 0;
+	revisionNr INTEGER;
+	proposalOpenDate DATE;
+	proposalTitle TEXT;
+BEGIN
+
+    FOR tiles IN
+        SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate"
+        FROM toms."MapGrid" m
+    LOOP
+
+        SELECT p."ProposalID", p."ProposalTitle", p."ProposalOpenDate", TiP."RevisionNr"
+		INTO proposalID, proposalTitle, proposalOpenDate, revisionNr
+        FROM toms."Proposals" p, toms."TilesInAcceptedProposals" TiP
+        WHERE tiles.id = TiP."TileNr"
+        AND TiP."ProposalID" = p."ProposalID"
+        ORDER BY TiP."RevisionNr" desc
+        LIMIT 1;
+
+		IF tiles."CurrRevisionNr" <> revisionNr THEN
+
+			raise notice 'Tile % -  has different revision nrs - % vs %. Last update from Proposal % (%)', tiles.id, tiles."CurrRevisionNr", revisionNr, proposalID, proposalTitle;
+
+		END IF;
+
+    END LOOP;
+
+END;
+$do$;

@@ -32,3 +32,4 @@ UPDATE "toms"."MapGrid"
 SET "CurrRevisionNr" = 4, "LastRevisionDate" = '2020-09-21'
 WHERE id = 1397;
 
+INSERT INTO "toms"."TilesInAcceptedProposals" ("ProposalID", "TileNr", "RevisionNr") VALUES (8, 1397, 4);
