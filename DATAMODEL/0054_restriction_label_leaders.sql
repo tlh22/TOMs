@@ -381,8 +381,9 @@ def update_leader_lines(main_geom, label_geom):
     plan = plpy.prepare('SELECT ST_LENGTH($1::geometry) as p', ['text'])
     ldr_length = plpy.execute(plan, [result])[0]['p']
 
-    if ldr_length < 0.01:
-        result = None
+    if ldr_length:
+        if ldr_length < 0.01:
+            result = None
 
     return result
 
@@ -462,3 +463,46 @@ CREATE TRIGGER z_insert_mngmt
     ON toms."Lines"
     FOR EACH ROW
     EXECUTE FUNCTION toms.labelling_for_restrictions();
+
+/*"""*/
+-- Run the trigger once to "repair" leaders
+
+--- Bays
+ALTER TABLE toms."Bays" DISABLE TRIGGER "set_last_update_details_bays";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "set_create_details_Bays";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "set_bay_geom_type_trigger";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "set_restriction_length_bays";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "set_restriction_length_Bays";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "update_capacity_bays";
+ALTER TABLE toms."Bays" DISABLE TRIGGER "notify_qgis_edit";
+
+UPDATE toms."Bays" SET label_pos = label_pos;
+
+ALTER TABLE toms."Bays" ENABLE TRIGGER "set_last_update_details_bays";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "set_create_details_Bays";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "set_bay_geom_type_trigger";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "set_restriction_length_bays";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "set_restriction_length_Bays";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "update_capacity_bays";
+ALTER TABLE toms."Bays" ENABLE TRIGGER "notify_qgis_edit";
+
+--- Lines
+ALTER TABLE toms."Lines" DISABLE TRIGGER "set_last_update_details_lines";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "set_create_details_Lines";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "set_crossing_geom_type_trigger";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "set_restriction_length_lines";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "set_restriction_length_Lines";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "update_capacity_lines";
+ALTER TABLE toms."Lines" DISABLE TRIGGER "notify_qgis_edit";
+
+UPDATE toms."Lines" SET label_pos = label_pos;
+
+ALTER TABLE toms."Lines" ENABLE TRIGGER "set_last_update_details_lines";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "set_create_details_Lines";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "set_crossing_geom_type_trigger";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "set_restriction_length_lines";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "set_restriction_length_Lines";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "update_capacity_lines";
+ALTER TABLE toms."Lines" ENABLE TRIGGER "notify_qgis_edit";
+
+/*"""*/
