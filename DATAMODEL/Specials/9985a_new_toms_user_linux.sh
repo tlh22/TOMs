@@ -68,13 +68,4 @@ sudo cp -r /home/$template_user/.local/share/QGIS/QGIS3/profiles/ /home/$usernam
 
 sudo chown -R $username:$group /home/$username
 
-#-----
-# add user to db
-echo "Adding user to db ..."
-psql -U postgres -d $database -h $hostname -p $port <<EOF
-CREATE USER "${username}" WITH PASSWORD '${new_user_password}';
-GRANT ${db_group} TO "${username}";
-EOF
-
-# add user/connection within guac - do this manually ...
 
