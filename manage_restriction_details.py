@@ -236,6 +236,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In doSelectRestriction", level=Qgis.Info)
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doSelectRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         #self.proposalsManager.TOMsToolChanged.emit()
 
         if not self.actionSelectRestriction.isChecked():
@@ -326,6 +331,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doCreateBayRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -389,6 +399,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doCreateLineRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -446,6 +461,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doCreatePolygonRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -499,6 +519,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doCreateSignRestriction", level=Qgis.Info)
 
         #self.proposalsManager.TOMsToolChanged.emit()
+
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doCreateSignRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
 
         self.mapTool = None
 
@@ -559,6 +584,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doCreateConstructionLine. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         self.mapTool = None
 
         if self.actionCreateConstructionLine.isChecked():
@@ -597,6 +627,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doRemoveRestriction", level=Qgis.Info)
 
         #self.proposalsManager.TOMsToolChanged.emit()
+
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doRemoveRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
 
         #self.mapTool = None
 
@@ -683,6 +718,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doEditRestriction - starting", level=Qgis.Info)
 
         #self.proposalsManager.TOMsToolChanged.emit()
+
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doEditRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
 
         self.mapTool = None
 
@@ -776,6 +816,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
     def doEditLabels(self):
 
         TOMsMessageLog.logMessage("In doEditLabels ... ", level=Qgis.Warning)
+
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doEditLabels. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
 
         def alert_box(text):
             QMessageBox.information( self.iface.mainWindow(), "Information", text, QMessageBox.Ok )
@@ -963,6 +1008,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         #self.proposalsManager.TOMsToolChanged.emit()
 
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doSplitRestriction. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
+
         self.mapTool = None
 
         # Get the current proposal from the session variables
@@ -1056,6 +1106,11 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In doImportRestrictions - starting", level=Qgis.Info)
 
         #self.proposalsManager.TOMsToolChanged.emit()
+
+        commitStatus = self.restrictionTransaction.rollBackTransactionGroup()
+        TOMsMessageLog.logMessage(
+            "In doImportRestrictions. Current transaction rolled back ... {}".format (commitStatus),
+            level=Qgis.Warning)
 
         self.mapTool = None
 
