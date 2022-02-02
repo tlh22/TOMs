@@ -10,30 +10,30 @@ ALTER TABLE toms."Lines" DISABLE TRIGGER ALL;
 ALTER TABLE toms."Bays" DISABLE TRIGGER ALL;
 
 UPDATE toms."Lines" r
-FROM toms."ControlledParkingZones" c
 SET "NoWaitingTimeID" = 39 -- Mon-Sat 8.00am-6.30pm
-WHERE "NoWaitingTime" = 14 -- Mon-Fri 8.00am-6.30pm
+FROM toms."ControlledParkingZones" c
+WHERE r."NoWaitingTimeID" = 14 -- Mon-Fri 8.00am-6.30pm
 AND c."CPZ" IN ('1' ,  '1A' ,  '2' ,  '3' , '4')
 AND ST_WITHIN (r.geom, c.geom);
 
 UPDATE toms."Lines" r
-FROM toms."ControlledParkingZones" c
 SET "NoWaitingTimeID" = 33 -- Mon-Sat 8.30am-6.30pm
-WHERE r."NoWaitingTime" = 12 -- Mon-Fri 8.30am-6.30pm
+FROM toms."ControlledParkingZones" c
+WHERE r."NoWaitingTimeID" = 12 -- Mon-Fri 8.30am-6.30pm
 AND c."CPZ" IN ('1' ,  '1A' ,  '2' ,  '3' , '4')
 AND ST_WITHIN (r.geom, c.geom);
 
 UPDATE toms."Lines" r
-FROM toms."ControlledParkingZones" c
 SET "NoWaitingTimeID" = 308 -- Mon-Sat 8.00am-6.30pm Sun 12.30pm-6.30pm
-WHERE r."NoWaitingTime" = 313 -- Mon-Fri 8.00am-6.30pm Sun 12.30pm-6.30pm
+FROM toms."ControlledParkingZones" c
+WHERE r."NoWaitingTimeID" = 313 -- Mon-Fri 8.00am-6.30pm Sun 12.30pm-6.30pm
 AND c."CPZ" IN ('1' ,  '1A' ,  '2' ,  '3' , '4')
 AND ST_WITHIN (r.geom, c.geom);
 
 UPDATE toms."Lines" r
-FROM toms."ControlledParkingZones" c
 SET "NoWaitingTimeID" = 309 -- Mon-Sat 8.30am-6.30pm Sun 12.30pm-6.30pm
-WHERE r."NoWaitingTime" = 311 -- Mon-Fri 8.30am-6.30pm Sun 12.30pm-6.30pm
+FROM toms."ControlledParkingZones" c
+WHERE r."NoWaitingTimeID" = 311 -- Mon-Fri 8.30am-6.30pm Sun 12.30pm-6.30pm
 AND c."CPZ" IN ('1' ,  '1A' ,  '2' ,  '3' , '4')
 AND ST_WITHIN (r.geom, c.geom);
 
@@ -64,9 +64,9 @@ WHERE "GeometryID" IN ('L_14802');
 -- Bays
 
 UPDATE toms."Bays" r
+SET "TimePeriodID" = 33 -- Mon-Sat 8.30am-6.30pm
 FROM toms."ControlledParkingZones" c
-SET "NoWaitingTimeID" = 33 -- Mon-Sat 8.30am-6.30pm
-WHERE r."NoWaitingTime" = 12 -- Mon-Fri 8.30am-6.30pm
+WHERE r."TimePeriodID" = 12 -- Mon-Fri 8.30am-6.30pm
 AND c."CPZ" IN ('1' ,  '1A' ,  '2' ,  '3' , '4')
 AND ST_WITHIN (r.geom, c.geom);
 
