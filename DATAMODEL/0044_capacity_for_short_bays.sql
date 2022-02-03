@@ -1,5 +1,5 @@
 /***
-Update trigger to deal with short bays
+Update trigger to deal with short bays - and bays in front of crossovers
 ***/
 
 -- main trigger
@@ -12,6 +12,7 @@ DECLARE
 	 vehicleWidth real := 0.0;
 	 motorcycleWidth real := 0.0;
 	 restrictionLength real := 0.0;
+	 fieldCheck boolean := false;
 BEGIN
 
     select "Value" into vehicleLength
@@ -31,9 +32,28 @@ BEGIN
         RETURN OLD;
     END IF;
 
-    -- Deal with short bays
+    -- Deal with short bays and crossovers in front of bays
 
     IF NEW."RestrictionTypeID" < 200 THEN
+
+        -- Check that there is a column called "UnacceptableTypeID"
+
+		--RAISE NOTICE '***** In TG_TABLE_SCHEMA (%)', TG_TABLE_SCHEMA;
+		--RAISE NOTICE '***** In TG_TABLE_NAME (%)', TG_TABLE_NAME;
+
+        SELECT TRUE INTO fieldCheck
+        FROM information_schema.columns
+        WHERE table_schema = TG_TABLE_SCHEMA
+        AND table_name = TG_TABLE_NAME
+        AND column_name = 'UnacceptableTypeID';
+
+        IF fieldCheck THEN
+            IF NEW."UnacceptableTypeID" IN (1,4,11) THEN
+                    NEW."Capacity" = 0;
+                    NEW."NrBays" = 0;
+            END IF;
+		END IF;
+
 	    IF NEW."NrBays" < 0 AND
              NEW."GeomShapeID" IN (1, 2, 3, 21, 22, 23) AND
              public.ST_Length (NEW."geom") <= vehicleLength THEN   -- all the parallel bay types
@@ -54,18 +74,25 @@ BEGIN
         **/
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
-            CASE WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
-                 WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
-                 WHEN NEW."RestrictionLength" >=(vehicleLength*4) THEN
-                     CASE WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
-					      WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
-                          END CASE;
-                 WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
+            CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
                  ELSE
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
-                          END CASE;
+                     CASE WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 146, 147, 150, 151) THEN
+                        NEW."Capacity" = 0;
+                     ELSE
+                         CASE
+                             WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
+                             WHEN NEW."RestrictionLength" >=(vehicleLength*4) THEN
+                                 CASE WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
+                                      WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                                      ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                                 END CASE;
+                             WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
+                             ELSE
+                                 CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                                      ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                                 END CASE;
+                         END CASE;
+                     END CASE;
             END CASE;
         ELSE
 
@@ -81,7 +108,10 @@ BEGIN
              **/
 
             CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229) THEN
-                     CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                     -- Consider only short bays, i.e., < 5.0m
+                     CASE WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
+                          NEW."Capacity" = 1;
+                          --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
                  ELSE NEW."Capacity" = 0;

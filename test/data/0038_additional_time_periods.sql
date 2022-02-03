@@ -132,7 +132,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (484, '7.00am-11.00am', '7.00am-11.00am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (485, 'Mon-Sat 9.00am-10.00am', 'Mon-Sat 9.00am-10.00am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (486, 'Mon-Fri 9.15am-2.30pm', 'Mon-Fri 9.15am-2.30pm');
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (487, 'Mon-Fri 8.30.00am-10.00am', 'Mon-Fri 8.30.00am-10.00am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (487, 'Mon-Fri 8.30am-10.00am', 'Mon-Fri 8.30am-10.00am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (488, 'Mon-Fri 8.30am-9.30am', 'Mon-Fri 8.30am-9.30am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (489, 'Mon-Fri 9.15am-10.00am', 'Mon-Fri 9.15am-10.00am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (490, 'Mon-Sat 8.00am-9.30am', 'Mon-Sat 8.00am-9.30am');
@@ -264,3 +264,20 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (624, 'Mon-Fri midnight-7.00am 9.00pm-midnight Sat midnight-7.00am 1.00pm-midnight Sun At any time', 'Mon-Fri midnight-7.00am 9.00pm-midnight;Sat midnight-7.00am 1.00pm-midnight;Sun At any time');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (625, 'Mon-Fri 8.00am-9.15am 2.45pm-3.45pm', 'Mon-Fri 8.00am-9.15am 2.45pm-3.45pm');
 
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (626, 'Mon-Fri 8.30am-9.30am 2.45pm-3.45pm', 'Mon-Fri 8.30am-9.30am 2.45pm-3.45pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (627, 'Mon-Fri 8.45am-9.15am 2.45pm-3.30pm', 'Mon-Fri 8.45am-9.15am 2.45pm-3.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (628, 'Mon-Thu 8.30am-9.15am 2.45pm-3.30pm Fri 8.30am-9.15am 2.00pm-3.00pm', 'Mon-Thu 8.30am-9.15am 2.45pm-3.30pm Fri 8.30am-9.15am 2.00pm-3.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (629, '8.00am-midnight', '8.00am-midnight');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (630, 'Mon-Fri 8.30am-9.30am 2.45pm-4.00pm', 'Mon-Fri 8.30am-9.30am 2.45pm-4.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (631, 'Mon-Fri 8.30am-9.45am 2.45pm-4.00pm', 'Mon-Fri 8.30am-9.45am 2.45pm-4.00pm');
+
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (632, 'Mon-Fri 8.15am-9.15am 2.30pm-4.30pm', 'Mon-Fri 8.15am-9.15am 2.30pm-4.30pm');
+
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (633, 'Mon-Fri 8.30am-10.30am', 'Mon-Fri 8.30am-10.30am');
+
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (634, 'Mon,Tue,Thu,Fri 6.00am-7.00pm Wed 4.30pm-7.00pm', 'Mon,Tue,Thu,Fri 6.00am-7.00pm;Wed 4.30pm-7.00pm');
+
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (635, 'Mon-Sun 9.00am-11.00am 2.00pm-3.00pm 11.00pm-midnight midnight-7.00am', 'Mon-Sun 9.00am-11.00am 2.00pm-3.00pm;11.00pm-midnight midnight-7.00am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (636, 'Mon-Sun 10.00pm-midnight midnight-6.00pm', 'Mon-Sun 10.00pm-midnight midnight-6.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (637, 'Mon-Sun 6.30am-10.30am', 'Mon-Sun 6.30am-10.30am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (638, 'Mon-Sun 9.30am-midday', 'Mon-Sun 9.30am-midday');

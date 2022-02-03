@@ -103,7 +103,14 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER "update_capacity_bays" BEFORE INSERT OR UPDATE ON "toms"."Bays" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
+DROP TRIGGER IF EXISTS update_capacity_bays ON toms."Bays";
+
+CREATE TRIGGER update_capacity_bays
+    BEFORE INSERT OR UPDATE OF "RestrictionTypeID", "GeomShapeID", "NrBays", "geom"
+    ON toms."Bays"
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_capacity();
+
 CREATE TRIGGER "update_capacity_lines" BEFORE INSERT OR UPDATE ON "toms"."Lines" FOR EACH ROW EXECUTE FUNCTION "public"."update_capacity"();
 
 -- Do complete revision if change parameters

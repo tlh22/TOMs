@@ -77,7 +77,7 @@ from ..constants import (
 
 from ..mapTools import MapToolMixin
 #from restrictionTypeUtils import RestrictionTypeUtils
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, originalFeature
+from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, originalFeature, TOMsLabelLayerNames
 from ..core.proposalsManager import TOMsProposalsManager
 
 # generate a subclass of Martin's class
@@ -241,7 +241,12 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
             self.addRestrictionToProposal(newRestrictionID, self.getRestrictionLayerTableID(self.getPrimaryLabelLayer(self.origLayer)), self.proposalsManager.currentProposal(), RestrictionAction.OPEN) # open the new one
             TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - feature opened.", level=Qgis.Info)
 
-            #self.proposalsManager.updateMapCanvas()
+            # if there are label layers, update those so that new feature is available
+            layerDetails = TOMsLabelLayerNames(self.origLayer)
+
+            for label_layer_name in layerDetails.getCurrLabelLayerNames():
+                labelLayer = QgsProject.instance().mapLayersByName(label_layer_name)[0]
+                labelLayer.reload()
 
         else:
 
