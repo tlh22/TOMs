@@ -235,7 +235,13 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 for (currRestrictionID, restrictionInProposalObject) in self.__getRestrictionsInProposalForLayerForAction(layerID):
 
                     currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, thisLayer, currRestrictionID)
-                    dictTilesInProposal.update(currRestriction.getTilesForRestrictionForDate(revisionDate))
+                    if currRestriction:
+                        dictTilesInProposal.update(currRestriction.getTilesForRestrictionForDate(revisionDate))
+                    else:
+                        dictTilesInProposal = dict()
+                        reply = QMessageBox.information(None, "Error",
+                                                        "getProposalTileDictionaryForDate failed with RestrictionID: {}".format(currRestrictionID)
+                                                        , QMessageBox.Ok)
 
                 # reset filter
                 filterStatus = thisLayerProvider.setSubsetString(currFilter)
