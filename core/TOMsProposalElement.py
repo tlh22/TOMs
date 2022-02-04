@@ -51,7 +51,7 @@ class TOMsProposalElement(QObject):
         self.layerID = layerID
         self.thisLayer = restrictionLayer
 
-        self.setElement(restrictionID)
+        status = self.setElement(restrictionID)
 
     def getGeometryID(self):
         return self.thisElement["GeometryID"]
@@ -87,10 +87,13 @@ class TOMsProposalElement(QObject):
             return True
 
         TOMsMessageLog.logMessage("*** ERROR: RestrictionID: \'{restrictionID}\' not found within layer {layerName}".format(restrictionID=restrictionID, layerName=self.thisLayer.name()), level=Qgis.Warning)
+        self.thisElement = None
         return False # either not found or 0
 
     def getElement(self):
-        return self
+        if self.thisElement:
+            return self
+        return None
 
     def getTilesForRestrictionForDate(self, filterDate):
         # get the tile(s) for a given restriction

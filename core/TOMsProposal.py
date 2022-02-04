@@ -221,6 +221,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         if self.getProposalNr() > 0:  # need to consider a proposal
 
             # loop through all the layers that might have restrictions
+
             for (layerID, layerName) in self.getRestrictionLayersList():
 
                 # clear filter
@@ -235,7 +236,17 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 for (currRestrictionID, restrictionInProposalObject) in self.__getRestrictionsInProposalForLayerForAction(layerID):
 
                     currRestriction = ProposalElementFactory.getProposalElement(self.proposalsManager, layerID, thisLayer, currRestrictionID)
-                    dictTilesInProposal.update(currRestriction.getTilesForRestrictionForDate(revisionDate))
+                    if currRestriction.getElement():
+                        dictTilesInProposal.update(currRestriction.getTilesForRestrictionForDate(revisionDate))
+                    else:
+                        dictTilesInProposal = dict()
+                        reply = QMessageBox.information(None, "Error",
+                                                        "getProposalTileDictionaryForDate failed with RestrictionID: {}".format(currRestrictionID)
+                                                        , QMessageBox.Ok)
+                        break
+                else:  # only execute when it's no break in the inner loop
+                    continue
+                break
 
                 # reset filter
                 filterStatus = thisLayerProvider.setSubsetString(currFilter)
