@@ -298,6 +298,8 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         proposalTileDictionaryForDate = printProposalObject.getProposalTileDictionaryForDate(currRevisionDate)
 
+        if len(proposalTileDictionaryForDate) == 0:
+            return
         # Now check which tiles to use
         self.tilesToPrint = self.TOMsChooseTiles(proposalTileDictionaryForDate)
 

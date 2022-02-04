@@ -91,7 +91,9 @@ class TOMsProposalElement(QObject):
         return False # either not found or 0
 
     def getElement(self):
-        return self
+        if self.thisElement:
+            return self
+        return None
 
     def getTilesForRestrictionForDate(self, filterDate):
         # get the tile(s) for a given restriction
