@@ -2,10 +2,7 @@
 # Taken from https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 # -----------------------------------------------------------
 
-from qgis.PyQt.QtCore import (
-    Qt,
-    QEvent
-)
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from qgis.PyQt.QtWidgets import (
     QComboBox,
@@ -23,6 +20,16 @@ from qgis.gui import (
     QgsCheckableComboBox
 )
 
+class Ui_thComboBox(object):
+    def setupUi(self, thComboBox):
+        thComboBox.setObjectName("promotedWidget")
+        QtCore.QMetaObject.connectSlotsByName(thComboBox)
+
+class thPushButton(QtWidgets.QPushButton):
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QPushButton.__init__(self, *args, **kwargs)
+        self.setstyleSheet("background-color:red")
+"""
 class CheckableComboBox(QComboBox):
 
     # Subclass Delegate to increase item height
@@ -153,3 +160,5 @@ class CheckableComboBox2(QgsCheckableComboBox):
                 self.setCurrentIndex(i)
                 self.model().itemCheckStateChanged.emit()
                 return
+
+"""
