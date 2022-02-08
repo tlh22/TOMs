@@ -36,7 +36,7 @@ class thPushButton(QtWidgets.QPushButton):
 To promote widget:
 1. add placeholder widget to form, e.g., QLabel or QPushButton
 2. create new class ideally using the placeholder widget as inheritance base
-3. within QtDesign, right clikc on placeholder and "Promote"
+3. within QtDesign, right click on placeholder and "Promote"
 4. Add name of new class
 5. Add path to header (including file name). No need for file extensions
 

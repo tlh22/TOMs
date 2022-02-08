@@ -203,7 +203,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QComboBox" name="MaxStayID"/>
+          <widget class="thComboBox" name="MaxStayID"/>
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="lbl_NoReturn">

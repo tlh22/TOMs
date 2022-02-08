@@ -227,7 +227,7 @@
         </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QComboBox" name="AdditionalConditionID"/>
+        <widget class="thComboBox" name="AdditionalConditionID"/>
        </item>
        <item row="5" column="0">
         <widget class="QLabel" name="label_2">
@@ -571,8 +571,13 @@
  <customwidgets>
   <customwidget>
    <class>QgsDateTimeEdit</class>
-   <extends>QDateTimeEdit</extends>
+   <extends></extends>
    <header>qgsdatetimeedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>thComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">TOMs.ui.CheckableComboBox2</header>
   </customwidget>
  </customwidgets>
  <resources/>

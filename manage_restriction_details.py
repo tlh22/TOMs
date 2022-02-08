@@ -62,7 +62,7 @@ from TOMs.importRestrictions.restriction_to_import import (restrictionToImport)
 
 import functools
 
-
+from TOMs.ui.__restrictionLineDetails_dialog import restrictionLineDetailsDialog
 
 class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
@@ -293,9 +293,23 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     dialog = self.iface.getFeatureForm(currRestrictionLayer, currRestriction)
 
-                    self.setupRestrictionDialog(dialog, currRestrictionLayer, currRestriction, self.restrictionTransaction)  # connects signals
+                    layerEditFormConfig = currRestrictionLayer.editFormConfig()
+                    ui_path = layerEditFormConfig.uiForm()
+                    TOMsMessageLog.logMessage(
+                        "In manage_restriction_details:doRestrictionDetails. ui_path for layer {} is {} ...".format(currRestrictionLayer, ui_path),
+                        level=Qgis.Warning)
 
-                    dialog.show()
+                    self.iface.preloadForm(ui_path)
+
+                    ex = restrictionLineDetailsDialog()
+
+                    self.setupRestrictionDialog(ex, currRestrictionLayer, currRestriction, self.restrictionTransaction)  # connects signals
+
+                    ex.show()
+                    #dialog.show()
+                    reply = QMessageBox.information(self.iface.mainWindow(), "Information",
+                                                    "stopping briefly ...",
+                                                    QMessageBox.Ok)
 
                     #self.iface.openFeatureForm(self.currRestrictionLayer, self.currRestriction)
 

@@ -1,7 +1,6 @@
 import os
-import sys
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import uic
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
