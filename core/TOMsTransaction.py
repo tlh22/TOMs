@@ -58,7 +58,7 @@ from ..constants import (
 
 @singleton
 class TOMsTransaction(QObject):
-    transactionCompleted = pyqtSignal()
+    #transactionCompleted = pyqtSignal()
     """Signal will be emitted, when the transaction is finished - either committed or rollback"""
 
     def __init__(self, iface, proposalsManager):
@@ -145,13 +145,13 @@ class TOMsTransaction(QObject):
             self.modified = False
             self.errorOccurred = False
 
-            self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
+            #self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
 
             return
 
     def startTransactionGroup(self):
 
-        TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup.", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup.", level=Qgis.Warning)
 
         if self.currTransactionGroup.isEmpty():
             TOMsMessageLog.logMessage("In TOMsTransaction:startTransactionGroup. Currently empty adding layers", level=Qgis.Info)
@@ -191,10 +191,10 @@ class TOMsTransaction(QObject):
                                  level=Qgis.Warning)
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        currMapTool = self.iface.mapCanvas().mapTool()
+        #currMapTool = self.iface.mapCanvas().mapTool()
         # currMapTool.deactivate()
         self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-        self.mapTool = None
+        #self.mapTool = None
 
         if not self.currTransactionGroup:
             TOMsMessageLog.logMessage("In TOMsTransaction:commitTransactionGroup. Transaction DOES NOT exist",
@@ -229,7 +229,21 @@ class TOMsTransaction(QObject):
         self.errorOccurred = False
 
         # signal for redraw ...
-        self.transactionCompleted.emit()
+        #self.transactionCompleted.emit()
+
+        try:
+            self.proposalsManager.updateMapCanvas()
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In TOMsTransaction:commitTransactionGroup. Issue updating map canvas *** ...",
+                level=Qgis.Warning)
+
+        """
+        try:
+            self.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
+        except Exception as e:
+            None
+        """
 
         return commitStatus
 
@@ -256,6 +270,13 @@ class TOMsTransaction(QObject):
 
         pass
 
+        """
+        try:
+            self.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
+        except Exception as e:
+            None
+        """
+
         return
 
     def rollBackTransactionGroup(self):
@@ -269,13 +290,33 @@ class TOMsTransaction(QObject):
         try:
             self.tableNames.setLayer(self.TOMsTransactionList[0]).rollBack()  # could be any table ...
             TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. Transaction rolled back correctly ...",
-                                     level=Qgis.Info)
-        except:
-            TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. error: ...",
-                                     level=Qgis.Info)
+                                     level=Qgis.Warning)
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In TOMsTransaction:rollBackTransactionGroup. rollback error {}".format(
+                    e),
+                level=Qgis.Warning)
 
         self.modified = False
         self.errorOccurred = False
         self.errorMessage = None
+
+        """
+        try:
+            self.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
+            TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. disconnected transaction completed signal ...",
+                                     level=Qgis.Warning)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In TOMsTransaction:rollBackTransactionGroup. Issue disconnecting transaction completed signal *** ...",
+                                     level=Qgis.Warning)
+            None
+        """
+
+        try:
+            self.proposalsManager.updateMapCanvas()
+        except Exception as e:
+            TOMsMessageLog.logMessage(
+                "In TOMsTransaction:rollBackTransactionGroup. Issue updating map canvas *** ...",
+                level=Qgis.Warning)
 
         return
