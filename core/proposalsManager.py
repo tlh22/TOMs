@@ -224,6 +224,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                                               level=Qgis.Warning)
                     return False
 
+        TOMsMessageLog.logMessage('Finished updateMapCanvas ... ', level=Qgis.Warning)
+
         return True
 
     def clearRestrictionFilters(self):

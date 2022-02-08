@@ -245,12 +245,14 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                                                         , QMessageBox.Ok)
                         break
                 else:  # only execute when it's no break in the inner loop
-                    continue
-                break
 
-                # reset filter
-                filterStatus = thisLayerProvider.setSubsetString(currFilter)
-                #TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate (2). filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
+                    # reset filter
+                    filterStatus = thisLayerProvider.setSubsetString(currFilter)
+                    # TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate (2). filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
+
+                    continue
+
+                break
 
         else:
 

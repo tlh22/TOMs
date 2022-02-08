@@ -241,6 +241,8 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             "In doSelectRestriction. Current transaction rolled back ... {}".format (commitStatus),
             level=Qgis.Warning)
 
+        self.mapTool = None
+
         #self.proposalsManager.TOMsToolChanged.emit()
 
         if not self.actionSelectRestriction.isChecked():
@@ -633,7 +635,7 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
             "In doRemoveRestriction. Current transaction rolled back ... {}".format (commitStatus),
             level=Qgis.Warning)
 
-        #self.mapTool = None
+        self.mapTool = None
 
         # Get the current proposal from the session variables
         self.currProposalID = self.proposalsManager.currentProposal()
@@ -659,6 +661,15 @@ class manageRestrictionDetails(RestrictionTypeUtilsMixin):
                             break
 
                     self.restrictionTransaction.commitTransactionGroup(None)
+
+                    """
+                    try:
+                        self.proposalsManager.updateMapCanvas()
+                    except Exception as e:
+                        TOMsMessageLog.logMessage(
+                            "In manageRestrictionDetails:doRemoveRestriction. Issue updating map canvas *** ...",
+                            level=Qgis.Warning)
+                    """
 
                 else:
 
