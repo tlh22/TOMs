@@ -2,22 +2,8 @@
 # Taken from https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 # -----------------------------------------------------------
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-
 from qgis.PyQt.QtWidgets import (
-    QComboBox,
-    QStyledItemDelegate,
-    qApp
-)
-
-from qgis.PyQt.QtGui import (
-    QPalette,
-    QFontMetrics,
-    QStandardItem
-)
-
-from qgis.gui import (
-    QgsCheckableComboBox
+    QPushButton
 )
 
 """
@@ -27,9 +13,9 @@ class Ui_thComboBox(object):
         QtCore.QMetaObject.connectSlotsByName(thComboBox)
 """
 
-class thPushButton(QtWidgets.QPushButton):
+class thPushButton(QPushButton):
     def __init__(self, *args, **kwargs):
-        QtWidgets.QPushButton.__init__(self, *args, **kwargs)
+        QPushButton.__init__(self, *args, **kwargs)
         self.setStyleSheet("background-color:red")
 
 """

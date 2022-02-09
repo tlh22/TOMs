@@ -26,25 +26,27 @@
     <string>PushButton</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QgsCheckableComboBox" name="AdditionalConditionID">
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>50</y>
-     <width>75</width>
-     <height>23</height>
+     <y>180</y>
+     <width>160</width>
+     <height>27</height>
     </rect>
-   </property>
-   <property name="text">
-    <string>PushButton</string>
    </property>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QgsCheckableComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgscheckablecombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>thPushButton</class>
    <extends>QPushButton</extends>
-   <header>TOMs.test.promoteWidget.thWidgets</header>
+   <header>TOMs/test/promoteWidget/thWidgets</header>
   </customwidget>
  </customwidgets>
  <resources/>
