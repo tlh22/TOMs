@@ -135,6 +135,8 @@ def getBayRestrictionLabelText(feature):
             timePeriodDesc = None
         else:
             timePeriodDesc = timePeriodID
+    else:
+        timePeriodDesc = timePeriodID
 
     #plpy.info('In getBayRestrictionLabelText. 2 timePeriodDesc: {} {} {}'.format(timePeriodID, CPZWaitingTimeID, timePeriodDesc))
 
@@ -187,7 +189,7 @@ def getBayRestrictionLabelText(feature):
         else:
             timePeriodDesc = "{}".format(additionalConditionID)
 
-    return maxStayDesc, noReturnDesc, timePeriodDesc
+    return maxStayID, noReturnID, timePeriodDesc
 
 def getWaitingLoadingRestrictionLabelText(feature):
 
@@ -216,6 +218,8 @@ def getWaitingLoadingRestrictionLabelText(feature):
             waitDesc = None
         else:
             waitDesc = waitingTimeID
+    else:
+        waitDesc = waitingTimeID
 
     if matchDayTimePeriodID:
         mdedz_rec = getMDEDZ(feature)
@@ -393,7 +397,7 @@ def update_leader_lines(main_geom, label_geom):
 
 if TD["table_name"] == 'Bays':
     maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
-    #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
+    plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
 
     if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
         # reset the leader
@@ -404,7 +408,7 @@ if TD["table_name"] == 'Bays':
 
 if TD["table_name"] == 'Lines':
     waitingDesc, loadingDesc = getWaitingLoadingRestrictionLabelText(NEW)
-    #plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
+    plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
 
     if waitingDesc is None:
         # reset the leader
@@ -426,9 +430,22 @@ NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW[
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
 # check to see whether or not the label has moved. If so, set rotation to None
+
 if OLD is not None:
-    if NEW["label_pos"] != OLD["label_pos"]:
+    plan = plpy.prepare('SELECT ST_EQUALS($1::geometry,$2::geometry) as p', ['text', 'text'])
+
+    try:
+        leader_not_moved = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])[0]['p']
+    except Exception as e:
+        plpy.info('Error checking if leader has moved: {})'.format(e))
+        leader_not_moved = False
+
+    if not leader_not_moved:
         NEW["label_Rotation"] = None
+        plpy.info('Positions are not the same 1 ...')
+
+    if NEW["label_pos"] == NEW["label_ldr"]:
+        plpy.info('Positions are the same 2 ...')
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
@@ -438,7 +455,15 @@ if TD["table_name"] == 'Lines':
 
     # check to see whether or not the label has moved. If so, set rotation to None
     if OLD is not None:
-        if NEW["label_loading_pos"] != OLD["label_loading_pos"]:
+
+        plan = plpy.prepare('SELECT ST_EQUALS($1::geometry,$2::geometry) as p', ['text', 'text'])
+        try:
+            leader_not_moved = plpy.execute(plan, [NEW["label_loading_pos"], NEW["label_loading_ldr"]])[0]['p']
+        except Exception as e:
+            plpy.info('Error when checking if loading leader has moved: {})'.format(e))
+            leader_not_moved = False
+
+        if not leader_not_moved:
             NEW["labelLoading_Rotation"] = None
 
 # this flag is required for the trigger to commit changes in NEW
