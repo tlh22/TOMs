@@ -6,7 +6,7 @@ DROP TRIGGER IF EXISTS insert_mngmt ON toms."Bays";
 DROP TRIGGER IF EXISTS z_insert_mngmt ON toms."Bays";
 
 CREATE TRIGGER z_insert_mngmt
-    BEFORE INSERT OR UPDATE OF "TimePeriodID", "MaxStayID", "NoReturnID", "MatchDayTimePeriodID", "AdditionalConditionID", "PermitCode", "geom", "label_pos"
+    BEFORE INSERT OR UPDATE OF "TimePeriodID", "MaxStayID", "NoReturnID", "MatchDayTimePeriodID", "AdditionalConditionID", "PermitCode", "geom", "label_pos", "label_ldr"
     ON toms."Bays"
     FOR EACH ROW
     EXECUTE FUNCTION toms.labelling_for_restrictions();
@@ -15,7 +15,7 @@ DROP TRIGGER IF EXISTS insert_mngmt ON toms."Lines";
 DROP TRIGGER IF EXISTS z_insert_mngmt ON toms."Lines";
 
 CREATE TRIGGER z_insert_mngmt
-    BEFORE INSERT OR UPDATE OF "NoWaitingTimeID", "NoLoadingTimeID", "MatchDayTimePeriodID", "AdditionalConditionID", "geom", "label_pos", "label_loading_pos"
+    BEFORE INSERT OR UPDATE OF "NoWaitingTimeID", "NoLoadingTimeID", "MatchDayTimePeriodID", "AdditionalConditionID", "geom", "label_pos", "label_ldr", "label_loading_pos", "label_loading_ldr"
     ON toms."Lines"
     FOR EACH ROW
     EXECUTE FUNCTION toms.labelling_for_restrictions();

@@ -380,14 +380,19 @@ def update_leader_lines(main_geom, label_geom):
     except Exception as e:
         plpy.info('update_leader_lines. error calculating leader: {})'.format(e))
         result = OLD["label_ldr"]
+        return result
 
     # Now check the length of the leader line
     plan = plpy.prepare('SELECT ST_LENGTH($1::geometry) as p', ['text'])
     ldr_length = plpy.execute(plan, [result])[0]['p']
 
-    if ldr_length:
-        if ldr_length < 0.01:
-            result = None
+    #plpy.info('update_leader_lines. leader length: {}'.format(ldr_length))
+
+    """
+    if ldr_length < 0.01:
+        plpy.info('update_leader_lines. leader length 3: {}'.format(ldr_length))
+        result = None
+        """
 
     return result
 
@@ -397,18 +402,25 @@ def update_leader_lines(main_geom, label_geom):
 
 if TD["table_name"] == 'Bays':
     maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
-    plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
+    #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
 
     if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
         # reset the leader
         plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
+
         NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+
+        plan = plpy.prepare('SELECT ST_AsText($1::geometry) AS a, ST_AsText($2::geometry) As b', ['text', 'text'])
+        results = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])
+
+        plpy.info('Revised positions: {} {} {}'.format(results[0]['a'], results[0]['b'], NEW["label_Rotation"]))
+
         return "MODIFY"
 
 if TD["table_name"] == 'Lines':
     waitingDesc, loadingDesc = getWaitingLoadingRestrictionLabelText(NEW)
-    plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
+    #plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
 
     if waitingDesc is None:
         # reset the leader
@@ -443,9 +455,6 @@ if OLD is not None:
     if not leader_not_moved:
         NEW["label_Rotation"] = None
         plpy.info('Positions are not the same 1 ...')
-
-    if NEW["label_pos"] == NEW["label_ldr"]:
-        plpy.info('Positions are the same 2 ...')
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
