@@ -398,50 +398,10 @@ def update_leader_lines(main_geom, label_geom):
 
 ##### Logic for the primary label
 
-# Check if label is required
-
-if TD["table_name"] == 'Bays':
-    maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
-    #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
-
-    if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
-        # reset the leader
-        plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
-
-        NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
-        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-
-        plan = plpy.prepare('SELECT ST_AsText($1::geometry) AS a, ST_AsText($2::geometry) As b', ['text', 'text'])
-        results = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])
-
-        plpy.info('Revised positions: {} {} {}'.format(results[0]['a'], results[0]['b'], NEW["label_Rotation"]))
-
-        return "MODIFY"
-
-if TD["table_name"] == 'Lines':
-    waitingDesc, loadingDesc = getWaitingLoadingRestrictionLabelText(NEW)
-    #plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
-
-    if waitingDesc is None:
-        # reset the leader
-        plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
-        NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
-        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-
-    if loadingDesc is None:
-        # reset the leader
-        plpy.info('resetting loading label position and leader for {}'.format(NEW["GeometryID"]))
-        NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
-        NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
-
-    if waitingDesc is None and loadingDesc is None:
-        return "MODIFY"
 
 plpy.info('Preparing label leaders for {}'.format(NEW["GeometryID"]))
 NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW["label_pos"], NEW["label_Rotation"])
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
-
-# check to see whether or not the label has moved. If so, set rotation to None
 
 if OLD is not None:
     plan = plpy.prepare('SELECT ST_EQUALS($1::geometry,$2::geometry) as p', ['text', 'text'])
@@ -474,6 +434,40 @@ if TD["table_name"] == 'Lines':
 
         if not leader_not_moved:
             NEW["labelLoading_Rotation"] = None
+
+# Check if label is required
+
+if TD["table_name"] == 'Bays':
+    maxStayDesc, noReturnDesc, timePeriodDesc = getBayRestrictionLabelText(NEW)
+    #plpy.info('Bay label text: {} {} {}'.format(maxStayDesc, noReturnDesc, timePeriodDesc))
+
+    if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
+        # reset the leader
+        plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
+
+        NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
+        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+
+        plan = plpy.prepare('SELECT ST_AsText($1::geometry) AS a, ST_AsText($2::geometry) As b', ['text', 'text'])
+        results = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])
+
+        plpy.info('Revised positions: {} {} {}'.format(results[0]['a'], results[0]['b'], NEW["label_Rotation"]))
+
+if TD["table_name"] == 'Lines':
+    waitingDesc, loadingDesc = getWaitingLoadingRestrictionLabelText(NEW)
+    #plpy.info('Line label text: {} {}'.format(waitingDesc, loadingDesc))
+
+    if waitingDesc is None:
+        # reset the leader
+        plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
+        NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
+        NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+
+    if loadingDesc is None:
+        # reset the leader
+        plpy.info('resetting loading label position and leader for {}'.format(NEW["GeometryID"]))
+        NEW["label_loading_pos"], NEW["labelLoading_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
+        NEW["label_loading_ldr"] = update_leader_lines(NEW["geom"], NEW["label_loading_pos"])
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
