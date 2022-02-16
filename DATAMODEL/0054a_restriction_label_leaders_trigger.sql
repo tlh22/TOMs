@@ -135,6 +135,8 @@ def getBayRestrictionLabelText(feature):
             timePeriodDesc = None
         else:
             timePeriodDesc = timePeriodID
+    else:
+        timePeriodDesc = timePeriodID
 
     #plpy.info('In getBayRestrictionLabelText. 2 timePeriodDesc: {} {} {}'.format(timePeriodID, CPZWaitingTimeID, timePeriodDesc))
 
@@ -187,7 +189,7 @@ def getBayRestrictionLabelText(feature):
         else:
             timePeriodDesc = "{}".format(additionalConditionID)
 
-    return maxStayDesc, noReturnDesc, timePeriodDesc
+    return maxStayID, noReturnID, timePeriodDesc
 
 def getWaitingLoadingRestrictionLabelText(feature):
 
@@ -216,6 +218,8 @@ def getWaitingLoadingRestrictionLabelText(feature):
             waitDesc = None
         else:
             waitDesc = waitingTimeID
+    else:
+        waitDesc = waitingTimeID
 
     if matchDayTimePeriodID:
         mdedz_rec = getMDEDZ(feature)
@@ -376,14 +380,19 @@ def update_leader_lines(main_geom, label_geom):
     except Exception as e:
         plpy.info('update_leader_lines. error calculating leader: {})'.format(e))
         result = OLD["label_ldr"]
+        return result
 
     # Now check the length of the leader line
     plan = plpy.prepare('SELECT ST_LENGTH($1::geometry) as p', ['text'])
     ldr_length = plpy.execute(plan, [result])[0]['p']
 
-    if ldr_length:
-        if ldr_length < 0.01:
-            result = None
+    #plpy.info('update_leader_lines. leader length: {}'.format(ldr_length))
+
+    """
+    if ldr_length < 0.01:
+        plpy.info('update_leader_lines. leader length 3: {}'.format(ldr_length))
+        result = None
+        """
 
     return result
 
@@ -398,8 +407,15 @@ if TD["table_name"] == 'Bays':
     if maxStayDesc is None and noReturnDesc is None and timePeriodDesc is None:
         # reset the leader
         plpy.info('resetting label position and leader for {}'.format(NEW["GeometryID"]))
+
         NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], None, None)
         NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
+
+        plan = plpy.prepare('SELECT ST_AsText($1::geometry) AS a, ST_AsText($2::geometry) As b', ['text', 'text'])
+        results = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])
+
+        plpy.info('Revised positions: {} {} {}'.format(results[0]['a'], results[0]['b'], NEW["label_Rotation"]))
+
         return "MODIFY"
 
 if TD["table_name"] == 'Lines':
@@ -426,9 +442,19 @@ NEW["label_pos"], NEW["label_Rotation"] = ensure_labels_points(NEW["geom"], NEW[
 NEW["label_ldr"] = update_leader_lines(NEW["geom"], NEW["label_pos"])
 
 # check to see whether or not the label has moved. If so, set rotation to None
+
 if OLD is not None:
-    if NEW["label_pos"] != OLD["label_pos"]:
+    plan = plpy.prepare('SELECT ST_EQUALS($1::geometry,$2::geometry) as p', ['text', 'text'])
+
+    try:
+        leader_not_moved = plpy.execute(plan, [NEW["label_pos"], NEW["label_ldr"]])[0]['p']
+    except Exception as e:
+        plpy.info('Error checking if leader has moved: {})'.format(e))
+        leader_not_moved = False
+
+    if not leader_not_moved:
         NEW["label_Rotation"] = None
+        plpy.info('Positions are not the same 1 ...')
 
 # Logic for the loading label (only exists on table Lines)
 if TD["table_name"] == 'Lines':
@@ -438,71 +464,18 @@ if TD["table_name"] == 'Lines':
 
     # check to see whether or not the label has moved. If so, set rotation to None
     if OLD is not None:
-        if NEW["label_loading_pos"] != OLD["label_loading_pos"]:
+
+        plan = plpy.prepare('SELECT ST_EQUALS($1::geometry,$2::geometry) as p', ['text', 'text'])
+        try:
+            leader_not_moved = plpy.execute(plan, [NEW["label_loading_pos"], NEW["label_loading_ldr"]])[0]['p']
+        except Exception as e:
+            plpy.info('Error when checking if loading leader has moved: {})'.format(e))
+            leader_not_moved = False
+
+        if not leader_not_moved:
             NEW["labelLoading_Rotation"] = None
 
 # this flag is required for the trigger to commit changes in NEW
 return "MODIFY"
 
 $$ LANGUAGE plpython3u;
-
-DROP TRIGGER IF EXISTS insert_mngmt ON toms."Bays";
-DROP TRIGGER IF EXISTS z_insert_mngmt ON toms."Bays";
-
-CREATE TRIGGER z_insert_mngmt
-    BEFORE INSERT OR UPDATE OF "TimePeriodID", "MaxStayID", "NoReturnID", "MatchDayTimePeriodID", "AdditionalConditionID", "PermitCode", "geom", "label_pos"
-    ON toms."Bays"
-    FOR EACH ROW
-    EXECUTE FUNCTION toms.labelling_for_restrictions();
-
-DROP TRIGGER IF EXISTS insert_mngmt ON toms."Lines";
-DROP TRIGGER IF EXISTS z_insert_mngmt ON toms."Lines";
-
-CREATE TRIGGER z_insert_mngmt
-    BEFORE INSERT OR UPDATE OF "NoWaitingTimeID", "NoLoadingTimeID", "MatchDayTimePeriodID", "AdditionalConditionID", "geom", "label_pos", "label_loading_pos"
-    ON toms."Lines"
-    FOR EACH ROW
-    EXECUTE FUNCTION toms.labelling_for_restrictions();
-
-/*"""*/
--- Run the trigger once to "repair" leaders
-
---- Bays
-ALTER TABLE toms."Bays" DISABLE TRIGGER "set_last_update_details_bays";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "set_create_details_Bays";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "set_bay_geom_type_trigger";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "set_restriction_length_bays";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "set_restriction_length_Bays";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "update_capacity_bays";
-ALTER TABLE toms."Bays" DISABLE TRIGGER "notify_qgis_edit";
-
-UPDATE toms."Bays" SET label_pos = label_pos;
-
-ALTER TABLE toms."Bays" ENABLE TRIGGER "set_last_update_details_bays";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "set_create_details_Bays";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "set_bay_geom_type_trigger";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "set_restriction_length_bays";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "set_restriction_length_Bays";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "update_capacity_bays";
-ALTER TABLE toms."Bays" ENABLE TRIGGER "notify_qgis_edit";
-
---- Lines
-ALTER TABLE toms."Lines" DISABLE TRIGGER "set_last_update_details_lines";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "set_create_details_Lines";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "set_crossing_geom_type_trigger";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "set_restriction_length_lines";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "set_restriction_length_Lines";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "update_capacity_lines";
-ALTER TABLE toms."Lines" DISABLE TRIGGER "notify_qgis_edit";
-
-UPDATE toms."Lines" SET label_pos = label_pos;
-
-ALTER TABLE toms."Lines" ENABLE TRIGGER "set_last_update_details_lines";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "set_create_details_Lines";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "set_crossing_geom_type_trigger";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "set_restriction_length_lines";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "set_restriction_length_Lines";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "update_capacity_lines";
-ALTER TABLE toms."Lines" ENABLE TRIGGER "notify_qgis_edit";
-
-/*"""*/
