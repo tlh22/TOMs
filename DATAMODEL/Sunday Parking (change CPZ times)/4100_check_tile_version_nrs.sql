@@ -29,7 +29,7 @@ AND TiP_1."RevisionNr" <> TiP_2."RevisionNr"
 ORDER BY TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalID"
 
 -- Find any changes for different proposals that are using the same version number
-SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_2."TileNr", TiP_2."RevisionNr", TiP_2."ProposalOpenDate"
+SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_1."ProposalID", TiP_1."ProposalTitle", TiP_2."ProposalOpenDate", TiP_2."ProposalID", TiP_2."ProposalTitle"
 FROM (
 SELECT TiP."TileNr", TiP."RevisionNr", p."ProposalID", p."ProposalTitle", p."ProposalOpenDate"
 FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
@@ -43,18 +43,11 @@ WHERE TiP."ProposalID" = p."ProposalID"
 ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
 ) AS TiP_2
 WHERE TiP_1."TileNr" = TiP_2."TileNr"
-AND TiP_1."ProposalOpenDate" <> TiP_2."ProposalOpenDate"
+AND TiP_1."ProposalOpenDate" < TiP_2."ProposalOpenDate"
+AND TiP_1."ProposalID" <> TiP_2."ProposalID"
 AND TiP_1."RevisionNr" = TiP_2."RevisionNr"
+ORDER BY TiP_1."TileNr"
 
--- deal with incorrect changes ...
-UPDATE toms."MapGrid"
-SET m."CurrRevisionNr" = 3
-WHERE id = 1276;
-
-UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 3
-WHERE "TileNr" = 1276
-AND "RevisionNr" = 4;
 
 
 -- Check that the latest revision nr within MapGrid matches the last revision in TilesWithinAcceptedProposals
@@ -72,6 +65,7 @@ BEGIN
     FOR tiles IN
         SELECT m.id, m."CurrRevisionNr", m."LastRevisionDate"
         FROM toms."MapGrid" m
+        ORDER BY m.id
     LOOP
 
         SELECT p."ProposalID", p."ProposalTitle", p."ProposalOpenDate", TiP."RevisionNr"

@@ -20,7 +20,7 @@ BEGIN
         SELECT DISTINCT id, "CurrRevisionNr", "LastRevisionDate"
         FROM toms."MapGrid" m, toms."ControlledParkingZones" c
         WHERE ST_Intersects(m.geom, c.geom)
-        AND c."CPZ" IN ('1')
+        AND c."CPZ" IN ('1', '5')
         AND id NOT IN
         (
         SELECT DISTINCT "TileNr"
