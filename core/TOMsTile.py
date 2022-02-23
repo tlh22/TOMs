@@ -43,18 +43,18 @@ class TOMsTile(QObject):
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer. tilesLayer layer NOT set !!!", level=Qgis.Warning)
         else:
             self.tileLayerFields = self.tilesLayer.fields()
             self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
             self.idxRevisionNr = self.tilesLayer.fields().indexFromName("CurrRevisionNr")
             self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... MapGrid ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer... MapGrid ", level=Qgis.Warning)
 
         self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer("TilesInAcceptedProposals")
         if self.tilesInAcceptedProposalsLayer is None:
-            TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Warning)
-        TOMsMessageLog.logMessage("In TOMsProposal:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer. tilesInAcceptedProposalsLayer layer NOT set !!!", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer... tilesInAcceptedProposalsLayer ", level=Qgis.Warning)
 
     def setTile(self, tileNr):
 
@@ -68,11 +68,11 @@ class TOMsTile(QObject):
             request = QgsFeatureRequest().setFilterExpression(query)
             for tile in self.tilesLayer.getFeatures(request):
                 self.thisTile = tile  # make assumption that only one row
-                TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile found: id: {} revNr: {}".format(self.thisTile.attribute("id"), self.thisTile.attribute("CurrRevisionNr")),
+                TOMsMessageLog.logMessage("In TOMsTile:setTile... tile found: id: {} revNr: {}".format(self.thisTile.attribute("id"), self.thisTile.attribute("CurrRevisionNr")),
                                          level=Qgis.Warning)
                 return True
 
-        TOMsMessageLog.logMessage("In TOMsProposal:setTile... tile NOT found ",
+        TOMsMessageLog.logMessage("In TOMsTile:setTile... tile NOT found ",
                                          level=Qgis.Warning)
         return False # either not found or 0
 
@@ -119,7 +119,7 @@ class TOMsTile(QObject):
 
         queryString = "\"TileNr\" = " + str(self.thisTileNr)
 
-        TOMsMessageLog.logMessage("In getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In TOMsTile:getTileRevisionNrAtDate: queryString: " + str(queryString), level=Qgis.Info)
 
         expr = QgsExpression(queryString)
 
@@ -134,23 +134,23 @@ class TOMsTile(QObject):
             proposalStatus = tileProposal.setProposal(lastProposalID)
             if proposalStatus == False:
                 TOMsMessageLog.logMessage(
-                    "In getTileRevisionNrAtDate: not able to see proposal for " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                    "In TOMsTile:getTileRevisionNrAtDate: not able to see proposal for " + str(lastProposalID) + "; " + str(lastRevisionNr),
                     level=Qgis.Warning)
                 break
 
             lastProposalOpendate = tileProposal.getProposalOpenDate()
 
             TOMsMessageLog.logMessage(
-                "In getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                "In TOMsTile:getTileRevisionNrAtDate: last Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
                 level=Qgis.Info)
 
             TOMsMessageLog.logMessage(
-                "In getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
+                "In TOMsTile:getTileRevisionNrAtDate: last Proposal open date: " + str(lastProposalOpendate) + "; filter date: " + str(filterDate),
                 level=Qgis.Info)
 
             if lastProposalOpendate <= filterDate:
                 TOMsMessageLog.logMessage(
-                    "In getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
+                    "In TOMsTile:getTileRevisionNrAtDate: using Proposal: " + str(lastProposalID) + "; " + str(lastRevisionNr),
                     level=Qgis.Info)
                 return lastRevisionNr, lastProposalOpendate
 
@@ -184,7 +184,7 @@ class TOMsTile(QObject):
         # check that there are no revisions beyond this date
         if self.lastRevisionDate() > currProposal.getProposalOpenDate():
             TOMsMessageLog.logMessage(
-                "In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers would be out of sync. Accept date of current Proposal is before last revision of this tile.",
+                "In TOMsTile:updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers would be out of sync. Accept date of current Proposal is before last revision of this tile.",
                 level=Qgis.Warning)
             QMessageBox.information(self.proposalsManager.iface.mainWindow(), "ERROR", ("In updateTileRevisionNr. tile" + str(self.thisTileNr) + " revision numbers are out of sync"))
             return False
@@ -192,9 +192,15 @@ class TOMsTile(QObject):
 
         currRevisionNr = self.getCurrentRevisionNr()
 
-        # Check this value within TilesInAcceptedProposals
+        # Logic is:
+        #  - if the lastRevisionDate is the same as the Open date of the current Proposal, then do NOT increment
+        #  - if the current version number is NULL or 0, set it to 1, i.e., first change within the tile
+        #  - otherwise, increment
 
-        if currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
+        if self.lastRevisionDate() == currProposal.getProposalOpenDate():
+            self.revisionNrForProposal = currRevisionNr
+
+        elif currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
             self.revisionNrForProposal = 1
         else:
             self.revisionNrForProposal = currRevisionNr + 1
