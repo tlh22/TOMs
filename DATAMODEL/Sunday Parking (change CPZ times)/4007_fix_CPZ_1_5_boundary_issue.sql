@@ -82,5 +82,5 @@ INSERT INTO toms."RestrictionsInProposals"(
 VALUES (205, 7, 2, '43');  -- This is the original PTA
 
 
--- Now check to see if there are any follow on issues
+-- Now check to see if there are any follow on issues, i.e., situations where CPZ in in following Proposals
 SELECT
