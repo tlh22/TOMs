@@ -73,13 +73,16 @@ AND "RestrictionID" = '1711f3b8-7efb-4ede-9d09-b2f005af874f'  -- Will need to ma
 ***/
 
 -- Close
+/**
 UPDATE toms."ParkingTariffAreas"
 SET "CloseDate" = '2020-11-09'
 WHERE "GeometryID" = '43';
 
+
 INSERT INTO toms."RestrictionsInProposals"(
         "ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID")
 VALUES (205, 7, 2, '43');  -- This is the original PTA
+**/
 
 /***
 Deal with mapgrid version numbers
@@ -144,7 +147,5 @@ BEGIN
 END;
 $do$;
 
--- Now check to see if there are any follow on issues, i.e., situations where CPZ in in following Proposals
-SELECT
 
 

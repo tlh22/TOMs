@@ -4,12 +4,8 @@ Add required details to proposals
 
 -- *** create Proposal for CPZ 2
 
-INSERT INTO toms."Proposals"(
-	"ProposalStatusID", "ProposalCreateDate", "ProposalNotes", "ProposalTitle", "ProposalOpenDate")
-	VALUES (2, now(), 'Sunday parking Zone 2', 'TRO-19-29A Zone 2', '2020-11-09');
-
 UPDATE toms."Proposals"
-SET "ProposalStatusID" = 2
+SET "ProposalStatusID" = 2, "ProposalNotes" = 'Sunday parking Zone 2', "ProposalTitle" = 'TRO-19-29A Zone 2', "ProposalOpenDate" = '2020-11-09'
 WHERE "ProposalID" = 203;
 
 -- *** CPZ 2 (Proposal 203 - created above)
