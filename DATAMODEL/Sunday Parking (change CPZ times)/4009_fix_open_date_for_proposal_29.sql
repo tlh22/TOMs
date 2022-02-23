@@ -51,7 +51,7 @@ AND "ProposalID" = 67;
 --** 1927 --
 UPDATE toms."MapGrid"
 SET "CurrRevisionNr" = 4
-WHERE id = 988;
+WHERE id = 1927;
 
 UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 3
@@ -66,14 +66,14 @@ AND "ProposalID" = 62;
 --** 1928 --
 UPDATE toms."MapGrid"
 SET "CurrRevisionNr" = 3, "LastRevisionDate" = '2019-10-01'
-WHERE id = 988;
+WHERE id = 1928;
 
 UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 3
-WHERE "TileNr" = 1927
+WHERE "TileNr" = 1928
 AND "ProposalID" = 29;
 
 UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 2
-WHERE "TileNr" = 1927
+WHERE "TileNr" = 1928
 AND "ProposalID" = 62;
