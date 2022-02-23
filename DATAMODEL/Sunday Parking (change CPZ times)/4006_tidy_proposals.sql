@@ -24,7 +24,7 @@ BEGIN
         -- Delete from Bays
         DELETE FROM toms."Bays"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Bays" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -34,7 +34,7 @@ BEGIN
         -- Delete from Lines
         DELETE FROM toms."Lines"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Lines" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -44,7 +44,7 @@ BEGIN
         -- Delete from RestrictionPolygons
         DELETE FROM toms."RestrictionPolygons"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."RestrictionPolygons" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -54,7 +54,7 @@ BEGIN
         -- Delete from Signs
         DELETE FROM toms."Signs"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Signs" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -67,7 +67,7 @@ BEGIN
 
         -- Delete Proposal
         DELETE FROM toms."Proposals" p
-        WHERE p."ProposalID" = proposal_details."ProposalID"
+        WHERE p."ProposalID" = proposal_details."ProposalID";
 
     END LOOP;
 
@@ -100,7 +100,7 @@ BEGIN
         -- Delete from Bays
         DELETE FROM toms."Bays"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Bays" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -111,7 +111,7 @@ BEGIN
         -- Delete from Lines
         DELETE FROM toms."Lines"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Lines" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -122,7 +122,7 @@ BEGIN
         -- Delete from RestrictionPolygons
         DELETE FROM toms."RestrictionPolygons"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."RestrictionPolygons" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -133,7 +133,7 @@ BEGIN
         -- Delete from Signs
         DELETE FROM toms."Signs"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."Signs" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -144,7 +144,7 @@ BEGIN
         -- Delete from CPZs
         DELETE FROM toms."ControlledParkingZones"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."ControlledParkingZones" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -155,7 +155,7 @@ BEGIN
         -- Delete from PTAs
         DELETE FROM toms."ParkingTariffAreas"
         WHERE "RestrictionID" IN (
-            SELECT "RestrictionID"
+            SELECT r."RestrictionID"
             FROM toms."ParkingTariffAreas" r, toms."RestrictionsInProposals" RiP
             WHERE r."RestrictionID" = RiP."RestrictionID"
             AND RiP."ProposalID" = proposal_details."ProposalID"
@@ -169,7 +169,7 @@ BEGIN
 
         -- Delete Proposal
         DELETE FROM toms."Proposals" p
-        WHERE p."ProposalID" = proposal_details."ProposalID"
+        WHERE p."ProposalID" = proposal_details."ProposalID";
 
     END LOOP;
 
