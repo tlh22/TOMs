@@ -193,14 +193,17 @@ class TOMsTile(QObject):
         currRevisionNr = self.getCurrentRevisionNr()
 
         # Logic is:
-        #  - if the lastRevisionDate is the same as the Open date of the current Proposal, then do NOT increment
         #  - if the current version number is NULL or 0, set it to 1, i.e., first change within the tile
         #  - otherwise, increment
 
+        """
+        #  THIS IS NOT IMPLEMENTED !!! (Subject to lots of discussion - see issue #366
+        # if the lastRevisionDate is the same as the Open date of the current Proposal, then do NOT increment
         if self.lastRevisionDate() == currProposal.getProposalOpenDate():
             self.revisionNrForProposal = currRevisionNr
+        """
 
-        elif currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
+        if currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
             self.revisionNrForProposal = 1
         else:
             self.revisionNrForProposal = currRevisionNr + 1
