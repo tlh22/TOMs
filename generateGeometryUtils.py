@@ -889,10 +889,6 @@ class generateGeometryUtils (QObject):
         minScale = float(generateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
 
-        """maxStayDesc = None
-        noReturnDesc = None
-        timePeriodDesc = None"""
-
         if currScale > minScale:
             return None, None, None
 
@@ -912,6 +908,8 @@ class generateGeometryUtils (QObject):
         maxStayDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, maxStayID)
         noReturnDesc = generateGeometryUtils.getLookupLabelText(lengthOfTimeLayer, noReturnID)
         timePeriodDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, timePeriodID)
+
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText (2) ..", level=Qgis.Info)
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionEDZ = feature.attribute("MatchDayEventDayZone")
@@ -986,30 +984,38 @@ class generateGeometryUtils (QObject):
 
         #TOMsMessageLog.logMessage("In getLookupDescription", level=Qgis.Info)
 
-        query = "\"Code\" = " + str(code)
-        request = QgsFeatureRequest().setFilterExpression(query)
+        if code:
+            query = "\"Code\" = " + str(code)
+            request = QgsFeatureRequest().setFilterExpression(query)
 
-        #TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
 
-        for row in lookupLayer.getFeatures(request):
-            #TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
-            return row.attribute("Description") # make assumption that only one row
+            for row in lookupLayer.getFeatures(request):
+                #TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
+                return row.attribute("Description") # make assumption that only one row
 
         return None
 
     @staticmethod
     def getLookupLabelText(lookupLayer, code):
 
-        TOMsMessageLog.logMessage("In getLookupLabelText", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getLookupLabelText", level=Qgis.Info)
 
-        query = "\"Code\" = " + str(code)
-        request = QgsFeatureRequest().setFilterExpression(query)
+        if code:
+            query = "\"Code\" = " + str(code)
+            request = QgsFeatureRequest().setFilterExpression(query)
 
-        TOMsMessageLog.logMessage("In getLookupLabelText. table: {}; query: {}".format(lookupLayer.name(), str(query)), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getLookupLabelText. table: {}; query: {}".format(lookupLayer.name(), str(query)), level=Qgis.Info)
 
-        for row in lookupLayer.getFeatures(request):
-            TOMsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), level=Qgis.Info)
-            return row.attribute("LabelText") # make assumption that only one row
+            try:
+                row = next(lookupLayer.getFeatures(request))
+                #TOMsMessageLog.logMessage("In getLookupLabelText. returning with {}".format(row["LabelText"]), level=Qgis.Info)
+                return row["LabelText"] # make assumption that only one row
+            except Exception as e:
+                TOMsMessageLog.logMessage('getLookupLabelText: error in expression function: {}'.format(e),
+                                  level=Qgis.Warning)
+
+        #TOMsMessageLog.logMessage("In getLookupLabelText. returning without value ...", level=Qgis.Info)
 
         return None
 
@@ -1147,25 +1153,28 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getCPZWaitingTimeID(cpzNr):
 
-        TOMsMessageLog.logMessage("In getCPZWaitingTimeID", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Looking for {}.".format(cpzNr), level=Qgis.Info)
 
         try:
             CPZLayer = QgsProject.instance().mapLayersByName("CPZs")[0]
         except Exception as e:
-            CPZLayer = None
+            return None
 
-        if CPZLayer:
-            for poly in CPZLayer.getFeatures():
-                currentCPZ = poly.attribute("CPZ")
+        if cpzNr:
 
-                if currentCPZ == cpzNr:
-                    TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
-                    cpzWaitingTimeID = poly.attribute("TimePeriodID")
-                    #cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
-                    #TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
-                    #return cpzWaitingTimeID, cpzMatchDayTimeID
-                    TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}".format(cpzWaitingTimeID), level=Qgis.Info)
-                    return cpzWaitingTimeID
+            query = "\"CPZ\" = '{}'".format(cpzNr)
+            request = QgsFeatureRequest().setFilterExpression(query)
+
+            TOMsMessageLog.logMessage("In getCPZWaitingTimeID. table: {}; query: {}".format(CPZLayer.name(), str(query)), level=Qgis.Info)
+
+            try:
+                row = next(CPZLayer.getFeatures(query))
+            except:
+                return None
+
+            TOMsMessageLog.logMessage("In getCPZWaitingTimeID. Found CPZ.", level=Qgis.Info)
+
+            return row["TimePeriodID"]
 
         return None
 
