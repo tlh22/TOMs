@@ -82,3 +82,112 @@ BEGIN
 
 END;
 $do$;
+
+-- Now deal with tile with the same Acceptance date and ensure that there are sequential revision numbers
+
+-- 987
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 4
+WHERE id = 987;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 4
+WHERE "TileNr" = 987
+AND "ProposalID" = 162;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 987
+AND "ProposalID" = 67;
+
+-- 1220
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 5
+WHERE id = 1220;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1220
+AND "ProposalID" = 62;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 4
+WHERE "TileNr" = 1220
+AND "ProposalID" = 139;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 5
+WHERE "TileNr" = 1220
+AND "ProposalID" = 64;
+
+-- 1222
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 4
+WHERE id = 1222;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1222
+AND "ProposalID" = 67;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 4
+WHERE "TileNr" = 1222
+AND "ProposalID" = 139;
+
+-- 1628
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 3
+WHERE id = 1628;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1628
+AND "ProposalID" = 119;
+
+-- 1863
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 6
+WHERE id = 1863;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1863
+AND "ProposalID" = 112;
+
+-- 1922
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 5
+WHERE id = 1922;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1922
+AND "ProposalID" = 119;
+
+-- 2160
+
+UPDATE toms."MapGrid"
+SET "CurrRevisionNr" = 5
+WHERE id = 1922;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 2160
+AND "ProposalID" = 62;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 4
+WHERE "TileNr" = 2160
+AND "ProposalID" = 139;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 5
+WHERE "TileNr" = 2160
+AND "ProposalID" = 143;

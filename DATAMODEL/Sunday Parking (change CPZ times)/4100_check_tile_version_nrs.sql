@@ -91,7 +91,7 @@ END;
 $do$;
 
 
--- Check that version numbers are sequential in date order
+-- Check that version numbers are sequential in date order for a given tile
 -- https://stackoverflow.com/questions/12444142/postgresql-how-to-figure-out-missing-numbers-in-a-column-using-generate-series
 
 DO
