@@ -113,7 +113,7 @@ class TOMsExpressions():
             res = ElementGeometryFactory.getElementGeometry(feature)
 
         except Exception as e:
-            TOMsMessageLog.logMessage('generateDisplayGeometry: error in expression function: {}'.format(e),
+            TOMsMessageLog.logMessage('generateDisplayGeometry: error in expression function for feature [{}]: {}'.format(feature.attribute("GeometryID"), e),
                               level=Qgis.Warning)
             """TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -132,7 +132,7 @@ class TOMsExpressions():
             res = ElementGeometryFactory.getElementGeometry(feature, RestrictionGeometryTypes.CROSSOVER)
 
         except Exception as e:
-            TOMsMessageLog.logMessage('generateDisplayGeometry: error in expression function: {}'.format(e),
+            TOMsMessageLog.logMessage('generateDisplayGeometry: error in expression function for feature [{}]: {}'.format(feature.attribute("GeometryID"), e),
                               level=Qgis.Warning)
             TOMsMessageLog.logMessage('generateDisplayGeometry', level=Qgis.Info)
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -150,7 +150,7 @@ class TOMsExpressions():
         try:
             return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
         except Exception as e:
-            TOMsMessageLog.logMessage('getAzimuthToRoadCentreLine: error in expression function: {}'.format(e),
+            TOMsMessageLog.logMessage('getAzimuthToRoadCentreLine: error in expression function for feature [{}]: {}'.format(feature.attribute("GeometryID"), e),
                                       level=Qgis.Warning)
             """TOMsMessageLog.logMessage('getAzimuthToRoadCentreLine', level=Qgis.Info)
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -166,7 +166,7 @@ class TOMsExpressions():
         try:
             newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
         except Exception as e:
-            TOMsMessageLog.logMessage('getRoadName: error in expression function: {}'.format(e),
+            TOMsMessageLog.logMessage('getRoadName: error in expression function for feature [{}]: {}'.format(feature.attribute("GeometryID"), e),
                                       level=Qgis.Warning)
             newRoadName = None
 
@@ -187,7 +187,7 @@ class TOMsExpressions():
         try:
             newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
         except Exception as e:
-            TOMsMessageLog.logMessage('getUSRN: error in expression function: {}'.format(e),
+            TOMsMessageLog.logMessage('getUSRN: error in expression function for feature [{}]: {}'.format(feature.attribute("GeometryID"), e),
                                       level=Qgis.Warning)
             newUSRN = None
             """TOMsMessageLog.logMessage('getUSRN', level=Qgis.Info)
@@ -295,7 +295,7 @@ class TOMsExpressions():
     def getWaitingRestrictionLabelText(feature, parent):
         # Returns the text to label the feature
 
-        TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText: Feature:{}".format(feature.attributes()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText: Feature:{}".format(feature.attribute("GeometryID")), level=Qgis.Info)
 
         try:
             waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
@@ -309,10 +309,10 @@ class TOMsExpressions():
                     repr(traceback.extract_tb(exc_traceback))),
                 level=Qgis.Warning)
 
-        #TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText), level=Qgis.Info)
         # waitingText = "Test"
         if waitingText:
-            labelText = "No Waiting: " + waitingText
+            #labelText = "No Waiting: " + waitingText
             labelText = waitingText
             return labelText
 
@@ -322,7 +322,7 @@ class TOMsExpressions():
     def getLoadingRestrictionLabelText(feature, parent):
         # Returns the text to label the feature
 
-        TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: Feature:{}".format(feature.attributes()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: Feature:{}".format(feature.attribute("GeometryID")), level=Qgis.Info)
 
         try:
             waitingText, loadingText = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
@@ -334,9 +334,9 @@ class TOMsExpressions():
                 'getLoadingRestrictionLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
                 level=Qgis.Info)"""
 
-            """TOMsMessageLog.logMessage(
+            TOMsMessageLog.logMessage(
             "In getLoadingRestrictionLabelText ****:" + " Waiting: " + str(waitingText) + " Loading: " + str(loadingText),
-            level=Qgis.Info)"""
+            level=Qgis.Info)
 
         if loadingText:
             #labelText = "No Loading: " + loadingText

@@ -821,6 +821,9 @@ class generateGeometryUtils (QObject):
 
         if currScale > minScale:
             return None, None
+
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): get details ...", level=Qgis.Info)
+
         try:
             waitingTimeID = feature.attribute("NoWaitingTimeID")
             loadingTimeID = feature.attribute("NoLoadingTimeID")
@@ -830,7 +833,11 @@ class generateGeometryUtils (QObject):
         except Exception as e:
             return None, None
 
-        TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriods")[0]
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): details found ... [{}]".format(geometryID), level=Qgis.Info)
+
+        TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
+
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): getting lookup values ... [{}]".format(geometryID), level=Qgis.Info)
 
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
@@ -993,15 +1000,15 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getLookupLabelText(lookupLayer, code):
 
-        #TOMsMessageLog.logMessage("In getLookupLabelText", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getLookupLabelText", level=Qgis.Info)
 
         query = "\"Code\" = " + str(code)
         request = QgsFeatureRequest().setFilterExpression(query)
 
-        #TOMsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getLookupLabelText. table: {}; query: {}".format(lookupLayer.name(), str(query)), level=Qgis.Info)
 
         for row in lookupLayer.getFeatures(request):
-            #TOMsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), level=Qgis.Info)
             return row.attribute("LabelText") # make assumption that only one row
 
         return None
