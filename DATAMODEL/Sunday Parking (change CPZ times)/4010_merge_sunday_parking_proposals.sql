@@ -1,5 +1,5 @@
 /***
- * Merge all Proposals associated with Sunday Parking
+ * Merge all Proposals associated with Sunday Parking within inner zones
 
 
 Proposals are:
@@ -25,7 +25,7 @@ BEGIN
 
     -- Create a new Proposal
     INSERT INTO toms."Proposals" ("ProposalStatusID", "ProposalCreateDate", "ProposalNotes", "ProposalTitle", "ProposalOpenDate")
-    VALUES (2, now(), 'Merge of Sunday Parking Proposals', 'TRO-19-29A - Sunday Parking Proposal (Inner Zones) MERGED', '2020-11-09');
+    VALUES (2, now(), 'Merge of Sunday Parking Proposals (inner zones)', 'TRO-19-29A - Sunday Parking Proposal (Inner Zones) MERGED', '2020-11-09');
 
     -- Get Proposal ID
     SELECT max("ProposalID")::integer INTO sunday_parking_proposal_id
