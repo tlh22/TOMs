@@ -147,8 +147,7 @@ class formCamera(QObject):
 
             try:
                 self.START_CAMERA_BUTTON.clicked.disconnect()
-                self.START_CAMERA_BUTTON.clicked.connect(
-                    functools.partial(self.useCamera, self.START_CAMERA_BUTTON, self.TAKE_PHOTO_BUTTON))
+                self.START_CAMERA_BUTTON.clicked.connect(self.useCamera)
             except Exception as e:
                 TOMsMessageLog.logMessage("In formCamera::endCamera: problem resetting connections {}".format(e),
                                           level=Qgis.Warning)
