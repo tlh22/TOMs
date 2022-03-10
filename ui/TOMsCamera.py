@@ -57,22 +57,13 @@ except ImportError:
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs panel")
     cv2_available = False
 
-try:
-    import acapture
-    acapture_available = True
-except ImportError:
-    print('acapture not available ...')
-    QgsMessageLog.logMessage("Not able to import acapture ...", tag="TOMs panel")
-    acapture_available = False
-
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
-
 
 class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
     pixmapUpdated = pyqtSignal(QPixmap)
 
-    def __init__(self, path_absolute, currFileName, cameraNr=None, frameWidth=None, frameHeight=None):
+    def __init__(self, path_absolute, currFileName, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, cameraNr=None, frameWidth=None, frameHeight=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
@@ -90,6 +81,16 @@ class formCamera(QObject):
         if self.frameHeight is None:
             self.frameHeight = 480
 
+        self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
+        self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
+
+        TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Warning)
+
+    def identify(self):
+        reply = QMessageBox.information(None, "Information",
+                                        "Hello, I am a camera path:{} photo:{} ...".format(self.path_absolute, self.currFileName),
+                                        QMessageBox.Ok)
+
     @pyqtSlot(QPixmap)
     def displayFrame(self, pixmap):
         TOMsMessageLog.logMessage("In formCamera::displayFrame ... ", level=Qgis.Info)
@@ -98,11 +99,9 @@ class formCamera(QObject):
         self.pixmapUpdated.emit(pixmap)
         QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
 
-    def useCamera(self, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, FIELD):
-        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Info)
-        self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
-        self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
-        self.FIELD = FIELD
+    @pyqtSlot()
+    def useCamera(self):
+        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Warning)
 
         self.START_CAMERA_BUTTON.clicked.disconnect()
         self.currButtonColour = self.START_CAMERA_BUTTON.palette().button().color()
@@ -126,38 +125,52 @@ class formCamera(QObject):
 
     def endCamera(self):
 
-        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Warning)
 
-        self.camera.stopCamera()
-        self.camera.changePixmap.disconnect(self.displayFrame)
-        self.camera.closeCamera.disconnect(self.endCamera)
+        try:
+            self.camera.stopCamera()
+            self.camera.changePixmap.disconnect(self.displayFrame)
+            self.camera.closeCamera.disconnect(self.endCamera)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In formCamera::endCamera: problem stopping camera {}".format(e), level=Qgis.Warning)
 
         # del self.camera
 
-        self.TAKE_PHOTO_BUTTON.setEnabled(False)
-        self.START_CAMERA_BUTTON.setChecked(False)
-        self.START_CAMERA_BUTTON.setText('Open Camera')
-        self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: green;}')
-        self.TAKE_PHOTO_BUTTON.clicked.disconnect()
+        if self.TAKE_PHOTO_BUTTON:
+            self.TAKE_PHOTO_BUTTON.setEnabled(False)
+            self.TAKE_PHOTO_BUTTON.clicked.disconnect()
 
-        self.START_CAMERA_BUTTON.clicked.disconnect()
-        self.START_CAMERA_BUTTON.clicked.connect(
-            functools.partial(self.useCamera, self.START_CAMERA_BUTTON, self.TAKE_PHOTO_BUTTON, self.FIELD))
+        if self.START_CAMERA_BUTTON:
+            self.START_CAMERA_BUTTON.setChecked(False)
+            self.START_CAMERA_BUTTON.setText('Open Camera')
+            self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: green;}')
+
+            try:
+                self.START_CAMERA_BUTTON.clicked.disconnect()
+                self.START_CAMERA_BUTTON.clicked.connect(self.useCamera)
+            except Exception as e:
+                TOMsMessageLog.logMessage("In formCamera::endCamera: problem resetting connections {}".format(e),
+                                          level=Qgis.Warning)
 
         if self.photoTaken == False:
             self.resetPhoto()
 
     def closeCameraForm(self):
 
-        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Warning)
 
-        self.camera.stopCamera()
-        self.camera.changePixmap.disconnect(self.displayFrame)
-        self.camera.closeCamera.disconnect(self.endCamera)
+        try:
+            self.camera.stopCamera()
+            self.camera.changePixmap.disconnect(self.displayFrame)
+            self.camera.closeCamera.disconnect(self.endCamera)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In formCamera::closeCameraForm1: problem stopping camera {}".format(e), level=Qgis.Warning)
 
-        self.TAKE_PHOTO_BUTTON.clicked.disconnect()
-        self.START_CAMERA_BUTTON.clicked.disconnect()
-
+        try:
+            self.TAKE_PHOTO_BUTTON.clicked.disconnect()
+            self.START_CAMERA_BUTTON.clicked.disconnect()
+        except Exception as e:
+            TOMsMessageLog.logMessage("In formCamera::closeCameraForm1: problem disconnecting buttons {}".format(e), level=Qgis.Warning)
 
     @pyqtSlot(str)
     def checkPhotoTaken(self, fileName):
@@ -171,16 +184,18 @@ class formCamera(QObject):
             self.photoTaken = False
 
     def resetPhoto(self):
-        TOMsMessageLog.logMessage("In formCamera::resetPhoto ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In formCamera::resetPhoto ... ", level=Qgis.Info)
 
-        pixmap = QPixmap(self.currFileName)
-        if pixmap.isNull():
-            pass
-        else:
-            #self.FIELD.setPixmap(pixmap)
-            #self.FIELD.setScaledContents(True)
-            self.pixmapUpdated.emit(pixmap)
+        if len(self.currFileName) > 0:
+            pixmap = QPixmap(self.currFileName)
+            if pixmap.isNull():
+                pass
+            else:
+                #self.FIELD.setPixmap(pixmap)
+                #self.FIELD.setScaledContents(True)
+                self.pixmapUpdated.emit(pixmap)
 
+        return
 
 class cvCamera(QThread):
     changePixmap = pyqtSignal(QPixmap)
@@ -189,15 +204,19 @@ class cvCamera(QThread):
 
     def __init__(self):
         QThread.__init__(self)
+        TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Warning)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
         self.cameraAvailable = False
-        self.cap.release()
+        try:
+            self.cap.release()
+        except Exception as e:
+            TOMsMessageLog.logMessage("In cvCamera::stopCamera: problem stopping camera {}".format(e), level=Qgis.Info)
 
     def startCamera(self, cameraNr, frameWidth, frameHeight):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Warning)
 
         """if acapture_available:
             self.cap = acapture.open(cameraNr)  # /dev/video0
@@ -207,7 +226,12 @@ class cvCamera(QThread):
             self.closeCamera.emit()
             return False
 
-        self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
+        try:
+            self.cap = cv2.VideoCapture(cameraNr)  # video capture source camera (Here webcam of laptop)
+        except Exception as e:
+            TOMsMessageLog.logMessage("In TOMsCamera::startCamera: problem starting camera {}".format(e), level=Qgis.Warning)
+            self.cameraAvailable = False
+            return
 
         self.cameraAvailable = True
         if not self.cap.isOpened():
@@ -216,7 +240,7 @@ class cvCamera(QThread):
 
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2a ", level=Qgis.Info)
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... resolution: {}*{} ".format(frameWidth, frameHeight), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... resolution: {}*{} ".format(frameWidth, frameHeight), level=Qgis.Info)
 
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, frameWidth)  # width=640 (1600)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frameHeight)  # height=480 (1200)

@@ -958,9 +958,9 @@ class RestrictionTypeUtilsMixin():
                     TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
                     TAKE_PHOTO_1.setEnabled(False)
 
-                    self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
-                    START_CAMERA_1.clicked.connect(
-                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
+                    self.camera1 = formCamera(path_absolute, newPhotoFileName1, START_CAMERA_1, TAKE_PHOTO_1, self.cameraNr)
+                    START_CAMERA_1.clicked.connect(self.camera1.useCamera)
+
                     self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
@@ -986,9 +986,9 @@ class RestrictionTypeUtilsMixin():
                     TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
                     TAKE_PHOTO_2.setEnabled(False)
 
-                    self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
-                    START_CAMERA_2.clicked.connect(
-                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
+                    self.camera2 = formCamera(path_absolute, newPhotoFileName2, START_CAMERA_2, TAKE_PHOTO_2, self.cameraNr)
+                    START_CAMERA_2.clicked.connect(self.camera2.useCamera)
+
                     self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
@@ -1013,9 +1013,9 @@ class RestrictionTypeUtilsMixin():
                     TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
                     TAKE_PHOTO_3.setEnabled(False)
 
-                    self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
-                    START_CAMERA_3.clicked.connect(
-                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
+                    self.camera3 = formCamera(path_absolute, newPhotoFileName3, START_CAMERA_3, TAKE_PHOTO_3, self.cameraNr)
+                    START_CAMERA_3.clicked.connect(self.camera3.useCamera)
+
                     self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
