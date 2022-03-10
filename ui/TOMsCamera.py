@@ -63,7 +63,7 @@ class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
     pixmapUpdated = pyqtSignal(QPixmap)
 
-    def __init__(self, path_absolute, currFileName, cameraNr=None, frameWidth=None, frameHeight=None):
+    def __init__(self, path_absolute, currFileName, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, cameraNr=None, frameWidth=None, frameHeight=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
@@ -81,7 +81,10 @@ class formCamera(QObject):
         if self.frameHeight is None:
             self.frameHeight = 480
 
-        TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Info)
+        self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
+        self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
+
+        TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Warning)
 
     def identify(self):
         reply = QMessageBox.information(None, "Information",
@@ -96,12 +99,9 @@ class formCamera(QObject):
         self.pixmapUpdated.emit(pixmap)
         QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
 
-    @pyqtSlot(QPushButton, QPushButton)
-    def useCamera(self, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON):
-        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Info)
-        self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
-        self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
-        #self.FIELD = FIELD
+    @pyqtSlot()
+    def useCamera(self):
+        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Warning)
 
         self.START_CAMERA_BUTTON.clicked.disconnect()
         self.currButtonColour = self.START_CAMERA_BUTTON.palette().button().color()
@@ -125,7 +125,7 @@ class formCamera(QObject):
 
     def endCamera(self):
 
-        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Warning)
 
         try:
             self.camera.stopCamera()
@@ -136,22 +136,29 @@ class formCamera(QObject):
 
         # del self.camera
 
-        self.TAKE_PHOTO_BUTTON.setEnabled(False)
-        self.START_CAMERA_BUTTON.setChecked(False)
-        self.START_CAMERA_BUTTON.setText('Open Camera')
-        self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: green;}')
-        self.TAKE_PHOTO_BUTTON.clicked.disconnect()
+        if self.TAKE_PHOTO_BUTTON:
+            self.TAKE_PHOTO_BUTTON.setEnabled(False)
+            self.TAKE_PHOTO_BUTTON.clicked.disconnect()
 
-        self.START_CAMERA_BUTTON.clicked.disconnect()
-        self.START_CAMERA_BUTTON.clicked.connect(
-            functools.partial(self.useCamera, self.START_CAMERA_BUTTON, self.TAKE_PHOTO_BUTTON))
+        if self.START_CAMERA_BUTTON:
+            self.START_CAMERA_BUTTON.setChecked(False)
+            self.START_CAMERA_BUTTON.setText('Open Camera')
+            self.START_CAMERA_BUTTON.setStyleSheet('QPushButton {color: green;}')
+
+            try:
+                self.START_CAMERA_BUTTON.clicked.disconnect()
+                self.START_CAMERA_BUTTON.clicked.connect(
+                    functools.partial(self.useCamera, self.START_CAMERA_BUTTON, self.TAKE_PHOTO_BUTTON))
+            except Exception as e:
+                TOMsMessageLog.logMessage("In formCamera::endCamera: problem resetting connections {}".format(e),
+                                          level=Qgis.Warning)
 
         if self.photoTaken == False:
             self.resetPhoto()
 
     def closeCameraForm(self):
 
-        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Warning)
 
         try:
             self.camera.stopCamera()
@@ -164,7 +171,7 @@ class formCamera(QObject):
             self.TAKE_PHOTO_BUTTON.clicked.disconnect()
             self.START_CAMERA_BUTTON.clicked.disconnect()
         except Exception as e:
-            TOMsMessageLog.logMessage("In formCamera::closeCameraForm1: problem stopping camera {}".format(e), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In formCamera::closeCameraForm1: problem disconnecting buttons {}".format(e), level=Qgis.Warning)
 
     @pyqtSlot(str)
     def checkPhotoTaken(self, fileName):
@@ -198,10 +205,10 @@ class cvCamera(QThread):
 
     def __init__(self):
         QThread.__init__(self)
-        TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Warning)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
         self.cameraAvailable = False
         try:
             self.cap.release()
@@ -210,7 +217,7 @@ class cvCamera(QThread):
 
     def startCamera(self, cameraNr, frameWidth, frameHeight):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Warning)
 
         """if acapture_available:
             self.cap = acapture.open(cameraNr)  # /dev/video0
