@@ -960,7 +960,7 @@ class RestrictionTypeUtilsMixin():
 
                     self.camera1 = formCamera(path_absolute, newPhotoFileName1, self.cameraNr)
                     START_CAMERA_1.clicked.connect(
-                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1, FIELD1))
+                        functools.partial(self.camera1.useCamera, START_CAMERA_1, TAKE_PHOTO_1))
                     self.camera1.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx1))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
@@ -988,7 +988,7 @@ class RestrictionTypeUtilsMixin():
 
                     self.camera2 = formCamera(path_absolute, newPhotoFileName2, self.cameraNr)
                     START_CAMERA_2.clicked.connect(
-                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2, FIELD2))
+                        functools.partial(self.camera2.useCamera, START_CAMERA_2, TAKE_PHOTO_2))
                     self.camera2.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx2))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
@@ -1015,7 +1015,7 @@ class RestrictionTypeUtilsMixin():
 
                     self.camera3 = formCamera(path_absolute, newPhotoFileName3, self.cameraNr)
                     START_CAMERA_3.clicked.connect(
-                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3, FIELD3))
+                        functools.partial(self.camera3.useCamera, START_CAMERA_3, TAKE_PHOTO_3))
                     self.camera3.notifyPhotoTaken.connect(functools.partial(self.savePhotoTaken, idx3))
                 except Exception as e:
                     TOMsMessageLog.logMessage('photoDetails: issue for photo form {}'.format(e), level=Qgis.Info)
