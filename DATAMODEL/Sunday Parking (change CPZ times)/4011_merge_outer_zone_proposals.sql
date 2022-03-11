@@ -11,7 +11,22 @@ Proposals are:
 
 Need to include into one new Proposal. Create a new one and mark the others as "Rejected"
 
+-- Check to see if there are any "duplicates"
+
+SELECT RiP."RestrictionID", RiP."ProposalID", RiP_2."ProposalID"
+FROM toms."RestrictionsInProposals" RiP, toms."RestrictionsInProposals" RiP_2
+WHERE RiP."ProposalID" IN (72, 39, 64, 50, 69)
+AND RiP_2."ProposalID" IN (72, 39, 64, 50, 69)
+AND RiP."RestrictionID" = RiP_2."RestrictionID"
+AND RiP."ProposalID" < RiP_2."ProposalID"
+ORDER BY RiP."RestrictionID", RiP."ProposalID"
+
  ***/
+
+-- Tidy Proposals
+DELETE FROM toms."RestrictionsInProposals"
+WHERE "RestrictionID" IN ('L_15379', 'L_15397', 'L_15398', 'L_15517')
+AND "ProposalID" = 39;
 
 -- Move restriction details to single Proposal
 
@@ -81,3 +96,50 @@ BEGIN
 
 END;
 $do$;
+
+
+/***
+ To see which restrictions from a given Proposals are within a specifc tile ...
+ ***/
+
+DO
+$do$
+DECLARE
+    proposal_id INTEGER = 308;
+    tile_nr INTEGER = 1512;
+BEGIN
+
+    SELECT r."GeometryID"
+    FROM toms."Bays" r, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP
+    WHERE TiP."TileNr" = tile_nr
+    AND TiP."ProposalID" = proposal_id
+    AND TiP."ProposalID" = RiP."ProposalID"
+    AND RiP."RestrictionID" = r."RestrictionID";
+
+
+END;
+$do$;
+
+
+CREATE FUNCTION restrictions_in_proposal_in_tile (proposal_id int, tile_nr int)
+RETURNS TABLE("GeoemtryID" text) AS $$
+    SELECT r."GeometryID"
+    FROM toms."Bays" r, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP, toms."MapGrid" m
+    WHERE TiP."TileNr" = tile_nr
+    AND TiP."ProposalID" = proposal_id
+    AND TiP."ProposalID" = RiP."ProposalID"
+    AND RiP."RestrictionID" = r."RestrictionID"
+    AND ST_Within(r.geom, m.geom);
+$$ LANGUAGE SQL;
+
+
+
+SELECT r."RestrictionID", r.geom, r."GeometryID"
+FROM toms."Bays" r, toms."MapGrid" m
+WHERE TiP."TileNr" = 1512
+AND TiP."ProposalID" = 308
+AND TiP."ProposalID" = RiP."ProposalID"
+AND RiP."RestrictionID" = r."RestrictionID"
+AND ST_Within(r.geom, m.geom);
+
+, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP,

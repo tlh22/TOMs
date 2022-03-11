@@ -172,7 +172,7 @@ WHERE "GeometryID" IN (
     SELECT r."GeometryID"
     FROM toms."Bays" r, toms."ControlledParkingZones" c
     WHERE r."CPZ" = '1'
-    AND "TimePeriodID" = 309
+    AND r."TimePeriodID" = 309
     AND c."CPZ" = '5'
     AND ST_Within(r.geom, c.geom)
     AND r."OpenDate" IS NOT NULL
@@ -185,7 +185,7 @@ WHERE "GeometryID" IN (
     SELECT r."GeometryID"
     FROM toms."Lines" r, toms."ControlledParkingZones" c
     WHERE r."CPZ" = '1'
-    AND "NoWaitingTimeID" = 309
+    AND r."NoWaitingTimeID" = 309
     AND c."CPZ" = '5'
     AND ST_Within(r.geom, c.geom)
     AND r."OpenDate" IS NOT NULL
