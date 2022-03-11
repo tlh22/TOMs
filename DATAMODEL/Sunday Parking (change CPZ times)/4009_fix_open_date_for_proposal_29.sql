@@ -2,16 +2,9 @@
  * Change Effective date for Proposal 29 (TRO-17-98) to 2019
  ***/
 
--- Change Proposal
-UPDATE toms."Proposals"
-SET "ProposalOpenDate" = '2019-10-01'
-WHERE "ProposalID" = 29;
+SELECT toms."change_proposal_open_date" (29, '01/10/2019');  -- This will change over all the restrictions and try to deal with map tiles
 
--- Change effected tiles
---** 857 --
-UPDATE toms."MapGrid"
-SET "LastRevisionDate" = '2019-10-01'
-WHERE id = 857;
+-- There are two tiles (987 and 1222) for which another Proposal is effective on the same day. Manually change these ...
 
 --** 987 --
 UPDATE toms."MapGrid"
@@ -28,11 +21,6 @@ SET "RevisionNr" = 2
 WHERE "TileNr" = 987
 AND "ProposalID" = 67;
 
---** 988 --
-UPDATE toms."MapGrid"
-SET "CurrRevisionNr" = 2, "LastRevisionDate" = '2019-10-01'
-WHERE id = 988;
-
 --** 1222 --
 UPDATE toms."MapGrid"
 SET "CurrRevisionNr" = 3
@@ -47,33 +35,3 @@ UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 2
 WHERE "TileNr" = 1222
 AND "ProposalID" = 67;
-
---** 1927 --
-UPDATE toms."MapGrid"
-SET "CurrRevisionNr" = 4
-WHERE id = 1927;
-
-UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 3
-WHERE "TileNr" = 1927
-AND "ProposalID" = 29;
-
-UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 2
-WHERE "TileNr" = 1927
-AND "ProposalID" = 62;
-
---** 1928 --
-UPDATE toms."MapGrid"
-SET "CurrRevisionNr" = 3, "LastRevisionDate" = '2019-10-01'
-WHERE id = 1928;
-
-UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 3
-WHERE "TileNr" = 1928
-AND "ProposalID" = 29;
-
-UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 2
-WHERE "TileNr" = 1928
-AND "ProposalID" = 62;

@@ -1,5 +1,5 @@
 /***
- * With the Sunday Parking CPZ changes, any Proposals currently being prepared should reference the new versions of the CPZs:
+ * With the Sunday Parking CPZ changes, any Proposals currently being prepared should reference the new versions of the CPZs and PTAs:
  ***/
 
  -- CPZ 1 - formerly 3 now 36. Swap over and reset TimePeriodID
