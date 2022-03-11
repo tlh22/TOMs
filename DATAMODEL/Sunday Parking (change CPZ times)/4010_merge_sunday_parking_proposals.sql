@@ -156,7 +156,7 @@ SET "CurrRevisionNr" = 6
 WHERE id = 1863;
 
 UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 3
+SET "RevisionNr" = 6
 WHERE "TileNr" = 1863
 AND "ProposalID" = 112;
 
@@ -167,7 +167,7 @@ SET "CurrRevisionNr" = 5
 WHERE id = 1922;
 
 UPDATE toms."TilesInAcceptedProposals"
-SET "RevisionNr" = 3
+SET "RevisionNr" = 5
 WHERE "TileNr" = 1922
 AND "ProposalID" = 119;
 
@@ -175,7 +175,7 @@ AND "ProposalID" = 119;
 
 UPDATE toms."MapGrid"
 SET "CurrRevisionNr" = 5
-WHERE id = 1922;
+WHERE id = 2160;
 
 UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 3
