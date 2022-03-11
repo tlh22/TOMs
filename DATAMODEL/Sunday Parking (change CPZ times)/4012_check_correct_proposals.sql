@@ -98,7 +98,7 @@ RETURNS TABLE("Layer" text, "GeometryID" text, "RestrictionID" text) AS $$
     ;
 $$ LANGUAGE SQL;
 
-SELECT restrictions_in_proposal_in_tile (proposal_id, map_tile);
+-- SELECT restrictions_in_proposal_in_tile (proposal_id, map_tile);
 
 
 -- Move restrictions that should be within the inner zones
@@ -141,9 +141,15 @@ BEGIN
     AND "ProposalID" = 308;
 
     -- Reset MapGrid
+    DELETE FROM toms."TilesInAcceptedProposals"
+    WHERE "TileNr" = 1512
+    AND "RevisionNr" = 3;
+
     UPDATE toms."MapGrid"
     SET "CurrRevisionNr" = 2, "LastRevisionDate" = inner_zones_open_date
     WHERE "id" = 1512;
 
+
 END;
 $do$;
+
