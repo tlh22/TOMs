@@ -23,10 +23,20 @@ ORDER BY RiP."RestrictionID", RiP."ProposalID"
 
  ***/
 
--- Tidy Proposals
+-- Tidy Proposals - remove duplications of deleted restrictions
 DELETE FROM toms."RestrictionsInProposals"
 WHERE "RestrictionID" IN ('L_15379', 'L_15397', 'L_15398', 'L_15517')
 AND "ProposalID" = 39;
+
+-- and deal with within the new restrictions.
+DELETE FROM toms."RestrictionsInProposals"
+WHERE "RestrictionID" IN ('43d0a206-e525-4ab5-83b1-ddb2302663b0')
+AND "ProposalID" = 39;
+
+/***  TODO: at some point in the future
+DELETE FROM toms."Lines"
+WHERE "RestrictionID" IN ('43d0a206-e525-4ab5-83b1-ddb2302663b0');
+***/
 
 -- Move restriction details to single Proposal
 
@@ -39,7 +49,7 @@ BEGIN
 
     -- Create a new Proposal
     INSERT INTO toms."Proposals" ("ProposalStatusID", "ProposalCreateDate", "ProposalNotes", "ProposalTitle", "ProposalOpenDate")
-    VALUES (2, now(), 'Merge of Sunday Parking Proposals (outer zones)', 'TRO-19-29B - Sunday Parking Proposal (Outer Zones) MERGED', '2020-04-05');
+    VALUES (2, now(), 'Merge of Sunday Parking Proposals (outer zones)', 'TRO-19-29B - Sunday Parking Proposal (Outer Zones) MERGED', '2021-04-05');
 
     -- Get Proposal ID
     SELECT max("ProposalID")::integer INTO sunday_parking_proposal_id
@@ -97,49 +107,3 @@ BEGIN
 END;
 $do$;
 
-
-/***
- To see which restrictions from a given Proposals are within a specifc tile ...
- ***/
-
-DO
-$do$
-DECLARE
-    proposal_id INTEGER = 308;
-    tile_nr INTEGER = 1512;
-BEGIN
-
-    SELECT r."GeometryID"
-    FROM toms."Bays" r, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP
-    WHERE TiP."TileNr" = tile_nr
-    AND TiP."ProposalID" = proposal_id
-    AND TiP."ProposalID" = RiP."ProposalID"
-    AND RiP."RestrictionID" = r."RestrictionID";
-
-
-END;
-$do$;
-
-
-CREATE FUNCTION restrictions_in_proposal_in_tile (proposal_id int, tile_nr int)
-RETURNS TABLE("GeoemtryID" text) AS $$
-    SELECT r."GeometryID"
-    FROM toms."Bays" r, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP, toms."MapGrid" m
-    WHERE TiP."TileNr" = tile_nr
-    AND TiP."ProposalID" = proposal_id
-    AND TiP."ProposalID" = RiP."ProposalID"
-    AND RiP."RestrictionID" = r."RestrictionID"
-    AND ST_Within(r.geom, m.geom);
-$$ LANGUAGE SQL;
-
-
-
-SELECT r."RestrictionID", r.geom, r."GeometryID"
-FROM toms."Bays" r, toms."MapGrid" m
-WHERE TiP."TileNr" = 1512
-AND TiP."ProposalID" = 308
-AND TiP."ProposalID" = RiP."ProposalID"
-AND RiP."RestrictionID" = r."RestrictionID"
-AND ST_Within(r.geom, m.geom);
-
-, toms."RestrictionsInProposals" RiP, toms."TilesInAcceptedProposals" TiP,
