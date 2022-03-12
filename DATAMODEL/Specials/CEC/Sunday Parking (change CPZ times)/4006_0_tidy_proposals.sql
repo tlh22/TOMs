@@ -77,3 +77,4 @@ UPDATE toms."ControlledParkingZones"
 SET "TimePeriodID" = 309
 WHERE "RestrictionID" = '38';  -- This is the CPZ that is opened
 
+-- *** Actually this needs to be dealt with manually ...
