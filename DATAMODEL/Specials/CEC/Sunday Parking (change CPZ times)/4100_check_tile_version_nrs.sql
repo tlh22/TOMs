@@ -31,7 +31,7 @@ AND TiP_1."RevisionNr" < TiP_2."RevisionNr"
 ORDER BY TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalID"
 
 
--- Find any changes for different proposals that are using the same version number on different dates
+-- Find any changes for different proposals that are using the same version number (on different dates -- not required)
 
 SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_1."ProposalID", TiP_1."ProposalTitle", TiP_2."ProposalOpenDate", TiP_2."ProposalID", TiP_2."ProposalTitle"
 FROM (
@@ -47,7 +47,7 @@ WHERE TiP."ProposalID" = p."ProposalID"
 ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
 ) AS TiP_2
 WHERE TiP_1."TileNr" = TiP_2."TileNr"
-AND TiP_1."ProposalOpenDate" < TiP_2."ProposalOpenDate"
+--AND TiP_1."ProposalOpenDate" < TiP_2."ProposalOpenDate"
 AND TiP_1."ProposalID" <> TiP_2."ProposalID"
 AND TiP_1."RevisionNr" = TiP_2."RevisionNr"
 ORDER BY TiP_1."TileNr"

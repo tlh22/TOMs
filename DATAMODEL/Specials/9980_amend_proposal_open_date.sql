@@ -105,7 +105,7 @@ END;
 $BODY$;
 
 -- This is an example ...
-SELECT toms."change_proposal_open_date" (121, '02/02/2022')
+--SELECT toms."change_proposal_open_date" (121, '02/02/2022')
 
 
 
