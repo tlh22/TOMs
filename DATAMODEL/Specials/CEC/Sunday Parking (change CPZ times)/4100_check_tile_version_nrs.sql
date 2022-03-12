@@ -31,7 +31,7 @@ AND TiP_1."RevisionNr" < TiP_2."RevisionNr"
 ORDER BY TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalID"
 
 
--- Find any changes for different proposals that are using the same version number on different dates
+-- Find any changes for different proposals that are using the same version number (on different dates -- not required)
 
 SELECT TiP_1."TileNr", TiP_1."RevisionNr", TiP_1."ProposalOpenDate", TiP_1."ProposalID", TiP_1."ProposalTitle", TiP_2."ProposalOpenDate", TiP_2."ProposalID", TiP_2."ProposalTitle"
 FROM (
@@ -47,7 +47,7 @@ WHERE TiP."ProposalID" = p."ProposalID"
 ORDER BY TiP."TileNr", TiP."RevisionNr", p."ProposalID"
 ) AS TiP_2
 WHERE TiP_1."TileNr" = TiP_2."TileNr"
-AND TiP_1."ProposalOpenDate" < TiP_2."ProposalOpenDate"
+--AND TiP_1."ProposalOpenDate" < TiP_2."ProposalOpenDate"
 AND TiP_1."ProposalID" <> TiP_2."ProposalID"
 AND TiP_1."RevisionNr" = TiP_2."RevisionNr"
 ORDER BY TiP_1."TileNr"
@@ -99,6 +99,7 @@ $do$
 DECLARE
     tiles RECORD;
     revision_nrs RECORD;
+    out_of_order_dates RECORD;
     max_revision_nr INTEGER;
     missing_evisionNr INTEGER;
 BEGIN
@@ -131,6 +132,34 @@ BEGIN
         LOOP
 
 			raise notice 'Tile % -  is missing revision nr %', tiles.id, revision_nrs.missing_revision_nr;
+
+        END LOOP;
+
+        -- now check date order
+        FOR revision_nrs IN
+            SELECT s.i AS curr_revision_nr
+            FROM generate_series(1, max_revision_nr-1) s(i)
+        LOOP
+
+            FOR out_of_order_dates IN
+                SELECT a."RevisionNr" AS problem
+                FROM (SELECT TiP."TileNr", TiP."RevisionNr", p."ProposalID", p."ProposalOpenDate"
+                      FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
+                      WHERE TiP."ProposalID" = p."ProposalID") a,
+                     (SELECT TiP."TileNr", TiP."RevisionNr", p."ProposalID", p."ProposalOpenDate"
+                      FROM toms."TilesInAcceptedProposals" TiP, toms."Proposals" p
+                      WHERE TiP."ProposalID" = p."ProposalID") b
+
+                WHERE a."TileNr" = b."TileNr"
+                AND tiles.id = a."TileNr"
+                AND a."RevisionNr" = revision_nrs.curr_revision_nr
+                AND b."RevisionNr" = revision_nrs.curr_revision_nr + 1
+                AND a."ProposalOpenDate" > b."ProposalOpenDate"
+            LOOP
+
+                raise notice 'Tile % -  has out of order revision nr %', tiles.id, out_of_order_dates.problem;
+
+            END LOOP;
 
         END LOOP;
 

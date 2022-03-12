@@ -35,3 +35,49 @@ UPDATE toms."TilesInAcceptedProposals"
 SET "RevisionNr" = 2
 WHERE "TileNr" = 1222
 AND "ProposalID" = 67;
+
+
+/***
+ * Other tidying ...  revision numbers out of order
+ ***/
+
+-- tile 689
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 2
+WHERE "TileNr" = 689
+AND "ProposalID" = 17;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 689
+AND "ProposalID" = 67;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 4
+WHERE "TileNr" = 689
+AND "ProposalID" = 77;
+
+-- 1927
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 2
+WHERE "TileNr" = 1927
+AND "ProposalID" = 62;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1927
+AND "ProposalID" = 29;
+
+-- 1928
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 2
+WHERE "TileNr" = 1928
+AND "ProposalID" = 62;
+
+UPDATE toms."TilesInAcceptedProposals"
+SET "RevisionNr" = 3
+WHERE "TileNr" = 1928
+AND "ProposalID" = 29;
