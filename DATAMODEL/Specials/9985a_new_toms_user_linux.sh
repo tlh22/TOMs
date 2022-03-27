@@ -1,5 +1,6 @@
 #!/bin/bash
 ##### creating a new user within linux and also within postgres
+##  sh ..../9985a_new_toms_user_linux.sh -t CEC -d CEC -h localhost -p 5435 -u toms.user -a password -g toms_user_group -G toms_public -c a.user
 
 # get arguments from flags
 
