@@ -835,7 +835,7 @@ class generateGeometryUtils (QObject):
         waitDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, waitingTimeID)
         loadDesc = generateGeometryUtils.getLookupLabelText(TimePeriodsLayer, loadingTimeID)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(1): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
 
         restrictionCPZ = feature.attribute("CPZ")
         restrictionEDZ = feature.attribute("MatchDayEventDayZone")
@@ -863,15 +863,19 @@ class generateGeometryUtils (QObject):
                 else:
                     waitDesc = "Match Day: {}".format(matchDayTimePeriodDesc)
 
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText(2): waiting: " + str(waitDesc) + " loading: " + str(loadDesc), level=Qgis.Warning)
+
         if additionalConditionID:
             AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
-            additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
-            if waitDesc:
-                waitDesc = "{};{}".format(waitDesc, additionalConditionDesc)
-            else:
-                waitDesc = "{}".format(additionalConditionDesc)
+            for id in additionalConditionID:
+                additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
+                if additionalConditionDesc:
+                    if waitDesc:
+                        waitDesc = "{};{}".format(waitDesc, additionalConditionDesc)
+                    else:
+                        waitDesc = "{}".format(additionalConditionDesc)
 
-        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText({}); waiting: {}; loading: {}".format(geometryID, waitDesc, loadDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText({}); waiting: {}; loading: {}".format(geometryID, waitDesc, loadDesc), level=Qgis.Warning)
         return waitDesc, loadDesc
 
     @staticmethod
@@ -962,13 +966,19 @@ class generateGeometryUtils (QObject):
             else:
                 timePeriodDesc = "Permit: {}".format(permitCode)
 
+        TOMsMessageLog.logMessage(
+            "In getBayRestrictionLabelText: additionalConditionID: {}".format(additionalConditionID),
+            level=Qgis.Warning)
+
         if additionalConditionID:
             AdditionalConditionTypesLayer = QgsProject.instance().mapLayersByName("AdditionalConditionTypes")[0]
-            additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, additionalConditionID)
-            if timePeriodDesc:
-                timePeriodDesc = "{};{}".format(timePeriodDesc, additionalConditionDesc)
-            else:
-                timePeriodDesc = "{}".format(additionalConditionDesc)
+            for id in additionalConditionID:
+                additionalConditionDesc = generateGeometryUtils.getLookupDescription(AdditionalConditionTypesLayer, id)
+                if additionalConditionDesc:
+                    if timePeriodDesc:
+                        timePeriodDesc = "{};{}".format(timePeriodDesc, additionalConditionDesc)
+                    else:
+                        timePeriodDesc = "{}".format(additionalConditionDesc)
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
 
