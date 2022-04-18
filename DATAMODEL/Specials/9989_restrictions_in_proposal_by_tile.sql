@@ -73,25 +73,39 @@ RETURNS BOOLEAN AS
 $$
 DECLARE
 	curr_proposal_id INTEGER;
+    curr_proposal_status_id INTEGER;
 	new_proposal_id INTEGER;
+	new_proposal_status_id INTEGER;
 BEGIN
 
-    SELECT "ProposalID"
-    INTO curr_proposal_id
+    -- Assume that Proposal is not Accepted
+    SELECT "ProposalID", "ProposalStatusID"
+    INTO curr_proposal_id, curr_proposal_status_id
     FROM toms."Proposals"
     WHERE "ProposalTitle" = curr_proposal_title;
 
-    SELECT "ProposalID"
-    INTO new_proposal_id
+    IF curr_proposal_status_id > 1 THEN
+        RAISE NOTICE '*** Proposal % is not in PREPARATION', curr_proposal_title;
+        RETURN false;
+    END IF;
+
+    SELECT "ProposalID", "ProposalStatusID"
+    INTO new_proposal_id, new_proposal_status_id
     FROM toms."Proposals"
     WHERE "ProposalTitle" = new_proposal_title;
 
-        UPDATE toms."RestrictionsInProposals" RiP
-        SET "ProposalID" = new_proposal_id
-        WHERE "ProposalID" = curr_proposal_id
-        AND "RestrictionID" = restriction_id;
+    IF new_proposal_status_id > 1 THEN
+        RAISE NOTICE '*** Proposal % is not in PREPARATION', new_proposal_title;
+        RETURN false;
+    END IF;
 
-        RAISE NOTICE '--- Moving restriction: % from Proposal % to Proposal %', restriction_id, curr_proposal_title, new_proposal_title;
+    -- Change details in RestrictionsInProposals
+    UPDATE toms."RestrictionsInProposals" RiP
+    SET "ProposalID" = new_proposal_id
+    WHERE "ProposalID" = curr_proposal_id
+    AND "RestrictionID" = restriction_id;
+
+    RAISE NOTICE '--- Moving restriction: % from Proposal % to Proposal %', restriction_id, curr_proposal_title, new_proposal_title;
 
     RETURN true;
 
@@ -106,84 +120,3 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-DO
-$do$
-DECLARE
-    row RECORD;
-    curr_proposal_title TEXT = 'TRO-20-18';
-    new_proposal_title TEXT = 'TRO-19-73';
-    map_ref INTEGER = 1128;
-	answer BOOLEAN;
-BEGIN
-
-    FOR row IN SELECT "RestrictionID"
-               FROM mhtc_operations.getRestrictionsInProposalInTile(curr_proposal_title, map_ref)
-    LOOP
-
-        RAISE NOTICE '***** Considering restriction: % in Proposal %', row."RestrictionID", curr_proposal_title;
-
-        SELECT *
-		INTO answer
-		FROM mhtc_operations.changeProposalForRestriction(row."RestrictionID", curr_proposal_title, new_proposal_title);
-
-
-
-    END LOOP;
-
-END;
-$do$;
-
-DO
-$do$
-DECLARE
-    row RECORD;
-    curr_proposal_title TEXT = 'TRO-20-18';
-    new_proposal_title TEXT = 'TRO/19/66';
-    map_ref INTEGER = 1677;
-	answer BOOLEAN;
-BEGIN
-
-    FOR row IN SELECT "RestrictionID"
-               FROM mhtc_operations.getRestrictionsInProposalInTile(curr_proposal_title, map_ref)
-    LOOP
-
-        RAISE NOTICE '***** Considering restriction: % in Proposal %', row."RestrictionID", curr_proposal_title;
-
-        SELECT *
-		INTO answer
-		FROM mhtc_operations.changeProposalForRestriction(row."RestrictionID", curr_proposal_title, new_proposal_title);
-
-
-
-    END LOOP;
-
-END;
-$do$;
-
-DO
-$do$
-DECLARE
-    row RECORD;
-    curr_proposal_title TEXT = 'TRO-20-18';
-    new_proposal_title TEXT = 'TRO-19-66';
-    map_ref INTEGER = 1736;
-	answer BOOLEAN;
-BEGIN
-
-    FOR row IN SELECT "RestrictionID"
-               FROM mhtc_operations.getRestrictionsInProposalInTile(curr_proposal_title, map_ref)
-    LOOP
-
-        RAISE NOTICE '***** Considering restriction: % in Proposal %', row."RestrictionID", curr_proposal_title;
-
-        SELECT *
-		INTO answer
-		FROM mhtc_operations.changeProposalForRestriction(row."RestrictionID", curr_proposal_title, new_proposal_title);
-
-
-
-    END LOOP;
-
-END;
-$do$;
