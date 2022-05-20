@@ -26,6 +26,8 @@ class RestrictionLayers(object):
     SIGNS = 5
     CPZS = 6
     PTAS = 7
+    MAPPING_UPDATES = 101
+    MAPPING_UPDATE_MASKS = 102
 
 class RestrictionGeometryTypes(object):
     PARALLEL_BAY = 1

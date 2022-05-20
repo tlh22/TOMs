@@ -265,6 +265,28 @@ class PTA(TOMsRestriction):
     def getZoneType(self):
         pass
 
+class MAPPING_UPDATE(TOMsRestriction):
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
+        TOMsMessageLog.logMessage("In factory. Creating Mapping_Update ... ", level=Qgis.Info)
+
+    def getGeometryID(self):
+        pass
+
+    def getZoneType(self):
+        pass
+
+class MAPPING_UPDATE_MASK(TOMsRestriction):
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
+        TOMsMessageLog.logMessage("In factory. Creating Mapping_Update_Mask ... ", level=Qgis.Info)
+
+    def getGeometryID(self):
+        pass
+
+    def getZoneType(self):
+        pass
+
 class TOMsLabel(TOMsProposalElement):
     def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
         super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
@@ -292,6 +314,10 @@ class ProposalElementFactory():
                 return CPZ(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.PTAS:
                 return PTA(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
+            elif proposalElementType == RestrictionLayers.MAPPING_UPDATES:
+                return MAPPING_UPDATE(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
+            elif proposalElementType == RestrictionLayers.MAPPING_UPDATE_MASKS:
+                return MAPPING_UPDATE_MASK(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             raise AssertionError("Restriction Type NOT found")
         except AssertionError as _e:
             TOMsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ", level=Qgis.Info)
