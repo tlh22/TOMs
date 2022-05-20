@@ -154,9 +154,11 @@ class TOMsProposalElement(QObject):
         currProposalOpenDate = self.currProposal.getProposalOpenDate()
 
         # update the Open/Close date for the restriction
-        TOMsMessageLog.logMessage("In updateProposalElement. layer: " + str(
+        TOMsMessageLog.logMessage("In TOMsProposalElement.acceptActionOnProposalElement. layer: " + str(
             self.thisLayer.name()) + " currRestId: " + self.thisRestrictionID + " Opendate: " + str(
             currProposalOpenDate), level=Qgis.Info)
+
+        TOMsMessageLog.logMessage("In TOMsProposalElement.acceptActionOnProposalElement. id: {}; idx: {}".format(self.thisElement.id(), self.thisLayer.fields().indexFromName("OpenDate")), level=Qgis.Info)
 
         # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
 
@@ -166,14 +168,14 @@ class TOMsProposalElement(QObject):
                                                                       "OpenDate"),
                                                                   currProposalOpenDate)
             TOMsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Opened", level=Qgis.Info)
+                "In TOMsProposalElement.acceptActionOnProposalElement. {} Opened; status: {}".format(self.thisRestrictionID, statusUpd), level=Qgis.Info)
         else:  # Close
             statusUpd = self.thisLayer.changeAttributeValue(self.thisElement.id(),
                                                             self.thisLayer.fields().indexFromName(
                                                                       "CloseDate"),
                                                                   currProposalOpenDate)
             TOMsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Closed", level=Qgis.Info)
+                "In TOMsProposalElement.acceptActionOnProposalElement. {} Closed; status: {}".format(self.thisRestrictionID, statusUpd), level=Qgis.Info)
 
         return statusUpd
 
@@ -265,6 +267,28 @@ class PTA(TOMsRestriction):
     def getZoneType(self):
         pass
 
+class MAPPING_UPDATE(TOMsRestriction):
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
+        TOMsMessageLog.logMessage("In factory. Creating Mapping_Update ... ", level=Qgis.Info)
+
+    def getGeometryID(self):
+        pass
+
+    def getZoneType(self):
+        pass
+
+class MAPPING_UPDATE_MASK(TOMsRestriction):
+    def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
+        super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
+        TOMsMessageLog.logMessage("In factory. Creating Mapping_Update_Mask ... ", level=Qgis.Info)
+
+    def getGeometryID(self):
+        pass
+
+    def getZoneType(self):
+        pass
+
 class TOMsLabel(TOMsProposalElement):
     def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
         super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
@@ -292,6 +316,10 @@ class ProposalElementFactory():
                 return CPZ(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             elif proposalElementType == RestrictionLayers.PTAS:
                 return PTA(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
+            elif proposalElementType == RestrictionLayers.MAPPING_UPDATES:
+                return MAPPING_UPDATE(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
+            elif proposalElementType == RestrictionLayers.MAPPING_UPDATE_MASKS:
+                return MAPPING_UPDATE_MASK(proposalsManager, proposalElementType, restrictionLayer, RestrictionID)
             raise AssertionError("Restriction Type NOT found")
         except AssertionError as _e:
             TOMsMessageLog.logMessage("In ProposalElementFactory. TYPE not found or something else ... ", level=Qgis.Info)
