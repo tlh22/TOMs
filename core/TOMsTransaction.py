@@ -99,7 +99,11 @@ class TOMsTransaction(QObject):
              "Lines.label_loading_ldr",
              "RestrictionPolygons.label_ldr",
              "CPZs.label_ldr",
-             "ParkingTariffAreas.label_ldr"
+             "ParkingTariffAreas.label_ldr",
+
+             # for mapping updates
+             "MappingUpdates",
+             "MappingUpdateMasks"
 
              ]
 

@@ -154,9 +154,11 @@ class TOMsProposalElement(QObject):
         currProposalOpenDate = self.currProposal.getProposalOpenDate()
 
         # update the Open/Close date for the restriction
-        TOMsMessageLog.logMessage("In updateProposalElement. layer: " + str(
+        TOMsMessageLog.logMessage("In TOMsProposalElement.acceptActionOnProposalElement. layer: " + str(
             self.thisLayer.name()) + " currRestId: " + self.thisRestrictionID + " Opendate: " + str(
             currProposalOpenDate), level=Qgis.Info)
+
+        TOMsMessageLog.logMessage("In TOMsProposalElement.acceptActionOnProposalElement. id: {}; idx: {}".format(self.thisElement.id(), self.thisLayer.fields().indexFromName("OpenDate")), level=Qgis.Info)
 
         # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
 
@@ -166,14 +168,14 @@ class TOMsProposalElement(QObject):
                                                                       "OpenDate"),
                                                                   currProposalOpenDate)
             TOMsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Opened", level=Qgis.Info)
+                "In TOMsProposalElement.acceptActionOnProposalElement. {} Opened; status: {}".format(self.thisRestrictionID, statusUpd), level=Qgis.Info)
         else:  # Close
             statusUpd = self.thisLayer.changeAttributeValue(self.thisElement.id(),
                                                             self.thisLayer.fields().indexFromName(
                                                                       "CloseDate"),
                                                                   currProposalOpenDate)
             TOMsMessageLog.logMessage(
-                "In updateRestriction. " + self.thisRestrictionID + " Closed", level=Qgis.Info)
+                "In TOMsProposalElement.acceptActionOnProposalElement. {} Closed; status: {}".format(self.thisRestrictionID, statusUpd), level=Qgis.Info)
 
         return statusUpd
 
