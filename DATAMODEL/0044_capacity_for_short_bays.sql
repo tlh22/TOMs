@@ -63,6 +63,7 @@ BEGIN
     END IF;
 
     CASE
+
         /**
         107 = Bus Stop
         116 = Cycle Hire Bay
@@ -72,6 +73,7 @@ BEGIN
         150 = Parklet
         151 = Market trading Bay
         **/
+
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
             CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
@@ -107,7 +109,7 @@ BEGIN
              229 = Unmarked Kerbline within PPZ
              **/
 
-            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229) THEN
+            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229, 1000) THEN
                      -- Consider only short bays, i.e., < 5.0m
                      CASE WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
                           NEW."Capacity" = 1;
