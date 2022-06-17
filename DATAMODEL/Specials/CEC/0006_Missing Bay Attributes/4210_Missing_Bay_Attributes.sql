@@ -62,7 +62,7 @@ SET "TimePeriodID" = c."TimePeriodID"
 FROM toms."ControlledParkingZones" c
 WHERE r."CPZ" = c."CPZ"
 AND r."RestrictionTypeID" IN (131, 134)
-AND r."TimePeriodID" IS NULL;
+AND r."TimePeriodID" = 0;
 
 /***
  * CPZ hours:

@@ -177,6 +177,8 @@ class TOMsConfigFile(QObject):
         if config_path is None:
             config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_home')
 
+        TOMsMessageLog.logMessage("In getTOMsConfigFile. config_path: {}".format(config_path), level=Qgis.Info)
+
         config_file = os.path.abspath(os.path.join(config_path, 'TOMs.conf'))
         TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Info)
 
