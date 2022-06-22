@@ -63,7 +63,7 @@ class formCamera(QObject):
     notifyPhotoTaken = pyqtSignal(str)
     pixmapUpdated = pyqtSignal(QPixmap)
 
-    def __init__(self, path_absolute, currFileName, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, cameraNr=None, frameWidth=None, frameHeight=None):
+    def __init__(self, path_absolute, currFileName, START_CAMERA_BUTTON, TAKE_PHOTO_BUTTON, cameraNr=None, frameWidth=None, frameHeight=None, rotate_camera=None):
         QObject.__init__(self)
         self.path_absolute = path_absolute
         self.currFileName = currFileName
@@ -80,6 +80,10 @@ class formCamera(QObject):
         self.frameHeight = frameHeight
         if self.frameHeight is None:
             self.frameHeight = 480
+
+        # indicate whether or not to flip image
+        self.rotate_camera = rotate_camera
+        TOMsMessageLog.logMessage("In formCamera::rotate_camera: {}".format(self.rotate_camera), level=Qgis.Info)
 
         self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
         self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
@@ -121,7 +125,7 @@ class formCamera(QObject):
 
         TOMsMessageLog.logMessage("In formCamera::useCamera: starting camera ... ", level=Qgis.Info)
 
-        self.camera.startCamera(self.cameraNr, self.frameWidth, self.frameHeight)
+        self.camera.startCamera(self.cameraNr, self.frameWidth, self.frameHeight, self.rotate_camera)
 
     def endCamera(self):
 
@@ -214,9 +218,10 @@ class cvCamera(QThread):
         except Exception as e:
             TOMsMessageLog.logMessage("In cvCamera::stopCamera: problem stopping camera {}".format(e), level=Qgis.Info)
 
-    def startCamera(self, cameraNr, frameWidth, frameHeight):
+    def startCamera(self, cameraNr, frameWidth, frameHeight, rotate_camera):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 " + str(cameraNr), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1; rotate: rotate_camera " + str(cameraNr, rotate_camera), level=Qgis.Warning)
+        self.rotate_camera = rotate_camera
 
         """if acapture_available:
             self.cap = acapture.open(cameraNr)  # /dev/video0
@@ -272,6 +277,11 @@ class cvCamera(QThread):
             cvRGBImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
             qimg = QImage(cvRGBImg.data, cvRGBImg.shape[1], cvRGBImg.shape[0], QImage.Format_RGB888)
             TOMsMessageLog.logMessage("In cvCamera::getFrame ... 3 ", level=Qgis.Info)
+
+            if self.rotate_camera:
+                TOMsMessageLog.logMessage("In cvCamera::getFrame ... rotating ", level=Qgis.Info)
+                qimg = qimg.mirrored(True, False)
+
             # Now display ...
             pixmap = QPixmap.fromImage(qimg)
 
