@@ -88,7 +88,7 @@ class formCamera(QObject):
         self.START_CAMERA_BUTTON = START_CAMERA_BUTTON
         self.TAKE_PHOTO_BUTTON = TAKE_PHOTO_BUTTON
 
-        TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Info)
 
     def identify(self):
         reply = QMessageBox.information(None, "Information",
@@ -105,7 +105,7 @@ class formCamera(QObject):
 
     @pyqtSlot()
     def useCamera(self):
-        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In formCamera::useCamera ... ", level=Qgis.Info)
 
         self.START_CAMERA_BUTTON.clicked.disconnect()
         self.currButtonColour = self.START_CAMERA_BUTTON.palette().button().color()
@@ -129,7 +129,7 @@ class formCamera(QObject):
 
     def endCamera(self):
 
-        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In formCamera::endCamera: stopping camera ... ", level=Qgis.Info)
 
         try:
             self.camera.stopCamera()
@@ -161,7 +161,7 @@ class formCamera(QObject):
 
     def closeCameraForm(self):
 
-        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In formCamera::closeCameraForm: closing form ... ", level=Qgis.Info)
 
         try:
             self.camera.stopCamera()
@@ -208,10 +208,10 @@ class cvCamera(QThread):
 
     def __init__(self):
         QThread.__init__(self)
-        TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Info)
 
     def stopCamera(self):
-        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
         self.cameraAvailable = False
         try:
             self.cap.release()
@@ -220,7 +220,7 @@ class cvCamera(QThread):
 
     def startCamera(self, cameraNr, frameWidth, frameHeight, rotate_camera):
 
-        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1; rotate: rotate_camera " + str(cameraNr, rotate_camera), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 1 nr: {}; rotate: {}".format(cameraNr, rotate_camera), level=Qgis.Info)
         self.rotate_camera = rotate_camera
 
         """if acapture_available:
@@ -268,19 +268,23 @@ class cvCamera(QThread):
 
         TOMsMessageLog.logMessage("In cvCamera::getFrame ... 1", level=Qgis.Info)
 
-        ret, self.frame = self.cap.read()  # return a single frame in variable `frame`
+        ret, frame = self.cap.read()  # return a single frame in variable `frame`
 
         TOMsMessageLog.logMessage("In cvCamera::getFrame ... 2 ", level=Qgis.Info)
 
         if ret == True:
-            # Need to change from BRG (cv::mat) to RGB image
-            cvRGBImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
-            qimg = QImage(cvRGBImg.data, cvRGBImg.shape[1], cvRGBImg.shape[0], QImage.Format_RGB888)
-            TOMsMessageLog.logMessage("In cvCamera::getFrame ... 3 ", level=Qgis.Info)
 
+            # check for rotation
             if self.rotate_camera:
                 TOMsMessageLog.logMessage("In cvCamera::getFrame ... rotating ", level=Qgis.Info)
-                qimg = qimg.mirrored(True, False)
+                self.cvRotatedImage = cv2.flip(frame, 0)
+            else:
+                self.cvRotatedImage = frame
+
+            # Need to change from BRG (cv::mat) to RGB image
+            self.cvRGBImg = cv2.cvtColor(self.cvRotatedImage, cv2.COLOR_BGR2RGB)
+            qimg = QImage(self.cvRGBImg.data, self.cvRGBImg.shape[1], self.cvRGBImg.shape[0], QImage.Format_RGB888)
+            TOMsMessageLog.logMessage("In cvCamera::getFrame ... 3 ", level=Qgis.Info)
 
             # Now display ...
             pixmap = QPixmap.fromImage(qimg)
@@ -304,7 +308,7 @@ class cvCamera(QThread):
         newPhotoFileName = os.path.join(path_absolute, fileName)
 
         TOMsMessageLog.logMessage("Saving photo: file: " + newPhotoFileName, level=Qgis.Info)
-        writeStatus = cv2.imwrite(newPhotoFileName, self.frame)
+        writeStatus = cv2.imwrite(newPhotoFileName, self.cvRotatedImage)
 
         if writeStatus is True:
             reply = QMessageBox.information(None, "Information", "Photo captured.", QMessageBox.Ok)
