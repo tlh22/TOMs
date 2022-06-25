@@ -16,6 +16,9 @@ echo "Setting up config files for: $username";
 
 #------------
 
+sudo rm -rf /home/$username/.config/menus
+sudo rm -rf /home/$username/.local/share/applications
+sudo rm -rf /home/$username/Desktop
 
 sudo mkdir -p /home/$username/.config/menus
 sudo mkdir -p /home/$username/.local/share/applications
