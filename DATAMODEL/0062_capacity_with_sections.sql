@@ -11,8 +11,11 @@ DECLARE
 	 vehicleLength real := 0.0;
 	 vehicleWidth real := 0.0;
 	 motorcycleWidth real := 0.0;
+	 cornerProtectionDistance real := 0.0;
 	 restrictionLength real := 0.0;
 	 fieldCheck boolean := false;
+	 NrCorners INTEGER := 0;
+	 availableLength real := 0;
 BEGIN
 
     select "Value" into vehicleLength
@@ -26,6 +29,10 @@ BEGIN
     select "Value" into motorcycleWidth
         from "mhtc_operations"."project_parameters"
         where "Field" = 'MotorcycleWidth';
+
+    select "Value" into cornerProtectionDistance
+        from "mhtc_operations"."project_parameters"
+        where "Field" = 'CornerProtectionDistance';
 
     IF vehicleLength IS NULL OR vehicleWidth IS NULL OR motorcycleWidth IS NULL THEN
         RAISE EXCEPTION 'Capacity parameters not available ...';
@@ -109,13 +116,37 @@ BEGIN
              229 = Unmarked Kerbline within PPZ
              **/
 
-            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229, 1000) THEN
+            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229) THEN
                      -- Consider only short bays, i.e., < 5.0m
                      CASE WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
                           NEW."Capacity" = 1;
                           --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                           END CASE;
+
+                 WHEN NEW."RestrictionTypeID" IN (1000) THEN   -- sections
+
+                    IF cornerProtectionDistance IS NULL THEN
+                        RAISE EXCEPTION 'Capacity parameters not available ...';
+                        RETURN OLD;
+                    END IF;
+
+                     SELECT COUNT(c.id) INTO NrCorners
+                     FROM mhtc_operations."Corners" AS c
+                     WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
+
+                     availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners * cornerProtectionDistance;
+
+                     -- TODO: Need to take account of perpendicular/echelon parking
+                     
+                     CASE WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
+                          NEW."Capacity" = 1;
+                          --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
+                          END CASE;
+
+                     RAISE NOTICE '***** GeometryID (%); length %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, NrCorners, NEW."Capacity";
+
                  ELSE NEW."Capacity" = 0;
                  END CASE;
 
