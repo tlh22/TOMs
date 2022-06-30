@@ -5,7 +5,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
+# -----------------------------------------------------------
 # Tim Hancock/Matthias Kuhn 2017
 # Oslandia 2022
 
@@ -20,19 +20,24 @@ register=False in order to delay registring of functions before we load the plug
 
 """
 
-
 import math
 import random
 import sys
 import traceback
 
-from qgis.core import Qgis, QgsExpression, QgsGeometry, QgsMessageLog, QgsPointXY
+from qgis.core import (
+    Qgis,
+    QgsExpression,
+    QgsGeometry,
+    QgsMessageLog,
+    QgsPointXY,
+)
 from qgis.utils import qgsfunction
 
 from .constants import RestrictionGeometryTypes
-from .core.TOMsGeometryElement import ElementGeometryFactory
-from .core.TOMsMessageLog import TOMsMessageLog
-from .generateGeometryUtils import generateGeometryUtils
+from .core.tomsGeometryElement import ElementGeometryFactory
+from .core.tomsMessageLog import TOMsMessageLog
+from .generateGeometryUtils import GenerateGeometryUtils
 
 
 class TOMsExpressions:
@@ -42,13 +47,13 @@ class TOMsExpressions:
         )
 
         self.functions = [
-            self.generate_display_geometry,
+            self.generateDisplayGeometry,
             self.generateDisplayGeometry,
             self.generateCrossoverGeometry,
             self.getAzimuthToRoadCentreLine,
             self.getRoadName,
             self.getUSRN,
-            self.generate_ZigZag,
+            self.generateZigZag,
             self.getWaitingLabelLeader,
             self.getLoadingLabelLeader,
             self.getBayLabelLeader,
@@ -67,31 +72,6 @@ class TOMsExpressions:
             self.prepareSignOrientation,
             self.generateDemandPoints,
         ]
-
-    @staticmethod
-    @qgsfunction(args="auto", group="TOMs2", usesgeometry=True, register=True)
-    def generate_display_geometry(
-        geometryID, restGeomType, AzimuthToCenterLine, offset, bayWidth, feature, parent
-    ):
-        try:
-            #  TOMsMessageLog.logMessage(
-            #      "In generate_display_geometry: New restriction .................................................................... ID: "
-            #      + str(geometryID),
-            #      level=Qgis.Info,
-            #  )
-            # res = generateGeometryUtils.getRestrictionGeometry(feature)
-            res = ElementGeometryFactory.getElementGeometry(feature)
-        except Exception as e:
-            TOMsMessageLog.logMessage(
-                "generate_display_geometry: error in expression function: {}".format(e),
-                level=Qgis.Warning,
-            )
-            """exc_type, exc_value, exc_traceback = sys.exc_info()
-            TOMsMessageLog.logMessage(
-                'generate_display_geometry error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
-                level=Qgis.Info)"""
-
-        return res
 
     @staticmethod
     @qgsfunction(args="auto", group="TOMs2", usesgeometry=True, register=True)
@@ -146,10 +126,10 @@ class TOMsExpressions:
                 level=Qgis.Warning,
             )
             TOMsMessageLog.logMessage("generateDisplayGeometry", level=Qgis.Info)
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, _, excTraceback = sys.exc_info()
             TOMsMessageLog.logMessage(
                 "generateDisplayGeometry error in expression function: "
-                + str(repr(traceback.extract_tb(exc_traceback))),
+                + str(repr(traceback.extract_tb(excTraceback))),
                 level=Qgis.Info,
             )
 
@@ -164,7 +144,7 @@ class TOMsExpressions:
         # TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper):", level=Qgis.Info)
 
         try:
-            return int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
+            return int(GenerateGeometryUtils.calculateAzimuthToRoadCentreLine(feature))
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getAzimuthToRoadCentreLine: error in expression function for feature [{}]: {}".format(
@@ -185,7 +165,7 @@ class TOMsExpressions:
 
         # TOMsMessageLog.logMessage("In getRoadName(helper):", level=Qgis.Info)
         try:
-            newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
+            newRoadName, newUSRN = GenerateGeometryUtils.determineRoadName(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getRoadName: error in expression function for feature [{}]: {}".format(
@@ -210,7 +190,7 @@ class TOMsExpressions:
         # TOMsMessageLog.logMessage("In getUSRN(helper):", level=Qgis.Info)
 
         try:
-            newRoadName, newUSRN = generateGeometryUtils.determineRoadName(feature)
+            newRoadName, newUSRN = GenerateGeometryUtils.determineRoadName(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getUSRN: error in expression function for feature [{}]: {}".format(
@@ -229,7 +209,7 @@ class TOMsExpressions:
 
     @staticmethod
     @qgsfunction(args="auto", group="TOMs2", usesgeometry=True, register=True)
-    def generate_ZigZag(feature, parent):
+    def generateZigZag(feature, parent):
         # Determine road name from the kerb line layer
 
         try:
@@ -255,7 +235,7 @@ class TOMsExpressions:
         # TOMsMessageLog.logMessage(
         #    "In getWaitingLabelLeader ", level=Qgis.Info)
         try:
-            labelLeaderGeom = generateGeometryUtils.generateWaitingLabelLeader(feature)
+            labelLeaderGeom = GenerateGeometryUtils.generateWaitingLabelLeader(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getWaitingLabelLeader: error in expression function: {}".format(e),
@@ -277,7 +257,7 @@ class TOMsExpressions:
         # TOMsMessageLog.logMessage(
         #    "In getLoadingLabelLeader ", level=Qgis.Info)
         try:
-            labelLeaderGeom = generateGeometryUtils.generateLoadingLabelLeader(feature)
+            labelLeaderGeom = GenerateGeometryUtils.generateLoadingLabelLeader(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getLoadingLabelLeader: error in expression function: {}".format(e),
@@ -298,7 +278,7 @@ class TOMsExpressions:
 
         # TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
         try:
-            labelLeaderGeom = generateGeometryUtils.generateBayLabelLeader(feature)
+            labelLeaderGeom = GenerateGeometryUtils.generateBayLabelLeader(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getBayLabelLeader: error in expression function: {}".format(e),
@@ -319,7 +299,7 @@ class TOMsExpressions:
 
         # TOMsMessageLog.logMessage("In getBayLabelLeader ", level=Qgis.Info)
         try:
-            labelLeaderGeom = generateGeometryUtils.generatePolygonLabelLeader(feature)
+            labelLeaderGeom = GenerateGeometryUtils.generatePolygonLabelLeader(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getPolygonLabelLeader: error in expression function: {}".format(e),
@@ -349,7 +329,7 @@ class TOMsExpressions:
             (
                 waitingText,
                 loadingText,
-            ) = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getWaitingRestrictionLabelText: error in expression function: {}".format(
@@ -358,10 +338,10 @@ class TOMsExpressions:
                 level=Qgis.Warning,
             )
             TOMsMessageLog.logMessage("getWaitingRestrictionLabelText", level=Qgis.Info)
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, _, excTraceback = sys.exc_info()
             TOMsMessageLog.logMessage(
                 "getWaitingRestrictionLabelText: error in expression function: "
-                + str(repr(traceback.extract_tb(exc_traceback))),
+                + str(repr(traceback.extract_tb(excTraceback))),
                 level=Qgis.Warning,
             )
 
@@ -397,7 +377,17 @@ class TOMsExpressions:
             (
                 waitingText,
                 loadingText,
-            ) = generateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getWaitingLoadingRestrictionLabelText(feature)
+
+            TOMsMessageLog.logMessage(
+                "In getLoadingRestrictionLabelText ****:"
+                + " Waiting: "
+                + str(waitingText)
+                + " Loading: "
+                + str(loadingText),
+                level=Qgis.Info,
+            )
+
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getLoadingRestrictionLabelText: error in expression function: {}".format(
@@ -410,15 +400,6 @@ class TOMsExpressions:
             TOMsMessageLog.logMessage(
                 'getLoadingRestrictionLabelText: error in expression function: ' + str(repr(traceback.extract_tb(exc_traceback))),
                 level=Qgis.Info)"""
-
-            TOMsMessageLog.logMessage(
-                "In getLoadingRestrictionLabelText ****:"
-                + " Waiting: "
-                + str(waitingText)
-                + " Loading: "
-                + str(loadingText),
-                level=Qgis.Info,
-            )
 
         if loadingText:
             # labelText = "No Loading: " + loadingText
@@ -441,7 +422,7 @@ class TOMsExpressions:
                 maxStayText,
                 noReturnText,
                 timePeriodText,
-            ) = generateGeometryUtils.getBayRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getBayRestrictionLabelText(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getBayTimePeriodLabelText: error in expression function: {}".format(e),
@@ -463,7 +444,7 @@ class TOMsExpressions:
                 maxStayText,
                 noReturnText,
                 timePeriodText,
-            ) = generateGeometryUtils.getBayRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getBayRestrictionLabelText(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getBayMaxStayLabelText: error in expression function: {}".format(e),
@@ -491,7 +472,7 @@ class TOMsExpressions:
                 maxStayText,
                 noReturnText,
                 timePeriodText,
-            ) = generateGeometryUtils.getBayRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getBayRestrictionLabelText(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getBayNoReturnLabelText: error in expression function: {}".format(e),
@@ -518,7 +499,7 @@ class TOMsExpressions:
                 maxStayText,
                 noReturnText,
                 timePeriodText,
-            ) = generateGeometryUtils.getBayRestrictionLabelText(feature)
+            ) = GenerateGeometryUtils.getBayRestrictionLabelText(feature)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "getBayLabelText: error in expression function: {}".format(e),
@@ -562,7 +543,7 @@ class TOMsExpressions:
     def getCPZ(feature, parent):
         # Returns the CPZ for the feature - or None
         try:
-            cpzNr, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(
+            cpzNr, cpzWaitingTimeID = GenerateGeometryUtils.getCurrentCPZDetails(
                 feature
             )
         except Exception as e:
@@ -589,13 +570,13 @@ class TOMsExpressions:
                 ptaName,
                 ptaMaxStayID,
                 ptaNoReturnID,
-            ) = generateGeometryUtils.getCurrentPTADetails(feature)
+            ) = GenerateGeometryUtils.getCurrentPTADetails(feature)
         except Exception:
             TOMsMessageLog.logMessage("getPTA", level=Qgis.Info)
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, _, excTraceback = sys.exc_info()
             TOMsMessageLog.logMessage(
                 "getPTA: error in expression function: "
-                + str(repr(traceback.extract_tb(exc_traceback))),
+                + str(repr(traceback.extract_tb(excTraceback))),
                 level=Qgis.Info,
             )
 
@@ -608,13 +589,13 @@ class TOMsExpressions:
     def prepareSignLine(feature, parent):
         newLineGeom = None
         try:
-            newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
+            newLineGeom, linePts = GenerateGeometryUtils.getGeneratedSignLine(feature)
         except Exception as e:
             QgsMessageLog.logMessage("prepareSignLine {}".format(e), tag="TOMs Panel")
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            excType, _, excTraceback = sys.exc_info()
             QgsMessageLog.logMessage(
                 "prepareSignLine: error in expression function: {}{}".format(
-                    exc_type, str(repr(traceback.extract_tb(exc_traceback)))
+                    excType, str(repr(traceback.extract_tb(excTraceback)))
                 ),
                 tag="TOMs Panel",
             )
@@ -628,15 +609,15 @@ class TOMsExpressions:
         newLineGeom = None
         linePts = []
         try:
-            newLineGeom, linePts = generateGeometryUtils.getGeneratedSignLine(feature)
+            newLineGeom, linePts = GenerateGeometryUtils.getGeneratedSignLine(feature)
         except Exception as e:
             QgsMessageLog.logMessage(
                 "prepareSignIconLocation {}".format(e), tag="TOMs Panel"
             )
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            excType, _, excTraceback = sys.exc_info()
             QgsMessageLog.logMessage(
                 "prepareSignIconLocation: error in expression function: {}{}".format(
-                    exc_type, str(repr(traceback.extract_tb(exc_traceback)))
+                    excType, str(repr(traceback.extract_tb(excTraceback)))
                 ),
                 tag="TOMs Panel",
             )
@@ -649,13 +630,13 @@ class TOMsExpressions:
     def prepareSignIcon(signNr, feature, parent):
         iconNames = []
         try:
-            iconNames = generateGeometryUtils.getSignIcons(feature)
+            iconNames = GenerateGeometryUtils.getSignIcons(feature)
         except Exception as e:
             QgsMessageLog.logMessage("prepareSignIcon {}".format(e), tag="TOMs Panel")
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, _, excTraceback = sys.exc_info()
             QgsMessageLog.logMessage(
                 "getSignIcon: error in expression function: "
-                + str(repr(traceback.extract_tb(exc_traceback))),
+                + str(repr(traceback.extract_tb(excTraceback))),
                 tag="TOMs Panel",
             )
         if len(iconNames) >= signNr:
@@ -668,15 +649,15 @@ class TOMsExpressions:
     def prepareSignOrientation(feature, parent):
         signOrientation = 0
         try:
-            signOrientation = generateGeometryUtils.getSignOrientationList(feature)
+            signOrientation = GenerateGeometryUtils.getSignOrientationList(feature)
         except Exception as e:
             QgsMessageLog.logMessage(
                 "prepareSignOrientation {}".format(e), tag="TOMs Panel"
             )
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, _, excTraceback = sys.exc_info()
             QgsMessageLog.logMessage(
                 "prepareSignOrientation: error in expression function: "
-                + str(repr(traceback.extract_tb(exc_traceback))),
+                + str(repr(traceback.extract_tb(excTraceback))),
                 tag="TOMs Panel",
             )
         return signOrientation
@@ -797,14 +778,14 @@ class TOMsExpressions:
 
     def registerFunctions(self):
 
-        toms_list = QgsExpression.Functions()
+        tomsList = QgsExpression.Functions()
 
         for func in self.functions:
             TOMsMessageLog.logMessage(
                 "Considering function {}".format(func.name()), level=Qgis.Info
             )
             try:
-                if func in toms_list:
+                if func in tomsList:
                     QgsExpression.unregisterFunction(func.name())
             except AttributeError:
                 pass

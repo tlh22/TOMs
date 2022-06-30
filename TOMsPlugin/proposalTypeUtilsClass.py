@@ -5,17 +5,13 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
-# Tim Hancock 2017
-
-"""
-Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them
-to be used in forms ... (not sure if this is the best way ...)
-"""
+# -----------------------------------------------------------
+# Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
 from qgis.core import Qgis, QgsFeatureRequest
 
-from .core.TOMsMessageLog import TOMsMessageLog
+from .core.tomsMessageLog import TOMsMessageLog
 
 
 class ProposalTypeUtilsMixin:
@@ -25,10 +21,10 @@ class ProposalTypeUtilsMixin:
 
     def getRestrictionLayersList(self):
 
-        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
         layerTypeList = []
-        for layerType in self.RestrictionLayers.getFeatures():
+        for layerType in self.restrictionLayers.getFeatures():
 
             layerID = layerType["Code"]
             layerName = layerType["RestrictionLayerName"]
@@ -58,13 +54,11 @@ class ProposalTypeUtilsMixin:
         # return the layer given the row in "RestrictionLayers"
         # TOMsMessageLog.logMessage("In getRestrictionsLayerFromID.", level=Qgis.Info)
 
-        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
-        request = QgsFeatureRequest().setFilterExpression(
-            '"Code"={layerID}'.format(layerID=layerID)
-        )
+        request = QgsFeatureRequest().setFilterExpression(f'"Code"={layerID}')
 
-        for layer in self.RestrictionLayers.getFeatures(request):
+        for layer in self.restrictionLayers.getFeatures(request):
             return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
 
         return None
@@ -73,13 +67,13 @@ class ProposalTypeUtilsMixin:
         TOMsMessageLog.logMessage("In getRestrictionLayerTableID.", level=Qgis.Info)
         # find the ID for the layer within the table "
 
-        self.RestrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
 
         request = QgsFeatureRequest().setFilterExpression(
-            '"RestrictionLayerName"={layerName}'.format(layerName=currLayer.name())
+            f'"RestrictionLayerName"={currLayer.name()}'
         )
 
-        for layer in self.RestrictionLayers.getFeatures(request):
+        for layer in self.restrictionLayers.getFeatures(request):
             return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
 
         return None

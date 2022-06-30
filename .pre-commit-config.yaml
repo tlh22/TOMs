@@ -1,6 +1,5 @@
 # CHECK for new hook to add (JS, etc.): https://pre-commit.com/hooks.html
 exclude: ".venv|venv|__pycache__|tests/dev/|tests/fixtures/"
-fail_fast: false
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
@@ -53,6 +52,11 @@ repos:
           [
             "--config=setup.cfg",
           ]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.961
+    hooks:
+      - id: mypy
 
   - repo: https://gitlab.com/Oslandia/pre-commit-hook
     rev: 0.1.0

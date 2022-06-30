@@ -5,17 +5,9 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
-# Tim Hancock 2017
-#
-""" mapTools.py
-
-    # Taken from Erik Westra's book
-
-
-    This module defines the various QgsMapTool subclasses used by the
-    "ForestTrails" application.
-"""
+# -----------------------------------------------------------
+# Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
 import math
 import sys
@@ -37,11 +29,22 @@ from qgis.core import (
     QgsWkbTypes,
 )
 from qgis.gui import QgsMapTool, QgsMapToolCapture, QgsMapToolIdentify
-from qgis.PyQt.QtCore import QPoint, Qt, QTimer, pyqtSlot
-from qgis.PyQt.QtWidgets import QAction, QDockWidget, QMenu, QMessageBox, QToolTip
+from qgis.PyQt.QtCore import (
+    QPoint,
+    Qt,
+    QTimer,
+    pyqtSlot,
+)
+from qgis.PyQt.QtWidgets import (
+    QAction,
+    QDockWidget,
+    QMenu,
+    QMessageBox,
+    QToolTip,
+)
 
 from .constants import RestrictionAction, RestrictionLayers
-from .core.TOMsMessageLog import TOMsMessageLog
+from .core.tomsMessageLog import TOMsMessageLog
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 
 #############################################################################
@@ -160,11 +163,9 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
         self.timerMapTips = QTimer(self.canvas)
         self.timerMapTips.timeout.connect(self.showMapTip)
 
-        self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("BayLineTypes")[
-            0
-        ]
-        self.SIGN_TYPES = QgsProject.instance().mapLayersByName("SignTypes")[0]
-        self.RESTRICTION_POLYGON_TYPES = QgsProject.instance().mapLayersByName(
+        self.restrictionTypes = QgsProject.instance().mapLayersByName("BayLineTypes")[0]
+        self.signTypes = QgsProject.instance().mapLayersByName("SignTypes")[0]
+        self.restrictionPolygonTypes = QgsProject.instance().mapLayersByName(
             "RestrictionPolygonTypes"
         )[0]
 
@@ -269,7 +270,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             mapPt.y() + tolerance,
         )
 
-        self.RestrictionLayers = QgsProject.instance().mapLayersByName(
+        self.restrictionLayers = QgsProject.instance().mapLayersByName(
             "RestrictionLayers"
         )[0]
 
@@ -279,7 +280,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
 
         context = QgsExpressionContext()
 
-        for layerDetails in self.RestrictionLayers.getFeatures():
+        for layerDetails in self.restrictionLayers.getFeatures():
 
             if (
                 layerDetails.attribute("Code") >= 6
@@ -316,13 +317,13 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             )
 
             # Loop through all features in the layer to find the closest feature
-            for f in self.currLayer.getFeatures(request):
+            for feat in self.currLayer.getFeatures(request):
 
                 if (
                     layerDetails.attribute("Code") == RestrictionLayers.BAYS
                     or layerDetails.attribute("Code") == RestrictionLayers.LINES
                 ):
-                    context.setFeature(f)
+                    context.setFeature(feat)
                     expression1 = QgsExpression("generateDisplayGeometry()")
 
                     shapeGeom = expression1.evaluate(context)
@@ -334,12 +335,12 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                     if shapeGeom.intersects(searchRectA):
                         # Add any features that are found should be added to a list
                         restrictionList.append(
-                            (f, layerDetails.attribute("Code"), self.currLayer)
+                            (feat, layerDetails.attribute("Code"), self.currLayer)
                         )
                     # layerList.append(self.currLayer)
                 else:
                     restrictionList.append(
-                        (f, layerDetails.attribute("Code"), self.currLayer)
+                        (feat, layerDetails.attribute("Code"), self.currLayer)
                     )
 
         TOMsMessageLog.logMessage(
@@ -364,7 +365,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                 title = "{RestrictionDescription} [{GeometryID}]".format(
                     RestrictionDescription=str(
                         self.getLookupDescription(
-                            self.RESTRICTION_TYPES,
+                            self.restrictionTypes,
                             feature.attribute("RestrictionTypeID"),
                         )
                     ),
@@ -375,7 +376,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                 title = "{RestrictionDescription} [{GeometryID}]".format(
                     RestrictionDescription=str(
                         self.getLookupDescription(
-                            self.RESTRICTION_TYPES,
+                            self.restrictionTypes,
                             feature.attribute("RestrictionTypeID"),
                         )
                     ),
@@ -386,7 +387,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                 title = "{RestrictionDescription} [{GeometryID}]".format(
                     RestrictionDescription=str(
                         self.getLookupDescription(
-                            self.RESTRICTION_POLYGON_TYPES,
+                            self.restrictionPolygonTypes,
                             feature.attribute("RestrictionTypeID"),
                         )
                     ),
@@ -396,16 +397,16 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             elif layerType == RestrictionLayers.SIGNS:
                 # Need to get each of the signs ...
                 for i in range(1, 10):
-                    field_index = layer.fields().indexFromName(
+                    fieldIdx = layer.fields().indexFromName(
                         "SignType_{counter}".format(counter=i)
                     )
-                    if field_index == -1:
+                    if fieldIdx == -1:
                         break
-                    if feature[field_index]:
+                    if feature[fieldIdx]:
                         title = "Sign: {RestrictionDescription} [{GeometryID}]".format(
                             RestrictionDescription=str(
                                 self.getLookupDescription(
-                                    self.SIGN_TYPES, feature[field_index]
+                                    self.signTypes, feature[fieldIdx]
                                 )
                             ),
                             GeometryID=currGeometryID,
@@ -416,7 +417,7 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                 title = "{RestrictionDescription} [{GeometryID}]".format(
                     RestrictionDescription=str(
                         self.getLookupDescription(
-                            self.RESTRICTION_TYPES,
+                            self.restrictionTypes,
                             feature.attribute("RestrictionTypeID"),
                         )
                     ),
@@ -460,11 +461,11 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
             "In getFeatureDetails: showing menu?", level=Qgis.Info
         )
 
-        clicked_action = self.restrictionSelectMenu.exec_(
+        clickedAction = self.restrictionSelectMenu.exec_(
             self.canvas.mapToGlobal(self.canvas.mouseLastXY())
         )
         TOMsMessageLog.logMessage(
-            ("In getFeatureDetails:clicked_action: " + str(clicked_action)),
+            ("In getFeatureDetails:clicked_action: " + str(clickedAction)),
             level=Qgis.Info,
         )
 
@@ -558,7 +559,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         # Set up rubber band. In current implementation, it is not showing feeback for "next" location
 
-        self.rb = self.createRubberBand(
+        self.rubberBand = self.createRubberBand(
             QgsWkbTypes.LineGeometry
         )  # what about a polygon ??
 
@@ -595,10 +596,10 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         self.snappingConfig.setMode(QgsSnappingConfig.AdvancedConfiguration)
 
         # set up tracing configuration
-        self.TOMsTracer = QgsTracer()
-        RoadCasementLayer = QgsProject.instance().mapLayersByName("RoadCasement")[0]
-        traceLayersNames = [RoadCasementLayer]
-        self.TOMsTracer.setLayers(traceLayersNames)
+        self.tomsTracer = QgsTracer()
+        roadCasementLayer = QgsProject.instance().mapLayersByName("RoadCasement")[0]
+        traceLayersNames = [roadCasementLayer]
+        self.tomsTracer.setLayers(traceLayersNames)
 
         # set an extent for the Tracer
         tracerExtent = iface.mapCanvas().extent()
@@ -608,7 +609,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         tracerExtent.setXMinimum(tracerExtent.xMinimum() - tolerance)
         tracerExtent.setYMinimum(tracerExtent.yMinimum() - tolerance)
 
-        self.TOMsTracer.setExtent(tracerExtent)
+        self.tomsTracer.setExtent(tracerExtent)
 
         # self.TOMsTracer.setMaxFeatureCount(1000)
         self.lastPoint = None
@@ -670,7 +671,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             else:
 
                 # check for shortest line
-                resVectorList = self.TOMsTracer.findShortestPath(
+                resVectorList = self.tomsTracer.findShortestPath(
                     self.lastPoint, self.currPoint
                 )
 
@@ -958,7 +959,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         )
 
         # store the current restriction
-        self.origFeature = originalFeature()
+        self.origFeature = OriginalReature()
 
         self.origFeature.setFeature(self.selectedRestriction)
         self.origLayer = self.iface.activeLayer()
@@ -1144,12 +1145,12 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
                         )
                         return None
                 except Exception:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    _, _, excTraceback = sys.exc_info()
                     reply = QMessageBox.information(
                         None,
                         "Error",
                         "SplitRestrictionTool:createNewSplitRestriction: Issue creating new feature after split. Status: "
-                        + str(repr(traceback.extract_tb(exc_traceback))),
+                        + str(repr(traceback.extract_tb(excTraceback))),
                         QMessageBox.Ok,
                     )
                     return None
@@ -1484,7 +1485,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         # NodeTool.deactivate()
 
 
-class originalFeature(object):  # TODO: duplicated ...
+class OriginalReature(object):  # TODO: duplicated ...
     def __init__(self, feature=None):
         self.savedFeature = None
 
@@ -1747,4 +1748,3 @@ class EditRestrictionTool(QgsMapTool, MapToolMixin):
     #          return None, None
     #
     #      pass
-

@@ -5,17 +5,23 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
+# -----------------------------------------------------------
 # Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
-from qgis.core import Qgis, QgsExpressionContextUtils, QgsFeatureRequest, QgsProject
+from qgis.core import (
+    Qgis,
+    QgsExpressionContextUtils,
+    QgsFeatureRequest,
+    QgsProject,
+)
 from qgis.PyQt.QtCore import QDate, QObject, pyqtSignal
 
 from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
-from .TOMsMessageLog import TOMsMessageLog
-from .TOMsProposal import TOMsProposal
-from .TOMsProposalElement import ProposalElementFactory
+from .tomsMessageLog import TOMsMessageLog
+from .tomsProposal import TOMsProposal
+from .tomsProposalElement import ProposalElementFactory
 
 
 class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QObject):
@@ -35,10 +41,10 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     proposal = newProposalCreated = pyqtSignal(int)
     """Signal will be emitted when the current proposal is changed"""
 
-    TOMsToolChanged = pyqtSignal()
+    tomsToolChanged = pyqtSignal()
     """ signal will be emitted when TOMs tool is changed """
 
-    TOMsActivated = pyqtSignal()
+    tomsActivated = pyqtSignal()
     """ signal will be emitted when TOMs tools are activated"""
     # TOMsStartupFailure = pyqtSignal()
     """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
@@ -53,14 +59,14 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         self.tableNames = TOMsLayers(self.iface)
         # self.tableNames.TOMsLayersSet.connect(self.setRestrictionLayers)
 
-        self.__date = QDate.currentDate()
+        self.__date = QDate.currentDate()  # pylint: disable=invalid-name
         self.currProposalFeature = None
 
         self.canvas = self.iface.mapCanvas()
 
         self.currProposalObject = TOMsProposal(self)
 
-        self.setTOMsActivated = False
+        self.setTOMsActivated: int = False
 
     def date(self):
         """
@@ -124,7 +130,9 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         if not box.isNull():
             self.canvas.setExtent(box)
 
-    def __queryStringForCurrentRestrictions(self, filterDate=None):
+    def __queryStringForCurrentRestrictions(
+        self, filterDate=None
+    ):  # pylint: disable=invalid-name
 
         if filterDate is None:
             filterDate = self.__date()
@@ -136,7 +144,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         # filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
-        filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
+        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
             dateChoosenFormatted=dateChoosenFormatted
         )
 
@@ -156,7 +164,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         # filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
-        filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
+        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
             dateChoosenFormatted=dateChoosenFormatted
         )
         # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
@@ -220,43 +228,43 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             # *** deal with labels ...
             # get the corresponding label layers
             if layerName == "Bays":
-                label_layers_names = ["Bays.label_pos", "Bays.label_ldr"]
+                labelLayersNames = ["Bays.label_pos", "Bays.label_ldr"]
             if layerName == "Lines":
-                label_layers_names = [
+                labelLayersNames = [
                     "Lines.label_pos",
                     "Lines.label_ldr",
                     "Lines.label_loading_pos",
                     "Lines.label_loading_ldr",
                 ]
             if layerName == "RestrictionPolygons":
-                label_layers_names = [
+                labelLayersNames = [
                     "RestrictionPolygons.label_pos",
                     "RestrictionPolygons.label_ldr",
                 ]
             if layerName == "CPZs":
-                label_layers_names = ["CPZs.label_pos", "CPZs.label_ldr"]
+                labelLayersNames = ["CPZs.label_pos", "CPZs.label_ldr"]
             if layerName == "ParkingTariffAreas":
-                label_layers_names = [
+                labelLayersNames = [
                     "ParkingTariffAreas.label_pos",
                     "ParkingTariffAreas.label_ldr",
                 ]
 
             # now apply the filter to the labels ...
 
-            for label_layers_name in label_layers_names:
+            for labelLayersName in labelLayersNames:
                 # get the label layer
                 TOMsMessageLog.logMessage(
-                    "updateMapCanvas: Considering layer: {}".format(label_layers_name),
+                    "updateMapCanvas: Considering layer: {}".format(labelLayersName),
                     level=Qgis.Info,
                 )
                 try:
-                    QgsProject.instance().mapLayersByName(label_layers_name)[
+                    QgsProject.instance().mapLayersByName(labelLayersName)[
                         0
                     ].dataProvider().setSubsetString(layerFilterString)
                 except Exception as e:
                     TOMsMessageLog.logMessage(
                         "updateMapCanvas: error in layer {}: {}".format(
-                            label_layers_name, e
+                            labelLayersName, e
                         ),
                         level=Qgis.Warning,
                     )
@@ -291,45 +299,45 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             # *** deal with labels ...
             # get the corresponding label layers
             if layerName == "Bays":
-                label_layers_names = ["Bays.label_pos", "Bays.label_ldr"]
+                labelLayersNames = ["Bays.label_pos", "Bays.label_ldr"]
             if layerName == "Lines":
-                label_layers_names = [
+                labelLayersNames = [
                     "Lines.label_pos",
                     "Lines.label_ldr",
                     "Lines.label_loading_pos",
                     "Lines.label_loading_ldr",
                 ]
             if layerName == "RestrictionPolygons":
-                label_layers_names = [
+                labelLayersNames = [
                     "RestrictionPolygons.label_pos",
                     "RestrictionPolygons.label_ldr",
                 ]
             if layerName == "CPZs":
-                label_layers_names = ["CPZs.label_pos", "CPZs.label_ldr"]
+                labelLayersNames = ["CPZs.label_pos", "CPZs.label_ldr"]
             if layerName == "ParkingTariffAreas":
-                label_layers_names = [
+                labelLayersNames = [
                     "ParkingTariffAreas.label_pos",
                     "ParkingTariffAreas.label_ldr",
                 ]
 
             # now apply the filter to the labels ...
 
-            for label_layers_name in label_layers_names:
+            for labelLayersName in labelLayersNames:
                 # get the label layer
                 TOMsMessageLog.logMessage(
                     "clearRestrictionFilters: Clearing filter for layer: {}".format(
-                        label_layers_name
+                        labelLayersName
                     ),
                     level=Qgis.Info,
                 )
                 try:
-                    QgsProject.instance().mapLayersByName(label_layers_name)[
+                    QgsProject.instance().mapLayersByName(labelLayersName)[
                         0
                     ].dataProvider().setSubsetString(None)
                 except Exception as e:
                     TOMsMessageLog.logMessage(
                         "clearRestrictionFilters: error in layer {}: {}".format(
-                            label_layers_name, e
+                            labelLayersName, e
                         ),
                         level=Qgis.Warning,
                     )
@@ -347,7 +355,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         dateString = self.__date.toString("yyyy-MM-dd")
         dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
 
-        filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}) AND (("CloseDate" \u003E to_date({dateChoosenFormatted})  OR "CloseDate" IS NULL))'.format(
+        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}) AND (("CloseDate" \u003E to_date({dateChoosenFormatted})  OR "CloseDate" IS NULL))'.format(
             dateChoosenFormatted=dateChoosenFormatted
         )
 
@@ -382,7 +390,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
     def getProposalsListWithStatus(self, proposalStatus=None):
 
-        self.ProposalsLayer = self.tableNames.setLayer("Proposals")
+        self.proposalsLayer = self.tableNames.setLayer("Proposals")
 
         query = ""
 
@@ -397,7 +405,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         request = QgsFeatureRequest().setFilterExpression(query)
 
         proposalsList = []
-        for proposalDetails in self.ProposalsLayer.getFeatures(request):
+        for proposalDetails in self.proposalsLayer.getFeatures(request):
             proposalsList.append(
                 [
                     proposalDetails["ProposalID"],

@@ -5,14 +5,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
-# Tim Hancock 2017
+# -----------------------------------------------------------
+# Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
-"""
-Series of functions to deal with restrictionsInProposals. Defined as static
-functions to allow them to be used in forms ... (not sure if this is the best way ...)
-
-"""
 import configparser
 import functools
 import os
@@ -41,26 +37,26 @@ from qgis.PyQt.QtWidgets import (
 from qgis.utils import iface
 
 from .constants import ProposalStatus, RestrictionAction
-from .core.TOMsMessageLog import TOMsMessageLog
-from .generateGeometryUtils import generateGeometryUtils
-from .ui.TOMsCamera import formCamera
+from .core.tomsMessageLog import TOMsMessageLog
+from .generateGeometryUtils import GenerateGeometryUtils
+from .ui.tomsCamera import FormCamera
 
 try:
     import cv2
 
-    cv2_available = True
-    cv2_available = False  # for office ...
+    CV2_AVAILABLE = True
+    CV2_AVAILABLE = False  # for office ...
 except ImportError:
     print("cv2 not available ...")
     QgsMessageLog.logMessage("Not able to import cv2 ...", tag="TOMs Panel")
-    cv2_available = False
+    CV2_AVAILABLE = False
 
 
 class TOMsParams(QObject):
 
-    TOMsParamsNotFound = pyqtSignal()
+    tomsParamsNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
-    TOMsParamsSet = pyqtSignal()
+    tomsParamsSet = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
 
     def __init__(self):
@@ -68,7 +64,7 @@ class TOMsParams(QObject):
         self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSParams.init ...", level=Qgis.Info)
-        self.TOMsParamsList = [
+        self.tomsParamsList = [
             "BayWidth",
             "BayLength",
             "BayOffsetFromKerb",
@@ -80,7 +76,7 @@ class TOMsParams(QObject):
             "AllowZoneEditing",
         ]
 
-        self.TOMsParamsDict = {}
+        self.tomsParamsDict = {}
 
     def getParams(self):
 
@@ -100,7 +96,7 @@ class TOMsParams(QObject):
 
             # TOMsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", level=Qgis.Info)
 
-            for param in self.TOMsParamsList:
+            for param in self.tomsParamsList:
                 TOMsMessageLog.logMessage(
                     "In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info
                 )
@@ -120,7 +116,7 @@ class TOMsParams(QObject):
                     )
 
                 if len(str(currParam)) > 0:
-                    self.TOMsParamsDict[param] = currParam
+                    self.tomsParamsDict[param] = currParam
                     TOMsMessageLog.logMessage(
                         "In TOMsParams.getParams ... set "
                         + str(param)
@@ -138,21 +134,21 @@ class TOMsParams(QObject):
                     break
 
         if not found:
-            self.TOMsParamsNotFound.emit()
+            self.tomsParamsNotFound.emit()
         else:
-            self.TOMsParamsSet.emit()
+            self.tomsParamsSet.emit()
 
             # TOMsMessageLog.logMessage("In TOMSLayers.getParams ... finished ", level=Qgis.Info)
 
         return found
 
     def setParam(self, param):
-        return self.TOMsParamsDict.get(param)
+        return self.tomsParamsDict.get(param)
 
 
 class TOMsConfigFile(QObject):
 
-    TOMsConfigFileNotFound = pyqtSignal()
+    tomsConfigFileNotFound = pyqtSignal()
     """ signal will be emitted if TOMs config file is not found """
 
     def __init__(self):
@@ -166,53 +162,53 @@ class TOMsConfigFile(QObject):
         # function to open file "toms.conf". Assume path is same as project file - unless environ variable is set
 
         # check for environ variable
-        config_path = None
+        configPath = None
         try:
-            config_path = os.environ.get("TOMs_CONFIG_PATH")
+            configPath = os.environ.get("TOMs_CONFIG_PATH")
         except Exception:
             TOMsMessageLog.logMessage(
                 "In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Info
             )
             # config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
 
-        if config_path is None:
-            config_path = QgsExpressionContextUtils.projectScope(
+        if configPath is None:
+            configPath = QgsExpressionContextUtils.projectScope(
                 QgsProject.instance()
             ).variable("project_home")
 
         TOMsMessageLog.logMessage(
-            "In getTOMsConfigFile. config_path: {}".format(config_path), level=Qgis.Info
+            "In getTOMsConfigFile. config_path: {}".format(configPath), level=Qgis.Info
         )
 
-        config_file = os.path.abspath(os.path.join(config_path, "TOMs.conf"))
+        configFile = os.path.abspath(os.path.join(configPath, "TOMs.conf"))
         TOMsMessageLog.logMessage(
-            "In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file),
+            "In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(configFile),
             level=Qgis.Info,
         )
 
-        if not os.path.isfile(config_file):
+        if not os.path.isfile(configFile):
             QMessageBox.information(
                 None,
                 "Information",
                 "TOMs configuration file not found. Stopping ...",
                 QMessageBox.Ok,
             )
-            self.TOMsConfigFileNotFound.emit()
+            self.tomsConfigFileNotFound.emit()
 
         # now read file
-        self.readTOMsConfigFile(config_file)
+        self.readTOMsConfigFile(configFile)
 
-    def readTOMsConfigFile(self, config_file):
+    def readTOMsConfigFile(self, configFile):
 
         self.config = configparser.ConfigParser()
         try:
-            self.config.read(config_file)
+            self.config.read(configFile)
         except Exception as e:
             TOMsMessageLog.logMessage(
                 "In TOMsConfigFile.init. Error reading config file ... {}".format(e),
                 level=Qgis.Warning,
             )
-            self.TOMsConfigFileNotFound.emit()
+            self.tomsConfigFileNotFound.emit()
 
     def getTOMsConfigElement(self, section, value):
         item = None
@@ -230,9 +226,9 @@ class TOMsConfigFile(QObject):
 
 
 class TOMsLayers(QObject):
-    TOMsLayersNotFound = pyqtSignal()
+    tomsLayersNotFound = pyqtSignal()
     """ signal will be emitted if there is a problem with opening TOMs - typically a layer missing """
-    TOMsLayersSet = pyqtSignal()
+    tomsLayersSet = pyqtSignal()
     """ signal will be emitted if everything is OK with opening TOMs """
 
     def __init__(self, iface):
@@ -242,21 +238,21 @@ class TOMsLayers(QObject):
 
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
 
-        self.TOMsLayerDict = {}
+        self.tomsLayerDict = {}
 
     def getTOMsLayerListFromConfigFile(self, configFileObject):
         self.configFileObject = configFileObject
         layers = configFileObject.getTOMsConfigElement("TOMsLayers", "layers")
         if layers:
-            self.TOMsLayerList = layers.split("\n")
+            self.tomsLayerList = layers.split("\n")
             return True
 
-        self.TOMsLayersNotFound.emit()
+        self.tomsLayersNotFound.emit()
         return False
 
     def getTOMsFormPathFromConfigFile(self, configFileObject):
-        form_path = configFileObject.getTOMsConfigElement("TOMsLayers", "form_path")
-        return form_path
+        formPath = configFileObject.getTOMsConfigElement("TOMsLayers", "form_path")
+        return formPath
 
     def getLayers(self, configFileObject):
 
@@ -280,7 +276,7 @@ class TOMsLayers(QObject):
                     "ERROR",
                     ("Problem with TOMs config file ..."),
                 )
-                self.TOMsLayersNotFound.emit()
+                self.tomsLayersNotFound.emit()
                 found = False
 
             self.formPath = self.getTOMsFormPathFromConfigFile(configFileObject)
@@ -296,31 +292,31 @@ class TOMsLayers(QObject):
                     "ERROR",
                     ("Form path in config file was not found ..."),
                 )
-                self.TOMsLayersNotFound.emit()
+                self.tomsLayersNotFound.emit()
                 found = False
 
         if found:
-            for layer in self.TOMsLayerList:
+            for layer in self.tomsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
-                    self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(
+                    self.tomsLayerDict[layer] = QgsProject.instance().mapLayersByName(
                         layer
                     )[0]
                     # set paths for forms
-                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
-                    ui_path = layerEditFormConfig.uiForm()
+                    layerEditFormConfig = self.tomsLayerDict[layer].editFormConfig()
+                    uiPath = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage(
                         "In TOMsLayers:getLayers. ui_path for layer {} is {} ...".format(
-                            layer, ui_path
+                            layer, uiPath
                         ),
                         level=Qgis.Info,
                     )
-                    if len(self.formPath) > 0 and len(ui_path) > 0:
+                    if len(self.formPath) > 0 and len(uiPath) > 0:
                         # try to get basename - doesn't seem to work on Linux
                         # base_ui_path = os.path.basename(ui_path)
-                        path_absolute = os.path.abspath(
-                            os.path.join(self.formPath, os.path.basename(ui_path))
+                        pathAbsolute = os.path.abspath(
+                            os.path.join(self.formPath, os.path.basename(uiPath))
                         )
-                        if not os.path.isfile(path_absolute):
+                        if not os.path.isfile(pathAbsolute):
                             TOMsMessageLog.logMessage(
                                 "In TOMsLayers:getLayers.form path not found for layer {} ...".format(
                                     layer
@@ -330,12 +326,12 @@ class TOMsLayers(QObject):
                         else:
                             TOMsMessageLog.logMessage(
                                 "In TOMsLayers:getLayers.setting new path for form {} ...".format(
-                                    path_absolute
+                                    pathAbsolute
                                 ),
                                 level=Qgis.Info,
                             )
-                            layerEditFormConfig.setUiForm(path_absolute)
-                            self.TOMsLayerDict[layer].setEditFormConfig(
+                            layerEditFormConfig.setUiForm(pathAbsolute)
+                            self.tomsLayerDict[layer].setEditFormConfig(
                                 layerEditFormConfig
                             )
 
@@ -353,7 +349,7 @@ class TOMsLayers(QObject):
         # TODO: need to deal with any errors arising ...
 
         if not found:
-            self.TOMsLayersNotFound.emit()
+            self.tomsLayersNotFound.emit()
             # else:
             # project = QgsProject.instance()
             # project.write()
@@ -377,26 +373,26 @@ class TOMsLayers(QObject):
 
         else:
 
-            for layer in self.TOMsLayerList:
+            for layer in self.tomsLayerList:
                 if QgsProject.instance().mapLayersByName(layer):
-                    self.TOMsLayerDict[layer] = QgsProject.instance().mapLayersByName(
+                    self.tomsLayerDict[layer] = QgsProject.instance().mapLayersByName(
                         layer
                     )[0]
                     # set paths for forms
-                    layerEditFormConfig = self.TOMsLayerDict[layer].editFormConfig()
-                    ui_path = layerEditFormConfig.uiForm()
+                    layerEditFormConfig = self.tomsLayerDict[layer].editFormConfig()
+                    uiPath = layerEditFormConfig.uiForm()
                     TOMsMessageLog.logMessage(
                         "In TOMsLayers:removePathFromLayerForms. ui_path for layer {} is {} ...".format(
-                            layer, ui_path
+                            layer, uiPath
                         ),
                         level=Qgis.Info,
                     )
-                    if len(self.formPath) > 0 and len(ui_path) > 0:
+                    if len(self.formPath) > 0 and len(uiPath) > 0:
                         # try to get basename - doesn't seem to work on Linux
                         # base_ui_path = os.path.basename(ui_path)
-                        formName = os.path.basename(ui_path)
+                        formName = os.path.basename(uiPath)
                         layerEditFormConfig.setUiForm(formName)
-                        self.TOMsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
+                        self.tomsLayerDict[layer].setEditFormConfig(layerEditFormConfig)
 
                 else:
                     QMessageBox.information(
@@ -412,10 +408,10 @@ class TOMsLayers(QObject):
             # TODO: need to deal with any errors arising ...
 
     def setLayer(self, layer):
-        return self.TOMsLayerDict.get(layer)
+        return self.tomsLayerDict.get(layer)
 
 
-class originalFeature(object):
+class OriginalFeature(object):
     def __init__(self, feature=None):
         self.savedFeature = None
 
@@ -470,7 +466,7 @@ class RestrictionTypeUtilsMixin:
         # returns True if resstriction is in Proposal
         TOMsMessageLog.logMessage("In restrictionInProposal.", level=Qgis.Info)
 
-        RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
+        restrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
             "RestrictionsInProposals"
         )[0]
 
@@ -478,7 +474,7 @@ class RestrictionTypeUtilsMixin:
 
         # not sure if there is better way to search for something, .e.g., using SQL ??
 
-        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
+        for restrictionInProposal in restrictionsInProposalsLayer.getFeatures():
             if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
                 if (
                     restrictionInProposal.attribute("RestrictionTableID")
@@ -500,28 +496,28 @@ class RestrictionTypeUtilsMixin:
         # adds restriction to the "RestrictionsInProposals" layer
         TOMsMessageLog.logMessage("In addRestrictionToProposal.", level=Qgis.Info)
 
-        RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
+        restrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
             "RestrictionsInProposals"
         )[0]
 
         # RestrictionsInProposalsLayer.startEditing()
 
-        idxProposalID = RestrictionsInProposalsLayer.fields().indexFromName(
+        idxProposalID = restrictionsInProposalsLayer.fields().indexFromName(
             "ProposalID"
         )
-        idxRestrictionID = RestrictionsInProposalsLayer.fields().indexFromName(
+        idxRestrictionID = restrictionsInProposalsLayer.fields().indexFromName(
             "RestrictionID"
         )
-        idxRestrictionTableID = RestrictionsInProposalsLayer.fields().indexFromName(
+        idxRestrictionTableID = restrictionsInProposalsLayer.fields().indexFromName(
             "RestrictionTableID"
         )
         idxActionOnProposalAcceptance = (
-            RestrictionsInProposalsLayer.fields().indexFromName(
+            restrictionsInProposalsLayer.fields().indexFromName(
                 "ActionOnProposalAcceptance"
             )
         )
 
-        newRestrictionsInProposal = QgsFeature(RestrictionsInProposalsLayer.fields())
+        newRestrictionsInProposal = QgsFeature(restrictionsInProposalsLayer.fields())
         newRestrictionsInProposal.setGeometry(QgsGeometry())
 
         newRestrictionsInProposal[idxProposalID] = proposalID
@@ -535,7 +531,7 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        returnStatus = RestrictionsInProposalsLayer.addFeatures(
+        returnStatus = restrictionsInProposalsLayer.addFeatures(
             [newRestrictionsInProposal]
         )
 
@@ -545,36 +541,36 @@ class RestrictionTypeUtilsMixin:
         # return the layer given the row in "RestrictionLayers"
         TOMsMessageLog.logMessage("In getRestrictionLayer.", level=Qgis.Info)
 
-        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
+        restrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
             0
         ]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName(
+        idxRestrictionsLayerName = restrictionsLayers.fields().indexFromName(
             "RestrictionLayerName"
         )
 
         currRestrictionsTableName = currRestrictionTableRecord[idxRestrictionsLayerName]
 
-        RestrictionLayer = QgsProject.instance().mapLayersByName(
+        restrictionLayer = QgsProject.instance().mapLayersByName(
             currRestrictionsTableName
         )[0]
 
-        return RestrictionLayer
+        return restrictionLayer
 
     def getRestrictionsLayerFromID(self, currRestrictionTableID):
         # return the layer given the row in "RestrictionLayers"
         TOMsMessageLog.logMessage("In getRestrictionsLayerFromID.", level=Qgis.Info)
 
-        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
+        restrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
             0
         ]
 
-        idxRestrictionsLayerName = RestrictionsLayers.fields().indexFromName(
+        idxRestrictionsLayerName = restrictionsLayers.fields().indexFromName(
             "RestrictionLayerName"
         )
-        idxRestrictionsLayerID = RestrictionsLayers.fields().indexFromName("Code")
+        idxRestrictionsLayerID = restrictionsLayers.fields().indexFromName("Code")
 
-        for layer in RestrictionsLayers.getFeatures():
+        for layer in restrictionsLayers.getFeatures():
             if layer[idxRestrictionsLayerID] == currRestrictionTableID:
                 currRestrictionLayerName = layer[idxRestrictionsLayerName]
 
@@ -588,7 +584,7 @@ class RestrictionTypeUtilsMixin:
         TOMsMessageLog.logMessage("In getRestrictionLayerTableID.", level=Qgis.Info)
         # find the ID for the layer within the table "
 
-        RestrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
+        restrictionsLayers = QgsProject.instance().mapLayersByName("RestrictionLayers")[
             0
         ]
 
@@ -596,7 +592,7 @@ class RestrictionTypeUtilsMixin:
 
         # not sure if there is better way to search for something, .e.g., using SQL ??
 
-        for layer in RestrictionsLayers.getFeatures():
+        for layer in restrictionsLayers.getFeatures():
             if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
                 layersTableID = layer.attribute("Code")
 
@@ -640,13 +636,13 @@ class RestrictionTypeUtilsMixin:
 
         returnStatus = False
 
-        RestrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
+        restrictionsInProposalsLayer = QgsProject.instance().mapLayersByName(
             "RestrictionsInProposals"
         )[0]
 
         # RestrictionsInProposalsLayer.startEditing()
 
-        for restrictionInProposal in RestrictionsInProposalsLayer.getFeatures():
+        for restrictionInProposal in restrictionsInProposalsLayer.getFeatures():
             if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
                 if (
                     restrictionInProposal.attribute("RestrictionTableID")
@@ -658,7 +654,7 @@ class RestrictionTypeUtilsMixin:
                             level=Qgis.Info,
                         )
 
-                        returnStatus = RestrictionsInProposalsLayer.deleteFeature(
+                        returnStatus = restrictionsInProposalsLayer.deleteFeature(
                             restrictionInProposal.id()
                         )
                         # returnStatus = True
@@ -858,9 +854,9 @@ class RestrictionTypeUtilsMixin:
                     # label_leader_layers_names = self.setCurrLabelLeaderLayerNames(currRestrictionLayer)
                     layerDetails = TOMsLabelLayerNames(currRestrictionLayer)
 
-                    for label_layer_name in layerDetails.getCurrLabelLayerNames():
+                    for labelLayerName in layerDetails.getCurrLabelLayerNames():
                         labelLayer = QgsProject.instance().mapLayersByName(
-                            label_layer_name
+                            labelLayerName
                         )[0]
                         labelLayer.reload()
 
@@ -939,15 +935,15 @@ class RestrictionTypeUtilsMixin:
     ):
         TOMsMessageLog.logMessage("In setDefaultRestrictionDetails: ", level=Qgis.Info)
 
-        generateGeometryUtils.setRoadName(currRestriction)
+        GenerateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
-            generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+            GenerateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
             # currRestriction.setAttribute("RestrictionLength", currRestriction.geometry().length())
 
-        currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(
+        currentCPZ, cpzWaitingTimeID = GenerateGeometryUtils.getCurrentCPZDetails(
             currRestriction
         )
-        currentED, edWaitingTimeID = generateGeometryUtils.getCurrentEventDayDetails(
+        currentED, edWaitingTimeID = GenerateGeometryUtils.getCurrentEventDayDetails(
             currRestriction
         )
 
@@ -990,7 +986,7 @@ class RestrictionTypeUtilsMixin:
                 currentPTA,
                 ptaMaxStayID,
                 ptaNoReturnID,
-            ) = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+            ) = GenerateGeometryUtils.getCurrentPTADetails(currRestriction)
 
             currRestriction.setAttribute("MaxStayID", ptaMaxStayID)
             currRestriction.setAttribute("NoReturnID", ptaNoReturnID)
@@ -1000,7 +996,7 @@ class RestrictionTypeUtilsMixin:
                 payParkingAreasLayer = QgsProject.instance().mapLayersByName(
                     "PayParkingAreas"
                 )[0]
-                currPayParkingArea = generateGeometryUtils.getPolygonForRestriction(
+                currPayParkingArea = GenerateGeometryUtils.getPolygonForRestriction(
                     currRestriction, payParkingAreasLayer
                 )
                 currRestriction.setAttribute(
@@ -1055,17 +1051,17 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        generateGeometryUtils.setRoadName(currRestriction)
+        GenerateGeometryUtils.setRoadName(currRestriction)
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
-            generateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
+            GenerateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID = generateGeometryUtils.getCurrentCPZDetails(
+            currentCPZ, cpzWaitingTimeID = GenerateGeometryUtils.getCurrentCPZDetails(
                 currRestriction
             )
             (
                 currentED,
                 edWaitingTimeID,
-            ) = generateGeometryUtils.getCurrentEventDayDetails(currRestriction)
+            ) = GenerateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(
                 currRestriction.id(),
@@ -1114,7 +1110,7 @@ class RestrictionTypeUtilsMixin:
                 currentPTA,
                 ptaMaxStayID,
                 ptaNoReturnID,
-            ) = generateGeometryUtils.getCurrentPTADetails(currRestriction)
+            ) = GenerateGeometryUtils.getCurrentPTADetails(currRestriction)
             currRestrictionLayer.changeAttributeValue(
                 currRestriction.id(),
                 currRestrictionLayer.fields().indexFromName("ParkingTariffArea"),
@@ -1130,7 +1126,7 @@ class RestrictionTypeUtilsMixin:
     ):
 
         # Create a copy of the feature
-        self.origFeature = originalFeature()
+        self.origFeature = OriginalFeature()
         self.origFeature.setFeature(currRestriction)
 
         if restrictionDialog is None:
@@ -1138,14 +1134,14 @@ class RestrictionTypeUtilsMixin:
                 "In setupRestrictionDialog. dialog not found", level=Qgis.Warning
             )
 
-        button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
+        buttonBox = restrictionDialog.findChild(QDialogButtonBox, "button_box")
 
-        if button_box is None:
+        if buttonBox is None:
             TOMsMessageLog.logMessage(
                 "In setupRestrictionDialog. button box not found", level=Qgis.Warning
             )
 
-        button_box.accepted.connect(
+        buttonBox.accepted.connect(
             functools.partial(
                 self.onSaveRestrictionDetails,
                 currRestriction,
@@ -1161,7 +1157,7 @@ class RestrictionTypeUtilsMixin:
             )
         )
 
-        button_box.rejected.connect(
+        buttonBox.rejected.connect(
             functools.partial(
                 self.onRejectRestrictionDetailsFromForm,
                 restrictionDialog,
@@ -1223,9 +1219,9 @@ class RestrictionTypeUtilsMixin:
 
         TOMsMessageLog.logMessage("In photoDetails", level=Qgis.Info)
 
-        FIELD1 = dialog.findChild(QLabel, "Photo_Widget_01")
-        FIELD2 = dialog.findChild(QLabel, "Photo_Widget_02")
-        FIELD3 = dialog.findChild(QLabel, "Photo_Widget_03")
+        field1 = dialog.findChild(QLabel, "Photo_Widget_01")
+        field2 = dialog.findChild(QLabel, "Photo_Widget_02")
+        field3 = dialog.findChild(QLabel, "Photo_Widget_03")
 
         # sort out path for Photos
         photoPath = QgsExpressionContextUtils.projectScope(
@@ -1238,18 +1234,18 @@ class RestrictionTypeUtilsMixin:
             return
 
         if os.path.isabs(photoPath):
-            path_absolute = photoPath
+            pathAbsolute = photoPath
         else:
             projectPath = QgsExpressionContextUtils.projectScope(
                 QgsProject.instance()
             ).variable("project_path")
-            path_absolute = os.path.abspath(os.path.join(projectPath, photoPath))
+            pathAbsolute = os.path.abspath(os.path.join(projectPath, photoPath))
 
         TOMsMessageLog.logMessage(
-            "In photoDetails. path_absolute: {}".format(path_absolute), level=Qgis.Info
+            "In photoDetails. path_absolute: {}".format(pathAbsolute), level=Qgis.Info
         )
         # check that the path exists
-        if not os.path.isdir(path_absolute):
+        if not os.path.isdir(pathAbsolute):
             QMessageBox.information(
                 None, "Information", "Please set value for PhotoPath.", QMessageBox.Ok
             )
@@ -1264,13 +1260,13 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        if FIELD1:
+        if field1:
             TOMsMessageLog.logMessage(
                 "In photoDetails. FIELD 1 exisits", level=Qgis.Info
             )
             if currRestrictionFeature[idx1]:
                 newPhotoFileName1 = os.path.join(
-                    path_absolute, currRestrictionFeature[idx1]
+                    pathAbsolute, currRestrictionFeature[idx1]
                 )
             else:
                 newPhotoFileName1 = None
@@ -1280,27 +1276,27 @@ class RestrictionTypeUtilsMixin:
             )
             pixmap1 = QPixmap(newPhotoFileName1)
             if not pixmap1.isNull():
-                FIELD1.setPixmap(pixmap1)
-                FIELD1.setScaledContents(True)
+                field1.setPixmap(pixmap1)
+                field1.setScaledContents(True)
                 TOMsMessageLog.logMessage(
                     "In photoDetails. Photo1: " + str(newPhotoFileName1),
                     level=Qgis.Info,
                 )
 
-            if cv2_available:
+            if CV2_AVAILABLE:
                 try:
-                    START_CAMERA_1 = dialog.findChild(QPushButton, "startCamera1")
-                    TAKE_PHOTO_1 = dialog.findChild(QPushButton, "getPhoto1")
-                    TAKE_PHOTO_1.setEnabled(False)
+                    startCamera1 = dialog.findChild(QPushButton, "startCamera1")
+                    takePhoto1 = dialog.findChild(QPushButton, "getPhoto1")
+                    takePhoto1.setEnabled(False)
 
-                    self.camera1 = formCamera(
-                        path_absolute,
+                    self.camera1 = FormCamera(
+                        pathAbsolute,
                         newPhotoFileName1,
-                        START_CAMERA_1,
-                        TAKE_PHOTO_1,
+                        startCamera1,
+                        takePhoto1,
                         self.cameraNr,
                     )
-                    START_CAMERA_1.clicked.connect(self.camera1.useCamera)
+                    startCamera1.clicked.connect(self.camera1.useCamera)
 
                     self.camera1.notifyPhotoTaken.connect(
                         functools.partial(self.savePhotoTaken, idx1)
@@ -1311,13 +1307,13 @@ class RestrictionTypeUtilsMixin:
                         level=Qgis.Info,
                     )
 
-        if FIELD2:
+        if field2:
             TOMsMessageLog.logMessage(
                 "In photoDetails. FIELD 2 exisits", level=Qgis.Info
             )
             if currRestrictionFeature[idx2]:
                 newPhotoFileName2 = os.path.join(
-                    path_absolute, currRestrictionFeature[idx2]
+                    pathAbsolute, currRestrictionFeature[idx2]
                 )
             else:
                 newPhotoFileName2 = None
@@ -1327,27 +1323,27 @@ class RestrictionTypeUtilsMixin:
             )
             pixmap2 = QPixmap(newPhotoFileName2)
             if not pixmap2.isNull():
-                FIELD2.setPixmap(pixmap2)
-                FIELD2.setScaledContents(True)
+                field2.setPixmap(pixmap2)
+                field2.setScaledContents(True)
                 TOMsMessageLog.logMessage(
                     "In photoDetails. Photo2: " + str(newPhotoFileName2),
                     level=Qgis.Info,
                 )
 
-            if cv2_available:
+            if CV2_AVAILABLE:
                 try:
-                    START_CAMERA_2 = dialog.findChild(QPushButton, "startCamera2")
-                    TAKE_PHOTO_2 = dialog.findChild(QPushButton, "getPhoto2")
-                    TAKE_PHOTO_2.setEnabled(False)
+                    startCamera2 = dialog.findChild(QPushButton, "startCamera2")
+                    takePhoto2 = dialog.findChild(QPushButton, "getPhoto2")
+                    takePhoto2.setEnabled(False)
 
-                    self.camera2 = formCamera(
-                        path_absolute,
+                    self.camera2 = FormCamera(
+                        pathAbsolute,
                         newPhotoFileName2,
-                        START_CAMERA_2,
-                        TAKE_PHOTO_2,
+                        startCamera2,
+                        takePhoto2,
                         self.cameraNr,
                     )
-                    START_CAMERA_2.clicked.connect(self.camera2.useCamera)
+                    startCamera2.clicked.connect(self.camera2.useCamera)
 
                     self.camera2.notifyPhotoTaken.connect(
                         functools.partial(self.savePhotoTaken, idx2)
@@ -1358,40 +1354,40 @@ class RestrictionTypeUtilsMixin:
                         level=Qgis.Info,
                     )
 
-        if FIELD3:
+        if field3:
             TOMsMessageLog.logMessage(
                 "In photoDetails. FIELD 3 exisits", level=Qgis.Info
             )
             if currRestrictionFeature[idx3]:
                 newPhotoFileName3 = os.path.join(
-                    path_absolute, currRestrictionFeature[idx3]
+                    pathAbsolute, currRestrictionFeature[idx3]
                 )
             else:
                 newPhotoFileName3 = None
 
             pixmap3 = QPixmap(newPhotoFileName3)
             if not pixmap3.isNull():
-                FIELD3.setPixmap(pixmap3)
-                FIELD3.setScaledContents(True)
+                field3.setPixmap(pixmap3)
+                field3.setScaledContents(True)
                 TOMsMessageLog.logMessage(
                     "In photoDetails. Photo3: " + str(newPhotoFileName3),
                     level=Qgis.Info,
                 )
 
-            if cv2_available:
+            if CV2_AVAILABLE:
                 try:
-                    START_CAMERA_3 = dialog.findChild(QPushButton, "startCamera3")
-                    TAKE_PHOTO_3 = dialog.findChild(QPushButton, "getPhoto3")
-                    TAKE_PHOTO_3.setEnabled(False)
+                    startCamera3 = dialog.findChild(QPushButton, "startCamera3")
+                    takePhoto3 = dialog.findChild(QPushButton, "getPhoto3")
+                    takePhoto3.setEnabled(False)
 
-                    self.camera3 = formCamera(
-                        path_absolute,
+                    self.camera3 = FormCamera(
+                        pathAbsolute,
                         newPhotoFileName3,
-                        START_CAMERA_3,
-                        TAKE_PHOTO_3,
+                        startCamera3,
+                        takePhoto3,
                         self.cameraNr,
                     )
-                    START_CAMERA_3.clicked.connect(self.camera3.useCamera)
+                    startCamera3.clicked.connect(self.camera3.useCamera)
 
                     self.camera3.notifyPhotoTaken.connect(
                         functools.partial(self.savePhotoTaken, idx3)
@@ -1402,7 +1398,7 @@ class RestrictionTypeUtilsMixin:
                         level=Qgis.Info,
                     )
 
-    def photoDetails_camera(
+    def photoDetailsCamera(
         self, restrictionDialog, currRestrictionLayer, currRestriction
     ):
 
@@ -1418,7 +1414,7 @@ class RestrictionTypeUtilsMixin:
                 "In photoDetails_camera: cameraNr issue: {}".format(e),
                 level=Qgis.Warning,
             )
-            if cv2_available:
+            if CV2_AVAILABLE:
                 self.cameraNr = QMessageBox.information(
                     None,
                     "Information",
@@ -1444,13 +1440,13 @@ class RestrictionTypeUtilsMixin:
     ):
         TOMsMessageLog.logMessage("In onSaveProposalFormDetails.", level=Qgis.Info)
 
-        self.Proposals = proposalsLayer
+        self.proposals = proposalsLayer
 
         # set up field indexes
-        idxProposalID = self.Proposals.fields().indexFromName("ProposalID")
-        idxProposalTitle = self.Proposals.fields().indexFromName("ProposalTitle")
-        idxProposalStatusID = self.Proposals.fields().indexFromName("ProposalStatusID")
-        idxProposalOpenDate = self.Proposals.fields().indexFromName("ProposalOpenDate")
+        idxProposalID = self.proposals.fields().indexFromName("ProposalID")
+        idxProposalTitle = self.proposals.fields().indexFromName("ProposalTitle")
+        idxProposalStatusID = self.proposals.fields().indexFromName("ProposalStatusID")
+        idxProposalOpenDate = self.proposals.fields().indexFromName("ProposalOpenDate")
 
         currProposalID = currProposalObject.getProposalNr()
         currProposalStatusID = currProposalObject.getProposalStatusID()
@@ -1572,7 +1568,7 @@ class RestrictionTypeUtilsMixin:
         # Trying to unset map tool to force updates ...
         # self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        proposalTransaction.commitTransactionGroup(self.Proposals)
+        proposalTransaction.commitTransactionGroup(self.proposals)
 
         proposalsDialog.close()
 
@@ -1584,7 +1580,7 @@ class RestrictionTypeUtilsMixin:
                 level=Qgis.Info,
             )
 
-            for proposal in self.Proposals.getFeatures():
+            for proposal in self.proposals.getFeatures():
                 if proposal[idxProposalTitle] == currProposalTitle:
                     TOMsMessageLog.logMessage(
                         "In onSaveProposalFormDetails. newProposalID = "
@@ -1662,13 +1658,13 @@ class RestrictionTypeUtilsMixin:
         dws = iface.mainWindow().findChildren(QDockWidget)
         # parent = iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
         dockstate = iface.mainWindow().dockWidgetArea(parent)
-        for d in dws:
-            if d is not parent:
+        for dockWid in dws:
+            if dockWid is not parent:
                 if (
-                    iface.mainWindow().dockWidgetArea(d) == dockstate
-                    and not d.isHidden()
+                    iface.mainWindow().dockWidgetArea(dockWid) == dockstate
+                    and not dockWid.isHidden()
                 ):
-                    iface.mainWindow().tabifyDockWidget(parent, d)
+                    iface.mainWindow().tabifyDockWidget(parent, dockWid)
         parent.raise_()
 
     def prepareRestrictionForEdit(self, currRestriction, currRestrictionLayer):
@@ -1843,8 +1839,8 @@ class TOMsLabelLayerNames(QObject):
             level=Qgis.Warning,
         )
 
-        self.label_layers_names = self.setCurrLabelLayerNames(currRestrictionLayer)
-        self.label_leader_layers_names = self.setCurrLabelLeaderLayerNames(
+        self.labelLayerName = self.setCurrLabelLayerNames(currRestrictionLayer)
+        self.labelLeaderLayersNames = self.setCurrLabelLeaderLayerNames(
             currRestrictionLayer
         )
 
@@ -1852,63 +1848,63 @@ class TOMsLabelLayerNames(QObject):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
-        def alert_box(text):
+        def alertBox(text):
             QMessageBox.information(
                 self.iface.mainWindow(), "Information", text, QMessageBox.Ok
             )
 
         if currRestrictionLayer.name() == "Bays":
-            label_layers_names = ["Bays.label_pos"]
+            labelLayerName = ["Bays.label_pos"]
         if currRestrictionLayer.name() == "Lines":
-            label_layers_names = ["Lines.label_pos", "Lines.label_loading_pos"]
+            labelLayerName = ["Lines.label_pos", "Lines.label_loading_pos"]
         if currRestrictionLayer.name() == "Signs":
-            label_layers_names = []
+            labelLayerName = []
         if currRestrictionLayer.name() == "RestrictionPolygons":
-            label_layers_names = ["RestrictionPolygons.label_pos"]
+            labelLayerName = ["RestrictionPolygons.label_pos"]
         if currRestrictionLayer.name() == "CPZs":
-            label_layers_names = ["CPZs.label_pos"]
+            labelLayerName = ["CPZs.label_pos"]
         if currRestrictionLayer.name() == "ParkingTariffAreas":
-            label_layers_names = ["ParkingTariffAreas.label_pos"]
+            labelLayerName = ["ParkingTariffAreas.label_pos"]
 
-        if len(label_layers_names) == 0:
-            alert_box("No labels for this restriction type")
+        if len(labelLayerName) == 0:
+            alertBox("No labels for this restriction type")
             return
 
-        return label_layers_names
+        return labelLayerName
 
     def getCurrLabelLayerNames(self):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
-        return self.label_layers_names
+        return self.labelLayerName
 
     def setCurrLabelLeaderLayerNames(self, currRestrictionLayer):
         # given a layer return the associated layer with label geometry
         # get the corresponding label layer
 
-        def alert_box(text):
+        def alertBox(text):
             QMessageBox.information(
                 self.iface.mainWindow(), "Information", text, QMessageBox.Ok
             )
 
         if currRestrictionLayer.name() == "Bays":
-            label_leader_layers_names = ["Bays.label_ldr"]
+            labelLeaderLayersNames = ["Bays.label_ldr"]
         if currRestrictionLayer.name() == "Lines":
-            label_leader_layers_names = ["Lines.label_ldr", "Lines.label_loading_ldr"]
+            labelLeaderLayersNames = ["Lines.label_ldr", "Lines.label_loading_ldr"]
         if currRestrictionLayer.name() == "Signs":
-            label_leader_layers_names = []
+            labelLeaderLayersNames = []
         if currRestrictionLayer.name() == "RestrictionPolygons":
-            label_leader_layers_names = ["RestrictionPolygons.label_ldr"]
+            labelLeaderLayersNames = ["RestrictionPolygons.label_ldr"]
         if currRestrictionLayer.name() == "CPZs":
-            label_leader_layers_names = ["CPZs.label_ldr"]
+            labelLeaderLayersNames = ["CPZs.label_ldr"]
         if currRestrictionLayer.name() == "ParkingTariffAreas":
-            label_leader_layers_names = ["ParkingTariffAreas.label_ldr"]
+            labelLeaderLayersNames = ["ParkingTariffAreas.label_ldr"]
 
-        if len(label_leader_layers_names) == 0:
-            alert_box("No labels for this restriction type")
+        if len(labelLeaderLayersNames) == 0:
+            alertBox("No labels for this restriction type")
             return
 
-        return label_leader_layers_names
+        return labelLeaderLayersNames
 
     def getCurrLabelLeaderLayerNames(self):
-        return self.label_leader_layers_names
+        return self.labelLeaderLayersNames

@@ -58,7 +58,7 @@
       <symbol alpha="1" clip_to_extent="1" type="line" name="0">
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
-          <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
+          <prop k="geometryModifier" v="generateDisplayGeometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@0@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
@@ -83,7 +83,7 @@
       <symbol alpha="1" clip_to_extent="1" type="line" name="1">
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
-          <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
+          <prop k="geometryModifier" v="generateDisplayGeometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@1@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
@@ -162,7 +162,7 @@
       <symbol alpha="1" clip_to_extent="1" type="line" name="3">
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
-          <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
+          <prop k="geometryModifier" v="generateDisplayGeometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@3@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
@@ -275,7 +275,7 @@
       <symbol alpha="1" clip_to_extent="1" type="line" name="5">
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
-          <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
+          <prop k="geometryModifier" v="generateDisplayGeometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@5@0">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>
@@ -317,7 +317,7 @@
         </layer>
         <layer pass="0" class="GeometryGenerator" locked="0">
           <prop k="SymbolType" v="Line"/>
-          <prop k="geometryModifier" v="generate_display_geometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
+          <prop k="geometryModifier" v="generateDisplayGeometry(   &quot;RestrictionTypeID&quot; , &quot;GeomShapeID&quot;,  &quot;AzimuthToRoadCentreLine&quot;,  @BayOffsetFromKerb ,  @BayWidth )"/>
           <symbol alpha="1" clip_to_extent="1" type="line" name="@6@1">
             <layer pass="0" class="SimpleLine" locked="0">
               <prop k="capstyle" v="square"/>

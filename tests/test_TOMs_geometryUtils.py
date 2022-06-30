@@ -1,16 +1,13 @@
-# coding=utf-8
-"""Dialog test.
-
-.. note:: This program is free software; you can redistribute it and/or modify
-     it under the terms of the GNU General Public License as published by
-     the Free Software Foundation; either version 2 of the License, or
-     (at your option) any later version.
-
-"""
-
-__author__ = "th@mhtc.co.uk"
-__date__ = "2017-01-01"
-__copyright__ = "Copyright 2017, TH"
+# -----------------------------------------------------------
+# Licensed under the terms of GNU GPL 2
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# -----------------------------------------------------------
+# Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
 from qgis.core import (
     QgsFeature,
@@ -22,9 +19,10 @@ from qgis.core import (
     QgsVectorLayer,
 )
 from qgis.PyQt.QtCore import QVariant
-from .utilities import get_qgis_app
 
 from TOMsPlugin import generateGeometryUtils
+
+from .utilities import get_qgis_app
 
 QGIS_APP = get_qgis_app()
 
@@ -60,8 +58,8 @@ class test_TOMs_geometryUtils(unittest.TestCase):
     def setUp(self):
         """Runs before each test."""
 
-        self.testClass = generateGeometryUtils.generateGeometryUtils
-        self.testClass1 = generateGeometryUtils.generateGeometryUtils()
+        self.testClass = generateGeometryUtils.GenerateGeometryUtils
+        self.testClass1 = generateGeometryUtils.GenerateGeometryUtils()
 
     def tearDown(self):
         """Runs after each test."""
