@@ -1,0 +1,77 @@
+# CHECK for new hook to add (JS, etc.): https://pre-commit.com/hooks.html
+exclude: ".venv|venv|__pycache__|tests/dev/|tests/fixtures/"
+fail_fast: false
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-toml
+      - id: check-json
+      - id: check-xml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: fix-encoding-pragma
+        args: [--remove]
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        exclude_types: [directory]
+        language_version: python3
+        require_serial: true
+        types: [file, python]
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.14.3
+    hooks:
+      - id: pylint
+        language: system
+        types: [python]
+        args:
+          [
+          "--rcfile=setup.cfg", # Link to your config file
+          ]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--filter-files"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        language: python
+        types: [python]
+        args:
+          [
+            "--config=setup.cfg",
+          ]
+
+  - repo: https://gitlab.com/Oslandia/pre-commit-hook
+    rev: 0.1.0
+    hooks:
+      - id: pgFormatter
+        args:
+          [
+            "-s4 -g -t -w120 -W5"
+          ]
+
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 1.0.0
+    hooks:
+      - id: sqlfluff-lint
+
+  # - repo: https://github.com/pre-commit/mirrors-eslint
+  #   rev: v8.18.0
+  #   hooks:
+  #   -   id: eslint
+  #       additional_dependencies:
+  #       - eslint@8.18.0
+  #       - eslint-plugin-react@7.30.0
