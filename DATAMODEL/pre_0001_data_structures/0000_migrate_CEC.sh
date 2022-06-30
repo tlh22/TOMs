@@ -21,7 +21,7 @@ psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plug
 psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/DATAMODEL/0009_add_pay_parking_areas.sql"
 psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/DATAMODEL/0015_add_toms_create_date.sql"
 psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/DATAMODEL/0018_add_toms_capacity.sql"
-psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/test/data/0018_add_toms_capacity_details.sql"
+psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/tests/data/0018_add_toms_capacity_details.sql"
 psql -U postgres -d "EDI_VM_Check_2" -h localhost -p 5436 -a -f "/home/QGIS/plugins/TOMs/DATAMODEL/0019_add_toms_additional_condition_to_restriction_polygons.sql"
 
 

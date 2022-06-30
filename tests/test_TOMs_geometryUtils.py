@@ -8,68 +8,51 @@
 
 """
 
-__author__ = 'th@mhtc.co.uk'
-__date__ = '2017-01-01'
-__copyright__ = 'Copyright 2017, TH'
-
-import unittest
-
-from qgis.PyQt.QtWidgets import (
-    QMessageBox,
-    QAction,
-    QDialogButtonBox,
-    QLabel,
-    QDockWidget, QDialog
-)
-
-from qgis.PyQt.QtGui import (
-    QIcon,
-    QPixmap
-)
-
-from qgis.PyQt.QtCore import (
-    QObject, QTimer, pyqtSignal,
-    QTranslator,
-    QSettings,
-    QCoreApplication,
-    qVersion, QVariant
-)
+__author__ = "th@mhtc.co.uk"
+__date__ = "2017-01-01"
+__copyright__ = "Copyright 2017, TH"
 
 from qgis.core import (
-    QgsExpressionContextUtils,
-    QgsExpression,
-    QgsFeatureRequest,
-    # QgsMapLayerRegistry,
-    QgsMessageLog, QgsFeature, QgsGeometry,
-    QgsTransaction, QgsTransactionGroup,
-    QgsProject, QgsWkbTypes,
-    QgsApplication, QgsRectangle, QgsPoint, QgsPointXY, QgsVectorLayer, QgsField
+    QgsFeature,
+    QgsField,
+    QgsGeometry,
+    QgsPoint,
+    QgsPointXY,
+    QgsProject,
+    QgsVectorLayer,
 )
+from qgis.PyQt.QtCore import QVariant
+from .utilities import get_qgis_app
 
-from TOMs import generateGeometryUtils
+from TOMsPlugin import generateGeometryUtils
 
-from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
 # From https://github.com/qgis/QGIS/blob/master/tests/src/python/test_qgsvectorfilewriter.py
 
-from osgeo import gdal, ogr
-from qgis.testing import start_app, unittest
+from qgis.testing import unittest
+
 
 class DummyInterface(object):
     def __getattr__(self, *args, **kwargs):
         def dummy(*args, **kwargs):
             return self
+
         return dummy
+
     def __iter__(self):
         return self
+
     def next(self):
         raise StopIteration
+
     def layers(self):
         # simulate iface.legendInterface().layers()
         return QgsProject.instance().mapLayersByName()
 
+
 iface = DummyInterface()
+
 
 class test_TOMs_geometryUtils(unittest.TestCase):
     """Test dialog works."""
@@ -88,9 +71,8 @@ class test_TOMs_geometryUtils(unittest.TestCase):
 
         # line layer
         testLayerA = QgsVectorLayer(
-            ('LineString?crs=epsg:27700&index=yes'),
-            'test1',
-            'memory')
+            ("LineString?crs=epsg:27700&index=yes"), "test1", "memory"
+        )
         testProviderA = testLayerA.dataProvider()
 
         testLineString1 = QgsGeometry.fromPolylineXY(
@@ -99,21 +81,8 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         testLineString2 = QgsGeometry.fromPolylineXY(
             [QgsPointXY(1, 0), QgsPointXY(2, 0)]
         )
-        testLineString3 = QgsGeometry.fromPolylineXY(
-            [QgsPointXY(0, 0), QgsPointXY(-1, 1)]
-        )
-        testLineString4 = QgsGeometry.fromPolylineXY(
-            [QgsPointXY(1, 1), QgsPointXY(2, 1)]
-        )
 
-        testLineString10 = QgsGeometry.fromPolylineXY(
-            [QgsPointXY(4, 2), QgsPointXY(1, 2), QgsPointXY(2, 2), QgsPointXY(2, 1), QgsPointXY(2, 4)]
-        )
-
-
-        testProviderA.addAttributes(
-            [QgsField("GeometryID", QVariant.String)
-             ])
+        testProviderA.addAttributes([QgsField("GeometryID", QVariant.String)])
         testFieldsA = testProviderA.fields()
         testFeature1A = QgsFeature(testFieldsA)
         testFeature1A.setGeometry(testLineString1)
@@ -125,25 +94,31 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         testLayerA.reload()
 
         # point layer
-        testLayerB = QgsVectorLayer(('Point?crs=epsg:27700&index=yes'), 'test2', 'memory')
+        testLayerB = QgsVectorLayer(
+            ("Point?crs=epsg:27700&index=yes"), "test2", "memory"
+        )
         testProviderB = testLayerB.dataProvider()
 
         testPoint1 = QgsPoint(0, 1)
 
         testProviderB.addAttributes(
-            [QgsField("GeometryID", QVariant.String),
-             QgsField("SignOrientation", QVariant.Int),
-             QgsField("SignType_1", QVariant.Int),
-             QgsField("SignType_2", QVariant.Int),
-             QgsField("SignType_3", QVariant.Int),
-             QgsField("SignType_4", QVariant.Int),
-             QgsField("original_geom", QVariant.Geometry),
-             ])
+            [
+                QgsField("GeometryID", QVariant.String),
+                QgsField("SignOrientation", QVariant.Int),
+                QgsField("SignType_1", QVariant.Int),
+                QgsField("SignType_2", QVariant.Int),
+                QgsField("SignType_3", QVariant.Int),
+                QgsField("SignType_4", QVariant.Int),
+                QgsField("original_geom", QVariant.Geometry),
+            ]
+        )
         testFieldsB = testProviderB.fields()
 
         testFeature2A = QgsFeature(testFieldsB)
         testFeature2A.setGeometry(testPoint1)
-        testFeature2A.setAttributes(["Alpha", 1, 1, None, None, None, testPoint1.asWkt()])
+        testFeature2A.setAttributes(
+            ["Alpha", 1, 1, None, None, None, testPoint1.asWkt()]
+        )
         testFeature2B = QgsFeature(testFieldsB)
         testFeature2B.setGeometry(testPoint1)
         testFeature2B.setAttributes(["Beta", 2, 1, 1, None, None, testPoint1.asWkt()])
@@ -153,12 +128,12 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         testProviderB.addFeatures([testFeature2A, testFeature2B, testFeature2C])
         testLayerB.reload()
 
-        testLayerC = QgsVectorLayer(('Point?crs=epsg:27700&index=yes'), 'test2', 'memory')
+        testLayerC = QgsVectorLayer(
+            ("Point?crs=epsg:27700&index=yes"), "test2", "memory"
+        )
         testProviderC = testLayerC.dataProvider()
 
-        testProviderC.addAttributes(
-            [QgsField("GeometryID", QVariant.String)
-             ])
+        testProviderC.addAttributes([QgsField("GeometryID", QVariant.String)])
         testFieldsC = testProviderC.fields()
         testFeature3A = QgsFeature(testFieldsC)
         testFeature3A.setGeometry(testPoint1)
@@ -168,15 +143,24 @@ class test_TOMs_geometryUtils(unittest.TestCase):
 
         distanceForIcons = 3
 
-        orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection = self.testClass.getLineOrientationAtPoint(QgsPointXY(testPoint1), testFeature1A)
+        (
+            orientationToFeature,
+            orientationInFeatureDirection,
+            orientationAwayFromFeature,
+            orientationOppositeFeatureDirection,
+        ) = self.testClass.getLineOrientationAtPoint(
+            QgsPointXY(testPoint1), testFeature1A
+        )
 
-        print ('orientationToFeature: {}'.format(orientationToFeature))
+        print("orientationToFeature: {}".format(orientationToFeature))
         self.assertEqual(orientationToFeature, 180.0)
         self.assertEqual(orientationInFeatureDirection, 90.0)
         self.assertEqual(orientationAwayFromFeature, 0.0)
         self.assertEqual(orientationOppositeFeatureDirection, 270.0)
 
-        lineGeom = self.testClass.createLinewithPointAzimuthDistance(QgsPointXY(testPoint1), orientationToFeature, 5)
+        lineGeom = self.testClass.createLinewithPointAzimuthDistance(
+            QgsPointXY(testPoint1), orientationToFeature, 5
+        )
         self.assertEqual(lineGeom.length(), 5.0)
 
         # check creation of line - for feature with 1 sign
@@ -186,19 +170,23 @@ class test_TOMs_geometryUtils(unittest.TestCase):
 
         orientationList = self.testClass.getSignOrientation(testFeature2A, testLayerA)
         self.assertEqual(len(orientationList), 5)
-        print ('orientationList: {}'.format(orientationList))
-        self.assertEqual(orientationList[1], 90.0) # feature direction
-        self.assertEqual(orientationList[2], 270.0) # opposite feature direction
-        self.assertEqual(orientationList[3], 180.0) # facing feature
-        self.assertEqual(orientationList[4], 0.0) # facing away from feature
+        print("orientationList: {}".format(orientationList))
+        self.assertEqual(orientationList[1], 90.0)  # feature direction
+        self.assertEqual(orientationList[2], 270.0)  # opposite feature direction
+        self.assertEqual(orientationList[3], 180.0)  # facing feature
+        self.assertEqual(orientationList[4], 0.0)  # facing away from feature
 
-        lineGeom = self.testClass.getSignLine(testFeature2A, testLayerA, distanceForIcons)
-        print ('lineGeom: {}'.format(lineGeom.asWkt()))
+        lineGeom = self.testClass.getSignLine(
+            testFeature2A, testLayerA, distanceForIcons
+        )
+        print("lineGeom: {}".format(lineGeom.asWkt()))
         self.assertEqual(lineGeom.length(), 6)
 
-        linePts = self.testClass.addPointsToSignLine(lineGeom, nrPlatesInSign, distanceForIcons)
-        #print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
-        #linePts = newLineGeom.asPolyline()
+        linePts = self.testClass.addPointsToSignLine(
+            lineGeom, nrPlatesInSign, distanceForIcons
+        )
+        # print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
+        # linePts = newLineGeom.asPolyline()
         self.assertEqual(len(linePts), 1)
 
         # check creation of line - for feature with 3 signs
@@ -210,13 +198,17 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         self.assertEqual(len(orientationList), 5)
         self.assertEqual(orientationList[1], 90.0)
 
-        lineGeom = self.testClass.getSignLine(testFeature2C, testLayerA, distanceForIcons)
-        print ('lineGeom: {}'.format(lineGeom.asWkt()))
+        lineGeom = self.testClass.getSignLine(
+            testFeature2C, testLayerA, distanceForIcons
+        )
+        print("lineGeom: {}".format(lineGeom.asWkt()))
         self.assertEqual(lineGeom.length(), 12)
 
-        linePts = self.testClass.addPointsToSignLine(lineGeom, nrPlatesInSign, distanceForIcons)
-        #print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
-        #linePts = newLineGeom.asPolyline()
+        linePts = self.testClass.addPointsToSignLine(
+            lineGeom, nrPlatesInSign, distanceForIcons
+        )
+        # print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
+        # linePts = newLineGeom.asPolyline()
         self.assertEqual(len(linePts), 3)
 
         # check creation of line - for feature without signs field
@@ -228,17 +220,21 @@ class test_TOMs_geometryUtils(unittest.TestCase):
         self.assertEqual(len(orientationList), 5)
         self.assertIsNone(orientationList[0])
 
-        lineGeom = self.testClass.getSignLine(testFeature3A, testLayerA, distanceForIcons)
+        lineGeom = self.testClass.getSignLine(
+            testFeature3A, testLayerA, distanceForIcons
+        )
         self.assertIsNone(lineGeom)
 
-        newLineGeom = self.testClass.addPointsToSignLine(lineGeom, nrPlatesInSign, distanceForIcons)
-        self.assertIsNone(lineGeom)
+        newLineGeom = self.testClass.addPointsToSignLine(
+            lineGeom, nrPlatesInSign, distanceForIcons
+        )
+        self.assertIsNone(newLineGeom)
 
         # static function
         lineGeom = self.testClass1.finalSignLine(testFeature2C)
+
 
 if __name__ == "__main__":
     suite = unittest.makeSuite(test_TOMs_geometryUtils)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-

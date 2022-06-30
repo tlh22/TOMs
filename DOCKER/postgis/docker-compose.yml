@@ -16,7 +16,7 @@ services:
       - ALLOW_IP_RANGE=0.0.0.0/0
     volumes:
       - ../../DATAMODEL:/io/DATAMODEL
-      - ../../test/data:/io/test/data
+      - ../../tests/data:/io/test/data
       - ./toms_test_db_init_scripts:/docker-entrypoint-initdb.d
       - ./config:/io/pg_config
       #- /home/pg_data:/var/lib/postgresql/data
