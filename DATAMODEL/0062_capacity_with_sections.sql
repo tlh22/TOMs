@@ -141,6 +141,7 @@ BEGIN
                      
                      CASE WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
                           NEW."Capacity" = 1;
+                          WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(availableLength/vehicleWidth);
                           --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
                           END CASE;
