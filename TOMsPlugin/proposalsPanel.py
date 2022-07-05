@@ -90,6 +90,22 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         self.toolButton.setEnabled(False)
         self.restrictionTools.disableTOMsToolbarItems()
 
+        self.closeTOMs = False
+        self.tomsConfigFileObject = None
+        self.dock = None
+        self.proposals = None
+        self.idxProposalTitle = None
+        self.idxCreateDate = None
+        self.idxOpenDate = None
+        self.idxProposalStatusID = None
+        self.proposalTransaction = None
+        self.newProposalObject = None
+        self.newProposal = None
+        self.proposalDialog = None
+        self.buttonBox = None
+        self.currProposalObject = None
+        self.currProposal = None
+
         TOMsMessageLog.logMessage(
             "Finished proposalsPanel init ...", level=Qgis.Warning
         )
@@ -105,8 +121,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         """Filter main layer based on date and state options"""
 
         TOMsMessageLog.logMessage("In onInitProposalsPanel", level=Qgis.Info)
-
-        # print "** STARTING ProposalPanel"
 
         # dockwidget may not exist if:
         #    first run of plugin
@@ -130,8 +144,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
             )
 
             self.closeTOMsTools()
-
-        pass
 
     def openTOMsTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
@@ -210,11 +222,9 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         self.toolButton.setEnabled(True)
         self.setLabelUpdateTriggers()
 
-        # setup use of "Escape" key to deactive map tools - https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
+        # setup use of "Escape" key to deactive map tools
+        # https://gis.stackexchange.com/questions/133228/how-to-deactivate-my-custom-tool-by-pressing-the-escape-key-using-pyqgis
 
-        """shortcutEsc = QShortcut(QKeySequence(Qt.Key_Escape), self.iface.mainWindow())
-        shortcutEsc.setContext(Qt.ApplicationShortcut)
-        shortcutEsc.activated.connect(self.iface.mapCanvas().unsetMapTool(self.mapTool))"""
         self.proposalsManager.setCurrentProposal(0)
 
         # TODO: Deal with the change of project ... More work required on this
@@ -265,15 +275,10 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         # reset path names
         self.tableNames.removePathFromLayerForms()
 
-        pass
-
     def createProposalcb(self):
 
         TOMsMessageLog.logMessage("In createProposalcb", level=Qgis.Info)
         # set up a "NULL" field for "No proposals to be shown"
-
-        # self.dock.cb_ProposalsList.currentIndexChanged.connect(self.onProposalListIndexChanged)
-        # self.dock.cb_ProposalsList.currentIndexChanged.disconnect(self.onProposalListIndexChanged)
 
         self.dock.cb_ProposalsList.clear()
 
@@ -284,13 +289,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         self.dock.cb_ProposalsList.addItem(currProposalTitle, currProposalID)
 
-        for (
-            currProposalID,
-            currProposalTitle,
-            currProposalStatusID,
-            currProposalOpenDate,
-            currProposal,
-        ) in sorted(
+        for (currProposalID, currProposalTitle, _, _, _,) in sorted(
             self.proposalsManager.getProposalsListWithStatus(
                 ProposalStatus.IN_PREPARATION
             ),
@@ -344,16 +343,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         # create a new Proposal
 
-        """self.newProposal = QgsFeature(self.Proposals.fields())
-        #newProposal.setGeometry(QgsGeometry())
-
-        self.newProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
-        self.newProposal[self.idxCreateDate] = self.proposalsManager.date()
-        self.newProposal[self.idxOpenDate] = self.proposalsManager.date()
-        self.newProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
-        self.newProposal.setGeometry(QgsGeometry())
-
-        self.Proposals.addFeature(self.newProposal)  # TH (added for v3)"""
         self.newProposalObject = (
             self.proposalsManager.currentProposalObject().initialiseProposal()
         )
@@ -385,7 +374,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
             )
         )
 
-        # self.button_box.rejected.disconnect()
         self.buttonBox.rejected.connect(self.onRejectProposalDetailsFromForm)
 
         self.proposalDialog.attributeForm().attributeChanged.connect(
@@ -395,11 +383,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         )
 
         self.proposalDialog.show()
-
-        # self.iface.openFeatureForm(self.Proposals, newProposal, False, True)
-
-        # self.createProposalcb()
-        pass
 
     def onNewProposalCreated(self, proposal):
         TOMsMessageLog.logMessage(
@@ -423,9 +406,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         return
 
-        # def onSaveProposalDetailsFromForm(self):
-        # self.onSaveProposalFormDetails(self.newProposal, self.Proposals, self.proposalDialog, self.currTransaction)
-
     def onRejectProposalDetailsFromForm(self):
 
         self.proposals.destroyEditCommand()
@@ -434,8 +414,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         # self.rollbackCurrentEdits()
 
         self.proposalTransaction.rollBackTransactionGroup()
-
-        pass
 
     def onProposalDetails(self):
         TOMsMessageLog.logMessage("In onProposalDetails", level=Qgis.Info)
@@ -458,7 +436,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
             self.proposals, self.currProposal
         )
 
-        # self.proposalDialog.attributeForm().disconnectButtonBox()
         self.buttonBox = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
         if self.buttonBox is None:
@@ -489,8 +466,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         self.proposalDialog.show()
 
-        pass
-
     def onProposalListIndexChanged(self):
         TOMsMessageLog.logMessage("In onProposalListIndexChanged.", level=Qgis.Info)
         # currProposal = self.proposalsManager.currentProposal()
@@ -509,26 +484,12 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage(
             "In onProposalChanged. Zoom to extents", level=Qgis.Info
         )
-        """if self.proposalsManager.getProposalBoundingBox():
-            TOMsMessageLog.logMessage("In onProposalChanged. Bounding box found", level=Qgis.Info)
-            self.iface.mapCanvas().setExtent(self.proposalsManager.getProposalBoundingBox())
-            self.iface.mapCanvas().refresh()"""
 
     def updateCurrentProposal(self):
         TOMsMessageLog.logMessage("In updateCurrentProposal.", level=Qgis.Info)
-        """Will be called whenever a new entry is selected in the combobox"""
+        # Will be called whenever a new entry is selected in the combobox
 
         # Can we check to see if there are any outstanding edits?!!
-
-        """reply = QMessageBox.information(self.iface.mainWindow(), "Information", "All changes will be rolled back",
-                                        QMessageBox.Ok)
-
-        if reply:
-
-            self.iface.actionRollbackAllEdits().trigger()
-            self.iface.actionCancelAllEdits().trigger()
-
-        pass"""
 
         currProposalCbIndex = self.dock.cb_ProposalsList.currentIndex()
         currProposalID = self.dock.cb_ProposalsList.itemData(currProposalCbIndex)
@@ -538,48 +499,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onDateChanged.", level=Qgis.Info)
         date = self.proposalsManager.date()
         self.dock.filterDate.setDate(date)
-
-        """ onChangeProposalStatus(self):
-        TOMsMessageLog.logMessage("In onChangeProposalStatus. Proposed status: " + str(self.Proposals.fields().indexFromName("ProposalStatusID")), level=Qgis.Info)
-
-        # check to see if the proposal is "Accepted"
-        acceptProposal = False
-
-        newProposalStatus = int(self.Proposals.fields().indexFromName("ProposalStatusID"))
-
-        if newProposalStatus == 1:    # should be 2 but with list ...
-
-            # if so, check to see if this was intended
-
-            reply = QMessageBox.question(self.iface.mainWindow(), 'Confirm changes to Proposal',
-                                         'Are you you want to accept this proposal?. Accepting will make all the proposed changes permanent.', QMessageBox.Yes, QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                # make the changes permanent
-                acceptProposal = True
-
-        # bring the Proposals dislog back to the front
-
-        self.dlg.activateWindow()
-
-        return acceptProposal"""
-
-        """def getRestrictionLayerTableID(self, currRestLayer):
-        TOMsMessageLog.logMessage("In getRestrictionLayerTableID.", level=Qgis.Info)
-        # find the ID for the layer within the table "
-
-        RestrictionsLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers2")[0]
-
-        layersTableID = 0
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        for layer in RestrictionsLayers.getFeatures():
-            if layer.attribute("RestrictionLayerName") == str(currRestLayer.name()):
-                layersTableID = layer.attribute("id")
-
-        TOMsMessageLog.logMessage("In getRestrictionLayerTableID. layersTableID: " + str(layersTableID), level=Qgis.Info)
-
-        return layersTableID"""
 
     def getProposal(self, proposalID):
         TOMsMessageLog.logMessage("In getProposal.", level=Qgis.Info)
@@ -594,8 +513,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
                 return currProposal
 
         return None
-
-        pass
 
     def setLabelUpdateTriggers(self):
         TOMsMessageLog.logMessage("In setLabelUpdateTriggers ...", level=Qgis.Info)

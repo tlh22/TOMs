@@ -66,29 +66,25 @@ class GenerateGeometryUtils(QObject):
 
         azCL = az1 - 90.0
         if azCL < 0:
-            azCL = azCL + 360.0
+            azCL += 360.0
 
         # TOMsMessageLog.logMessage("In turnToCL AzCL = " + str(AzCL), level=Qgis.Info)
 
         # Need to check quadrant
 
-        if azCL >= 0.0 and azCL <= 90.0:
-            if az2 >= 270.0 and az2 <= 359.999:
+        if 0 <= azCL <= 90.0:
+            if 270.0 <= az2 <= 359.999:
                 azCL = azCL + 360
-        elif az2 >= 0 and az2 <= 90:
-            if azCL >= 270.0 and azCL <= 359.999:
+        elif 0 <= az2 <= 90:
+            if 270.0 <= azCL <= 359.999:
                 az2 = az2 + 360
 
         direction = abs(float(azCL) - float(az2))
-
-        # TOMsMessageLog.logMessage("In turnToCL Diff = " + str(g), level=Qgis.Info)
 
         if direction < 90:
             turn = -90
         else:
             turn = 90
-
-        # TOMsMessageLog.logMessage("In turnToCL Turn = " + str(Turn), level=Qgis.Info)
 
         return turn
 
@@ -96,35 +92,16 @@ class GenerateGeometryUtils(QObject):
     def calcBisector(prevAz, currAz, turn, widthRest):
         # function to return Az of bisector
 
-        # TOMsMessageLog.logMessage("In calcBisector", level=Qgis.Info)
-        # TOMsMessageLog.logMessage("In calcBisector: prevAz: " + str(prevAz) + " currAz: " + str(currAz), level=Qgis.Info)
-
         prevAzA = GenerateGeometryUtils.checkDegrees(prevAz + float(turn))
         currAzA = GenerateGeometryUtils.checkDegrees(currAz + float(turn))
 
-        # TOMsMessageLog.logMessage("In calcBisector: prevAzA: " + str(prevAzA) + " currAzA: " + str(currAzA), level=Qgis.Info)
-
-        """
-        if prevAz > 180:
-            revPrevAz = prevAz - float(180)
-        else:
-            revPrevAz = prevAz + float(180)
-        """
-
-        # TOMsMessageLog.logMessage("In calcBisector: revPrevAz: " + str(revPrevAz), level=Qgis.Info)
-
         diffAz = prevAzA - currAzA
-
-        # TOMsMessageLog.logMessage("In calcBisector: diffAz: " + str(diffAz), level=Qgis.Info)
 
         diffAngle = diffAz / float(2)
         bisectAz = prevAzA - diffAngle
 
         diffAngleRad = math.radians(diffAngle)
-        # TOMsMessageLog.logMessage("In calcBisector: diffAngle: " + str(diffAngle) + " diffAngle_rad: " + str(diffAngle_rad), level=Qgis.Warning)
         distToPt = float(widthRest) / math.cos(diffAngleRad)
-
-        # TOMsMessageLog.logMessage("In generateDisplayGeometry: bisectAz: " + str(bisectAz) + " distToPt:" + str(distToPt), level=Qgis.Warning)
 
         return bisectAz, distToPt
 
@@ -141,8 +118,6 @@ class GenerateGeometryUtils(QObject):
             diffAz2 = diffAz - 360.0
         if diffAz < -180.0:
             diffAz2 = diffAz + 360.0
-
-        # TOMsMessageLog.logMessage("In generateDisplayGeometry: Az1: {}; Az2:{}; diffAz:{}: {}".format(Az1, Az2, diffAz, diffAz2), level=Qgis.Info)
 
         diffAngle = diffAz2 / float(2)
         bisectAz = GenerateGeometryUtils.checkDegrees(az1 - diffAngle)
@@ -182,8 +157,6 @@ class GenerateGeometryUtils(QObject):
                 level=Qgis.Warning,
             )
 
-            # feature.setAttribute("AzimuthToRoadCentreLine", int(generateGeometryUtils.calculateAzimuthToRoadCentreLine(feature)))
-
     @staticmethod
     def determineRoadName(feature):
 
@@ -196,16 +169,7 @@ class GenerateGeometryUtils(QObject):
             "In setRoadName: {}".format(feature.geometry().asWkt()), level=Qgis.Info
         )
 
-        """line = generateGeometryUtils.getLineForAz(feature)
-
-        if len(line) == 0:
-            return 0
-
-        testPt = line[
-            0]
-        """
         geom = feature.geometry()
-        # line = QgsGeometry()
 
         toleranceNearby = (
             10.0  # somehow need to have this (and layer names) as global variables
@@ -235,8 +199,6 @@ class GenerateGeometryUtils(QObject):
                     ),
                     level=Qgis.Info,
                 )
-                # ptList = feature.geometry().asPolyline()
-                # secondPt = ptList[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
 
             elif geom.type() == QgsWkbTypes.PointGeometry:  # Point
                 TOMsMessageLog.logMessage(
@@ -259,7 +221,7 @@ class GenerateGeometryUtils(QObject):
             TOMsMessageLog.logMessage(
                 "In setRoadName: unknown geometry type", level=Qgis.Info
             )
-            return
+            return None, None
 
         # nrPts = len(ptList)
         # TOMsMessageLog.logMessage("In setRoadName: number of pts in list: " + str(nrPts), level=Qgis.Info)
@@ -277,15 +239,11 @@ class GenerateGeometryUtils(QObject):
         # nearestRC_feature = generateGeometryUtils.findFeatureAt2(feature, testPt, RoadCasementLayer,
         #                                                        tolerance_nearby)
 
-        (
-            closestRCPoint,
-            nearestRCFeature,
-        ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+        (_, nearestRCFeature,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
             testPt, roadCasementLayer, toleranceNearby
         )
 
         if nearestRCFeature:
-            # TOMsMessageLog.logMessage("In setRoadName: nearestRC_feature: " + nearestRC_feature.geometry().asWkt(), level=Qgis.Info)
 
             idxRoadName = roadCasementLayer.fields().indexFromName("RoadName")
             idxUSRN = roadCasementLayer.fields().indexFromName("USRN")
@@ -299,10 +257,7 @@ class GenerateGeometryUtils(QObject):
 
             return roadName, usrn
 
-        else:
-            return None, None
-
-        pass
+        return None, None
 
     @staticmethod
     def setAzimuthToRoadCentreLine(feature):
@@ -319,8 +274,6 @@ class GenerateGeometryUtils(QObject):
         # - existence of geoemtry
         # - whether or not it is multi-part
 
-        # TOMsMessageLog.logMessage("In getLineForAz(helper):", level=Qgis.Info)
-
         geom = feature.geometry()
         # line = QgsGeometry()
 
@@ -330,15 +283,11 @@ class GenerateGeometryUtils(QObject):
                     lines = geom.asMultiPolyline()
                     nrLines = len(lines)
 
-                    # TOMsMessageLog.logMessage("In getLineForAz(helper):  geometry: " + feature.geometry().asWkt()  + " - NrLines = " + str(nrLines), level=Qgis.Info)
-
                     # take the first line as the one we are interested in
                     if nrLines > 0:
                         line = lines[0]
                     else:
                         return 0
-                    """for idxLine in range(nrLines):
-                        line = lines[idxLine]"""
 
                 else:
                     line = feature.geometry().asPolyline()
@@ -346,34 +295,27 @@ class GenerateGeometryUtils(QObject):
                 # Now return the array
                 return line
 
-            else:
-                TOMsMessageLog.logMessage(
-                    "In getLineForAz(helper): Incorrect geometry found", level=Qgis.Info
-                )
-                return None
-
-        else:
             TOMsMessageLog.logMessage(
-                "In getLineForAz(helper): geometry not found", level=Qgis.Info
+                "In getLineForAz(helper): Incorrect geometry found", level=Qgis.Info
             )
             return None
+
+        TOMsMessageLog.logMessage(
+            "In getLineForAz(helper): geometry not found", level=Qgis.Info
+        )
+        return None
 
     @staticmethod
     def calculateAzimuthToRoadCentreLine(feature):
         # find the shortest line from this point to the road centre line layer
-        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/ - generates "closest feature" function
+        # http://www.lutraconsulting.co.uk/blog/2014/10/17/getting-started-writing-qgis-python-plugins/
+        # generates "closest feature" function
 
         TOMsMessageLog.logMessage(
             "In setAzimuthToRoadCentreLine(helper):", level=Qgis.Info
         )
 
         roadCentreLineLayer = QgsProject.instance().mapLayersByName("RoadCentreLine")[0]
-
-        """if feature.geometry():
-            geom = feature.geometry()
-        else:
-            TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): geometry not found", level=Qgis.Info)
-            return 0"""
 
         # take the a point from the geometry
         # line = feature.geometry().asPolyline()
@@ -382,19 +324,13 @@ class GenerateGeometryUtils(QObject):
         if len(line) == 0:
             return 0
 
-        # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
+        # Get the mid point of the line
+        # https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
 
-        testPt = (
-            feature.geometry().centroid().asPoint()
-        )  # lineGeom = QgsGeometry.fromPolyline((line[::])
-        # lineLength = lineGeom.length()
-        # TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), level=Qgis.Info)
-        # testPt = lineGeom.interpolate(lineLength / 2.0)
-        # testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
+        testPt = feature.geometry().centroid().asPoint()
 
-        # TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), level=Qgis.Info)
-
-        # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
+        # Find all Road Centre Line features within a "reasonable" distance
+        # and then check each one to find the shortest distance
 
         toleranceRoadwidth = 25
         searchRect = QgsRectangle(
@@ -427,7 +363,6 @@ class GenerateGeometryUtils(QObject):
 
         if featureFound:
             # now obtain the line between the testPt and the nearest feature
-            # f_lineToCL = closestFeature.geometry().shortestLine(QgsGeometry.fromPointXY(testPt))
             startPt = QgsPoint(
                 QgsGeometry.asPoint(
                     closestFeature.geometry().nearestPoint(
@@ -436,12 +371,6 @@ class GenerateGeometryUtils(QObject):
                 )
             )
 
-            # get the start point (we know the end point)
-            """startPtV2 = f_lineToCL.geometry().startPoint()
-            startPt = QgsPoint()
-            startPt.setX(startPtV2.x())
-            startPt.setY(startPtV2.y())"""
-
             TOMsMessageLog.logMessage(
                 "In calculateAzimuthToRoadCentreLine: startPoint: " + str(startPt.x()),
                 level=Qgis.Info,
@@ -449,51 +378,9 @@ class GenerateGeometryUtils(QObject):
 
             azim = GenerateGeometryUtils.checkDegrees(QgsPoint(testPt).azimuth(startPt))
 
-            # Az = generateGeometryUtils.checkDegrees(testPt.azimuth(startPt))
-            # TOMsMessageLog.logMessage("In calculateAzimuthToRoadCentreLine: Az: " + str(Az), level=Qgis.Info)
-
             return azim
-        else:
-            return 0
 
-    @staticmethod
-    def findFeatureAt2(feature, layerPt, layer, tolerance):
-        # def findFeatureAt(self, pos, excludeFeature=None):
-        """Find the feature close to the given position.
-
-        'layerPt' is the position to check, in layer coordinates.
-        'layer' is specified layer
-        'tolerance' is search distance in layer units
-
-        If no feature is close to the given coordinate, we return None.
-        """
-
-        TOMsMessageLog.logMessage(
-            "In findFeatureAt2. Incoming layer: "
-            + str(layer)
-            + "tol: "
-            + str(tolerance),
-            level=Qgis.Info,
-        )
-
-        searchRect = QgsRectangle(
-            layerPt.x() - tolerance,
-            layerPt.y() - tolerance,
-            layerPt.x() + tolerance,
-            layerPt.y() + tolerance,
-        )
-
-        request = QgsFeatureRequest()
-        request.setFilterRect(searchRect)
-        request.setFlags(QgsFeatureRequest.ExactIntersect)
-
-        for feature in layer.getFeatures(request):
-            TOMsMessageLog.logMessage(
-                "In findFeatureAt2. feature found", level=Qgis.Info
-            )
-            return feature  # Return first matching feature.
-
-        return None
+        return 0
 
     @staticmethod
     def getReverseAzimuth(azim):
@@ -503,68 +390,47 @@ class GenerateGeometryUtils(QObject):
             azimuthToCentreLine = azim + 180
         return azimuthToCentreLine
 
-        """
-        @staticmethod
-        def checkFeatureIsBay(restGeomType):
-            TOMsMessageLog.logMessage("In checkFeatureIsBay: restGeomType = " + str(restGeomType), level=Qgis.Info)
-            if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
-                return True
-            else:
-                return False
-        """
-
     @staticmethod
     def getDisplayGeometry(
         feature, restGeomType, offset, shpExtent, orientation, azimuthToCentreLine
     ):
         # Obtain relevant variables
-        # TOMsMessageLog.logMessage("In getDisplayGeometry: restGeomType = " + str(restGeomType), level=Qgis.Info)
 
         # Need to check why the project variable function is not working
 
         restrictionID = feature.attribute("GeometryID")
         TOMsMessageLog.logMessage(
-            "In getDisplayGeometry: New restriction .................................................................... ID: "
-            + str(restrictionID),
+            "In getDisplayGeometry: New restriction ............................"
+            "........................................ ID: " + str(restrictionID),
             level=Qgis.Info,
         )
-        # restGeomType = feature.attribute("GeomShapeID")
-        # AzimuthToCentreLine = float(feature.attribute("AzimuthToRoadCentreLine"))
-        # TOMsMessageLog.logMessage("In getDisplayGeometry: Az: " + str(AzimuthToCentreLine), tag = "TOMs panel")
 
-        # Need to check feature class. If it is a bay, obtain the number
-        # nrBays = feature.attribute("nrBays")
-
-        """
-        Within expression areas use:    generateDisplayGeometry(   "RestrictionTypeID" , "GeomTypeID",  "AzimuthToRoadCentreLine",  @BayOffsetFromKerb ,  @BayWidth )
-
-        Logic is :
-
-        For vertex 0,
-            Move for defined distance (typically 0.25m) in direction "AzimuthToCentreLine" and create point 1
-            Move for bay width (typically 2.0m) in direction "AzimuthToCentreLine and create point 2
-            Calculate Azimuth for line between vertex 0 and vertex 1
-            Calc difference in Azimuths and decide < or > 180 (to indicate which side of kerb line to generate bay)
-
-        For each vertex (starting at 1)
-            Calculate Azimuth for current vertex and previous
-            Calculate perpendicular to centre of road (using knowledge of which side of kerb line generated above)
-            Move for bay width (typically 2.0m) along perpendicular and create point
-
-        For last vertex
-                Move for defined distance (typically 0.25m) along perpendicular and create last point
-        """
+        #  Within expression areas use:
+        #  generateDisplayGeometry(   "RestrictionTypeID" , "GeomTypeID",
+        #                             "AzimuthToRoadCentreLine",  @BayOffsetFromKerb ,  @BayWidth )
+        #
+        #  Logic is :
+        #
+        #  For vertex 0,
+        #      Move for defined distance (typically 0.25m) in direction "AzimuthToCentreLine" and create point 1
+        #      Move for bay width (typically 2.0m) in direction "AzimuthToCentreLine and create point 2
+        #      Calculate Azimuth for line between vertex 0 and vertex 1
+        #      Calc difference in Azimuths and decide < or > 180 (to indicate which side of kerb line to generate bay)
+        #
+        #  For each vertex (starting at 1)
+        #      Calculate Azimuth for current vertex and previous
+        #      Calculate perpendicular to centre of road (using knowledge of which side of kerb line generated above)
+        #      Move for bay width (typically 2.0m) along perpendicular and create point
+        #
+        #  For last vertex
+        #          Move for defined distance (typically 0.25m) along perpendicular and create last point
 
         line = GenerateGeometryUtils.getLineForAz(feature)
-
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), level=Qgis.Info)
 
         if len(line) == 0:
             return 0
 
         # Now have a valid set of points
-
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  Now processing line", level=Qgis.Info)
 
         ptsList = []
         parallelPtsList = []
@@ -575,30 +441,17 @@ class GenerateGeometryUtils(QObject):
 
         for i in range(len(line) - 1):
 
-            # TOMsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), level=Qgis.Info)
-
             azim = line[i].azimuth(line[i + 1])
-
-            # TOMsMessageLog.logMessage("In getDisplayGeometry: geometry: " + str(line[i].x()) + " " + str(line[i+1].x()) + " " + str(Az), level=Qgis.Info)
 
             # if this is the first point
 
             if i == 0:
                 # determine which way to turn towards CL
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: considering first point", level=Qgis.Info)
 
                 turn = GenerateGeometryUtils.turnToCL(azim, azimuthToCentreLine)
 
                 newAz = azim + turn
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: newAz: " + str(newAz), level=Qgis.Info)
                 cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
-
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: cosa : " + str(cosa) + " " + str(cosb), level=Qgis.Info)
-
-                # dx = float(offset) * cosa
-                # dy = float(offset) * cosb
-
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: dx: " + str(dx) + " dy: " + str(dy), level=Qgis.Info)
 
                 ptsList.append(
                     QgsPoint(
@@ -606,7 +459,6 @@ class GenerateGeometryUtils(QObject):
                         line[i].y() + (float(offset) * cosb),
                     )
                 )
-                # TOMsMessageLog.logMessage("In geomType: added point 1 ", level=Qgis.Info)
 
                 # Now add the point at the extent. If it is an echelon bay:
                 #   a. calculate the difference between the first Az and the echelon Az (??), and
@@ -630,7 +482,6 @@ class GenerateGeometryUtils(QObject):
                         level=Qgis.Info,
                     )
                     cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
-                    pass
 
                 ptsList.append(
                     QgsPoint(
@@ -638,22 +489,12 @@ class GenerateGeometryUtils(QObject):
                         line[i].y() + (float(shpExtent) * cosb),
                     )
                 )
-                # TOMsMessageLog.logMessage("In geomType: added point 2 ", level=Qgis.Info)
-
-                # ptsList.append(newPoint)
-                # TOMsMessageLog.logMessage("In geomType: after append ", level=Qgis.Info)
-
-                # ptsList.append(QgsPoint(line[i].x()+(float(bayWidth)*cosa), line[i].y()+(float(bayWidth)*cosb)))
 
             else:
 
                 # now pass along the feature
 
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: considering point: " + str(i), level=Qgis.Info)
-
                 # need to work out half of bisected angle
-
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), level=Qgis.Info)
 
                 newAz, distWidth = GenerateGeometryUtils.calcBisector(
                     prevAz, azim, turn, shpExtent
@@ -674,16 +515,10 @@ class GenerateGeometryUtils(QObject):
                     )
                 )
 
-            # TOMsMessageLog.logMessage("In generateDisplayGeometry: point appended", level=Qgis.Info)
-
             prevAz = azim
-
-        # TOMsMessageLog.logMessage("In generateDisplayGeometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), level=Qgis.Info)
 
         # have reached the end of the feature. Now need to deal with last point.
         # Use Azimuth from last segment but change the points
-
-        # TOMsMessageLog.logMessage("In generateDisplayGeometry: feature processed. Now at last point ", level=Qgis.Info)
 
         # standard bay
         newAz = azim + turn + diffEchelonAz
@@ -711,129 +546,7 @@ class GenerateGeometryUtils(QObject):
 
         newLine = QgsGeometry.fromPolyline(ptsList)
 
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  newGeometry ********: " + newLine.asWkt(), level=Qgis.Info)
-
         return newLine, parallelPtsList
-
-    @staticmethod
-    def zigzag(
-        feature,
-        wavelength,
-        amplitude,
-        restGeometryType,
-        offset,
-        shpExtent,
-        orientation,
-        azimuthToCentreLine,
-    ):
-        """
-         Taken from: https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=8&cad=rja&uact=8&ved=0ahUKEwi06c6nkMzWAhWCwxoKHWHMC34QFghEMAc&url=http%3A%2F%2Fwww.geoinformations.developpement-durable.gouv.fr%2Ffichier%2Fodt%2Fgenerateur_de_zigzag_v1_cle0d3366.odt%3Farg%3D177834503%26cle%3Df6f59e5a812d5c3e7a829f05497213f839936080%26file%3Dodt%252Fgenerateur_de_zigzag_v1_cle0d3366.odt&usg=AOvVaw0JoVM0llmrvSCdxOEaGCOH
-         www.geoinformations.developpement-durable.gouv.fr
-
-        transforme une geometrie lineaire en zigzag
-        <h4>Syntax</h4>
-        <pre>zigzag(geom, longueur, amplitude)</pre>
-
-        <h4>Exemple</h4>
-        zigzag($geometry,200,100)
-
-        """
-
-        TOMsMessageLog.logMessage("In zigzag", level=Qgis.Info)
-
-        line, parallelLine = GenerateGeometryUtils.getDisplayGeometry(
-            feature,
-            restGeometryType,
-            offset,
-            shpExtent,
-            orientation,
-            azimuthToCentreLine,
-        )
-
-        # TOMsMessageLog.logMessage("In zigzag - have geometry + " + line.asWkt(), level=Qgis.Info)
-
-        length = line.length()
-        # TOMsMessageLog.logMessage(
-        #    "In zigzag - have geometry. Length = " + str(length) + " wavelength: " + str(wavelength),
-        #    level=Qgis.Info)
-
-        segments = int(length / wavelength)
-        # Find equally spaced points that approximate the line
-        # TOMsMessageLog.logMessage("In zigzag - have geometry. segments = " + str(segments), level=Qgis.Info)
-
-        points = []
-        countSegments = 0
-        while countSegments <= segments:
-            # TOMsMessageLog.logMessage("In zigzag - countSegment = " + str(countSegments), level=Qgis.Info)
-            interpolateDistance = int(countSegments * int(wavelength))
-            # TOMsMessageLog.logMessage("In zigzag - interpolateDistance = " + str(interpolateDistance), level=Qgis.Info)
-            points.append(line.interpolate(float(interpolateDistance)).asPoint())
-            # TOMsMessageLog.logMessage("In zigzag - added Point", level=Qgis.Info)
-            countSegments = countSegments + 1
-
-        # TOMsMessageLog.logMessage("In zigzag - have points: nrPts = " + str(len(points)), level=Qgis.Info)
-
-        # Calculate the azimuths of the approximating line segments
-
-        azimuths = []
-
-        for i in range(len(points) - 1):
-            # TOMsMessageLog.logMessage("In zigzag - creating Az: i = " + str(i), level=Qgis.Info)
-            azimuths.append((points[i].azimuth(points[i + 1])))
-
-        # TOMsMessageLog.logMessage("In zigzag - after azimuths: i " + str(i) + " len(az): " + str(len(azimuths)),
-        #                         level=Qgis.Info)
-
-        # Average consecutive azimuths and rotate 90 deg counterclockwise
-
-        # newAz, distWidth = generateGeometryUtils.calcBisector(prevAz, Az, Turn, shpExtent)
-
-        zigzagazimuths = [azimuths[0] - math.pi / 2]
-        zigzagazimuths.extend(
-            [
-                GenerateGeometryUtils.meanAngle(azimuths[i], azimuths[i - 1])
-                - math.pi / 2
-                for i in range(len(points) - 1)
-            ]
-        )
-        zigzagazimuths.append(azimuths[-1] - math.pi / 2)
-
-        # TOMsMessageLog.logMessage("In zigzag - about to create shape", level=Qgis.Info)
-
-        cosa = 0.0
-        cosb = 0.0
-
-        # Offset the points along the zigzagazimuths
-        zigzagpoints = []
-        for i in range(len(points) - 1):
-            # Alternate the sign
-
-            # TOMsMessageLog.logMessage("In zigzag - sign: " + str(i - 2 * math.floor(i / 2)), level=Qgis.Info)
-
-            # currX = points[i].x()
-            # currY = points[i].y()
-
-            # currAz = zigzagazimuths[i]
-            cosa, cosb = GenerateGeometryUtils.cosdirAzim(azimuths[i])
-
-            # TOMsMessageLog.logMessage("In zigzag - cosa: " + str(cosa), level=Qgis.Info)
-
-            zigzagpoints.append(
-                QgsPoint(
-                    points[i].x() + (float(offset) * cosa),
-                    points[i].y() + (float(offset) * cosb),
-                )
-            )
-
-            # TOMsMessageLog.logMessage("In zigzag - point added: " + str(i), level=Qgis.Info)
-            # zigzagpoints.append(QgsPoint(points[i][0] + math.sin(zigzagazimuths[i]) * dst, points[i][1] + math.cos(zigzagazimuths[i]) * dst))
-
-        # Create new feature from the list of zigzag points
-        gLine = QgsGeometry.fromPolyline(zigzagpoints)
-
-        # TOMsMessageLog.logMessage("In zigzag - shape created", level=Qgis.Info)
-
-        return gLine
 
     @staticmethod
     def meanAngle(angle1, angle2):
@@ -845,8 +558,6 @@ class GenerateGeometryUtils(QObject):
 
         minScale = float(GenerateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
-
-        # QgsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), tag="TOMs panel")
 
         if currScale <= minScale:
 
@@ -920,8 +631,6 @@ class GenerateGeometryUtils(QObject):
 
         minScale = float(GenerateGeometryUtils.getMininumScaleForDisplay())
         currScale = float(iface.mapCanvas().scale())
-
-        # TOMsMessageLog.logMessage("In generateLabelLeader. Current scale: " + str(currScale) + " min scale: " + str(minScale), level=Qgis.Info)
 
         if currScale <= minScale:
 
@@ -1037,8 +746,6 @@ class GenerateGeometryUtils(QObject):
         )
 
         if cpzWaitingTimeID:
-            # TOMsMessageLog.logMessage("In getWaitingLoadingRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(waitingTimeID),
-            #                         level=Qgis.Info)
             if cpzWaitingTimeID == waitingTimeID:
                 waitDesc = None
 
@@ -1169,14 +876,10 @@ class GenerateGeometryUtils(QObject):
                 timePeriodDesc = None
 
             if tariffZoneMaxStayID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                level=Qgis.Info)"""
                 if tariffZoneMaxStayID == maxStayID:
                     maxStayDesc = None
 
             if tariffZoneNoReturnID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                level=Qgis.Info)"""
                 if tariffZoneNoReturnID == noReturnID:
                     noReturnDesc = None
 
@@ -1238,7 +941,6 @@ class GenerateGeometryUtils(QObject):
             # TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
 
             for row in lookupLayer.getFeatures(request):
-                # TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
                 return row.attribute("Description")  # make assumption that only one row
 
         return None
@@ -1252,11 +954,8 @@ class GenerateGeometryUtils(QObject):
             query = '"Code" = ' + str(code)
             request = QgsFeatureRequest().setFilterExpression(query)
 
-            # TOMsMessageLog.logMessage("In getLookupLabelText. table: {}; query: {}".format(lookupLayer.name(), str(query)), level=Qgis.Info)
-
             try:
                 row = next(lookupLayer.getFeatures(request))
-                # TOMsMessageLog.logMessage("In getLookupLabelText. returning with {}".format(row["LabelText"]), level=Qgis.Info)
                 return row["LabelText"]  # make assumption that only one row
             except Exception as e:
                 TOMsMessageLog.logMessage(
@@ -1489,7 +1188,6 @@ class GenerateGeometryUtils(QObject):
                     )
                     edzWaitingTimeID = poly.attribute("TimePeriodID")
                     # cpzMatchDayTimeID = poly.attribute("MatchDayTimePeriodID")
-                    # TOMsMessageLog.logMessage("In getCPZWaitingTimeID. ID. {}; matchDay: {}".format(cpzWaitingTimeID, cpzMatchDayTimeID), level=Qgis.Info)
                     # return cpzWaitingTimeID, cpzMatchDayTimeID
                     TOMsMessageLog.logMessage(
                         "In getEDWaitingTimeID. ID. {}".format(edzWaitingTimeID),
@@ -1527,59 +1225,6 @@ class GenerateGeometryUtils(QObject):
                     return ptaTimePeriodID, ptaMaxStayID, ptaNoReturnID
 
         return None, None, None
-
-    """
-    @staticmethod
-    def getTariffZoneMaxStayID(tpaNr):
-
-        #TOMsMessageLog.logMessage("In getTariffZoneMaxStayID", level=Qgis.Info)
-
-        tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-
-        for poly in tpaLayer.getFeatures():
-            currentPTA = poly.attribute("ParkingTariffArea")
-            if currentPTA == tpaNr:
-                #TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. Found PTA.", level=Qgis.Info)
-                ptaMaxStayID = poly.attribute("MaxStayID")
-                #TOMsMessageLog.logMessage("In getTariffZoneMaxStayID. ID." + str(ptaMaxStayID), level=Qgis.Info)
-                return ptaMaxStayID
-
-        return None
-
-    @staticmethod
-    def getTariffZoneNoReturnID(tpaNr):
-
-        #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID", level=Qgis.Info)
-
-        tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-
-        for poly in tpaLayer.getFeatures():
-            currentPTA = poly.attribute("ParkingTariffArea")
-            if currentPTA == tpaNr:
-                #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID. Found PTA.", level=Qgis.Info)
-                ptaNoReturnID = poly.attribute("NoReturnID")
-                #TOMsMessageLog.logMessage("In getTariffZoneNoReturnID. ID." + str(ptaNoReturnID), level=Qgis.Info)
-                return ptaNoReturnID
-
-        return None
-
-    @staticmethod
-    def getTariffZoneTimePeriodID(tpaNr):
-
-        #TOMsMessageLog.logMessage("In getTariffZoneTimePeriodID", level=Qgis.Info)
-
-        tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
-
-        for poly in tpaLayer.getFeatures():
-            currentPTA = poly.attribute("ParkingTariffArea")
-            if currentPTA == tpaNr:
-                #TOMsMessageLog.logMessage("In getTariffZoneTimePeriodID. Found PTA.", level=Qgis.Info)
-                ptaTimePeriodID = poly.attribute("TimePeriodID")
-                #TOMsMessageLog.logMessage("In getTariffZoneTimePeriodID. ID." + str(ptaTimePeriodID), level=Qgis.Info)
-                return ptaTimePeriodID
-
-        return None
-    """
 
     @staticmethod
     def findNearestPointOnLineLayer(searchPt, lineLayer, tolerance, geometryIDs=None):
@@ -1643,10 +1288,8 @@ class GenerateGeometryUtils(QObject):
             # nearestPoint = QgsFeature()
             # add the geometry to the feature,
             # nearestPoint.setGeometry(QgsGeometry(closestPtOnFeature))
-            # TOMsMessageLog.logMessage("findNearestPointL: nearestPoint geom type: " + str(nearestPoint.wkbType()), tag="TOMs panel")
             return closestPoint, closestFeature  # returns a geometry
-        else:
-            return None, None
+        return None, None
 
     @staticmethod
     def getLineOrientationAtPoint(point, lineFeature):
@@ -1654,10 +1297,10 @@ class GenerateGeometryUtils(QObject):
 
         lineGeom = lineFeature.geometry()
         (
-            distSquared,
+            _,
             closestPt,
             vertexNrAfterPt,
-            leftOf,
+            _,
         ) = lineGeom.closestSegmentWithContext(point)
         orientationToFeature = GenerateGeometryUtils.checkDegrees(
             point.azimuth(QgsPointXY(closestPt))
@@ -1688,22 +1331,15 @@ class GenerateGeometryUtils(QObject):
         )
 
         TOMsMessageLog.logMessage(
-            "getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}".format(
-                toFeature=orientationToFeature,
-                featureDirection=orientationInFeatureDirection,
-                awayFromFeature=orientationAwayFromFeature,
-                oppFeatureDirection=orientationOppositeFeatureDirection,
-            ),
+            f"getLineOrientationAtPoint 1: {orientationToFeature}; 2: {orientationInFeatureDirection}; 3: "
+            f"{orientationAwayFromFeature}; 4: {orientationOppositeFeatureDirection}",
             level=Qgis.Info,
         )
         TOMsMessageLog.logMessage(
-            "getLineOrientationAtPoint 6: {obliqueInFeatureDirection}; 7: {obliqueOppFeatureDirection}".format(
-                obliqueInFeatureDirection=orientationObliqueInFeatureDirection,
-                obliqueOppFeatureDirection=orientationObliqueOppositeFeatureDirection,
-            ),
+            f"getLineOrientationAtPoint 6: {orientationObliqueInFeatureDirection}; "
+            f"7: {orientationObliqueOppositeFeatureDirection}",
             level=Qgis.Info,
         )
-        # print('getLineOrientationAtPoint 1: {toFeature}; 2: {featureDirection}; 3: {awayFromFeature}; 4: {oppFeatureDirection}'.format(toFeature=orientationToFeature, featureDirection=orientationInFeatureDirection, awayFromFeature=orientationAwayFromFeature, oppFeatureDirection=orientationOppositeFeatureDirection), level=Qgis.Info)
 
         return (
             orientationToFeature,
@@ -1783,8 +1419,6 @@ class GenerateGeometryUtils(QObject):
                 orientationObliqueInFeatureDirection,
                 orientationObliqueOppositeFeatureDirection,
             ) = GenerateGeometryUtils.getLineOrientationAtPoint(signPt, closestFeature)
-            # TOMsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), level=Qgis.Info)
-            # print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
 
             # make it match sign orientation
             return [
@@ -1905,7 +1539,7 @@ class GenerateGeometryUtils(QObject):
         return newLinePts
 
     @staticmethod
-    def finalSignLine(self, feature):
+    def finalSignLine(feature):
         return GenerateGeometryUtils.getGeneratedSignLine(feature)
 
     @staticmethod
@@ -1997,7 +1631,8 @@ class GenerateGeometryUtils(QObject):
         )
 
         if orientationList[1]:  # check that valid values have been returned
-            # This list give the orientation for the way the line is pointing. Now need to swap each through 180 to give true direction for arrows, etc
+            # This list give the orientation for the way the line is pointing.
+            # Now need to swap each through 180 to give true direction for arrows, etc
             # add extra value to match SignsOrientation values
             newOrientationList = [
                 0,

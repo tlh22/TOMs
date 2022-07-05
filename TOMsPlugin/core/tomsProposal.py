@@ -27,7 +27,9 @@ from .tomsTile import TOMsTile
 
 
 class TOMsProposal(ProposalTypeUtilsMixin, QObject):
-    def __init__(self, proposalsManager, proposalNr=None):
+    def __init__(
+        self, proposalsManager, proposalNr=None
+    ):  # pylint: disable=super-init-not-called
         QObject.__init__(self)
         TOMsMessageLog.logMessage("In TOMsProposal:init. ... ", level=Qgis.Info)
         self.proposalsManager = proposalsManager
@@ -42,6 +44,9 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         if proposalNr is not None:
             self.setProposal(proposalNr)
 
+        self.thisProposal = None
+        self.restrictionsInProposals = None
+
     def setProposalsLayer(self):
         self.proposalsLayer = self.tableNames.setLayer("Proposals")
 
@@ -51,23 +56,25 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 level=Qgis.Info,
             )
             return False
-        else:
-            self.idxProposalTitle = self.proposalsLayer.fields().indexFromName(
-                "ProposalTitle"
-            )
-            self.idxCreateDate = self.proposalsLayer.fields().indexFromName(
-                "ProposalCreateDate"
-            )
-            self.idxOpenDate = self.proposalsLayer.fields().indexFromName(
-                "ProposalOpenDate"
-            )
-            self.idxProposalStatusID = self.proposalsLayer.fields().indexFromName(
-                "ProposalStatusID"
-            )
+
+        self.idxProposalTitle = self.proposalsLayer.fields().indexFromName(
+            "ProposalTitle"
+        )
+        self.idxCreateDate = self.proposalsLayer.fields().indexFromName(
+            "ProposalCreateDate"
+        )
+        self.idxOpenDate = self.proposalsLayer.fields().indexFromName(
+            "ProposalOpenDate"
+        )
+        self.idxProposalStatusID = self.proposalsLayer.fields().indexFromName(
+            "ProposalStatusID"
+        )
 
         TOMsMessageLog.logMessage(
             "In TOMsProposal:setProposalsLayer... ", level=Qgis.Info
         )
+
+        return True
 
     def setProposal(self, proposalID):
 
@@ -89,15 +96,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         self.thisProposal.setGeometry(QgsGeometry())
         # self.proposalsLayer.addFeature(self.thisProposal)  # TH (added for v3)
 
-        """self.setProposalTitle('')   #str(uuid.uuid4())
-        self.setProposalOpenDate = self.proposalsManager.date()
-        self.setProposalCreateDate = self.proposalsManager.date()
-        self.setProposalStatusID = ProposalStatus.IN_PREPARATION"""
-
         self.thisProposal[self.idxProposalTitle] = ""  # str(uuid.uuid4())
         self.thisProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.thisProposal[self.idxOpenDate] = self.proposalsManager.date()
-        self.thisProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
+        self.thisProposal[
+            self.idxProposalStatusID
+        ] = ProposalStatus.IN_PREPARATION.value
 
         self.proposalsLayer.addFeature(self.thisProposal)  # TH (added for v3)
 
@@ -130,7 +134,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         return self.thisProposal.attribute("ProposalStatusID")
 
     def setProposalStatusID(self, value):
-        # result = self.thisProposal.setAttribute("ProposalStatusID", value)   # this does not update. TODO: Understand why
+        # result = self.thisProposal.setAttribute("ProposalStatusID", value)
+        # this does not update. TODO: Understand why
         result = self.proposalsLayer.changeAttributeValue(
             self.thisProposal.id(), self.idxProposalStatusID, value
         )  # this does update ??
@@ -184,8 +189,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         if actionOnAcceptance is not None:
             query = (
-                '{query} AND "ActionOnProposalAcceptance" = {actionOnAcceptance}'
-            ).format(query=query, actionOnAcceptance=str(actionOnAcceptance))
+                f'{query} AND "ActionOnProposalAcceptance" = {actionOnAcceptance.value}'
+            )
 
         TOMsMessageLog.logMessage(
             "In __getRestrictionsInProposalForLayerForAction. query: " + str(query),
@@ -279,7 +284,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             + str(revisionDate),
             level=Qgis.Info,
         )
-        dictTilesInProposal = dict()
+        dictTilesInProposal = {}
 
         # Logic is:
         # Loop through each map tile
@@ -295,14 +300,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 thisLayer = self.tableNames.setLayer(layerName)
                 thisLayerProvider = thisLayer.dataProvider()
                 currFilter = thisLayerProvider.subsetString()
-                # TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. currFilter: {}".format(currFilter), level=Qgis.Info)
 
                 thisLayerProvider.setSubsetString(None)
-                # TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate. filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
 
                 for (
                     currRestrictionID,
-                    restrictionInProposalObject,
+                    _,
                 ) in self.__getRestrictionsInProposalForLayerForAction(layerID):
 
                     currRestriction = ProposalElementFactory.getProposalElement(
@@ -313,7 +316,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                             currRestriction.getTilesForRestrictionForDate(revisionDate)
                         )
                     else:
-                        dictTilesInProposal = dict()
+                        dictTilesInProposal = {}
                         QMessageBox.information(
                             None,
                             "Error",
@@ -327,7 +330,6 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
                     # reset filter
                     thisLayerProvider.setSubsetString(currFilter)
-                    # TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate (2). filter is now: {}. Change status {}".format(thisLayerProvider.subsetString(), filterStatus), level=Qgis.Info)
 
                     continue
 
@@ -378,11 +380,10 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             level=Qgis.Warning,
         )
 
-        """ Steps in acceptance are:
-        1. Set new open/close dates for restrictions ( remember to clear filter )
-        2. update revision numbers for tiles (including add details to TilesInAcceptedProposals)
-        3. update Proposal details
-        """
+        #  Steps in acceptance are:
+        #  1. Set new open/close dates for restrictions ( remember to clear filter )
+        #  2. update revision numbers for tiles (including add details to TilesInAcceptedProposals)
+        #  3. update Proposal details
 
         if self.thisProposalNr > 0:  # need to consider a proposal
 
@@ -466,10 +467,12 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     return False
 
             # Now update Proposal
-            if not self.setProposalStatusID(ProposalStatus.ACCEPTED):
+            if not self.setProposalStatusID(ProposalStatus.ACCEPTED.value):
                 return False
 
             return True
+
+        return False
 
     def rejectProposal(self):
 
@@ -477,7 +480,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             "In TOMsProposal.rejectProposal - " + str(self.thisProposalNr),
             level=Qgis.Info,
         )
-        status = self.setProposalStatusID(ProposalStatus.REJECTED)
+        status = self.setProposalStatusID(ProposalStatus.REJECTED.value)
 
         if status:
             TOMsMessageLog.logMessage(

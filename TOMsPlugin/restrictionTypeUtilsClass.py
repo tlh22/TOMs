@@ -34,7 +34,6 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QPushButton,
 )
-from qgis.utils import iface
 
 from .constants import ProposalStatus, RestrictionAction
 from .core.tomsMessageLog import TOMsMessageLog
@@ -42,7 +41,7 @@ from .generateGeometryUtils import GenerateGeometryUtils
 from .ui.tomsCamera import FormCamera
 
 try:
-    import cv2
+    import cv2  # pylint: disable=unused-import
 
     CV2_AVAILABLE = True
     CV2_AVAILABLE = False  # for office ...
@@ -61,7 +60,6 @@ class TOMsParams(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSParams.init ...", level=Qgis.Info)
         self.tomsParamsList = [
@@ -87,9 +85,7 @@ class TOMsParams(QObject):
         currProject = QgsProject.instance()
 
         if len(currProject.fileName()) == 0:
-            QMessageBox.information(
-                self.iface.mainWindow(), "ERROR", ("Project not yet open")
-            )
+            QMessageBox.information(None, "ERROR", ("Project not yet open"))
             found = False
 
         else:
@@ -101,8 +97,6 @@ class TOMsParams(QObject):
                     "In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info
                 )
 
-                """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
-                    currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
                 currParam = None
                 try:
                     currParam = QgsExpressionContextUtils.projectScope(
@@ -110,7 +104,7 @@ class TOMsParams(QObject):
                     ).variable(param)
                 except Exception:
                     QMessageBox.information(
-                        self.iface.mainWindow(),
+                        None,
                         "ERROR",
                         ("Property " + param + " is not present"),
                     )
@@ -126,7 +120,7 @@ class TOMsParams(QObject):
                     )
                 else:
                     QMessageBox.information(
-                        self.iface.mainWindow(),
+                        None,
                         "ERROR",
                         ("Property " + param + " is not present"),
                     )
@@ -152,10 +146,11 @@ class TOMsConfigFile(QObject):
     """ signal will be emitted if TOMs config file is not found """
 
     def __init__(self):
-        QObject.__init__(self)
-        # self.iface = iface
+        super().__init__()
 
         TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
+
+        self.config = configparser.ConfigParser()
 
     def initialiseTOMsConfigFile(self):
 
@@ -200,7 +195,6 @@ class TOMsConfigFile(QObject):
 
     def readTOMsConfigFile(self, configFile):
 
-        self.config = configparser.ConfigParser()
         try:
             self.config.read(configFile)
         except Exception as e:
@@ -239,8 +233,11 @@ class TOMsLayers(QObject):
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
 
         self.tomsLayerDict = {}
+        self.formPath = ""
+        self.tomsLayerList = None
+        self.configFileObject = None
 
-    def getTOMsLayerListFromConfigFile(self, configFileObject):
+    def getTOMsLayerListFromConfigFile(self, configFileObject: "TOMsConfigFile"):
         self.configFileObject = configFileObject
         layers = configFileObject.getTOMsConfigElement("TOMsLayers", "layers")
         if layers:
@@ -350,12 +347,6 @@ class TOMsLayers(QObject):
 
         if not found:
             self.tomsLayersNotFound.emit()
-            # else:
-            # project = QgsProject.instance()
-            # project.write()
-            # self.TOMsLayersSet.emit()
-
-        return
 
     def removePathFromLayerForms(self):
 
@@ -411,8 +402,8 @@ class TOMsLayers(QObject):
         return self.tomsLayerDict.get(layer)
 
 
-class OriginalFeature(object):
-    def __init__(self, feature=None):
+class OriginalFeature:
+    def __init__(self):
         self.savedFeature = None
 
     def setFeature(self, feature):
@@ -442,22 +433,10 @@ class OriginalFeature(object):
 
 
 class RestrictionTypeUtilsMixin:
-    # def __init__(self):
     def __init__(self, iface):
-
-        # self.constants = TOMsConstants()
-        # self.proposalsManager = proposalsManager
         self.iface = iface
-        # self.tableNames = TOMSLayers(self.iface)
-
-        # self.tableNames.getLayers()
-        # super().__init__()
         self.currTransaction = None
-        # self.proposalTransaction = QgsTransaction()
-        # self.proposalPanel = None
-
         self.cameraNr = None
-
         self.settings = QgsSettings()
 
     def restrictionInProposal(
@@ -500,8 +479,6 @@ class RestrictionTypeUtilsMixin:
             "RestrictionsInProposals"
         )[0]
 
-        # RestrictionsInProposalsLayer.startEditing()
-
         idxProposalID = restrictionsInProposalsLayer.fields().indexFromName(
             "ProposalID"
         )
@@ -523,7 +500,7 @@ class RestrictionTypeUtilsMixin:
         newRestrictionsInProposal[idxProposalID] = proposalID
         newRestrictionsInProposal[idxRestrictionID] = restrictionID
         newRestrictionsInProposal[idxRestrictionTableID] = restrictionLayerTableID
-        newRestrictionsInProposal[idxActionOnProposalAcceptance] = proposedAction
+        newRestrictionsInProposal[idxActionOnProposalAcceptance] = proposedAction.value
 
         TOMsMessageLog.logMessage(
             "In addRestrictionToProposal. Before record create. RestrictionID: "
@@ -702,15 +679,8 @@ class RestrictionTypeUtilsMixin:
                 )
 
                 # res = dialog.save()
-                status = currRestrictionLayer.updateFeature(currRestriction)
-                status = dialog.attributeForm().save()
-
-                """if res == True:
-                    TOMsMessageLog.logMessage("In onSaveRestrictionDetails. Form saved.",
-                                             level=Qgis.Info)
-                else:
-                    TOMsMessageLog.logMessage("In onSaveRestrictionDetails. Form NOT saved.",
-                                             level=Qgis.Info)"""
+                currRestrictionLayer.updateFeature(currRestriction)
+                dialog.attributeForm().save()
 
             else:
 
@@ -719,9 +689,6 @@ class RestrictionTypeUtilsMixin:
                 # need to:
                 #    - enter the restriction into the table RestrictionInProposals, and
                 #    - make a copy of the restriction in the current layer (with the new details)
-
-                # TOMsMessageLog.logMessage("In onSaveRestrictionDetails. Adding restriction. ID: " + str(currRestriction.id()),
-                #                         level=Qgis.Info)
 
                 # Create a new feature using the current details
 
@@ -735,10 +702,12 @@ class RestrictionTypeUtilsMixin:
                 )
 
                 if currRestriction[idxOpenDate] is None:
-                    # This is a feature that has just been created, i.e., it is not currently part of the proposal and did not previously exist
+                    # This is a feature that has just been created, i.e., it is not currently part
+                    # of the proposal and did not previously exist
 
                     # Not quite sure what is happening here but think the following:
-                    #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it and can't use either feature or layer to save
+                    #  Feature does not yet exist, i.e., not saved to layer yet, so there is no id for it
+                    # and can't use either feature or layer to save
                     #  So, need to continue to modify dialog value which will be eventually saved
 
                     dialog.attributeForm().changeAttribute(
@@ -764,7 +733,7 @@ class RestrictionTypeUtilsMixin:
                         level=Qgis.Info,
                     )
 
-                    """ attributeForm saves to the layer. Has the feature been added to the layer?"""
+                    # attributeForm saves to the layer. Has the feature been added to the layer?
 
                     dialog.attributeForm().save()  # this issues a commit on the transaction?
                     # dialog.accept()
@@ -803,7 +772,8 @@ class RestrictionTypeUtilsMixin:
 
                     newRestriction = QgsFeature(currRestriction)
 
-                    # TODO: Rethink logic here and need to unwind changes ... without triggering rollBack ?? maybe attributeForm.setFeature()
+                    # TODO: Rethink logic here and need to unwind changes ... without triggering rollBack ??
+                    # maybe attributeForm.setFeature()
                     # dialog.reject()
 
                     newRestriction[idxRestrictionID] = newRestrictionID
@@ -860,8 +830,6 @@ class RestrictionTypeUtilsMixin:
                         )[0]
                         labelLayer.reload()
 
-                pass
-
             # Now commit changes and redraw
 
             attrs1 = currRestriction.attributes()
@@ -886,34 +854,19 @@ class RestrictionTypeUtilsMixin:
                 level=Qgis.Info,
             )
 
-            restrictionTransaction.commitTransactionGroup(currRestrictionLayer)
+            restrictionTransaction.commitTransactionGroup()
             # restrictionTransaction.deleteTransactionGroup()
             TOMsMessageLog.logMessage(
                 "In onSaveRestrictionDetails. Transaction Status 4: "
                 + str(restrictionTransaction.currTransactionGroup.modified()),
                 level=Qgis.Info,
             )
-            # Trying to unset map tool to force updates ...
-            # self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-            # dialog.accept()
-            """TOMsMessageLog.logMessage(
-                "In onSaveRestrictionDetails. Transaction Status 5: " + str(
-                    restrictionTransaction.currTransactionGroup.modified()) + " commitStatus " + str(commitStatus),
-                level=Qgis.Info)"""
-            # status = dialog.attributeForm().close()
-            # dialog.accept()
-            # QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, currRestrictionLayer))
 
             dialog.reject()
 
         else:  # currProposal = 0, i.e., no change allowed
 
-            """reply = QMessageBox.information(None, "Information",
-            "Changes to current data are not allowed. Changes are made via Proposals",
-            QMessageBox.Ok)"""
             dialog.reject()
-
-        pass
 
         # ************* refresh the view. Might be able to set up a signal to get the proposals_panel to intervene
 
@@ -930,9 +883,8 @@ class RestrictionTypeUtilsMixin:
 
         self.setupPanelTabs(self.iface, self.proposalPanel)
 
-    def setDefaultRestrictionDetails(
-        self, currRestriction, currRestrictionLayer, currDate
-    ):
+    def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
+        # FIXME: tellement de commentaire, au final pas de date settée ?
         TOMsMessageLog.logMessage("In setDefaultRestrictionDetails: ", level=Qgis.Info)
 
         GenerateGeometryUtils.setRoadName(currRestriction)
@@ -1024,8 +976,6 @@ class RestrictionTypeUtilsMixin:
             )
             currRestriction.setAttribute("MatchDayTimePeriodID", edWaitingTimeID)
 
-        return
-
     def storeLastUsedDetails(self, layer, field, value):
         entry = "{layer}/{field}".format(layer=layer, field=field)
         TOMsMessageLog.logMessage(
@@ -1042,9 +992,8 @@ class RestrictionTypeUtilsMixin:
         )
         return self.settings.value(entry, default)
 
-    def updateDefaultRestrictionDetails(
-        self, currRestriction, currRestrictionLayer, currDate
-    ):
+    def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
+        # FIXME: tellement de commentaire, au final pas de date settée ?
         TOMsMessageLog.logMessage(
             "In updateDefaultRestrictionDetails. currLayer: "
             + currRestrictionLayer.name(),
@@ -1055,12 +1004,10 @@ class RestrictionTypeUtilsMixin:
         if currRestrictionLayer.geometryType() == 1:  # Line or Bay
             GenerateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
 
-            currentCPZ, cpzWaitingTimeID = GenerateGeometryUtils.getCurrentCPZDetails(
-                currRestriction
-            )
+            currentCPZ, _ = GenerateGeometryUtils.getCurrentCPZDetails(currRestriction)
             (
                 currentED,
-                edWaitingTimeID,
+                _,
             ) = GenerateGeometryUtils.getCurrentEventDayDetails(currRestriction)
 
             currRestrictionLayer.changeAttributeValue(
@@ -1108,8 +1055,8 @@ class RestrictionTypeUtilsMixin:
 
             (
                 currentPTA,
-                ptaMaxStayID,
-                ptaNoReturnID,
+                _,
+                _,
             ) = GenerateGeometryUtils.getCurrentPTADetails(currRestriction)
             currRestrictionLayer.changeAttributeValue(
                 currRestriction.id(),
@@ -1210,8 +1157,6 @@ class RestrictionTypeUtilsMixin:
             )  # rollback all changes
 
         self.storeLastUsedDetails(layer.name(), fieldName, value)
-
-        return
 
     def photoDetails(self, dialog, currRestLayer, currRestrictionFeature):
 
@@ -1463,7 +1408,7 @@ class RestrictionTypeUtilsMixin:
         newProposal = False
         proposalAcceptedRejected = False
 
-        if newProposalStatusID == ProposalStatus.ACCEPTED:  # 2 = accepted
+        if newProposalStatusID == ProposalStatus.ACCEPTED.value:  # 2 = accepted
             # if currProposal[idxProposalStatusID] == ProposalStatus.ACCEPTED:  # 2 = accepted
 
             reply = QMessageBox.question(
@@ -1490,20 +1435,21 @@ class RestrictionTypeUtilsMixin:
                     )
                     return
 
-                updateStatus = proposalsDialog.attributeForm().save()
+                proposalsDialog.attributeForm().save()
                 proposalsDialog.close()
                 proposalAcceptedRejected = True
 
             else:
                 proposalsDialog.reject()
 
-        elif currProposalStatusID == ProposalStatus.REJECTED:  # 3 = rejected
+        elif currProposalStatusID == ProposalStatus.REJECTED.value:  # 3 = rejected
 
             reply = QMessageBox.question(
                 None,
                 "Confirm changes to Proposal",
                 # How do you access the main window to make the popup ???
-                "Do you want to REJECT this proposal?. This will remove it from the Proposal list (although it will remain in the system).",
+                "Do you want to REJECT this proposal?. This will remove it from the "
+                "Proposal list (although it will remain in the system).",
                 QMessageBox.Yes,
                 QMessageBox.No,
             )
@@ -1568,11 +1514,12 @@ class RestrictionTypeUtilsMixin:
         # Trying to unset map tool to force updates ...
         # self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
 
-        proposalTransaction.commitTransactionGroup(self.proposals)
+        proposalTransaction.commitTransactionGroup()
 
         proposalsDialog.close()
 
-        # For some reason the committedFeaturesAdded signal for layer "Proposals" is not firing at this point and so the cbProposals is not refreshing ...
+        # For some reason the committedFeaturesAdded signal for layer "Proposals" is not
+        # firing at this point and so the cbProposals is not refreshing ...
 
         if newProposal:
             TOMsMessageLog.logMessage(
@@ -1628,7 +1575,6 @@ class RestrictionTypeUtilsMixin:
         # TOMsMessageLog.logMessage("In getLookupDescription. queryStatus: " + str(query), level=Qgis.Info)
 
         for row in lookupLayer.getFeatures(request):
-            # TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
             return row.attribute("Description")  # make assumption that only one row
 
         return None
@@ -1644,7 +1590,6 @@ class RestrictionTypeUtilsMixin:
 
         bayTypesInUse = self.TOMsLayers.setLayer("BayTypesInUse")
         for row in bayTypesInUse.getFeatures(request):
-            # TOMsMessageLog.logMessage("In getLookupDescription: found row " + str(row.attribute("Description")), level=Qgis.Info)
             return row.attribute(
                 "GeomShapeGroupType"
             )  # make assumption that only one row
@@ -1653,7 +1598,7 @@ class RestrictionTypeUtilsMixin:
 
     def setupPanelTabs(self, iface, parent):
 
-        # https: // gis.stackexchange.com / questions / 257603 / activate - a - panel - in -tabbed - panels?utm_medium = organic & utm_source = google_rich_qa & utm_campaign = google_rich_qa
+        # https://gis.stackexchange.com/questions/257603/activate-a-panel-in-tabbed-panels?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
         dws = iface.mainWindow().findChildren(QDockWidget)
         # parent = iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
@@ -1688,7 +1633,8 @@ class RestrictionTypeUtilsMixin:
             )
             #  This one is not in the current Proposal, so now we need to:
             #  - generate a new ID and assign it to the feature for which the geometry has changed
-            #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+            #  - switch the geometries arround so that the original feature has the original geometry
+            #    and the new feature has the new geometry
             #  - add the details to RestrictionsInProposal
 
             newFeature = self.cloneRestriction(currRestriction, currRestrictionLayer)
@@ -1728,10 +1674,6 @@ class RestrictionTypeUtilsMixin:
                 "In TOMsNodeTool:init - restriction exists in RestrictionsInProposal",
                 level=Qgis.Info,
             )
-            # newFeature = currRestriction
-
-        # test to see if the geometry is correct
-        # self.restrictionTransaction.commitTransactionGroup(self.origLayer)
 
         return newFeature
 
@@ -1746,14 +1688,11 @@ class RestrictionTypeUtilsMixin:
         TOMsMessageLog.logMessage("In TOMsNodeTool:cloneRestriction", level=Qgis.Info)
         #  This one is not in the current Proposal, so now we need to:
         #  - generate a new ID and assign it to the feature for which the geometry has changed
-        #  - switch the geometries arround so that the original feature has the original geometry and the new feature has the new geometry
+        #  - switch the geometries arround so that the original feature has the original geometry
+        #    and the new feature has the new geometry
         #  - add the details to RestrictionsInProposal
 
-        # originalFeature = self.origFeature.getFeature()
-
         newFeature = QgsFeature(originalFeature)
-
-        # newFeature.setAttributes(originalFeature.attributes())
 
         newRestrictionID = str(uuid.uuid4())
 
@@ -1765,13 +1704,6 @@ class RestrictionTypeUtilsMixin:
         newFeature[idxOpenDate] = None
         newFeature[idxGeometryID] = None
 
-        # abstractGeometry = originalFeature.geometry().geometry().clone()  # make a deep copy of the geometry ... https://gis.stackexchange.com/questions/232056/how-to-deep-copy-a-qgis-memory-layer
-
-        # newFeature.setGeometry(QgsGeometry(originalFeature.geometry()))
-        # geomStatus = restrictionLayer.changeGeometry(newFeature.id(), QgsGeometry(abstractGeometry))
-
-        # if a new feature has been added to the layer, the featureAdded signal is emitted by the layer ... and the fid is obtained
-        # self.newFid = None
         restrictionLayer.featureAdded.connect(self.onFeatureAdded)
 
         addStatus = restrictionLayer.addFeature(newFeature, True)
@@ -1803,13 +1735,6 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        # test to see that feature has been added ...
-        feat = restrictionLayer.getFeatures(
-            QgsFeatureRequest().setFilterExpression(
-                "GeometryID = '{}'".format(newFeature["GeometryID"])
-            )
-        ).next()
-
         return newFeature
 
     def getPrimaryLabelLayer(self, currLayer):
@@ -1820,19 +1745,18 @@ class RestrictionTypeUtilsMixin:
 
         if pointLocation == -1:
             return currLayer
-        else:
-            primaryLayerName = currLayerName[:pointLocation]
-            TOMsMessageLog.logMessage(
-                "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
-                level=Qgis.Info,
-            )
-            return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
+
+        primaryLayerName = currLayerName[:pointLocation]
+        TOMsMessageLog.logMessage(
+            "In getPrimaryLabelLayer: layer: {}".format(primaryLayerName),
+            level=Qgis.Info,
+        )
+        return QgsProject.instance().mapLayersByName(primaryLayerName)[0]
 
 
 class TOMsLabelLayerNames(QObject):
     def __init__(self, currRestrictionLayer):
         QObject.__init__(self)
-        self.iface = iface
 
         TOMsMessageLog.logMessage(
             "In TOMsLabelLayerName:initialising .... {}".format(currRestrictionLayer),
@@ -1849,9 +1773,7 @@ class TOMsLabelLayerNames(QObject):
         # get the corresponding label layer
 
         def alertBox(text):
-            QMessageBox.information(
-                self.iface.mainWindow(), "Information", text, QMessageBox.Ok
-            )
+            QMessageBox.information(None, "Information", text, QMessageBox.Ok)
 
         if currRestrictionLayer.name() == "Bays":
             labelLayerName = ["Bays.label_pos"]
@@ -1868,7 +1790,7 @@ class TOMsLabelLayerNames(QObject):
 
         if len(labelLayerName) == 0:
             alertBox("No labels for this restriction type")
-            return
+            return [""]
 
         return labelLayerName
 
@@ -1883,9 +1805,7 @@ class TOMsLabelLayerNames(QObject):
         # get the corresponding label layer
 
         def alertBox(text):
-            QMessageBox.information(
-                self.iface.mainWindow(), "Information", text, QMessageBox.Ok
-            )
+            QMessageBox.information(None, "Information", text, QMessageBox.Ok)
 
         if currRestrictionLayer.name() == "Bays":
             labelLeaderLayersNames = ["Bays.label_ldr"]
@@ -1902,7 +1822,7 @@ class TOMsLabelLayerNames(QObject):
 
         if len(labelLeaderLayersNames) == 0:
             alertBox("No labels for this restriction type")
-            return
+            return [""]
 
         return labelLeaderLayersNames
 

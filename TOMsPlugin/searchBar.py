@@ -12,32 +12,27 @@
 from qgis.core import Qgis, QgsProject
 from qgis.PyQt.QtCore import QCoreApplication, QStringListModel, Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QCompleter, QLineEdit
+from qgis.PyQt.QtWidgets import (
+    QAction,
+    QCompleter,
+    QLineEdit,
+    QToolBar,
+)
 
 from .core.tomsMessageLog import TOMsMessageLog
 
 
 class SearchBar:
-    def __init__(self, iface, tomsSearchBar):
+    def __init__(self, iface, tomsSearchBar: QToolBar):
 
         TOMsMessageLog.logMessage("In searchBar", level=Qgis.Info)
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.tomsSearchBar = tomsSearchBar
-        # self.proposalsManager = proposalsManager
-
-        # self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
-
-        self.initSearchBar()
-
-        # https: // gis.stackexchange.com / questions / 244584 / adding - textbox - to - qgis - plugin - toolbar
-
-    def initSearchBar(self):
-        TOMsMessageLog.logMessage("In initSearchBox:", level=Qgis.Info)
-
         self.initialPass = True
-        self.gazetteerStringList = []
+        self.gazetteerStringList: list[str] = []
+        self.gazetteerLayer = None
 
         # Create & add a textbox
         self.searchTextbox = QLineEdit(self.iface.mainWindow())
@@ -58,47 +53,31 @@ class SearchBar:
         self.actionGoToItem.triggered.connect(self.doGoToItem)
         self.actionGoToItem.setCheckable(True)
 
-        # Add in details of the Instant Print plugin
-        """self.toolButton = QToolButton(self.iface.mainWindow())
-        self.toolButton.setIcon(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"))
-        #self.toolButton.setToolTip(self.tr("Instant Print"))
-        self.toolButton.setCheckable(True)
-        self.printButtonAction = self.TOMsSearchBar.addWidget(self.toolButton)"""
-
-        """self.actionInstantPrint = QAction(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"),
-                                          QCoreApplication.translate("Print", "Print"), self.iface.mainWindow())"""
-
-        # self.toolButton.toggled.connect(self.__enablePrintTool)
-        # self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
-
-    def enableSearchBar(self):
+    def enableSearchBar(self) -> None:
         TOMsMessageLog.logMessage("In enableSearchBar", level=Qgis.Info)
 
         self.actionGoToItem.setEnabled(True)
-        # self.toolButton.setEnabled(True)
         self.searchTextbox.textChanged.connect(self.doLookupItem)
 
-    def disableSearchBar(self):
+    def disableSearchBar(self) -> None:
         TOMsMessageLog.logMessage("In disableSearchBar", level=Qgis.Info)
 
         self.initialPass = True
         self.actionGoToItem.setEnabled(False)
-        # self.toolButton.setEnabled(False)
         try:
             self.searchTextbox.textChanged.disconnect(self.doLookupItem)
         except Exception as e:
             TOMsMessageLog.logMessage(
-                "In searchBar.disableSearchBar. Issue with disconnects {}".format(e),
+                f"In searchBar.disableSearchBar. Issue with disconnects {e}",
                 level=Qgis.Warning,
             )
 
-    def doLookupItem(self):
-
+    def doLookupItem(self) -> None:
         TOMsMessageLog.logMessage("In doLookupItem:", level=Qgis.Info)
 
         # TODO: Check whether or not a project has been opened
 
-        # https: // gis.stackexchange.com / questions / 246339 / drop - down - list - qgis - plugin - based - on - keyword - search / 246347
+        # https://gis.stackexchange.com/questions/246339/drop-down-list-qgis-plugin-based-on-keyword-search/246347
 
         if self.initialPass:
             self.setupCompleter()
@@ -109,13 +88,7 @@ class SearchBar:
             "In doLookupItem: searchText " + str(searchText), level=Qgis.Info
         )
 
-        # search_in = txt
-        # query = "SELECT myfield1, myfield2 FROM my_table WHERE '%s' LIKE '%' || search_field || '%';" % (search_in)
-        # access your db and run the query
-        # run the query with while query.next() and store values in a list
-        # feed list to resiver (combox.addItems(myList)
-
-    def setupCompleter(self):
+    def setupCompleter(self) -> None:
         # set up string list for completer
 
         TOMsMessageLog.logMessage("In setupCompleter:", level=Qgis.Info)
@@ -138,7 +111,6 @@ class SearchBar:
                     "In setupCompleter: nameString: " + nameString, level=Qgis.Info
                 )
                 lookupStringSet.add(nameString)
-                # self.gazetteerStringList.append((nameString))
 
         completer = QCompleter()
         completer.setCaseSensitivity(Qt.CaseInsensitive)
@@ -149,7 +121,7 @@ class SearchBar:
         model.setStringList(self.gazetteerStringList)
         model.setStringList(sorted(lookupStringSet))
 
-    def doGoToItem(self):
+    def doGoToItem(self) -> None:
 
         TOMsMessageLog.logMessage("In doGoToItem:", level=Qgis.Info)
 
@@ -164,7 +136,7 @@ class SearchBar:
             roadName, localityName = searchText.split(",")
         except Exception as e:
             TOMsMessageLog.logMessage(
-                "In doGoToItem: error spliting searchText: {}".format(e),
+                f"In doGoToItem: error spliting searchText: {e}",
                 level=Qgis.Warning,
             )
             roadName = searchText
@@ -197,19 +169,8 @@ class SearchBar:
 
         self.canvas.zoomToSelected(self.gazetteerLayer)
 
-        """box = layer.boundingBoxOfSelected()
-        iface.mapCanvas().setExtent(box)
-        iface.mapCanvas().refresh()"""
-
-    def unload(self):
+    def unload(self) -> None:
         # self.tool.setEnabled(False)
         # self.tool = None
         # self.iface.TOMsSearchBar().removeAction(self.printButtonAction)
         self.iface.TOMsSearchBar().removeAction(self.actionGoToItem)
-
-    """def __enablePrintTool(self, active):
-        self.tool.setEnabled(active)
-
-    def __onPrintToolSet(self, tool):
-        if tool != self.tool:
-            self.toolButton.setChecked(False)"""

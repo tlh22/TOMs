@@ -56,6 +56,16 @@ class RestrictionGeometryTypes(Enum):
     ECHELON_ON_PAVEMENT_POLYGON = 29
     CROSSOVER = 35
 
+    @staticmethod
+    def isBay(restGeomType):
+        if isinstance(restGeomType, RestrictionGeometryTypes):
+            val = restGeomType.value
+        elif isinstance(restGeomType, int):
+            val = restGeomType
+        else:
+            raise NotImplementedError(f"Type {type(restGeomType)} not implemented here")
+        return val < 10 or 20 <= val < 30
+
 
 def singleton(myClass):
     # From https://www.youtube.com/watch?v=6IV_FYx6MQA

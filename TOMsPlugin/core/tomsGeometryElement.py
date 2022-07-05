@@ -63,7 +63,7 @@ class TOMsGeometryElement(QObject):
             "In TOMsGeometryElement.init: checking for bay ", level=Qgis.Info
         )
 
-        if self.checkFeatureIsBay(self.currRestGeomType):
+        if RestrictionGeometryTypes.isBay(self.currRestGeomType):
             # NrBays
 
             # TODO: Include configuration item - ShowBayDivisions
@@ -128,13 +128,6 @@ class TOMsGeometryElement(QObject):
             return True
         return False
 
-    def checkFeatureIsBay(self, restGeomType):  # possibly put at Element level ...
-        # TOMsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), level=Qgis.Info)
-        if restGeomType < 10 or (restGeomType >= 20 and restGeomType < 30):
-            return True
-        else:
-            return False
-
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
@@ -162,9 +155,6 @@ class TOMsGeometryElement(QObject):
                 level=Qgis.Info,
             )
 
-            # TOMsMessageLog.logMessage("In generatePolygon:  new geom type ********: {}: {}".format(newGeometry.wkbType(), newGeometry.asWkt()),
-            #                         level=Qgis.Info)
-
             if newGeometry.wkbType() == QgsWkbTypes.MultiLineString:
 
                 # TOMsMessageLog.logMessage(
@@ -172,37 +162,11 @@ class TOMsGeometryElement(QObject):
                 linesList = newGeometry.asMultiPolyline()
 
                 outputGeometry = QgsGeometry.fromPolygonXY(linesList)
-                """for verticesList in linesList:
-
-                    res = outputGeometry.addPointsXY(verticesList.asPolyline(), QgsWkbTypes.PolygonGeometry)
-                    if res != QgsGeometry.OperationResult.Success:
-                        TOMsMessageLog.logMessage(
-                            "In generatePolygon: NOT able to add part  ...", level=Qgis.Info)"""
 
             else:
 
-                # TOMsMessageLog.logMessage(
-                #    "In generatePolygon: creating single?  ...", level=Qgis.Info)
-
-                # It seems that .addPointsXY has been removed from the API. To get around this, convert to multi type and ...
-                # newGeometry.convertToMultiType ()
-                # linesList = newGeometry.asMultiPolyline()
-                # TOMsMessageLog.logMessage(
-                #    "In generatePolygon: creating single 2?  ...: {}".format(linesList), level=Qgis.Info)
-                # outputGeometry = QgsGeometry.fromPolygonXY(linesList)
-
-                # res = outputGeometry.addPartGeometry(newGeometry.asPolyline())
-                # res = outputGeometry.addPartGeometry(newGeometry)
-
                 outputGeometry = QgsGeometry.fromPolygonXY([newGeometry.asPolyline()])
 
-                """
-                res = outputGeometry.addPointsXY(newGeometry.asPolyline(), QgsWkbTypes.PolygonGeometry)
-
-                if res != QgsGeometry.OperationResult.Success:
-                    TOMsMessageLog.logMessage(
-                        "In generatePolygon: NOT able to add part  ...", level=Qgis.Info)
-                """
                 TOMsMessageLog.logMessage(
                     "In generatePolygon: after creating single  ...", level=Qgis.Info
                 )
@@ -254,27 +218,24 @@ class TOMsGeometryElement(QObject):
             azimuthToCentreLine = self.currAzimuthToCentreLine
         if offset is None:
             offset = self.bayOffsetFromKerb
-        """
-        Logic is :
 
-        For vertex 0,
-            Move for defined distance (typically 0.25m) in direction "AzimuthToCentreLine" and create point 1
-            Move for bay width (typically 2.0m) in direction "AzimuthToCentreLine and create point 2
-            Calculate Azimuth for line between vertex 0 and vertex 1
-            Calc difference in Azimuths and decide < or > 180 (to indicate which side of kerb line to generate bay)
-
-        For each vertex (starting at 1)
-            Calculate Azimuth for current vertex and previous
-            Calculate perpendicular to centre of road (using knowledge of which side of kerb line generated above)
-            Move for bay width (typically 2.0m) along perpendicular and create point
-
-        For last vertex
-                Move for defined distance (typically 0.25m) along perpendicular and create last point
-        """
+        #  Logic is :
+        #
+        #  For vertex 0,
+        #      Move for defined distance (typically 0.25m) in direction "AzimuthToCentreLine" and create point 1
+        #      Move for bay width (typically 2.0m) in direction "AzimuthToCentreLine and create point 2
+        #      Calculate Azimuth for line between vertex 0 and vertex 1
+        #      Calc difference in Azimuths and decide < or > 180 (to indicate which side of kerb line to generate bay)
+        #
+        #  For each vertex (starting at 1)
+        #      Calculate Azimuth for current vertex and previous
+        #      Calculate perpendicular to centre of road (using knowledge of which side of kerb line generated above)
+        #      Move for bay width (typically 2.0m) along perpendicular and create point
+        #
+        #  For last vertex
+        #          Move for defined distance (typically 0.25m) along perpendicular and create last point
 
         line = GenerateGeometryUtils.getLineForAz(feature)
-
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  nr of pts = " + str(len(line)), level=Qgis.Info)
 
         if len(line) == 0:
             return 0
@@ -291,7 +252,6 @@ class TOMsGeometryElement(QObject):
 
             # TOMsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), level=Qgis.Info)
             azimuth = GenerateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
-            # TOMsMessageLog.logMessage("In getShape: geometry: " + str(line[i].x()) + ":" + str(line[i].y()) + " " + str(line[i+1].x()) + ":" + str(line[i+1].y()) + " " + str(Az), level=Qgis.Info)
 
             # if this is the first point
 
@@ -302,15 +262,10 @@ class TOMsGeometryElement(QObject):
                 turn = GenerateGeometryUtils.turnToCL(azimuth, azimuthToCentreLine)
 
                 newAz = GenerateGeometryUtils.checkDegrees(azimuth + turn)
-                # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + "; turn is " + str(Turn), level=Qgis.Info)
                 cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
-
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: cosa : " + str(cosa) + " " + str(cosb), level=Qgis.Info)
 
                 # dx = float(offset) * cosa
                 # dy = float(offset) * cosb
-
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: dx: " + str(dx) + " dy: " + str(dy), level=Qgis.Info)
 
                 ptsList.append(
                     QgsPointXY(
@@ -344,12 +299,8 @@ class TOMsGeometryElement(QObject):
                     # TOMsMessageLog.logMessage("In getShape: diffEchelonAz1: " + str(diffEchelonAz1), level=Qgis.Info)
 
                     diffEchelonAz = GenerateGeometryUtils.checkDegrees(diffEchelonAz1)
-                    # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz1: " + str(diffEchelonAz1) + " diffEchelonAz: " + str(diffEchelonAz),
-                    #                         level=Qgis.Info)
 
                     newAz = GenerateGeometryUtils.checkDegrees(newAz + diffEchelonAz)
-                    # TOMsMessageLog.logMessage("In getShape: newAz: " + str(newAz) + " diffEchelonAz: " + str(diffEchelonAz),
-                    #                         level=Qgis.Info)
                     cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
 
                 ptsList.append(
@@ -370,59 +321,7 @@ class TOMsGeometryElement(QObject):
                     "Inspecter le code ici car après il y a des variables non définies"
                 )
 
-                #  # now pass along the feature
-                #
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: considering point: " + str(i), level=Qgis.Info)
-                #
-                #  # need to work out half of bisected angle
-                #
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: prevAz: " + str(prevAz) + " currAz: " + str(Az), level=Qgis.Info)
-                #
-                #  newAz, distWidth = generateGeometryUtils.calcBisector(
-                #      prevAz, Az, Turn, shpExtent
-                #  )
-                #  newAzOffset, distOffset = generateGeometryUtils.calcBisector(
-                #      prevAz, Az, Turn, offset
-                #  )
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: newAz: " + str(newAz), level=Qgis.Info)
-                #
-                #  cosa, cosb = generateGeometryUtils.cosdir_azim(newAz + diffEchelonAz)
-                #  ptsList.append(
-                #      QgsPointXY(
-                #          line[i].x() + (float(distWidth) * cosa),
-                #          line[i].y() + (float(distWidth) * cosb),
-                #      )
-                #  )
-                #
-                #  # issue when kerbline is horizontal causing difference in signs between distWidth and offset ...
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: line[{}]: x: {}; y: {}; dist {}; offset {}".format(i, line[i].x(), line[i].y(), distWidth, distOffset), level=Qgis.Warning)
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: newAz: {}; diffEchelonAz; {}; cosa: {}; cosb: {} ".format(newAz, diffEchelonAz, cosa, cosb), level=Qgis.Warning)
-                #  # TOMsMessageLog.logMessage("In generateDisplayGeometry: different signs for cos: {}".format(generateGeometryUtils.same_sign(cosa, initial_cosa)), level=Qgis.Warning)
-                #
-                #  this_offset = distOffset
-                #  if distWidth < 0.0:
-                #      if not generateGeometryUtils.same_sign(distWidth, distOffset):
-                #          this_offset = generateGeometryUtils.change_sign(distOffset)
-                #
-                #  parallelPtsList.append(
-                #      QgsPointXY(
-                #          line[i].x() + (float(this_offset) * cosa),
-                #          line[i].y() + (float(this_offset) * cosb),
-                #      )
-                #  )
-
-            # TOMsMessageLog.logMessage("In generateDisplayGeometry: point appended", level=Qgis.Info)
-
-            # TOMsMessageLog.logMessage("In generateDisplayGeometry: newPoint 1: " + str(ptsList[1].x()) + " " + str(ptsList[1].y()), level=Qgis.Warning)
-
-            # have reached the end of the feature. Now need to deal with last point.
-            # Use Azimuth from last segment but change the points
-
-            # TOMsMessageLog.logMessage("In generateDisplayGeometry: feature processed. Now at last point ", level=Qgis.Info)
-
-            # standard bay
         newAz = GenerateGeometryUtils.checkDegrees(azimuth + turn + diffEchelonAz)
-        # TOMsMessageLog.logMessage("In generateDisplayGeometry: newAz: " + str(newAz), level=Qgis.Info)
         cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
 
         ptsList.append(
@@ -451,9 +350,8 @@ class TOMsGeometryElement(QObject):
         )
 
         newLine = QgsGeometry.fromPolylineXY(ptsList)
-        if (
-            not newLine.isSimple()
-        ):  # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
+        if not newLine.isSimple():
+            # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
             TOMsMessageLog.logMessage(
                 "In TOMsGeometryElement.getShape: newLine is self-intersecting for {}. Resolving ... ".format(
                     self.currFeature.attribute("GeometryID")
@@ -464,9 +362,8 @@ class TOMsGeometryElement(QObject):
 
         # parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
-        if (
-            not parallelLine.isSimple()
-        ):  # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
+        if not parallelLine.isSimple():
+            # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis
             TOMsMessageLog.logMessage(
                 "In TOMsGeometryElement.getShape: parallelLine is self-intersecting for {}. Resolving ... ".format(
                     self.currFeature.attribute("GeometryID")
@@ -474,9 +371,6 @@ class TOMsGeometryElement(QObject):
                 level=Qgis.Warning,
             )
             parallelLine = self.resolveSelfIntersections(parallelPtsList)
-
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  newLine ********: " + newLine.asWkt(), level=Qgis.Info)
-        # TOMsMessageLog.logMessage("In getDisplayGeometry:  parallelLine ********: " + parallelLine.asWkt(), level=Qgis.Info)
 
         return newLine, parallelLine
 
@@ -616,8 +510,6 @@ class TOMsGeometryElement(QObject):
 
         azimuth = line[0].azimuth(line[1])
 
-        # TOMsMessageLog.logMessage("In getZigZag. Az = " + str(Az) + "; AzCL = " + str(self.currAzimuthToCentreLine) + "; line[0]: " + line[0].asWkt() + "; line[1]: " + line[1].asWkt(), level=Qgis.Info)
-
         turn = GenerateGeometryUtils.turnToCL(azimuth, self.currAzimuthToCentreLine)
 
         newAz = azimuth + turn
@@ -660,7 +552,6 @@ class TOMsGeometryElement(QObject):
                 + str(distanceAlongLine),
                 level=Qgis.Info,
             )
-            # TOMsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), level=Qgis.Info)
 
             TOMsMessageLog.logMessage(
                 "In getZigZag. newC x = "
@@ -682,8 +573,6 @@ class TOMsGeometryElement(QObject):
             interpolatedPointD = (
                 self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
             )
-
-            # TOMsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
 
             ptsList.append(
                 QgsPointXY(
@@ -801,10 +690,10 @@ class TOMsGeometryElement(QObject):
             # now need to find the two vertices around this point and determine the azimuth ...
 
             (
-                distSquared,
+                _,
                 closestPt,
                 vertexNrAfterPt,
-                leftOf,
+                _,
             ) = currGeom.closestSegmentWithContext(interpolatedPointC)
 
             azimuth = GenerateGeometryUtils.checkDegrees(
@@ -848,9 +737,6 @@ class TOMsGeometryElement(QObject):
                 closestPt.x() + (float(offset) * cosa),
                 closestPt.y() + (float(offset) * cosb),
             )
-            """ptsList.append(
-                QgsPointXY(closestPt.x() + (float(shpExtent) * cosa),
-                         closestPt.y() + (float(shpExtent) * cosb)))"""
 
             testEndPoint = QgsPointXY(
                 closestPt.x() + (float(shpExtent) * cosa),
@@ -933,6 +819,8 @@ class TOMsGeometryElement(QObject):
             geomList.append(outputGeometry)
             return self.generateMultiLineShape(geomList)
 
+        return None
+
     def addBayPolygonDividers(
         self,
         outputGeometry,
@@ -978,9 +866,9 @@ class TOMsGeometryElement(QObject):
                 newGeomsList = []
                 for outGeom in outputGeometries:
                     (
-                        result,
+                        _,
                         extraGeometriesList,
-                        topologyTestPointsList,
+                        _,
                     ) = outGeom.splitGeometry(divider.asPolyline(), True)
                     newGeomsList.append(outGeom)
                     for geom in extraGeometriesList:
@@ -1009,9 +897,6 @@ class TOMsGeometryElement(QObject):
             )
 
         return outputGeometry
-
-
-""" ***** """
 
 
 class GeneratedGeometryBayLineType(TOMsGeometryElement):
@@ -1188,7 +1073,7 @@ class GeneratedGeometryLineType(TOMsGeometryElement):
         )
 
     def getElementGeometry(self):
-        outputGeometry, parallelLine = self.getLine()
+        outputGeometry, _ = self.getLine()
         return outputGeometry
 
 
@@ -1293,10 +1178,6 @@ class GeneratedGeometryOnPavementPolygonType(TOMsGeometryElement):
             self.bayWidth,
             GenerateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine),
         )
-        # outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-
-        # return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
-        # return self.generatePolygon([(outputGeometry1, parallelLine1)])
         outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
 
         if self.nrBays > 0:
@@ -1463,112 +1344,19 @@ class GeneratedGeometryCrossoverPolygonType(TOMsGeometryElement):
             self.crossoverShapeWidth,
             GenerateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine),
         )
-        # outputGeometry1A, paralletLine1A = self.getLine(generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
-
-        # return self.generatePolygon([(outputGeometry1, outputGeometry1A)])
         return self.generatePolygon([(outputGeometry1, parallelLine1)])
-
-
-""" ***** SIGNS  ***** """
-"""
-class generatedGeometrySignType(TOMsGeometryElement):
-    def __init__(self, currFeature):
-        super().__init__(currFeature)
-        QgsMessageLog.logMessage("In factory. generatedGeometrySignType ... ", tag="TOMs panel")
-
-        try:
-            self.signOrientation = self.currFeature.attribute("SignOrientation")
-        except KeyError as e:
-            self.signOrientation = None
-
-    def getElementGeometry(self):
-
-        if not self.signOrientation:
-            return None
-
-        QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(self.signOrientation), tag="TOMs2 panel")
-
-        lineGeom = None
-        if self.signOrientation is None:
-            return None
-
-        orientationList = generateGeometryUtils.getSignOrientation(self.currFeature, lineLayer)
-
-        # Now generate a line in the appropriate direction
-        if orientationList[1]:
-            # work out the length of the line based on the number of plates in the sign
-            platesInSign = generateGeometryUtils.getPlatesInSign(self.currFeature)
-            nrPlatesInSign = len(platesInSign)
-            #QgsMessageLog.logMessage('getSignLine nrPlatesInSign: {}'.format(nrPlatesInSign), tag="TOMs2 panel")
-            lineLength = (nrPlatesInSign + 1) * distanceForIcons
-            #QgsMessageLog.logMessage('getSignLine lineLength: {}'.format(lineLength), tag="TOMs2 panel")
-            print('getSignLine lineLength: {}'.format(lineLength))
-
-            signPt = self.currFeature.geometry().asPoint()
-            # generate lines
-            if self.signOrientation == 1:  # "Facing in same direction as road"
-                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[1], lineLength)
-            elif self.signOrientation == 2:  # "Facing in opposite direction to road"
-                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[2], lineLength)
-            elif self.signOrientation == 3:  # "Facing road"
-                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[3], lineLength)
-            elif self.signOrientation == 4:  # "Facing away from road"
-                lineGeom = generateGeometryUtils.createLinewithPointAzimuthDistance(signPt, orientationList[4], lineLength)
-            else:
-                return None
-
-        #QgsMessageLog.logMessage('getSignLine lineGeom: {}'.format(lineGeom.asWkt()), tag="TOMs2 panel")
-        return lineGeom
-
-    def getSignOrientation(ptFeature, lineLayer):
-
-        try:
-            signOrientation = ptFeature.attribute("SignOrientation")
-        except KeyError as e:
-            return [None, None, None, None, None]
-
-        #QgsMessageLog.logMessage('getSignLine - orientation: {}'.format(signOrientation), tag="TOMs2 panel")
-
-        lineGeom = None
-        if signOrientation is None:
-            return [None, None, None, None, None]
-
-        # find closest point/feature on lineLayer
-
-        signPt = ptFeature.geometry().asPoint()
-        #print('signPt: {}'.format(signPt.asWkt()))
-        QgsMessageLog.logMessage('getSignLine signid: {}; signPt: {}'.format(ptFeature.attribute("fid"), signPt.asWkt()), tag="TOMs2 panel")
-        closestPoint, closestFeature = generateGeometryUtils.findNearestPointOnLineLayer(signPt, lineLayer, 25)
-        #QgsMessageLog.logMessage('getSignLine cloestPoint: {}'.format(closestPoint.asWkt()), tag="TOMs2 panel")
-
-        # Now generate a line in the appropriate direction
-        if closestPoint:
-            # get the orientation of the line feature
-            (orientationToFeature, orientationInFeatureDirection, orientationAwayFromFeature, orientationOppositeFeatureDirection) = generateGeometryUtils.getLineOrientationAtPoint(
-                signPt, closestFeature)
-            #QgsMessageLog.logMessage('getSignLine orientationToFeature: {}'.format(orientationToFeature), tag="TOMs2 panel")
-            #print('getSignLine orientationToFeature: {}'.format(orientationToFeature))
-
-            # make it match sign orientation
-            return [0.0, orientationInFeatureDirection, orientationOppositeFeatureDirection, orientationToFeature, orientationAwayFromFeature]
-
-        return [None, None, None, None, None]
-
-    def getSignLine(ptFeature, lineLayer, distanceForIcons):
-"""
-
-
-""" ***** """
 
 
 class ElementGeometryFactory:
     @staticmethod
     def getElementGeometry(currFeature, restGeomType=None):
-
         if restGeomType:
             currRestGeomType = restGeomType
         else:
-            currRestGeomType = currFeature.attribute("GeomShapeID")
+            currRestGeomType = RestrictionGeometryTypes(
+                currFeature.attribute("GeomShapeID")
+            )
+
         TOMsMessageLog.logMessage(
             "In factory. getElementGeometry "
             + str(currFeature.attribute("GeometryID"))
@@ -1577,104 +1365,92 @@ class ElementGeometryFactory:
             level=Qgis.Info,
         )
 
-        try:
-            if currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY:
-                return GeneratedGeometryBayLineType(currFeature).getElementGeometry()
+        res = None
+        if currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY:
+            res = GeneratedGeometryBayLineType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.HALF_ON_HALF_OFF:
-                return GeneratedGeometryHalfOnHalfOffLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.HALF_ON_HALF_OFF:
+            res = GeneratedGeometryHalfOnHalfOffLineType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ON_PAVEMENT:
-                return GeneratedGeometryOnPavementLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ON_PAVEMENT:
+            res = GeneratedGeometryOnPavementLineType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR:
-                return GeneratedGeometryPerpendicularLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR:
+            res = GeneratedGeometryPerpendicularLineType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ECHELON:
-                return GeneratedGeometryEchelonLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ECHELON:
+            res = GeneratedGeometryEchelonLineType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT:
-                return GeneratedGeometryPerpendicularOnPavementLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT:
+            res = GeneratedGeometryPerpendicularOnPavementLineType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.OTHER:
-                return GeneratedGeometryOutlineShape(currFeature).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.OTHER:
+            res = GeneratedGeometryOutlineShape(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.CENTRAL_PARKING:
-                return GeneratedGeometryOutlineShape(currFeature).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.CENTRAL_PARKING:
+            res = GeneratedGeometryOutlineShape(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT:
-                return GeneratedGeometryEchelonOnPavementLineType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT:
+            res = GeneratedGeometryEchelonOnPavementLineType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_LINE:
-                return GeneratedGeometryLineType(currFeature).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.PARALLEL_LINE:
+            res = GeneratedGeometryLineType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ZIG_ZAG:
-                return GeneratedGeometryZigZagType(currFeature).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ZIG_ZAG:
+            res = GeneratedGeometryZigZagType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY_POLYGON:
-                return GeneratedGeometryBayPolygonType(currFeature).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY_POLYGON:
+            res = GeneratedGeometryBayPolygonType(currFeature).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.HALF_ON_HALF_OFF_POLYGON:
-                return GeneratedGeometryHalfOnHalfOffPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.HALF_ON_HALF_OFF_POLYGON:
+            res = GeneratedGeometryHalfOnHalfOffPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ON_PAVEMENT_POLYGON:
-                return GeneratedGeometryOnPavementPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ON_PAVEMENT_POLYGON:
+            res = GeneratedGeometryOnPavementPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_POLYGON:
-                return GeneratedGeometryPerpendicularPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.PERPENDICULAR_POLYGON:
+            res = GeneratedGeometryPerpendicularPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.ECHELON_POLYGON:
-                return GeneratedGeometryEchelonPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ECHELON_POLYGON:
+            res = GeneratedGeometryEchelonPolygonType(currFeature).getElementGeometry()
 
-            elif (
-                currRestGeomType
-                == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT_POLYGON
-            ):
-                return GeneratedGeometryPerpendicularOnPavementPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if (
+            currRestGeomType
+            == RestrictionGeometryTypes.PERPENDICULAR_ON_PAVEMENT_POLYGON
+        ):
+            res = GeneratedGeometryPerpendicularOnPavementPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.OUTLINE_BAY_POLYGON:
-                return GeneratedGeometryOutlineBayPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.OUTLINE_BAY_POLYGON:
+            res = GeneratedGeometryOutlineBayPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif (
-                currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT_POLYGON
-            ):
-                return GeneratedGeometryEchelonOnPavementPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.ECHELON_ON_PAVEMENT_POLYGON:
+            res = GeneratedGeometryEchelonOnPavementPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
-                return GeneratedGeometryCrossoverPolygonType(
-                    currFeature
-                ).getElementGeometry()
+        if currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
+            res = GeneratedGeometryCrossoverPolygonType(
+                currFeature
+            ).getElementGeometry()
 
-            raise AssertionError("Restriction Geometry Type NOT found")
-
-        except AssertionError:
-            TOMsMessageLog.logMessage(
-                "In ElementGeometryFactory. TYPE not found or something else ... ",
-                level=Qgis.Info,
-            )
+        if res is None:
+            raise NotImplementedError("Restriction Geometry Type NOT found")
+        return res

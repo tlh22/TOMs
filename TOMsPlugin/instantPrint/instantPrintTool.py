@@ -22,11 +22,10 @@ from qgis.PyQt.QtCore import (
     QRectF,
     QSettings,
     Qt,
-    QUrl,
     pyqtSignal,
 )
-from qgis.PyQt.QtGui import QColor, QDesktopServices, QIcon
-from qgis.PyQt.QtPrintSupport import QPrintDialog, QPrinter
+from qgis.PyQt.QtGui import QColor, QIcon
+from qgis.PyQt.QtPrintSupport import QPrinter
 from qgis.PyQt.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -41,10 +40,10 @@ class InstantPrintDialog(QDialog):
 
     hidden = pyqtSignal()
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         QDialog.__init__(self, parent)
 
-    def hideEvent(self, event):
+    def hideEvent(self, _):
         self.hidden.emit()
 
     def keyPressEvent(self, e):
@@ -93,10 +92,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         )  # TODO: sort out what scales are available ...
         self.dialogui.comboBoxScale.scaleChanged.connect(self.__changeScale)
         self.exportButton.clicked.connect(self.__export)
-        # self.printButton.clicked.connect(self.__print)
-        # self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(
-            lambda: self.dialog.hide()
+            self.dialog.hide
         )
         self.dialogui.addScale.clicked.connect(self.addNewScale)
         self.dialogui.deleteScale.clicked.connect(self.removeScale)
@@ -111,14 +108,17 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 if scale:
                     self.retrieveScales(scale)
         self.checkScales()
+        self.layoutView = None
+        self.corner = None
+        self.oldrect = None
 
     def __onDialogHidden(self):  # pylint: disable=invalid-name
         self.setEnabled(False)
         self.iface.mapCanvas().unsetMapTool(self)
         QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
-        list = []
+        myList = []
         for i in range(self.dialogui.comboBoxScale.count()):
-            list.append(self.dialogui.comboBoxScale.itemText(i))
+            myList.append(self.dialogui.comboBoxScale.itemText(i))
         QSettings().setValue("instantprint/scales", ";".join(list))
 
     def retrieveScales(self, checkScale):
@@ -296,14 +296,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __export(self):  # pylint: disable=invalid-name
         settings = QSettings()
-        format = self.dialogui.comboBoxFileFormat.itemData(
+        myFormat = self.dialogui.comboBoxFileFormat.itemData(
             self.dialogui.comboBoxFileFormat.currentIndex()
         )
         filepath = QFileDialog.getSaveFileName(
             self.iface.mainWindow(),
             self.tr("Export Layout"),
             settings.value("/instantprint/lastfile", ""),
-            format,
+            myFormat,
         )
         if not all(filepath):
             return
@@ -343,26 +343,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.iface.mainWindow(), "Information", ("Printing completed")
         )
 
-    def __print(self):  # pylint: disable=invalid-name
-        layoutName = self.dialogui.comboBoxLayouts.currentText()
-        layoutItem = self.projectLayoutManager.layoutByName(layoutName)
-        actualPrinter = QgsLayoutExporter(layoutItem)
-
-        printdialog = QPrintDialog(self.printer)
-        if printdialog.exec_() != QDialog.Accepted:
-            return
-
-        success = actualPrinter.print(
-            self.printer, QgsLayoutExporter.PrintExportSettings()
-        )
-
-        if success != 0:
-            QMessageBox.warning(
-                self.iface.mainWindow(),
-                self.tr("Print Failed"),
-                self.tr("Failed to print the layout."),
-            )
-
     def __reloadLayouts(self, removed=None):  # pylint: disable=invalid-name
         if not self.dialog.isVisible():
             # Make it less likely to hit the issue
@@ -393,12 +373,6 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.exportButton.setEnabled(False)
             self.dialogui.comboBoxScale.setEnabled(False)
 
-    def __help(self):  # pylint: disable=invalid-name
-        manualPath = os.path.join(
-            os.path.dirname(__file__), "help", "documentation.pdf"
-        )
-        QDesktopServices.openUrl(QUrl.fromLocalFile(manualPath))
-
     def scaleFromString(self, scaleText):
         locale = QLocale()
         parts = [locale.toInt(part) for part in scaleText.split(":")]
@@ -411,10 +385,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 and parts[1][0] != 0
             ):
                 return float(parts[0][0]) / float(parts[1][0])
-            else:
-                return None
+            return None
         except ZeroDivisionError:
-            return
+            pass
+        return None
 
     def checkScales(self):
         predefScalesStr = QSettings().value("Map/scales", PROJECT_SCALES).split(",")

@@ -9,10 +9,6 @@
 # Tim Hancock/Matthias Kuhn 2017
 # Oslandia 2022
 
-"""
-Series of functions to deal with restrictionsInProposals. Defined as static functions to allow them to be used in forms ... (not sure if this is the best way ...)
-
-"""
 import functools
 
 from qgis.core import Qgis, QgsTransactionGroup
@@ -25,8 +21,11 @@ from .tomsMessageLog import TOMsMessageLog
 
 @singleton
 class TOMsTransaction(QObject):
-    # transactionCompleted = pyqtSignal()
-    """Signal will be emitted, when the transaction is finished - either committed or rollback"""
+    """
+    Series of functions to deal with restrictionsInProposals.
+    Defined as static functions to allow them to be used in forms ...
+    NOT SURE IF THIS IS THE BEST WAY ...
+    """
 
     def __init__(self, iface, proposalsManager):
 
@@ -43,6 +42,8 @@ class TOMsTransaction(QObject):
         self.setTransactionGroup = []
         self.tableNames = self.proposalsManager.tableNames
         self.errorOccurred = False
+        self.modified = False
+        self.errorMessage = ""
 
         self.tomsTransactionList = [
             "Proposals",
@@ -185,7 +186,7 @@ class TOMsTransaction(QObject):
         self.errorOccurred = True
         self.errorMessage = message
 
-    def commitTransactionGroup(self, currRestrictionLayer=None):
+    def commitTransactionGroup(self):
 
         TOMsMessageLog.logMessage(
             "In TOMsTransaction:commitTransactionGroup", level=Qgis.Warning
@@ -202,7 +203,7 @@ class TOMsTransaction(QObject):
                 "In TOMsTransaction:commitTransactionGroup. Transaction DOES NOT exist",
                 level=Qgis.Warning,
             )
-            return
+            return False
 
         if self.errorOccurred:
             QMessageBox.information(
@@ -256,13 +257,6 @@ class TOMsTransaction(QObject):
                 level=Qgis.Warning,
             )
 
-        """
-        try:
-            self.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
-        except Exception as e:
-            None
-        """
-
         return commitStatus
 
     def layersInTransaction(self):
@@ -290,13 +284,6 @@ class TOMsTransaction(QObject):
 
             self.currTransactionGroup.commitError.disconnect(self.errorInTransaction)
             self.currTransactionGroup = None
-
-        """
-        try:
-            self.transactionCompleted.disconnect(self.proposalsManager.updateMapCanvas)
-        except Exception as e:
-            None
-        """
 
     def rollBackTransactionGroup(self):
 
@@ -334,5 +321,3 @@ class TOMsTransaction(QObject):
                 "In TOMsTransaction:rollBackTransactionGroup. Issue updating map canvas *** ...",
                 level=Qgis.Warning,
             )
-
-        return

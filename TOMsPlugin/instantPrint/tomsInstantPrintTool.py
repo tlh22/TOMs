@@ -70,6 +70,13 @@ class TOMsInstantPrintTool(InstantPrintTool):
         self.initialisePrintdialog()
 
         # self.dialogui.comboBoxScale.setEnabled(False)
+        self.layoutInterface = None
+        self.proposalForPrintingStatusText = ""
+        self.proposalPrintTypeDetails = ""
+        self.acceptedProposalDialog = None
+        self.openDateForPrintProposal = None
+        self.tilesToPrint = None
+        self.tileListDialog = None
 
     def initialisePrintdialog(self):
         # find the first atlas dialog and set it as current. Also amend the
@@ -99,13 +106,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.acceptedProposalDialog.cb_AcceptedProposalsList.clear()
 
-        for (
-            currProposalID,
-            currProposalTitle,
-            currProposalStatusID,
-            currProposalOpenDate,
-            currProposal,
-        ) in sorted(
+        for (currProposalID, currProposalTitle, _, _, _,) in sorted(
             self.proposalsManager.getProposalsListWithStatus(ProposalStatus.ACCEPTED),
             key=lambda f: f[1],
         ):
@@ -173,7 +174,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     level=Qgis.Warning,
                 )
             else:
-                excType, excValue, excTraceback = sys.exc_info()
+                _, _, excTraceback = sys.exc_info()
                 TOMsMessageLog.logMessage(
                     "In TOMsSelectLayout. export tools issue {}".format(
                         repr(traceback.extract_tb(excTraceback))
@@ -205,7 +206,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     level=Qgis.Warning,
                 )
             else:
-                excType, excValue, excTraceback = sys.exc_info()
+                _, _, excTraceback = sys.exc_info()
                 TOMsMessageLog.logMessage(
                     "In TOMsSelectLayout. export tools issue {}".format(
                         repr(traceback.extract_tb(excTraceback))
@@ -633,7 +634,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             )
             tilesToPrint = self.tileListDialog.getValues()
 
-        # ToDo: deal with cancel
+        # TODO: deal with cancel
 
         # https://stackoverflow.com/questions/46057737/dynamically-changeable-qcheckbox-list
         return tilesToPrint
@@ -667,11 +668,8 @@ class PrintListDialog(printListDialogUI, QDialog):
         self.cbToggleTiles.stateChanged.connect(self.toggleValues)
 
     def changeValues(self, element):
-        """Whenever a checkbox is checked, modify the values"""
+        # Whenever a checkbox is checked, modify the values
         # Check if we check or uncheck the value:
-        """TOMsMessageLog.logMessage(
-            "In printListDialog. In changeValues for: " + str(element.data(Qt.DisplayRole)),
-            level=Qgis.Info)"""
 
         if element.checkState() == Qt.Checked:
             # self.tilesToPrint.append(element.data(Qt.DisplayRole))
@@ -728,7 +726,7 @@ class PrintListDialog(printListDialogUI, QDialog):
                 # attr = feature.attributes()
                 self.titleList.item(i).setCheckState(Qt.Unchecked)
 
-    def populateTileListDialog(self, txtFilter=None):
+    def populateTileListDialog(self):
         """Fill the QListWidget with values"""
         # Delete everything
         TOMsMessageLog.logMessage(

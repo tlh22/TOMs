@@ -29,7 +29,7 @@ from .mapTools import (
 )
 
 # Initialize Qt resources from file resources.py
-from .resources import *
+from .resources import *  # pylint: disable=wildcard-import, unused-wildcard-import
 from .restrictionTypeUtilsClass import RestrictionTypeUtilsMixin
 
 
@@ -169,6 +169,12 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         # deal with saving label changes ...
         self.labelMapToolSet = False
+        self.restrictionTransaction = None
+        self.mapTool = None
+        self.currLayer = None
+        self.currProposalID = None
+        self._currentlyEdittedLabelLayers = None
+        self.labelGeometryIsChanged = False
 
     def enableTOMsToolbarItems(self, restrictionTransaction):
 
@@ -187,19 +193,8 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionCreateConstructionLine.setEnabled(True)
         self.actionImportRestrictions.setEnabled(True)
 
-        # print tool
-        # self.toolButton.setEnabled(True)
-
         # set up a Transaction object
-        # self.tableNames = TOMSLayers(self.iface)
-        # self.tableNames.getLayers()
         self.restrictionTransaction = restrictionTransaction
-        """self.proposalsManager.TOMsToolChanged.connect(
-            functools.partial(self.restrictionTransaction.commitTransactionGroup, self.tableNames.PROPOSALS))"""
-
-        # self.iface.mapCanvas().mapToolSet.connect(self.unCheckNodeTool)
-
-        pass
 
     def unCheckNodeTool(self):
         self.actionEditRestriction.setChecked(False)
@@ -220,11 +215,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
         self.actionEditLabels.setEnabled(False)
         self.actionCreateConstructionLine.setEnabled(False)
         self.actionImportRestrictions.setEnabled(False)
-
-        # print tool
-        # self.toolButton.setEnabled(False)
-
-        pass
 
     def doSelectRestriction(self):
         """Select point and then display details"""
@@ -249,7 +239,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.mapTool = None
             # self.actionPan.connect()
             # deal with labelling tool. Allow to continue to select ...
-            if self.labelMapToolSet == False:
+            if not self.labelMapToolSet:
                 return
             self.labelMapToolSet = False
 
@@ -325,27 +315,21 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             else:
 
-                reply = QMessageBox.information(
+                QMessageBox.information(
                     self.iface.mainWindow(),
                     "Information",
                     "Select restriction first and then choose information button",
                     QMessageBox.Ok,
                 )
 
-            pass
-
-            # currRestrictionLayer.deselect(currRestriction.id())
-
         else:
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Select restriction first and then choose information button",
                 QMessageBox.Ok,
             )
-
-        pass
 
     def doCreateBayRestriction(self):
 
@@ -419,17 +403,15 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionCreateBayRestriction.isChecked():
                 self.actionCreateBayRestriction.setChecked(False)
-                if self.mapTool == None:
+                if self.mapTool is None:
                     self.actionCreateBayRestriction.setChecked(False)
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data is not allowed. Changes are made via Proposals",
                 QMessageBox.Ok,
             )
-
-        pass
 
     def doCreateLineRestriction(self):
 
@@ -497,17 +479,15 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionCreateLineRestriction.isChecked():
                 self.actionCreateLineRestriction.setChecked(False)
-                if self.mapTool == None:
+                if self.mapTool is None:
                     self.actionCreateLineRestriction.setChecked(False)
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data is not allowed. Changes are made via Proposals",
                 QMessageBox.Ok,
             )
-
-        pass
 
     def doCreatePolygonRestriction(self):
 
@@ -574,17 +554,15 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionCreatePolygonRestriction.isChecked():
                 self.actionCreatePolygonRestriction.setChecked(False)
-                if self.mapTool == None:
+                if self.mapTool is None:
                     self.actionCreatePolygonRestriction.setChecked(False)
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data is not allowed. Changes are made via Proposals",
                 QMessageBox.Ok,
             )
-
-        pass
 
     def doCreateSignRestriction(self):
 
@@ -654,17 +632,15 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
             if self.actionCreateSignRestriction.isChecked():
                 self.actionCreateSignRestriction.setChecked(False)
-                if self.mapTool == None:
+                if self.mapTool is None:
                     self.actionCreateSignRestriction.setChecked(False)
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data is not allowed. Changes are made via Proposals",
                 QMessageBox.Ok,
             )
-
-        pass
 
     def doCreateConstructionLine(self):
 
@@ -720,10 +696,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.mapTool = None
             self.actionCreateConstructionLine.setChecked(False)
 
-            # self.currLayer.editingStopped ()
-
-        pass
-
     def doRemoveRestriction(self):
         # pass control to MapTool and then deal with Proposals issues from there ??
         TOMsMessageLog.logMessage("In doRemoveRestriction", level=Qgis.Info)
@@ -771,20 +743,11 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                             self.restrictionTransaction.rollBackTransactionGroup()
                             break
 
-                    self.restrictionTransaction.commitTransactionGroup(None)
-
-                    """
-                    try:
-                        self.proposalsManager.updateMapCanvas()
-                    except Exception as e:
-                        TOMsMessageLog.logMessage(
-                            "In manageRestrictionDetails:doRemoveRestriction. Issue updating map canvas *** ...",
-                            level=Qgis.Warning)
-                    """
+                    self.restrictionTransaction.commitTransactionGroup()
 
                 else:
 
-                    reply = QMessageBox.information(
+                    QMessageBox.information(
                         self.iface.mainWindow(),
                         "Information",
                         "Select restriction for delete",
@@ -793,7 +756,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         else:
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data are not allowed. Changes are made via Proposals",
@@ -828,7 +791,8 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                     ),
                 )
                 return False
-            # remove the restriction from the RestrictionsInProposals table - and from the currLayer, i.e., it is totally removed.
+            # remove the restriction from the RestrictionsInProposals table
+            # and from the currLayer, i.e., it is totally removed.
             # NB: This is the only case of a restriction being truly deleted
 
             TOMsMessageLog.logMessage(
@@ -889,94 +853,8 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
         # Get the current proposal from the session variables
         currProposalID = self.proposalsManager.currentProposal()
 
-        if currProposalID > 0:
-
-            if self.actionEditRestriction.isChecked():
-
-                TOMsMessageLog.logMessage(
-                    "In actionEditRestriction - tool being activated", level=Qgis.Info
-                )
-
-                # Need to clear any other maptools ....   ********
-
-                currRestrictionLayer = self.iface.activeLayer()
-
-                if currRestrictionLayer:
-
-                    TOMsMessageLog.logMessage(
-                        "In doEditRestriction. currLayer: "
-                        + str(currRestrictionLayer.name()),
-                        level=Qgis.Info,
-                    )
-
-                    if currRestrictionLayer.selectedFeatureCount() > 0:
-
-                        self.restrictionTransaction.startTransactionGroup()
-
-                        """currRestriction = currRestrictionLayer.selectedFeatures()[0]
-                        restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
-                        currRestrictionLayer.deselect(currRestriction.id())
-                        currRestrictionLayer.select(restrictionForEdit.id())
-                        #currRestrictionLayer.selectByIds([editFeature.id()])"""
-
-                        # self.actionEditRestriction.setChecked(True)
-                        self.mapTool = TOMsNodeTool(
-                            self.iface,
-                            self.proposalsManager,
-                            self.restrictionTransaction,
-                        )  # This is where we use the Node Tool ... need canvas and panel??
-                        """self.mapTool = TOMsNodeTool(self.iface,
-                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??"""
-                        self.mapTool.setAction(self.actionEditRestriction)
-                        self.iface.mapCanvas().setMapTool(self.mapTool)
-
-                        # currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
-
-                    else:
-
-                        reply = QMessageBox.information(
-                            self.iface.mainWindow(),
-                            "Information",
-                            "Select restriction for edit",
-                            QMessageBox.Ok,
-                        )
-
-                        self.actionEditRestriction.setChecked(False)
-                        self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                        self.mapTool = None
-
-                else:
-
-                    reply = QMessageBox.information(
-                        self.iface.mainWindow(),
-                        "Information",
-                        "Select restriction for edit",
-                        QMessageBox.Ok,
-                    )
-                    self.actionEditRestriction.setChecked(False)
-                    self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                    self.mapTool = None
-
-            else:
-
-                TOMsMessageLog.logMessage(
-                    "In doEditRestriction - tool deactivated", level=Qgis.Info
-                )
-
-                self.actionEditRestriction.setChecked(False)
-                self.iface.mapCanvas().unsetMapTool(self.mapTool)
-                self.mapTool = None
-
-            pass
-
-        else:
-
-            """if self.actionEditRestriction.isChecked():
-            self.actionEditRestriction.setChecked(False)
-            if self.mapTool == None:
-                self.actionEditRestriction.setChecked(False)"""
-
-            reply = QMessageBox.information(
+        if currProposalID <= 0:
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data are not allowed. Changes are made via Proposals",
@@ -985,12 +863,77 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.actionEditRestriction.setChecked(False)
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
+            return
 
-        pass
+        if self.actionEditRestriction.isChecked():
+
+            TOMsMessageLog.logMessage(
+                "In actionEditRestriction - tool being activated", level=Qgis.Info
+            )
+
+            # Need to clear any other maptools ....   ********
+
+            currRestrictionLayer = self.iface.activeLayer()
+
+            if currRestrictionLayer:
+
+                TOMsMessageLog.logMessage(
+                    "In doEditRestriction. currLayer: "
+                    + str(currRestrictionLayer.name()),
+                    level=Qgis.Info,
+                )
+
+                if currRestrictionLayer.selectedFeatureCount() > 0:
+
+                    self.restrictionTransaction.startTransactionGroup()
+
+                    # self.actionEditRestriction.setChecked(True)
+                    self.mapTool = TOMsNodeTool(
+                        self.iface,
+                        self.proposalsManager,
+                        self.restrictionTransaction,
+                    )  # This is where we use the Node Tool ... need canvas and panel??
+                    self.mapTool.setAction(self.actionEditRestriction)
+                    self.iface.mapCanvas().setMapTool(self.mapTool)
+
+                    # currRestrictionLayer.editingStopped.connect(self.proposalsManager.updateMapCanvas)
+
+                else:
+
+                    QMessageBox.information(
+                        self.iface.mainWindow(),
+                        "Information",
+                        "Select restriction for edit",
+                        QMessageBox.Ok,
+                    )
+
+                    self.actionEditRestriction.setChecked(False)
+                    self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                    self.mapTool = None
+
+            else:
+
+                QMessageBox.information(
+                    self.iface.mainWindow(),
+                    "Information",
+                    "Select restriction for edit",
+                    QMessageBox.Ok,
+                )
+                self.actionEditRestriction.setChecked(False)
+                self.iface.mapCanvas().unsetMapTool(self.mapTool)
+                self.mapTool = None
+
+        else:
+
+            TOMsMessageLog.logMessage(
+                "In doEditRestriction - tool deactivated", level=Qgis.Info
+            )
+
+            self.actionEditRestriction.setChecked(False)
+            self.iface.mapCanvas().unsetMapTool(self.mapTool)
+            self.mapTool = None
 
         TOMsMessageLog.logMessage("In doEditRestriction - leaving", level=Qgis.Info)
-
-        pass
 
     def doEditLabels(self):
 
@@ -1025,7 +968,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             # Get the active layer
             currRestrictionLayer = self.iface.activeLayer()
 
-            if not (currProposalID > 0):
+            if currProposalID <= 0:
                 alertBox(
                     "Changes to current data are not allowed. Changes are made via Proposals"
                 )
@@ -1045,25 +988,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                 labelLayersNames = ["Bays.label_pos", "Bays.label_ldr"]
 
             if currRestrictionLayer.name() == "Lines":
-                """
-                msgBox = QMessageBox()
-                msgBox.setWindowTitle("Which labels do you want edit?")
-                waitingBtn = msgBox.addButton(QPushButton("Waiting"), QMessageBox.YesRole)
-                loadingBtn = msgBox.addButton(QPushButton("Loading"), QMessageBox.NoRole)
-                cancelBtn = msgBox.addButton(QPushButton("Cancel"), QMessageBox.RejectRole)
-                btn_clicked = msgBox.exec_()
-
-                TOMsMessageLog.logMessage("In doEditLabels - possibilities: {}. {}. {}".format(waitingBtn, loadingBtn, cancelBtn),
-                                          level=Qgis.Warning)
-                TOMsMessageLog.logMessage("In doEditLabels - result: {}. {}".format(msgBox.clickedButton().text(), btn_clicked), level=Qgis.Warning)
-
-                if msgBox.clickedButton().text() == "Waiting":
-                    label_layers_names = ['Lines.label_pos', 'Lines.label_ldr']
-                elif msgBox.clickedButton().text() == "Loading":
-                    label_layers_names = ['Lines.label_loading_pos', 'Lines.label_loading_ldr']
-                else:
-                    return
-                """
                 labelLayersNames = [
                     "Lines.label_pos",
                     "Lines.label_ldr",
@@ -1108,7 +1032,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             selectedExpression = '"{}" IN ({})'.format(pkAttr, selectedPks)
 
             # we keep the bouding box for zooming
-            box = currRestrictionLayer.boundingBoxOfSelected()
             self.labelGeometryIsChanged = False
 
             for labelLayersNames in labelLayersNames:
@@ -1166,61 +1089,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                 "In doEditLabels - should now be finished", level=Qgis.Info
             )
 
-    def saveLabelChanges(self, newTool, oldTool):  # Not currently used ...
-        TOMsMessageLog.logMessage("In saveLabelChanges ...", level=Qgis.Warning)
-
-        if self.labelMapToolSet:
-            try:  # this signal is not connected for situations where right click is used - as tool is already unset within commit process TODO: improve!!
-                self.canvas.mapToolSet.disconnect(self.saveLabelChanges)
-                oldTool.onFinishEditing()
-            except Exception as e:
-                TOMsMessageLog.logMessage(
-                    "In saveLabelChanges: error in with signal disconnect: {}".format(
-                        e
-                    ),
-                    level=Qgis.Warning,
-                )
-
-            # self.labelMapToolSet = False
-
-        """def labelGeometryChanged(self):
-        TOMsMessageLog.logMessage("In labelGeometryChanged ... ", level=Qgis.Warning)
-        self.labelGeometryIsChanged = True
-
-    def stopEditLabels(self):
-        # commit and cleanup after vertex tool stopped
-        #for layer in self._currently_editted_label_layers:
-        #    layer.commitChanges()   # use commitTransactionGroup
-
-        TOMsMessageLog.logMessage("In stopEditLabels - _currently_editted_label_layers: {}".format(len(self._currently_editted_label_layers)), level=Qgis.Warning)
-        for layer in self._currently_editted_label_layers:
-            TOMsMessageLog.logMessage("In stopEditLabels - layer: {}".format(layer.name()), level=Qgis.Warning)
-
-            try:   # TODO: for some reason stopEditLabels is called twice. Need to find out why, but in short term, this stops error
-                layer.geometryChanged.disconnect(self.labelGeometryChanged)
-            except Exception as e:
-                None
-
-        try:
-            self.mapTool.deactivated.disconnect(self.stopEditLabels)
-        except TypeError:
-            pass
-        else:   # still seems to be trying to disconnect when not connected ...
-            pass
-
-        if self.mapTool:
-            self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            self.mapTool = None
-
-        # check to see of there has been any change
-        if self.labelGeometryIsChanged:
-            self.restrictionTransaction.commitTransactionGroup(self._currently_editted_label_layers[0])
-        else:
-            self.restrictionTransaction.rollBackTransactionGroup()
-
-        self._currently_editted_label_layers = []
-        self.actionEditLabels.setChecked(False)"""
-
     def doSplitRestriction(self):
 
         TOMsMessageLog.logMessage("In doSplitRestriction - starting", level=Qgis.Info)
@@ -1264,12 +1132,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                         self.restrictionTransaction.startTransactionGroup()
 
-                        """currRestriction = currRestrictionLayer.selectedFeatures()[0]
-                        restrictionForEdit = self.prepareRestrictionForEdit (currRestriction, currRestrictionLayer)
-                        currRestrictionLayer.deselect(currRestriction.id())
-                        currRestrictionLayer.select(restrictionForEdit.id())
-                        #currRestrictionLayer.selectByIds([editFeature.id()])"""
-
                         # self.actionEditRestriction.setChecked(True)
                         self.mapTool = TOMsSplitRestrictionTool(
                             self.iface,
@@ -1277,8 +1139,6 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                             self.proposalsManager,
                             self.restrictionTransaction,
                         )  # This is where we use the Node Tool ... need canvas and panel??
-                        """self.mapTool = TOMsNodeTool(self.iface,
-                                                    self.proposalsManager, self.restrictionTransaction, restrictionForEdit, currRestrictionLayer)  # This is where we use the Node Tool ... need canvas and panel??"""
                         self.mapTool.setAction(self.actionSplitRestriction)
                         self.iface.mapCanvas().setMapTool(self.mapTool)
 
@@ -1286,7 +1146,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                     else:
 
-                        reply = QMessageBox.information(
+                        QMessageBox.information(
                             self.iface.mainWindow(),
                             "Information",
                             "Select restriction for edit",
@@ -1299,7 +1159,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
                 else:
 
-                    reply = QMessageBox.information(
+                    QMessageBox.information(
                         self.iface.mainWindow(),
                         "Information",
                         "Select restriction for edit",
@@ -1319,16 +1179,9 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                 self.iface.mapCanvas().unsetMapTool(self.mapTool)
                 self.mapTool = None
 
-            pass
-
         else:
 
-            """if self.actionEditRestriction.isChecked():
-            self.actionEditRestriction.setChecked(False)
-            if self.mapTool == None:
-                self.actionEditRestriction.setChecked(False)"""
-
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data are not allowed. Changes are made via Proposals",
@@ -1338,11 +1191,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
             self.iface.mapCanvas().unsetMapTool(self.mapTool)
             self.mapTool = None
 
-        pass
-
         TOMsMessageLog.logMessage("In doSplitRestriction - leaving", level=Qgis.Info)
-
-        pass
 
     def doImportRestrictions(self):
 
@@ -1371,9 +1220,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                     "In doImportRestrictions - tool being activated", level=Qgis.Info
                 )
 
-                """
-                Need to confirm layer/selected items to be imported - and the layer into which they are to be imported
-                """
+                # Need to confirm layer/selected items to be imported - and the layer into which they are to be imported
                 restrictionLayers = QgsProject.instance().mapLayersByName(
                     "RestrictionLayers"
                 )[0]
@@ -1395,11 +1242,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                 # See if OK was pressed
                 if result:
 
-                    indexImportLayer = dlg.importLayer.currentIndex()
                     importLayer = dlg.importLayer.currentLayer()
-                    """onlySelectedRestrictions = False
-                    if dlg.onlySelectedRestrictions.isChecked():
-                        onlySelectedRestrictions = True"""
                     nameRestrictionLayer = (
                         dlg.cb_RestrictionLayers.currentModelIndex().data()
                     )  # provides name of layer
@@ -1411,18 +1254,12 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                         nameRestrictionLayer
                     )[0]
 
-                    """reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                            "Importing from {} into {} as {} - selected details for another time".format(importLayer.name(), outputLayer.name(), currRestrictionLayerTableID),
-                                            QMessageBox.Ok)"""
-
-                    """
-                    Now need to
-                    1. start transaction
-                    2. generate all the relevant TOMs fields (RestrictionID, ...)
-                    3. add the feature to the relevant layer and
-                    4. addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
-                    5. commit
-                    """
+                    #  Now need to
+                    #  1. start transaction
+                    #  2. generate all the relevant TOMs fields (RestrictionID, ...)
+                    #  3. add the feature to the relevant layer and
+                    #  4. addRestrictionToProposal(restrictionID, restrictionLayerTableID, proposalID, proposedAction):
+                    #  5. commit
 
                     self.restrictionTransaction.startTransactionGroup()
 
@@ -1446,7 +1283,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
                                 )
                                 transactionError = True
                                 break
-                            status = self.addRestrictionToProposal(
+                            self.addRestrictionToProposal(
                                 str(newRestriction.attribute("RestrictionID")),
                                 currRestrictionLayerTableID,
                                 currProposalID,
@@ -1476,7 +1313,7 @@ class ManageRestrictionDetails(RestrictionTypeUtilsMixin):
 
         else:
 
-            reply = QMessageBox.information(
+            QMessageBox.information(
                 self.iface.mainWindow(),
                 "Information",
                 "Changes to current data are not allowed. Changes are made via Proposals",

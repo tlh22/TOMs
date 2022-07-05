@@ -21,7 +21,6 @@ from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
 from .tomsMessageLog import TOMsMessageLog
 from .tomsProposal import TOMsProposal
-from .tomsProposalElement import ProposalElementFactory
 
 
 class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QObject):
@@ -35,22 +34,19 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     # TH: orig code has reference to iface. Need to include ***
 
     dateChanged = pyqtSignal()
-    """Signal will be emitted, when the current date is changed"""
+    #  Signal will be emitted, when the current date is changed
     proposalChanged = pyqtSignal()
-    """Signal will be emitted when the current proposal is changed"""
+    #  Signal will be emitted when the current proposal is changed
     proposal = newProposalCreated = pyqtSignal(int)
-    """Signal will be emitted when the current proposal is changed"""
+    #  Signal will be emitted when the current proposal is changed
 
     tomsToolChanged = pyqtSignal()
-    """ signal will be emitted when TOMs tool is changed """
+    # signal will be emitted when TOMs tool is changed
 
     tomsActivated = pyqtSignal()
-    """ signal will be emitted when TOMs tools are activated"""
-    # TOMsStartupFailure = pyqtSignal()
-    """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
-    # TOMsSplitRestrictionSaved = pyqtSignal()
+    # Signal will be emitted when TOMs tools are activated
 
-    def __init__(self, iface):
+    def __init__(self, iface):  # pylint: disable=super-init-not-called
 
         QObject.__init__(self)
         # ProposalTypeUtilsMixin.__init__(self)
@@ -67,6 +63,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         self.currProposalObject = TOMsProposal(self)
 
         self.setTOMsActivated: int = False
+        self.proposalsLayer = None
 
     def date(self):
         """
@@ -79,7 +76,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         Set the current date
         """
         TOMsMessageLog.logMessage(
-            "Current date changed to {date}".format(date=value.toString("dd/MM/yyyy")),
+            f'Current date changed to {value.toString("dd/MM/yyyy")}',
             level=Qgis.Info,
         )
         self.__date = value
@@ -114,7 +111,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         Set the current proposal
         """
         TOMsMessageLog.logMessage(
-            "Current proposal changed to {proposal_id}".format(proposal_id=value),
+            f"Current proposal changed to {value}",
             level=Qgis.Info,
         )
         QgsExpressionContextUtils.setProjectVariable(
@@ -130,25 +127,20 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         if not box.isNull():
             self.canvas.setExtent(box)
 
-    def __queryStringForCurrentRestrictions(
-        self, filterDate=None
-    ):  # pylint: disable=invalid-name
-
-        if filterDate is None:
-            filterDate = self.__date()
-
-        dateString = filterDate.toString("dd-MM-yyyy")
-        # currProposalID = self.currentProposal()
-
-        dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
-
-        # filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
-
-        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
-            dateChoosenFormatted=dateChoosenFormatted
-        )
-
-        return filterString
+    #  def __queryStringForCurrentRestrictions(
+    #      self, filterDate=None
+    #  ):  # pylint: disable=invalid-name
+    #
+    #      if filterDate is None:
+    #          filterDate = self.__date()
+    #
+    #      dateString = filterDate.toString("dd-MM-yyyy")
+    #      filterString = (
+    #          f"\"OpenDate\" \u003C\u003D to_date('{dateString}', 'dd-MM-yyyy') "
+    #          + f"AND ((\"CloseDate\" \u003E to_date('{dateString}', 'dd-MM-yyyy')  OR \"CloseDate\" IS NULL)"
+    #      )
+    #
+    #      return filterString
 
     def updateMapCanvas(self):
         """
@@ -160,19 +152,16 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         dateString = self.__date.toString("dd-MM-yyyy")
         currProposalID = self.currentProposal()
 
-        dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
-
-        # filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
-
-        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(
-            dateChoosenFormatted=dateChoosenFormatted
+        filterString = (
+            f"\"OpenDate\" \u003C\u003D to_date('{dateString}', 'dd-MM-yyyy') "
+            + f"AND ((\"CloseDate\" \u003E to_date('{dateString}', 'dd-MM-yyyy')  OR \"CloseDate\" IS NULL)"
         )
         # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
         #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         for (layerID, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage(
-                "updateMapCanvas: Considering layer: {}".format(layerName),
+                f"updateMapCanvas: Considering layer: {layerName}",
                 level=Qgis.Info,
             )
 
@@ -184,23 +173,13 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                     self.currProposalObject.getRestrictionsToCloseForLayer(layerID)
                 )
                 if len(restrictionsToClose) > 0:
-                    layerFilterString = (
-                        '{layerString} AND "RestrictionID" NOT IN ({restrictionsToClose}))'
-                    ).format(
-                        layerString=layerFilterString,
-                        restrictionsToClose=restrictionsToClose,
-                    )
+                    layerFilterString = f'{layerFilterString} AND "RestrictionID" NOT IN ({restrictionsToClose}))'
 
                 restrictionsToOpen = (
                     self.currProposalObject.getRestrictionsToOpenForLayer(layerID)
                 )
                 if len(restrictionsToOpen) > 0:
-                    layerFilterString = (
-                        ' "RestrictionID"  IN ({restrictionsToOpen}) OR ({layerString})'
-                    ).format(
-                        layerString=layerFilterString,
-                        restrictionsToOpen=restrictionsToOpen,
-                    )
+                    layerFilterString = f' "RestrictionID"  IN ({restrictionsToOpen}) OR ({layerFilterString})'
 
                 if len(restrictionsToClose) == 0:
                     layerFilterString = layerFilterString + ")"
@@ -209,9 +188,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 layerFilterString = layerFilterString + ")"
 
             TOMsMessageLog.logMessage(
-                "In updateMapCanvas. Layer: {} Date Filter: {}".format(
-                    layerName, layerFilterString
-                ),
+                f"In updateMapCanvas. Layer: {layerName} Date Filter: {layerFilterString}",
                 level=Qgis.Info,
             )
             try:
@@ -220,7 +197,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 )
             except Exception as e:
                 TOMsMessageLog.logMessage(
-                    "updateMapCanvas: error in layer {}: {}".format(layerName, e),
+                    f"updateMapCanvas: error in layer {layerName}: {e}",
                     level=Qgis.Warning,
                 )
                 return False
@@ -254,7 +231,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             for labelLayersName in labelLayersNames:
                 # get the label layer
                 TOMsMessageLog.logMessage(
-                    "updateMapCanvas: Considering layer: {}".format(labelLayersName),
+                    f"updateMapCanvas: Considering layer: {labelLayersName}",
                     level=Qgis.Info,
                 )
                 try:
@@ -263,9 +240,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                     ].dataProvider().setSubsetString(layerFilterString)
                 except Exception as e:
                     TOMsMessageLog.logMessage(
-                        "updateMapCanvas: error in layer {}: {}".format(
-                            labelLayersName, e
-                        ),
+                        f"updateMapCanvas: error in layer {labelLayersName}: {e}",
                         level=Qgis.Warning,
                     )
                     return False
@@ -281,17 +256,15 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             "Entering clearRestrictionFilters ... ", level=Qgis.Info
         )
 
-        for (layerID, layerName) in self.getRestrictionLayersList():
+        for (_, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage(
-                "Clearing filter for layer: {}".format(layerName), level=Qgis.Info
+                f"Clearing filter for layer: {layerName}", level=Qgis.Info
             )
             try:
                 self.tableNames.setLayer(layerName).dataProvider().setSubsetString(None)
             except Exception as e:
                 TOMsMessageLog.logMessage(
-                    "clearRestrictionFilters: error in layer {}: {}".format(
-                        layerName, e
-                    ),
+                    f"clearRestrictionFilters: error in layer {layerName}: {e}",
                     level=Qgis.Warning,
                 )
                 return False
@@ -325,9 +298,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             for labelLayersName in labelLayersNames:
                 # get the label layer
                 TOMsMessageLog.logMessage(
-                    "clearRestrictionFilters: Clearing filter for layer: {}".format(
-                        labelLayersName
-                    ),
+                    f"clearRestrictionFilters: Clearing filter for layer: {labelLayersName}",
                     level=Qgis.Info,
                 )
                 try:
@@ -336,57 +307,56 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                     ].dataProvider().setSubsetString(None)
                 except Exception as e:
                     TOMsMessageLog.logMessage(
-                        "clearRestrictionFilters: error in layer {}: {}".format(
-                            labelLayersName, e
-                        ),
+                        f"clearRestrictionFilters: error in layer {labelLayersName}: {e}",
                         level=Qgis.Warning,
                     )
                     return False
 
         return True
 
-    def getCurrentRestrictionsForLayerAtDate(
-        self, layerID, dateString=None
-    ):  # TODO: possibly better with Proposal
-
-        if not dateString:
-            dateString = self.date()
-
-        dateString = self.__date.toString("yyyy-MM-dd")
-        dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
-
-        filterString = '"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}) AND (("CloseDate" \u003E to_date({dateChoosenFormatted})  OR "CloseDate" IS NULL))'.format(
-            dateChoosenFormatted=dateChoosenFormatted
-        )
-
-        thisLayer = self.getRestrictionLayerFromID(layerID)
-
-        request = QgsFeatureRequest().setFilterExpression(filterString)
-
-        TOMsMessageLog.logMessage(
-            "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: "
-            + thisLayer.name()
-            + " Filter: "
-            + filterString,
-            level=Qgis.Info,
-        )
-        restrictionList = []
-        for currentRestrictionDetails in thisLayer.getFeatures(request):
-            TOMsMessageLog.logMessage(
-                "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: "
-                + thisLayer.name()
-                + " restrictionID: "
-                + str(currentRestrictionDetails["RestrictionID"]),
-                level=Qgis.Info,
-            )
-            currRestriction = ProposalElementFactory.getProposalElement(
-                self, layerID, thisLayer, currentRestrictionDetails["RestrictionID"]
-            )
-            restrictionList.append(
-                [currentRestrictionDetails["RestrictionID"], currRestriction]
-            )
-
-        return restrictionList
+    #  def getCurrentRestrictionsForLayerAtDate(
+    #      self, layerID, dateString=None
+    #  ):  # TODO: possibly better with Proposal
+    #
+    #      if not dateString:
+    #          dateString = self.date()
+    #
+    #      dateString = self.__date.toString("yyyy-MM-dd")
+    #      dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
+    #
+    #      filterString = ('"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}) AND '
+    #                     + '(("CloseDate" \u003E to_date({dateChoosenFormatted})  OR "CloseDate" IS NULL))').format(
+    #          dateChoosenFormatted=dateChoosenFormatted
+    #      )
+    #
+    #      thisLayer = self.getRestrictionLayerFromID(layerID)
+    #
+    #      request = QgsFeatureRequest().setFilterExpression(filterString)
+    #
+    #      TOMsMessageLog.logMessage(
+    #          "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: "
+    #          + thisLayer.name()
+    #          + " Filter: "
+    #          + filterString,
+    #          level=Qgis.Info,
+    #      )
+    #      restrictionList = []
+    #      for currentRestrictionDetails in thisLayer.getFeatures(request):
+    #          TOMsMessageLog.logMessage(
+    #              "In ProposalsManager:getCurrentRestrictionsForLayerAtDate. Layer: "
+    #              + thisLayer.name()
+    #              + " restrictionID: "
+    #              + str(currentRestrictionDetails["RestrictionID"]),
+    #              level=Qgis.Info,
+    #          )
+    #          currRestriction = ProposalElementFactory.getProposalElement(
+    #              self, layerID, thisLayer, currentRestrictionDetails["RestrictionID"]
+    #          )
+    #          restrictionList.append(
+    #              [currentRestrictionDetails["RestrictionID"], currRestriction]
+    #          )
+    #
+    #      return restrictionList
 
     def getProposalsListWithStatus(self, proposalStatus=None):
 
@@ -395,9 +365,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
         query = ""
 
         if proposalStatus is not None:
-            query = ('"ProposalStatusID" = {proposalStatus}').format(
-                proposalStatus=str(proposalStatus)
-            )
+            query = f'"ProposalStatusID" = {proposalStatus.value}'
 
         TOMsMessageLog.logMessage(
             "In __getProposalsListWithStatus. query: " + str(query), level=Qgis.Info

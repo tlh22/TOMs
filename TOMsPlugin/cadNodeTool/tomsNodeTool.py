@@ -308,40 +308,12 @@ class TOMsNodeTool(MapToolMixin, RestrictionTypeUtilsMixin, NodeTool):
 
         # uncheck current tool
 
-        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+        self.restrictionTransaction.commitTransactionGroup()
         # self.restrictionTransaction.deleteTransactionGroup()
 
         self.origLayer.deselect(self.origFeature.getFeature().id())
 
         self.shutDownNodeTool()
-
-        # **** New
-        """"#currRestrictionRestrictionID = currFeature[idxRestrictionID]
-
-        TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged. currRestrictionID: " + str(self.currFeature[idxRestrictionID]), level=Qgis.Info)
-
-        self.currFeature.setGeometry(newGeometry)
-
-        TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - attributes: " + str(self.currFeature.attributes()),
-                                 level=Qgis.Info)
-
-        TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - newGeom: " + self.currFeature.geometry().asWkt(),
-                                 level=Qgis.Info)
-
-        # Trying to unset map tool to force updates ...
-        #self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-
-        # change active layer
-        status = self.iface.setActiveLayer(None)
-
-        self.restrictionTransaction.commitTransactionGroup(self.currLayer)
-        #self.restrictionTransaction.deleteTransactionGroup()
-
-        #QTimer.singleShot(0, functools.partial(RestrictionTypeUtils.commitRestrictionChanges, origLayer))
-
-        #TOMsMessageLog.logMessage("In TOMsNodeTool:onGeometryChanged - geometry saved.", level=Qgis.Info)"""
-
-        return
 
     def cadCanvasPressEvent(self, e):
 
@@ -1035,7 +1007,7 @@ class TOMsLabelTool(TOMsNodeTool):
             level=Qgis.Info,
         )
 
-        self.restrictionTransaction.commitTransactionGroup(self.origLayer)
+        self.restrictionTransaction.commitTransactionGroup()
 
         self.origLayer.deselect(self.origFeature.getFeature().id())
 

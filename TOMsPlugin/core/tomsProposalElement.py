@@ -9,6 +9,8 @@
 # Tim Hancock/Matthias Kuhn 2017
 # Oslandia 2022
 
+from typing import Any
+
 from qgis.core import Qgis, QgsFeatureRequest
 from qgis.PyQt.QtCore import QObject
 
@@ -18,7 +20,6 @@ from .tomsTile import TOMsTile
 
 
 class TOMsProposalElement(QObject):
-    # def __init__(self, proposalsManager, layerID, restriction, restrictionID):
     def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
         super().__init__()
         # restriction is restriction record ??
@@ -35,6 +36,7 @@ class TOMsProposalElement(QObject):
         self.tableNames = self.proposalsManager.tableNames
         self.layerID = layerID
         self.thisLayer = restrictionLayer
+        self.tilesLayer: Any = None
 
         self.setElement(restrictionID)
 
@@ -60,12 +62,6 @@ class TOMsProposalElement(QObject):
         # self.setThisLayer()
 
         # need to save and then clear the current filter
-        """
-        TOMsMessageLog.logMessage(
-            "In TOMsProposalElement.setElement. filter is now: {}. ".format(
-                self.thisLayer.subsetString()), level=Qgis.Info)
-                """
-
         query = "\"RestrictionID\" = '{restrictionID}'".format(
             restrictionID=restrictionID
         )
@@ -105,7 +101,7 @@ class TOMsProposalElement(QObject):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
 
-        dictTilesInRestriction = dict()
+        dictTilesInRestriction = {}
 
         TOMsMessageLog.logMessage(
             "In factory. Creating Proposal Element ... "
@@ -146,7 +142,7 @@ class TOMsProposalElement(QObject):
 
                 # check revision nr, etc
 
-                """ TODO: Tidy this up ... with Tile object ..."""
+                # TODO: Tidy this up ... with Tile object ...
                 currTile = TOMsTile(self.proposalsManager, currTileNr)
 
                 # currTile.setTile(currTileNr)
@@ -209,7 +205,7 @@ class TOMsProposalElement(QObject):
 
         # clear filter currRestrictionLayer.setSubsetString("")  **** need to make sure this is done ...
 
-        if actionOnAcceptance == RestrictionAction.OPEN:  # Open
+        if actionOnAcceptance == RestrictionAction.OPEN.value:  # Open
             statusUpd = self.thisLayer.changeAttributeValue(
                 self.thisElement.id(),
                 self.thisLayer.fields().indexFromName("OpenDate"),
@@ -221,7 +217,7 @@ class TOMsProposalElement(QObject):
                 ),
                 level=Qgis.Info,
             )
-        else:  # Close
+        elif actionOnAcceptance == RestrictionAction.CLOSE.value:
             statusUpd = self.thisLayer.changeAttributeValue(
                 self.thisElement.id(),
                 self.thisLayer.fields().indexFromName("CloseDate"),
@@ -232,6 +228,10 @@ class TOMsProposalElement(QObject):
                     self.thisRestrictionID, statusUpd
                 ),
                 level=Qgis.Info,
+            )
+        else:
+            raise NotImplementedError(
+                f"RestrictionAction {actionOnAcceptance} not implemented"
             )
 
         return statusUpd
@@ -246,8 +246,8 @@ class TOMsRestriction(TOMsProposalElement):
         )
 
     def getDisplayGeometry(self):
-        # TODO: ...
-        pass
+        # TODO
+        ...
 
 
 class Bay(TOMsRestriction):
@@ -290,6 +290,7 @@ class TOMsPolygonRestriction(TOMsRestriction):
     def __init__(self, proposalsManager, layerID, restrictionLayer, restrictionID):
         super().__init__(proposalsManager, layerID, restrictionLayer, restrictionID)
         TOMsMessageLog.logMessage("In factory. Creating POLYGON ... ", level=Qgis.Info)
+        self.displayGeometry: Any = None
 
     def getZoneType(self):
         pass
@@ -376,96 +377,90 @@ class TOMsLabel(TOMsProposalElement):
 class ProposalElementFactory:
     @staticmethod
     def getProposalElement(
-        proposalsManager, proposalElementType, restrictionLayer, restrictionID
+        proposalsManager, proposalElementTypeID, restrictionLayer, restrictionID
     ):
         TOMsMessageLog.logMessage(
             "In factory. getProposalElement ... "
-            + str(proposalElementType)
+            + str(proposalElementTypeID)
             + ";"
             + str(restrictionID),
             level=Qgis.Info,
         )
-        try:
-            if proposalElementType == RestrictionLayers.BAYS:
-                return Bay(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.LINES:
-                return Line(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.SIGNS:
-                return Sign(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.RESTRICTION_POLYGONS:
-                return Sign(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-                # return RestrictionPolygonFactory.getProposalElement(proposalElementType, restrictionLayer, RestrictionID)
-            elif proposalElementType == RestrictionLayers.CPZS:
-                return CPZ(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.PTAS:
-                return PTA(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.MAPPING_UPDATES:
-                return MappingUpdate(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            elif proposalElementType == RestrictionLayers.MAPPING_UPDATE_MASKS:
-                return MappingUpdateMask(
-                    proposalsManager,
-                    proposalElementType,
-                    restrictionLayer,
-                    restrictionID,
-                )
-            raise AssertionError("Restriction Type NOT found")
-        except AssertionError:
-            TOMsMessageLog.logMessage(
-                "In ProposalElementFactory. TYPE not found or something else ... ",
-                level=Qgis.Info,
+        if proposalElementTypeID == RestrictionLayers.BAYS.value:
+            return Bay(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
             )
+        if proposalElementTypeID == RestrictionLayers.LINES.value:
+            return Line(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        if proposalElementTypeID == RestrictionLayers.SIGNS.value:
+            return Sign(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        if proposalElementTypeID == RestrictionLayers.RESTRICTION_POLYGONS.value:
+            return Sign(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+            # return RestrictionPolygonFactory.getProposalElement(proposalElementType, restrictionLayer, RestrictionID)
+        if proposalElementTypeID == RestrictionLayers.CPZS.value:
+            return CPZ(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        if proposalElementTypeID == RestrictionLayers.PTAS.value:
+            return PTA(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        if proposalElementTypeID == RestrictionLayers.MAPPING_UPDATES.value:
+            return MappingUpdate(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        if proposalElementTypeID == RestrictionLayers.MAPPING_UPDATE_MASKS.value:
+            return MappingUpdateMask(
+                proposalsManager,
+                proposalElementTypeID,
+                restrictionLayer,
+                restrictionID,
+            )
+        raise NotImplementedError(f"Restriction Type {proposalElementTypeID} NOT found")
 
 
-class RestrictionPolygonFactory:
-    @staticmethod
-    def getProposalElement(proposalElementType, restrictionLayer, restrictionID):
-        try:
-            if proposalElementType == RestrictionLayers.BAYS:
-                return Bay()
-            elif proposalElementType == RestrictionLayers.LINES:
-                return Line()
-            elif proposalElementType == RestrictionLayers.SIGNS:
-                return Sign()
-            elif proposalElementType == RestrictionLayers.RESTRICTION_POLYGONS:
-                return RestrictionPolygonFactory()
-            raise AssertionError("Proposal Type NOT found")
-        except AssertionError:
-            TOMsMessageLog.logMessage(
-                "In ProposalElementFactory. TYPE not found or something else ... ",
-                level=Qgis.Info,
-            )
+#  class RestrictionPolygonFactory:
+#      @staticmethod
+#      def getProposalElement(proposalElementType, restrictionLayer, restrictionID):
+#          try:
+#              if proposalElementType == RestrictionLayers.BAYS:
+#                  return Bay()
+#              elif proposalElementType == RestrictionLayers.LINES:
+#                  return Line()
+#              elif proposalElementType == RestrictionLayers.SIGNS:
+#                  return Sign()
+#              elif proposalElementType == RestrictionLayers.RESTRICTION_POLYGONS:
+#                  return RestrictionPolygonFactory()
+#              raise AssertionError("Proposal Type NOT found")
+#          except AssertionError:
+#              TOMsMessageLog.logMessage(
+#                  "In ProposalElementFactory. TYPE not found or something else ... ",
+#                  level=Qgis.Info,
+#              )

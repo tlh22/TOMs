@@ -34,6 +34,10 @@ class TOMsTile(QObject):
         if tileNr is not None:
             self.setTile(tileNr)
 
+        self.revisionNrAtDate = None
+        self.lastRevisionDateAtDate = None
+        self.revisionNrForProposal = None
+
     def setTilesLayer(self):
         self.tilesLayer = self.tableNames.setLayer("MapGrid")
         if self.tilesLayer is None:
@@ -249,7 +253,8 @@ class TOMsTile(QObject):
             TOMsMessageLog.logMessage(
                 "In TOMsTile:updateTileRevisionNr. tile"
                 + str(self.thisTileNr)
-                + " revision numbers would be out of sync. Accept date of current Proposal is before last revision of this tile.",
+                + " revision numbers would be out of sync. "
+                "Accept date of current Proposal is before last revision of this tile.",
                 level=Qgis.Warning,
             )
             QMessageBox.information(
@@ -270,12 +275,10 @@ class TOMsTile(QObject):
         #  - if the current version number is NULL or 0, set it to 1, i.e., first change within the tile
         #  - otherwise, increment
 
-        """
         #  THIS IS NOT IMPLEMENTED !!! (Subject to lots of discussion - see issue #366
         # if the lastRevisionDate is the same as the Open date of the current Proposal, then do NOT increment
-        if self.lastRevisionDate() == currProposal.getProposalOpenDate():
-            self.revisionNrForProposal = currRevisionNr
-        """
+        #  if self.lastRevisionDate() == currProposal.getProposalOpenDate():
+        #      self.revisionNrForProposal = currRevisionNr
 
         if currRevisionNr is None or currRevisionNr == NULL or currRevisionNr == 0:
             self.revisionNrForProposal = 1
@@ -300,7 +303,8 @@ class TOMsTile(QObject):
         return True
 
     def addRecordToTilesInAcceptedProposal(self, currProposal):
-        # Now need to add the details of this tile to "TilesWithinAcceptedProposals" (including revision numbers at time of acceptance)
+        # Now need to add the details of this tile to "TilesWithinAcceptedProposals"
+        # (including revision numbers at time of acceptance)
         TOMsMessageLog.logMessage(
             "In TOMsTile:addRecordToTilesInAcceptedProposal...", level=Qgis.Warning
         )

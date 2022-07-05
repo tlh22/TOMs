@@ -83,6 +83,13 @@ class FormCamera(QObject):
         self.startCameraButton = startCameraButton
         self.takePhotoButton = takePhotoButton
 
+        self.currButtonColour = None
+        self.photoTaken = False
+        self.cameraAvailable = False
+        self.cap = None
+        self.cvRotatedImage = None
+        self.cvRGBImg = None
+
         TOMsMessageLog.logMessage("formCamera:init completed ...", level=Qgis.Info)
 
     def identify(self):
@@ -113,7 +120,7 @@ class FormCamera(QObject):
         self.startCameraButton.setText("Close Camera")
         self.startCameraButton.clicked.connect(self.endCamera)
 
-        """ Camera code  """
+        # Camera code
 
         self.camera.changePixmap.connect(self.displayFrame)
         self.camera.closeCamera.connect(self.endCamera)
@@ -226,8 +233,6 @@ class FormCamera(QObject):
                 # self.FIELD.setScaledContents(True)
                 self.pixmapUpdated.emit(pixmap)
 
-        return
-
 
 class CvCamera(QThread):
     changePixmap = pyqtSignal(QPixmap)
@@ -237,6 +242,11 @@ class CvCamera(QThread):
     def __init__(self):
         QThread.__init__(self)
         TOMsMessageLog.logMessage("In cvCamera::init ... ", level=Qgis.Info)
+        self.cameraAvailable = False
+        self.rotateCamera = None
+        self.cap = None
+        self.cvRotatedImage = None
+        self.cvRGBImg = None
 
     def stopCamera(self):
         TOMsMessageLog.logMessage("In cvCamera::stopCamera ... ", level=Qgis.Info)
@@ -259,9 +269,6 @@ class CvCamera(QThread):
         )
         self.rotateCamera = rotateCamera
 
-        """if acapture_available:
-            self.cap = acapture.open(cameraNr)  # /dev/video0
-        else:"""
         if not CV2_AVAILABLE:
             QMessageBox.information(
                 None,
@@ -282,7 +289,7 @@ class CvCamera(QThread):
                 level=Qgis.Warning,
             )
             self.cameraAvailable = False
-            return
+            return False
 
         self.cameraAvailable = True
         if not self.cap.isOpened():
@@ -309,16 +316,14 @@ class CvCamera(QThread):
         TOMsMessageLog.logMessage("In cvCamera::startCamera: ... 2b ", level=Qgis.Info)
 
         while self.cameraAvailable:
-            # while True:
             self.getFrame()
-            # cv2.imshow('img1',self.frame) #display the captured image
-            # cv2.waitKey(1)
             time.sleep(0.1)
-        else:
-            TOMsMessageLog.logMessage(
-                "In cvCamera::startCamera: camera closed ... ", level=Qgis.Info
-            )
-            self.closeCamera.emit()
+
+        TOMsMessageLog.logMessage(
+            "In cvCamera::startCamera: camera closed ... ", level=Qgis.Info
+        )
+        self.closeCamera.emit()
+        return True
 
     def getFrame(self):
 
@@ -393,12 +398,6 @@ class CvCamera(QThread):
             self.photoTaken.emit()
 
         # Now stop camera (and display image)
-
         self.cap.release()
 
-        """def fps(self):
-            fps = int(cv.GetCaptureProperty(self._cameraDevice, cv.CV_CAP_PROP_FPS))
-            if not fps > 0:
-                fps = self._DEFAULT_FPS
-            return fps"""
         # https://stackoverflow.com/questions/44404349/pyqt-showing-video-stream-from-opencv

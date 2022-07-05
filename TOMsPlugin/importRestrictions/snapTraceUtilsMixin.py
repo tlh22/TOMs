@@ -12,16 +12,11 @@
 import math
 
 from qgis.core import (
-    QgsFeature,
     QgsFeatureRequest,
     QgsGeometry,
     QgsMessageLog,
-    QgsPointXY,
     QgsRectangle,
-    QgsWkbTypes,
 )
-from qgis.PyQt.QtCore import QDate, QObject, pyqtSignal
-from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
 
 class SnapTraceUtilsMixin:
@@ -70,13 +65,8 @@ class SnapTraceUtilsMixin:
         del searchRect
 
         if shortestDistance < float("inf"):
-            # nearestPoint = QgsFeature()
-            # add the geometry to the feature,
-            # nearestPoint.setGeometry(QgsGeometry(closestPtOnFeature))
-            # QgsMessageLog.logMessage("findNearestPointL: nearestPoint geom type: " + str(nearestPoint.wkbType()), tag="TOMs panel")
             return closestPoint  # returns a geometry
-        else:
-            return None
+        return None
 
     def nearbyLineFeature(self, currFeatureGeom, searchLineLayer, tolerance):
 
@@ -84,7 +74,7 @@ class SnapTraceUtilsMixin:
 
         nearestLine = None
 
-        for currVertexNr, currVertexPt in enumerate(currFeatureGeom.asPolyline()):
+        for _, currVertexPt in enumerate(currFeatureGeom.asPolyline()):
 
             nearestLine = self.findNearestLine(currVertexPt, searchLineLayer, tolerance)
             if nearestLine:
@@ -128,16 +118,11 @@ class SnapTraceUtilsMixin:
         del searchRect
 
         if shortestDistance < float("inf"):
-
-            """QgsMessageLog.logMessage("In findNearestLine: closestLine {}".format(closestLine.exportToWkt()),
-            tag="TOMs panel")"""
-
             return closestLine  # returns a geometry
-        else:
-            return None
+        return None
 
     def azimuth(self, point1, point2):
-        """azimuth between 2 shapely points (interval 0 - 360)"""
+        # azimuth between 2 shapely points (interval 0 - 360)
         angle = math.atan2(point2.x() - point1.x(), point2.y() - point1.y())
         return math.degrees(angle) if angle > 0 else math.degrees(angle) + 360
 

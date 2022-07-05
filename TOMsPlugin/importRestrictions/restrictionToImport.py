@@ -35,6 +35,10 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         self.currGeometry = currFeature.geometry()
         self.targetLayer = targetLayer
 
+        self.traceLineLayer = None
+        self.tolerance = None
+        self.matchDetails = None
+
         QgsMessageLog.logMessage(
             "In restrictionToImport ... type = {}".format(self.currGeometry.type()),
             tag="TOMs panel",
@@ -77,18 +81,6 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         if currRestrictionTypeID:
             # geometry type
             newGeom = self.currGeometry
-
-            """
-            # pre-process import layers. Don't try to do it here ...
-
-            elif currRestrictionTypeID > 100:
-
-            geomShapeID = 10 # line
-            # check feature type - based on "RestrictionTypeID"
-            if currRestrictionTypeID < 200:
-                new_geom, geomShapeID = self.reduceBayShape()
-            else:
-                new_geom = self.reduceLineShape()"""
 
         if newGeom:
 
@@ -141,10 +133,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         diffEchelonAz = 0
 
         # deal with start point
-        (
-            startPointOnTraceLine,
-            traceLineFeature,
-        ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+        (startPointOnTraceLine, _,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
             line[0], self.traceLineLayer, self.tolerance
         )
 
@@ -237,11 +226,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
 
         # now add the last point
 
-        # lastPointOnTraceLine, traceLineFeature = generateGeometryUtils.findNearestPointOnLineLayer(line[i+1], self.traceLineLayer, self.tolerance)  # TODO: need this logic
-        (
-            lastPointOnTraceLine,
-            traceLineFeature,
-        ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+        (lastPointOnTraceLine, _,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
             line[len(line) - 1], self.traceLineLayer, self.tolerance
         )  # issues for multi-line features
         if not lastPointOnTraceLine:
@@ -356,10 +341,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         # Now "reduce"
         traceStartVertex = 0
         # deal with start point
-        (
-            startPointOnTraceLine,
-            traceLineFeature,
-        ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+        (startPointOnTraceLine, _,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
             line[traceStartVertex], self.traceLineLayer, self.tolerance
         )
 
@@ -393,7 +375,6 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         TOMsMessageLog.logMessage(
             "In reduceBayShape: initialAzimuth: " + str(initialAzimuth), level=Qgis.Info
         )
-        # Turn = generateGeometryUtils.turnToCL(Az, generateGeometryUtils.checkDegrees(line[traceStartVertex+1].azimuth(line[traceStartVertex+2])))
         distanceFromTraceLine = startPointOnTraceLine.distance(
             QgsGeometry.fromPointXY(QgsPointXY(line[traceStartVertex + 1]))
         )
@@ -485,10 +466,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
 
         # now add the last point
 
-        (
-            lastPointOnTraceLine,
-            traceLineFeature,
-        ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+        (lastPointOnTraceLine, _,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
             line[traceLastVertex], self.traceLineLayer, self.tolerance
         )  # issues for multi-line features
 
@@ -609,43 +587,6 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
             level=Qgis.Info,
         )
 
-        # also check situation where the last point is after end of loop, i.e., sits between points 0 and 1
-        """
-        # this approach removes any vertices that are between others - perhaps a bit violent, but ...
-        verticesToRemove = set()
-
-        for currVertex in range(0, len(origLine) - 1, 1):
-
-            i = 0
-            while True:
-                startVertex = i
-                endVertex = i + 1
-
-                if startVertex == len(origLine)-1:
-                    break
-
-                lineSegment = QgsGeometry.fromPolylineXY([origLine[startVertex], origLine[endVertex]])
-                TOMsMessageLog.logMessage(
-                    "In removeKickBackVertices: currVertex: {}; i: {}; start: {}; end: {}".format(currVertex, i, origLine[startVertex].asWkt(),
-                                                                              origLine[endVertex].asWkt()),
-                    level=Qgis.Info)
-
-                if currVertex == startVertex or currVertex == endVertex:
-                    if lineSegment.within(QgsGeometry.fromPointXY(origLine[currVertex]).buffer(0.1, 5)):
-                        verticesToRemove.add(currVertex)
-                        TOMsMessageLog.logMessage("In removeKickBackVertices: removing vertex {}".format(currVertex), level=Qgis.Info)
-                else:
-                    if lineSegment.intersects(QgsGeometry.fromPointXY(origLine[currVertex]).buffer(0.1, 5)):
-                        verticesToRemove.add(currVertex)
-                        TOMsMessageLog.logMessage("In removeKickBackVertices 2: removing vertex {}".format(currVertex), level=Qgis.Info)
-
-                i = i + 1
-
-        newLine = origLine
-
-        for vertex in verticesToRemove:
-            del newLine[vertex]
-        """
         TOMsMessageLog.logMessage(
             "In removeKickBackVertices: len newLine {}".format(len(newLine)),
             level=Qgis.Info,
@@ -745,11 +686,11 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
                 )
 
                 (
-                    vertexCoord,
-                    vertex,
+                    _,
+                    _,
                     prevVertex,
                     nextVertex,
-                    distSquared,
+                    _,
                 ) = lineGeom.closestVertex(ptXY)
 
                 TOMsMessageLog.logMessage(
@@ -821,17 +762,11 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
                 level=Qgis.Info,
             )
 
-            # move along line ...
-            # if not QgsGeometry.fromPointXY(QgsPointXY(startPt)).equals(QgsGeometry.fromPointXY(QgsPointXY(lineGeom.vertexAt(startVertex)))):
-            #    # add start pt
-
             newLine.append(startPt)
 
             for i in range(startVertex, endVertex + 1, 1):
                 newLine.append(line[i])
 
-            # if not QgsGeometry.fromPointXY(QgsPointXY(endPt)).equals(QgsGeometry.fromPointXY(QgsPointXY(lineGeom.vertexAt(endVertex)))):
-            #    # add end pt
             newLine.append(endPt)
 
             geomShapeID = 2  # half-on/half-off bay
@@ -882,8 +817,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
                 )
                 totalLength += lineSegmentToPoint.length()
                 break
-            else:
-                totalLength += lineSegment.length()
+            totalLength += lineSegment.length()
 
         TOMsMessageLog.logMessage(
             "In getDistanceToPoint: totalLength: {}; vertex: {}".format(
@@ -911,10 +845,7 @@ class RestrictionToImport(QObject, SnapTraceUtilsMixin):
         ptsList = []
         # check to see whether there were any points within tolerance
         for i in range(0, len(restrictionline) - 1, 1):
-            (
-                pointOnTraceLine,
-                traceLineFeature,
-            ) = GenerateGeometryUtils.findNearestPointOnLineLayer(
+            (pointOnTraceLine, _,) = GenerateGeometryUtils.findNearestPointOnLineLayer(
                 restrictionline[i], traceLineLayer, tolerance
             )
             if pointOnTraceLine:

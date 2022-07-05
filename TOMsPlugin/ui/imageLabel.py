@@ -32,10 +32,6 @@ class ImageLabel(QtWidgets.QLabel):
         # self.screenpoint = QtCore.QPoint(0, 0)
         self._displayedPixmap = QtGui.QPixmap()
 
-        """self.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.MinimumExpanding
-        )"""
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
             QtWidgets.QSizePolicy.MinimumExpanding,
@@ -45,6 +41,10 @@ class ImageLabel(QtWidgets.QLabel):
         # sizePolicy.setHeightForWidth(sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
         self.setAutoFillBackground(True)
+
+        self.origImage = None
+        self._zoom = 0
+        self.screenpoint = None
 
     def setPixmap(self, image):
         TOMsMessageLog.logMessage("In imageLabel.setPixmap ... ", level=Qgis.Info)
@@ -158,12 +158,7 @@ class ImageLabel(QtWidgets.QLabel):
                     else:
                         self._zoom += 1
 
-        """def mousePressEvent(self, event):
-        self.pixMapCentre = event.pos()
-        TOMsMessageLog.logMessage("In imageLabel.wheelEvent ... pressed {}:{}. ".format(self.pixMapCentre.x(), self.pixMapCentre.y()),
-                                  level=Qgis.Warning)"""
-
-    def paintEvent(self, paintEvent):
+    def paintEvent(self, paintEvent):  # pylint: disable=unused-argument
         painter = QtGui.QPainter(self)
 
         painter.drawPixmap(
