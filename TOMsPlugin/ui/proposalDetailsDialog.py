@@ -5,18 +5,20 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ---------------------------------------------------------------------
+# -----------------------------------------------------------
 # Tim Hancock/Matthias Kuhn 2017
 # Oslandia 2022
 
-from .tomsPlugin import TOMs
+import os
+
+from qgis.PyQt import QtWidgets, uic
+
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "proposal_details_dialog_base_qt5.ui")
+)
 
 
-def classFactory(iface):  # pylint: disable=invalid-name
-    """Load TOMs class from file TOMsPlugin.
-
-    :param iface: A QGIS interface instance.
-    :type iface: QgsInterface
-    """
-
-    return TOMs(iface)
+class ProposalDetailsDialog(QtWidgets.QDialog, FORM_CLASS):
+    def __init__(self, parent=None):
+        """Constructor."""
+        super().__init__(parent)

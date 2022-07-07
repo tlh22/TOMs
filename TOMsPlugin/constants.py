@@ -1,26 +1,29 @@
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 # Licensed under the terms of GNU GPL 2
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#---------------------------------------------------------------------
-# Tim Hancock 2017
+# -----------------------------------------------------------
+# Tim Hancock/Matthias Kuhn 2017
+# Oslandia 2022
 
 from enum import Enum
 
 
-class ProposalStatus(object):
+class ProposalStatus(Enum):
     IN_PREPARATION = 1
     ACCEPTED = 2
     REJECTED = 3
 
-class RestrictionAction(object):
+
+class RestrictionAction(Enum):
     OPEN = 1
     CLOSE = 2
 
-class RestrictionLayers(object):
+
+class RestrictionLayers(Enum):
     BAYS = 2
     LINES = 3
     RESTRICTION_POLYGONS = 4
@@ -30,7 +33,8 @@ class RestrictionLayers(object):
     MAPPING_UPDATES = 101
     MAPPING_UPDATE_MASKS = 102
 
-class RestrictionGeometryTypes(object):
+
+class RestrictionGeometryTypes(Enum):
     PARALLEL_BAY = 1
     HALF_ON_HALF_OFF = 2
     ON_PAVEMENT = 3
@@ -52,11 +56,24 @@ class RestrictionGeometryTypes(object):
     ECHELON_ON_PAVEMENT_POLYGON = 29
     CROSSOVER = 35
 
+    @staticmethod
+    def isBay(restGeomType):
+        if isinstance(restGeomType, RestrictionGeometryTypes):
+            val = restGeomType.value
+        elif isinstance(restGeomType, int):
+            val = restGeomType
+        else:
+            raise NotImplementedError(f"Type {type(restGeomType)} not implemented here")
+        return val < 10 or 20 <= val < 30
+
+
 def singleton(myClass):
     # From https://www.youtube.com/watch?v=6IV_FYx6MQA
     instances = {}
+
     def getInstance(*args, **kwargs):
         if myClass not in instances:
             instances[myClass] = myClass(*args, **kwargs)
-            return instances[myClass]
+        return instances[myClass]
+
     return getInstance
