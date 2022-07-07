@@ -37,7 +37,7 @@ repos:
         args:
           [
           "--rcfile=./setup.cfg", # Link to your config file
-          "--fail-under=9.7"
+          "--fail-under=8"
           ]
         exclude: resources.py
 
