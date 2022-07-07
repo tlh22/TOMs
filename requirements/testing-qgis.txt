@@ -1,0 +1,4 @@
+-r testing.txt
+pytest-qt
+pytest-mock
+pytest-qgis
