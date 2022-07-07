@@ -10,8 +10,8 @@
 # Oslandia 2022
 
 import datetime
+import logging
 import os.path
-import time
 from typing import Any
 
 from qgis.core import (
@@ -21,21 +21,33 @@ from qgis.core import (
     QgsProject,
 )
 
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+    level=logging.DEBUG,
+)
+tomsLogger = logging.getLogger("TOMs")
+tomsLogger.setLevel(logging.DEBUG)
+
 
 class TOMsMessageLog:
+    """
+    Wraps QGis and Python logging systems
+    """
 
     filename = ""
     currLoggingLevel = Qgis.Info
+    tomsLogFileHandler = None
 
     @staticmethod
     def currentLoggingLevel() -> int:
         """Get minimum logging level to be logged (default = Info)"""
         currLoggingLevel = int(Qgis.Info)
-        llevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(
+        qLevel = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(
             "TOMs_Logging_Level"
         )
-        if llevel is not None:
-            currLoggingLevel = int(llevel)
+        if qLevel is not None:
+            currLoggingLevel = int(qLevel)
             QgsMessageLog.logMessage(
                 "Logging level read from TOMs_Logging_Level project variable"
             )
@@ -43,20 +55,41 @@ class TOMsMessageLog:
         return currLoggingLevel
 
     @staticmethod
-    def logMessage(*args: Any, **kwargs: Any) -> None:
+    def logMessage(msg: str, *args: Any, **kwargs: Any) -> None:
+        """forward message to qgis and python logging"""
+        currLevel = TOMsMessageLog.currLoggingLevel
         # check to see if a logging level has been set
-        debugLevel = TOMsMessageLog.currLoggingLevel
-        llevel = kwargs.get("level") or Qgis.Info
-        messageLevel = int(llevel)
+        # qLevel can also be equals to logging.DEBUG
+        qLevel = kwargs.get("level") or Qgis.Info
+        messageLevel = int(qLevel)
 
-        if messageLevel >= debugLevel:
-            QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
-            # TOMsMessageLog.write_log_message(args[0], messageLevel, "TOMs Panel", debug_level)
-            if TOMsMessageLog.filename != "":
-                with open(TOMsMessageLog.filename, "a", encoding="utf8") as logfile:
-                    logfile.write(
-                        f'{time.strftime("%Y%m%d:%H%M%S")}[TOMs Panel]: {debugLevel} :: {args[0]}\n'
-                    )
+        # >>>> python logging part
+        loggingLevel = logging.DEBUG
+        if messageLevel == Qgis.Info:
+            loggingLevel = logging.INFO
+        elif messageLevel == Qgis.Warning:
+            loggingLevel = logging.WARNING
+        elif messageLevel == Qgis.Critical:
+            loggingLevel = logging.ERROR
+
+        filename, lineNumber, funcName, _ = tomsLogger.findCaller()
+        logRec = logging.LogRecord(
+            tomsLogger.name,
+            loggingLevel,
+            filename,
+            lineNumber,
+            msg,
+            args,
+            None,
+            func=funcName,
+        )
+        tomsLogger.handle(logRec)
+
+        # >>>>> QGIS logging part
+        if (
+            logging.DEBUG > messageLevel >= currLevel
+        ):  # disable when messageLevel is DEBUG as QGIS does not handle it
+            QgsMessageLog.logMessage(msg, *args, **kwargs, tag="TOMs Panel")
 
     @classmethod
     def setLogFile(cls) -> None:
@@ -74,8 +107,15 @@ class TOMsMessageLog:
 
         logfile = "qgis_" + datetime.date.today().strftime("%Y%m%d") + ".log"
         TOMsMessageLog.filename = os.path.join(logFilePath, logfile)
+
+        if TOMsMessageLog.tomsLogFileHandler:
+            tomsLogger.removeHandler(TOMsMessageLog.tomsLogFileHandler)
+
+        TOMsMessageLog.tomsLogFileHandler = logging.FileHandler(TOMsMessageLog.filename)
+        tomsLogger.addHandler(TOMsMessageLog.tomsLogFileHandler)
+
         QgsMessageLog.logMessage(
-            "Sorting out log file" + cls.filename,
+            "Sorting out log file" + TOMsMessageLog.filename,
             tag="TOMs Panel",
             level=Qgis.Info,
         )

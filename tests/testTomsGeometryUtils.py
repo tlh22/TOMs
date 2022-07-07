@@ -9,6 +9,9 @@
 # Tim Hancock/Matthias Kuhn 2017
 # Oslandia 2022
 
+import logging
+import sys
+
 from qgis.core import (
     Qgis,
     QgsFeature,
@@ -21,23 +24,10 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 
 from TOMsPlugin import generateGeometryUtils
-
-
-def logMessage(msg, level):
-    if level == Qgis.Info:
-        levelStr = "Info:"
-    elif level == Qgis.Warning:
-        levelStr = "WARNING:"
-    elif level == Qgis.Critical:
-        levelStr = "!! CRITICAL:"
-    print(levelStr, msg)
+from TOMsPlugin.core.tomsMessageLog import TOMsMessageLog, tomsLogger
 
 
 def testGeneratedSignLine(monkeypatch):
-    monkeypatch.setattr(
-        "TOMsPlugin.generateGeometryUtils.TOMsMessageLog.logMessage", logMessage
-    )
-
     testClass = generateGeometryUtils.GenerateGeometryUtils
 
     # line layer
@@ -112,7 +102,9 @@ def testGeneratedSignLine(monkeypatch):
         _,
     ) = testClass.getLineOrientationAtPoint(QgsPointXY(testPoint1), testFeature1A)
 
-    print("orientationToFeature: {}".format(orientationToFeature))
+    TOMsMessageLog.logMessage(
+        "orientationToFeature: {}".format(orientationToFeature), level=logging.DEBUG
+    )
     assert orientationToFeature == 180.0
     assert orientationInFeatureDirection == 90.0
     assert orientationAwayFromFeature == 0.0
@@ -129,18 +121,22 @@ def testGeneratedSignLine(monkeypatch):
     assert nrPlatesInSign == 1
 
     orientationList = testClass.getSignOrientation(testFeature2A, testLayerA)
-    print("orientationList: {}".format(orientationList))
+    TOMsMessageLog.logMessage(
+        "orientationList: {}".format(orientationList), level=logging.DEBUG
+    )
     assert orientationList[1] == 90.0  # feature direction
     assert orientationList[2] == 270.0  # opposite feature direction
     assert orientationList[3] == 180.0  # facing feature
     assert orientationList[4] == 0.0  # facing away from feature
 
     lineGeom = testClass.getSignLine(testFeature2A, testLayerA, distanceForIcons)
-    print("lineGeom: {}".format(lineGeom.asWkt()))
+    TOMsMessageLog.logMessage(
+        "lineGeom: {}".format(lineGeom.asWkt()), level=logging.DEBUG
+    )
     assert lineGeom.length() == 6
 
     linePts = testClass.addPointsToSignLine(lineGeom, nrPlatesInSign, distanceForIcons)
-    # print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
+    # TOMsMessageLog.logMessage ('newLineGeom: {}'.format(newLineGeom.asWkt()))
     # linePts = newLineGeom.asPolyline()
     assert len(linePts) == 1
 
@@ -154,11 +150,13 @@ def testGeneratedSignLine(monkeypatch):
     assert orientationList[1] == 90.0
 
     lineGeom = testClass.getSignLine(testFeature2C, testLayerA, distanceForIcons)
-    print("lineGeom: {}".format(lineGeom.asWkt()))
+    TOMsMessageLog.logMessage(
+        "lineGeom: {}".format(lineGeom.asWkt()), level=logging.DEBUG
+    )
     assert lineGeom.length() == 12
 
     linePts = testClass.addPointsToSignLine(lineGeom, nrPlatesInSign, distanceForIcons)
-    # print ('newLineGeom: {}'.format(newLineGeom.asWkt()))
+    # TOMsMessageLog.logMessage ('newLineGeom: {}'.format(newLineGeom.asWkt()))
     # linePts = newLineGeom.asPolyline()
     assert len(linePts) == 3
 
@@ -169,12 +167,12 @@ def testGeneratedSignLine(monkeypatch):
 
     orientationList = testClass.getSignOrientation(testFeature3A, testLayerA)
     assert len(orientationList) == 7
-    assert orientationList[0] is None
+    assert orientationList[0] is None  # TODO: And this is normal?
 
     lineGeom = testClass.getSignLine(testFeature3A, testLayerA, distanceForIcons)
-    assert lineGeom is None
+    assert lineGeom is None  # TODO: And this is normal?
 
     newLineGeom = testClass.addPointsToSignLine(
         lineGeom, nrPlatesInSign, distanceForIcons
     )
-    assert newLineGeom is None
+    assert newLineGeom is None  # TODO: And this is normal?
