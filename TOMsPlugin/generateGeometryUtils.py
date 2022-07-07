@@ -1366,13 +1366,16 @@ class GenerateGeometryUtils(QObject):
         try:
             signOrientation = ptFeature.attribute("SignOrientationTypeID")
         except KeyError:
+            TOMsMessageLog.logMessage(
+                "Attribute 'SignOrientationTypeID' not found", level=Qgis.Critical
+            )
             return [None, None, None, None, None, None, None]
 
         try:
             signOriginalGeometry = ptFeature.attribute("original_geom_wkt")
         except KeyError:
             TOMsMessageLog.logMessage(
-                "getSignLine - signOriginalGeometry issue", level=Qgis.Info
+                "Attribute 'original_geom_wkt' not found", level=Qgis.Critical
             )
             return [None, None, None, None, None, None, None]
 
@@ -1388,6 +1391,7 @@ class GenerateGeometryUtils(QObject):
         )
 
         if signOrientation is None:
+            TOMsMessageLog.logMessage("signOrientation is None", level=Qgis.Critical)
             return [None, None, None, None, None, None, None]
 
         # find closest point/feature on lineLayer
@@ -1431,6 +1435,7 @@ class GenerateGeometryUtils(QObject):
                 orientationObliqueOppositeFeatureDirection,
             ]
 
+        TOMsMessageLog.logMessage("closestPoint not defined", level=Qgis.Critical)
         return [None, None, None, None, None, None, None]
 
     @staticmethod
