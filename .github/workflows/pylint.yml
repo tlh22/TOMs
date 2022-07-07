@@ -30,4 +30,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint --rcfile=./setup.cfg --fail-under=2.0 $(git ls-files 'TOMsPlugin/*.py') $(git ls-files 'tests/*.py')
