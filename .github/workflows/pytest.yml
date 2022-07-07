@@ -1,0 +1,58 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application
+
+on:
+  push:
+    branches: [ "develop" ]
+    paths:
+    - 'tests/**/*.py'
+    - 'TOMsPlugin/**/*.py'
+  pull_request:
+    branches: [ "develop" ]
+    paths:
+    - 'tests/**/*.py'
+    - 'TOMsPlugin/**/*.py'
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_FOLDER: "TOMs"
+  REPO_PLUGIN_URL: "https://github.com/ProjectCentreLimited/TOMs/"
+  POSTGRES_VERSION: "12"
+  POSTGIS_VERSION: "3.0"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  NPM_CACHE_DIR: "$CI_PROJECT_DIR/.npm"
+
+
+jobs:
+  build:
+    runs-on: qgis/qgis:release-3_22
+
+    env:
+      QT_QPA_PLATFORM: "offscreen"
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PYTHONPATH: "/usr/share/qgis/python:."
+      QGIS_DEBUG: 2
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install system packages
+      run: |
+        apt-get update && apt-get install -y libpq-dev gcc postgresql-client-${POSTGRES_VERSION} unixodbc-dev g++
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python3 -m pip install -U -r requirements/development.txt
+        python3 -m pip install -U -r requirements/testing-qgis.txt
+    - name: Test with pytest
+      run: |
+        pytest
