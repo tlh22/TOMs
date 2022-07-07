@@ -1,0 +1,194 @@
+stages:
+
+  - 🐍 lint
+  - 🤞 test
+#  - 📦 build
+#  - 🚀 deploy
+
+# Change pip's cache directory to be inside the project directory since we can
+# only cache local items.
+variables:
+  PROJECT_FOLDER: "TOMs"
+  REPO_PLUGIN_URL: "https://github.com/ProjectCentreLimited/TOMs/"
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+  POSTGRES_VERSION: "12"
+  POSTGIS_VERSION: "3.0"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  NPM_CACHE_DIR: "$CI_PROJECT_DIR/.npm"
+
+
+# Pip's cache doesn't store the python packages
+# https://pip.pypa.io/en/stable/reference/pip_install/#caching
+#
+# If you want to also cache the installed packages, you have to install
+# them in a virtualenv and cache it as well.
+# cache:
+#   key:
+#     files:
+#       - requirements/*.txt
+#   paths:
+#     - .cache/pip
+
+# -- LINT JOBS -------------------------------------------------------------------------
+
+flake8:
+  stage: 🐍 lint
+  image: python:3.8-slim-buster
+  only:
+    changes:
+      - "**/*.py"
+  before_script:
+    - python -m pip install -U flake8
+  script:
+    - flake8 $PROJECT_FOLDER --count --select=E9,F63,F7,F82 --show-source --statistics
+    - flake8 $PROJECT_FOLDER --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+
+# -- TEST JOBS --------------------------------------------------------------------------
+python-test-qgis:
+  stage: 🤞 test
+  variables:
+      QT_QPA_PLATFORM: "offscreen"
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  image: qgis/qgis:release-3_22
+  services:
+    - name: postgis/postgis:${POSTGRES_VERSION}-${POSTGIS_VERSION}-alpine
+      # alias must be the same than ${TRANSAPI_DATABASE_HOST}
+      alias: postgis
+  only:
+    refs:
+      - merge_requests
+      - main
+      - develop
+    changes:
+      - "**/*.py"
+      - 'requirements/'
+      - ".gitlab-ci.yml"
+  before_script:
+    - apt-get update && apt-get install -y libpq-dev gcc postgresql-client-${POSTGRES_VERSION} unixodbc-dev g++
+    - python3 -m pip install -U -r requirements/development.txt
+    - python3 -m pip install -U -r requirements/testing-qgis.txt
+  script:
+    - PYTHONPATH=/usr/share/qgis/python:. QGIS_DEBUG=2 python3 tests/test_TOMs_geometryUtils.py
+      # pytest tests --junitxml=junit/test-results-gui.xml --cov-report=xml:coverage-reports/coverage-gui.xml
+  artifacts:
+    when: always
+    paths:
+      - coverage-reports/coverage-*.xml
+      - junit/test-results*.xml
+    reports:
+      junit: junit/test-results-*.xml
+      cobertura: coverage-reports/coverage-unit.xml
+      # coverage_report:
+      #   coverage_format: cobertura
+      #   path: coverage-reports/coverage-*.xml
+
+
+# -- BUILD JOBS -------------------------------------------------------------------------
+# build:windows:
+#   stage: 📦 build
+#   tags:
+#     - shared-windows
+#     - windows
+#     - windows-1809
+#   only:
+#     refs:
+#       - main
+#   before_script:
+#     - Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+#     - choco install -y python --version=3.9.5
+#     - RefreshEnv
+#   script:
+#     - python --version
+#     - python -m pip install -U pip setuptools wheel
+#     - python -m pip install --no-deps -U -r requirements/embedded.txt -t $PROJECT_FOLDER/embedded_external_libs
+#     - python -m pip install -i https://test.pypi.org/simple/ --no-deps -U -r requirements/embedded-pypi-test.txt -t $PROJECT_FOLDER/embedded_external_libs
+
+#     # cleaning up code and build files to alleviate artifact
+#     - gci -Recurse -Filter "__pycache__" -Directory -ErrorAction SilentlyContinue -Path $env:PROJECT_FOLDER | Remove-Item -Force -Recurse
+#     - gci -Recurse -Filter "*.dist-info" -Directory -ErrorAction SilentlyContinue -Path $env:PROJECT_FOLDER | Remove-Item -Force -Recurse
+#     - gci -Recurse -Filter "examples" -Directory -ErrorAction SilentlyContinue -Path $env:PROJECT_FOLDER | Remove-Item -Force -Recurse
+#     - gci -Recurse -Filter "tests" -Directory -ErrorAction SilentlyContinue -Path $env:PROJECT_FOLDER | Remove-Item -Force -Recurse
+#     - gci -Recurse -Filter "test" -Directory -ErrorAction SilentlyContinue -Path $env:PROJECT_FOLDER | Remove-Item -Force -Recurse
+
+#   artifacts:
+#     paths:
+#       - $PROJECT_FOLDER/embedded_external_libs
+
+builder:
+  stage: 📦 build
+  image: python:3.8
+  only:
+    refs:
+      - main
+  needs:
+    - build:windows
+  before_script:
+    - apt install git
+    - python -m pip install -U -r requirements/packaging.txt
+  script:
+    # Amend gitignore to include embedded libs with qgis-plugin-ci
+    - sed -i 's/^\*\.py\[cod\].*//' .gitignore
+    - sed -i 's|^lib.*| |' .gitignore # remove libs from gitignore
+    - sed -i "s|^$PROJECT_FOLDER/embedded_external_libs/.*| |" .gitignore
+    - git add $PROJECT_FOLDER/embedded_external_libs/
+    - qgis-plugin-ci package latest --allow-uncommitted-changes --plugin-repo-url $REPO_PLUGIN_URL
+  artifacts:
+    name: "$PROJECT_FOLDER_b$CI_COMMIT_REF_NAME-c$CI_COMMIT_SHORT_SHA-j$CI_JOB_ID"
+    paths:
+      - "${PROJECT_FOLDER}.*.zip"
+      - plugins.xml
+
+documentation:
+  stage: 📦 build
+  image: python:3.8-slim-buster
+  only:
+    refs:
+      - merge_requests
+      - main
+      - develop
+  before_script:
+    - python -m pip install -U -r requirements/documentation.txt
+  script:
+    - sphinx-build -b html docs target/docs
+  artifacts:
+    name: documentation
+    expose_as: "Built documentation static website"
+    paths:
+      - target/docs
+    when: always
+
+# -- DEPLOYMENT JOBS -------------------------------------------------------------------
+# pages:
+#   stage: 🚀 deploy
+#   variables:
+#     GIT_STRATEGY: none
+#   only:
+#     changes:
+#       - "**/*.md"
+#       - "**/*.rst"
+#       - ".gitlab-ci.yml"
+#       - "openlog/**/*"
+#       - requirements/documentation.txt
+#       - requirements/packaging.txt
+#     refs:
+#       - main
+#   needs:
+#     - builder
+#     - documentation
+
+#   script:
+#     - mkdir -p public
+#     # copy generated plugin
+#     - cp ${PROJECT_FOLDER}.*.zip public/
+#     - cp plugins.xml public/
+#     # copy HTML documentation
+#     - cp -rf target/docs/* public/
+
+
+#   artifacts:
+#     paths:
+#       - public
+#     when: always
