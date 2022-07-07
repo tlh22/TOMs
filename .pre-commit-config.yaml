@@ -40,6 +40,7 @@ repos:
           "--fail-under=9.7"
           ]
         exclude: resources.py
+
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
