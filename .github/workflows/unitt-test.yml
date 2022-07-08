@@ -9,11 +9,15 @@ on:
     paths:
       - 'tests/**/*.py'
       - 'TOMsPlugin/**/*.py'
+      - 'requirements/*.txt'
+      - '.github/**/*.yml'
   pull_request:
     branches: [ "develop" ]
     paths:
       - 'tests/**/*.py'
       - 'TOMsPlugin/**/*.py'
+      - 'requirements/*.txt'
+      - '.github/**/*.yml'
 
 permissions:
   contents: read
@@ -67,9 +71,22 @@ jobs:
           PYTHONPATH: "/usr/share/qgis/python/plugins:/usr/share/qgis/python:."
           QGIS_DEBUG: 2
         run: |
-          pytest
+          pytest --junitxml=junit/test-results-unit.xml --cov-report=xml:coverage-reports/coverage-unit.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-reports/coverage-unit.xml
+
+      - name: Upload unit test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-test-results
+          path: junit/test-results-unit.xml
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-coverage-results
+          path: coverage-reports/coverage-unit.xml
