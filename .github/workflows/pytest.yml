@@ -1,19 +1,19 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python application
+name: Python unit tests
 
 on:
   push:
     branches: [ "develop" ]
     paths:
-    - 'tests/**/*.py'
-    - 'TOMsPlugin/**/*.py'
+      - 'tests/**/*.py'
+      - 'TOMsPlugin/**/*.py'
   pull_request:
     branches: [ "develop" ]
     paths:
-    - 'tests/**/*.py'
-    - 'TOMsPlugin/**/*.py'
+      - 'tests/**/*.py'
+      - 'TOMsPlugin/**/*.py'
 
 permissions:
   contents: read
@@ -23,36 +23,53 @@ env:
   REPO_PLUGIN_URL: "https://github.com/ProjectCentreLimited/TOMs/"
   POSTGRES_VERSION: "12"
   POSTGIS_VERSION: "3.0"
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  NPM_CACHE_DIR: "$CI_PROJECT_DIR/.npm"
-
 
 jobs:
   build:
-    runs-on: qgis/qgis:release-3_22
-
-    env:
-      QT_QPA_PLATFORM: "offscreen"
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PYTHONPATH: "/usr/share/qgis/python:."
-      QGIS_DEBUG: 2
+    runs-on: ubuntu-latest
+    container:
+      image: qgis/qgis:release-3_22
+      env:
+        CI: true
+        DISPLAY: ":1"
+        QT_QPA_PLATFORM: "offscreen"
+        POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+#          21159729-f930-4dc5-8d8f-562b58665af4
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install system packages
-      run: |
-        apt-get update && apt-get install -y libpq-dev gcc postgresql-client-${POSTGRES_VERSION} unixodbc-dev g++
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python3 -m pip install -U -r requirements/development.txt
-        python3 -m pip install -U -r requirements/testing-qgis.txt
-    - name: Test with pytest
-      run: |
-        pytest
+      - uses: actions/checkout@v3
+
+      - name: Install system packages
+        run: |
+            apt-get update && apt-get install -y libpq-dev gcc postgresql-client-${POSTGRES_VERSION} unixodbc-dev g++
+
+      - name: Create cache dir
+        run: mkdir -p ~/.cache/pip && chmod -R a+rw ~/.cache/pip
+
+      - uses: actions/cache@v3.0.4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+              ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install -U -r requirements/development.txt
+            python3 -m pip install -U -r requirements/testing-qgis.txt
+            python3 -m pip show pytest-qgis
+
+      - name: Test with pytest
+        env:
+          PYTHONPATH: "/usr/share/qgis/python/plugins:/usr/share/qgis/python:."
+          QGIS_DEBUG: 2
+        run: |
+          pytest
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
