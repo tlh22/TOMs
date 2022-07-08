@@ -10,7 +10,6 @@
 # Oslandia 2022
 
 import logging
-import sys
 
 from qgis.core import (
     Qgis,
@@ -24,10 +23,12 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 
 from TOMsPlugin import generateGeometryUtils
-from TOMsPlugin.core.tomsMessageLog import TOMsMessageLog, tomsLogger
+from TOMsPlugin.core.tomsMessageLog import TOMsMessageLog
 
 
-def testGeneratedSignLine(monkeypatch):
+def testGeneratedSignLine():
+    """Test sign line. Retrieve and rework from TH job"""
+
     testClass = generateGeometryUtils.GenerateGeometryUtils
 
     # line layer
