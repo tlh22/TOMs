@@ -250,22 +250,16 @@ class TOMsGeometryElement(QObject):
 
         for i in range(len(line) - 1):
 
-            # TOMsMessageLog.logMessage("In getDisplayGeometry: i = " + str(i), level=Qgis.Info)
             azimuth = GenerateGeometryUtils.checkDegrees(line[i].azimuth(line[i + 1]))
 
             # if this is the first point
 
             if i == 0:
-                # determine which way to turn towards CL
-                # TOMsMessageLog.logMessage("In generateDisplayGeometry: considering first point", level=Qgis.Info)
-
+                # determine which way to turn towards CL (center line)
                 turn = GenerateGeometryUtils.turnToCL(azimuth, azimuthToCentreLine)
 
                 newAz = GenerateGeometryUtils.checkDegrees(azimuth + turn)
                 cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
-
-                # dx = float(offset) * cosa
-                # dy = float(offset) * cosb
 
                 ptsList.append(
                     QgsPointXY(
@@ -280,24 +274,17 @@ class TOMsGeometryElement(QObject):
                         line[i].y() + (float(offset) * cosb),
                     )
                 )
-                # TOMsMessageLog.logMessage("In geomType: added point 1 ", level=Qgis.Info)
 
                 # Now add the point at the extent. If it is an echelon bay:
                 #   a. calculate the difference between the first Az and the echelon Az (??), and
                 #   b. adjust the angle
                 #   c. *** also need to adjust the length *** Not yet implemented
 
-                # if restGeomType == 5 or restGeomType == 25:  # echelon
                 if restGeomType in [5, 25, 9, 29]:  # echelon
-                    # TOMsMessageLog.logMessage("In getShape: orientation: " + str(orientation), level=Qgis.Info)
                     if not self.isFloat(orientation):
                         orientation = azimuthToCentreLine
 
-                    # TOMsMessageLog.logMessage("In getShape: orientation: " + str(float(orientation)), level=Qgis.Info)
-
                     diffEchelonAz1 = float(orientation) - newAz
-                    # TOMsMessageLog.logMessage("In getShape: diffEchelonAz1: " + str(diffEchelonAz1), level=Qgis.Info)
-
                     diffEchelonAz = GenerateGeometryUtils.checkDegrees(diffEchelonAz1)
 
                     newAz = GenerateGeometryUtils.checkDegrees(newAz + diffEchelonAz)
@@ -309,25 +296,43 @@ class TOMsGeometryElement(QObject):
                         line[i].y() + (float(shpExtent) * cosb),
                     )
                 )
-                # TOMsMessageLog.logMessage("In geomType: added point 2 ", level=Qgis.Info)
-
-                # ptsList.append(newPoint)
-                # TOMsMessageLog.logMessage("In geomType: after append ", level=Qgis.Info)
-
-                # ptsList.append(QgsPoint(line[i].x()+(float(bayWidth)*cosa), line[i].y()+(float(bayWidth)*cosb)))
 
             else:
-                raise Exception(
-                    "Inspecter le code ici car après il y a des variables non définies"
+                newAz, distWidth = GenerateGeometryUtils.calcBisector(
+                    prevAz, azimuth, turn, shpExtent
                 )
+                newAzOffset, distOffset = GenerateGeometryUtils.calcBisector(
+                    prevAz, azimuth, turn, offset
+                )
+
+                cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz + diffEchelonAz)
+                ptsList.append(
+                    QgsPointXY(
+                        line[i].x() + (float(distWidth) * cosa),
+                        line[i].y() + (float(distWidth) * cosb),
+                    )
+                )
+                thisOffset = distOffset
+                if distWidth < 0:
+                    if not GenerateGeometryUtils.sameSign(distWidth, distOffset):
+                        thisOffset = GenerateGeometryUtils.changeSign(distOffset)
+
+                parallelPtsList.append(
+                    QgsPointXY(
+                        line[i].x() + (float(thisOffset) * cosa),
+                        line[i].y() + (float(thisOffset) * cosb),
+                    )
+                )
+
+            prevAz = azimuth
 
         newAz = GenerateGeometryUtils.checkDegrees(azimuth + turn + diffEchelonAz)
         cosa, cosb = GenerateGeometryUtils.cosdirAzim(newAz)
 
         ptsList.append(
             QgsPointXY(
-                line[len(line) - 1].x() + (float(shpExtent) * cosa),
-                line[len(line) - 1].y() + (float(shpExtent) * cosb),
+                line[-1].x() + (float(shpExtent) * cosa),
+                line[-1].y() + (float(shpExtent) * cosb),
             )
         )
 
@@ -360,7 +365,6 @@ class TOMsGeometryElement(QObject):
             )
             newLine = self.resolveSelfIntersections(ptsList)
 
-        # parallelPtsList.reverse()
         parallelLine = QgsGeometry.fromPolylineXY(parallelPtsList)
         if not parallelLine.isSimple():
             # https://gis.stackexchange.com/questions/353194/how-to-find-the-line-is-self-intersected-or-not-in-python-using-qgis

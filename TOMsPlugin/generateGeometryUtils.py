@@ -391,11 +391,7 @@ class GenerateGeometryUtils(QObject):
 
     @staticmethod
     def getReverseAzimuth(azim):
-        if (azim + 180) > 360:
-            azimuthToCentreLine = azim - 180
-        else:
-            azimuthToCentreLine = azim + 180
-        return azimuthToCentreLine
+        return azim % 360
 
     @staticmethod
     def getDisplayGeometry(

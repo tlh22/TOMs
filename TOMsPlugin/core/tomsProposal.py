@@ -32,6 +32,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     ):  # pylint: disable=super-init-not-called
         QObject.__init__(self)
         TOMsMessageLog.logMessage("In TOMsProposal:init. ... ", level=Qgis.Info)
+        self.thisProposal = None
+        self.restrictionsInProposals = None
         self.proposalsManager = proposalsManager
         self.tableNames = self.proposalsManager.tableNames
 
@@ -44,11 +46,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         if proposalNr is not None:
             self.setProposal(proposalNr)
 
-        self.thisProposal = None
-        self.restrictionsInProposals = None
-
     def setProposalsLayer(self):
-        self.proposalsLayer = self.tableNames.setLayer("Proposals")
+        self.proposalsLayer = self.tableNames.getLayer("Proposals")
 
         if self.proposalsLayer is None:
             TOMsMessageLog.logMessage(
@@ -82,8 +81,9 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         self.setProposalsLayer()
 
         if proposalID is not None:
-            query = '"ProposalID" = {proposalID}'.format(proposalID=proposalID)
-            request = QgsFeatureRequest().setFilterExpression(query)
+            request = QgsFeatureRequest().setFilterExpression(
+                f'"ProposalID" = {proposalID}'
+            )
             for proposal in self.proposalsLayer.getFeatures(request):
                 self.thisProposal = proposal  # make assumption that only one row
                 return True
@@ -179,7 +179,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
     ):
         # Will return a list of restrictions within a Proposal subject to actionOnAcceptance
 
-        self.restrictionsInProposals = self.tableNames.setLayer(
+        self.restrictionsInProposals = self.tableNames.getLayer(
             "RestrictionsInProposals"
         )
 
@@ -221,7 +221,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         if currProposalID > 0:  # need to consider a proposal
 
             for (layerID, layerName) in self.getRestrictionLayersList():
-                currLayer = self.tableNames.setLayer(layerName)
+                currLayer = self.tableNames.getLayer(layerName)
                 restrictionStr = self.__getRestrictionsListForLayerForAction(layerID)
                 TOMsMessageLog.logMessage(
                     "In getProposalBoundingBox. ({}) request: {}".format(
@@ -297,7 +297,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
             for (layerID, layerName) in self.getRestrictionLayersList():
 
                 # clear filter
-                thisLayer = self.tableNames.setLayer(layerName)
+                thisLayer = self.tableNames.getLayer(layerName)
                 thisLayerProvider = thisLayer.dataProvider()
                 currFilter = thisLayerProvider.subsetString()
 
@@ -337,7 +337,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         else:
 
-            for currTileRecord in self.tableNames.setLayer("MapGrid").getFeatures():
+            for currTileRecord in self.tableNames.getLayer("MapGrid").getFeatures():
 
                 TOMsMessageLog.logMessage(
                     "In TOMsProposal.getProposalTileDictionaryForDate. Current. Tile: "
@@ -365,9 +365,9 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                 "In TOMsProposal.getProposalTileDictionaryForDate: "
                 + str(thisTileNr)
                 + " RevisionNr: "
-                + str(thisTile.getRevisionNr_AtDate())
+                + str(thisTile.getRevisionNrAtDate())
                 + " RevisionDate: "
-                + str(thisTile.getLastRevisionDate_AtDate()),
+                + str(thisTile.getLastRevisionDateAtDate()),
                 level=Qgis.Info,
             )
 
@@ -389,7 +389,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
             # set Open/Close date for restrictions in Proposal
             for (currlayerID, currlayerName) in self.getRestrictionLayersList():
-                currLayer = self.tableNames.setLayer(currlayerName)
+                currLayer = self.tableNames.getLayer(currlayerName)
                 if not currLayer.dataProvider().setSubsetString(
                     None
                 ):  # need to use data provider ??

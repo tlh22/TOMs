@@ -23,6 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QToolButton,
 )
+from qgis.utils import iface
 
 from .constants import ProposalStatus
 from .core.proposalsManager import TOMsProposalsManager
@@ -36,20 +37,18 @@ from .ui.proposalPanelDockwidget import ProposalPanelDockWidget
 
 
 class ProposalsPanel(RestrictionTypeUtilsMixin):
-    def __init__(self, iface, tomsToolbar):
-        # def __init__(self, iface, TOMsMenu, proposalsManager):
+    def __init__(self, tomsToolbar):
 
-        RestrictionTypeUtilsMixin.__init__(self, iface)
+        RestrictionTypeUtilsMixin.__init__(self)
 
         # Save reference to the QGIS interface
-        self.iface = iface
-        self.canvas = self.iface.mapCanvas()
+        self.canvas = iface.mapCanvas()
         self.tomsToolbar = tomsToolbar
 
         self.actionProposalsPanel = QAction(
             QIcon(":/plugins/TOMs/resources/TOMsStart.png"),
             QCoreApplication.translate("MyPlugin", "Start TOMs"),
-            self.iface.mainWindow(),
+            iface.mainWindow(),
         )
         self.actionProposalsPanel.setCheckable(True)
 
@@ -59,31 +58,30 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         self.newProposalRequired = False
 
-        self.proposalsManager = TOMsProposalsManager(self.iface)
+        self.proposalsManager = TOMsProposalsManager()
         self.tableNames = self.proposalsManager.tableNames
 
         # Now set up the toolbar
 
         self.restrictionTools = ManageRestrictionDetails(
-            self.iface, self.tomsToolbar, self.proposalsManager
+            self.tomsToolbar, self.proposalsManager
         )
 
-        # self.searchBar = searchBar(self.iface, self.TOMsToolBar, self.proposalsManager)
-        self.searchBar = SearchBar(self.iface, self.tomsToolbar)
+        self.searchBar = SearchBar(self.tomsToolbar)
 
         # Add print to the search toolbar
 
-        self.tool = TOMsInstantPrintTool(self.iface, self.proposalsManager)
+        self.tool = TOMsInstantPrintTool(self.proposalsManager)
 
         # Add in details of the Instant Print plugin
-        self.toolButton = QToolButton(self.iface.mainWindow())
+        self.toolButton = QToolButton(iface.mainWindow())
         self.toolButton.setIcon(QIcon(":/plugins/TOMs/InstantPrint/icons/icon.png"))
         self.toolButton.setCheckable(True)
         self.toolButton.setToolTip("Print")
         self.printButtonAction = self.tomsToolbar.addWidget(self.toolButton)
 
         self.toolButton.toggled.connect(self.__enablePrintTool)
-        self.iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
+        iface.mapCanvas().mapToolSet.connect(self.__onPrintToolSet)
 
         self.searchBar.disableSearchBar()
         # print tool
@@ -161,29 +159,28 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         self.tomsConfigFileObject.tomsConfigFileNotFound.connect(self.setCloseTOMsFlag)
         self.tomsConfigFileObject.initialiseTOMsConfigFile()
 
-        self.tableNames.getLayers(self.tomsConfigFileObject)
+        self.tableNames.setLayers(self.tomsConfigFileObject)
 
         if self.closeTOMs:
             QMessageBox.information(
-                self.iface.mainWindow(), "ERROR", ("Unable to start TOMs ...")
+                iface.mainWindow(), "ERROR", ("Unable to start TOMs ...")
             )
             self.actionProposalsPanel.setChecked(False)
             return
 
-            # QMessageBox.information(self.iface.mainWindow(), "ERROR", ("TOMsActivated about to emit"))
         self.proposalsManager.tomsActivated.emit()
 
         self.dock = ProposalPanelDockWidget()
-        self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
+        iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
 
         # set up tabbing for Panels
-        self.setupPanelTabs(self.iface, self.dock)
+        self.setupPanelTabs(self.dock)
 
         self.proposalsManager.dateChanged.connect(self.onDateChanged)
         self.dock.filterDate.setDisplayFormat("dd-MM-yyyy")
         self.dock.filterDate.setDate(QDate.currentDate())
 
-        self.proposals = self.tableNames.setLayer("Proposals")
+        self.proposals = self.tableNames.getLayer("Proposals")
 
         # Set up field details for table  ** what about errors here **
         self.idxProposalTitle = self.proposals.fields().indexFromName("ProposalTitle")
@@ -214,7 +211,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         # Create a transaction object for the Proposals
 
-        self.proposalTransaction = TOMsTransaction(self.iface, self.proposalsManager)
+        self.proposalTransaction = TOMsTransaction(self.proposalsManager)
 
         self.restrictionTools.enableTOMsToolbarItems(self.proposalTransaction)
         self.searchBar.enableSearchBar()
@@ -313,8 +310,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In onChangeProposal", level=Qgis.Info)
 
         # https://gis.stackexchange.com/questions/94135/how-to-populate-a-combobox-with-layers-in-toc
-        newProposalCbIndex = self.dock.cb_ProposalsList.currentIndex()
-        newProposalID = self.dock.cb_ProposalsList.itemData(newProposalCbIndex)
+        newProposalID = self.dock.cb_ProposalsList.currentData()
         newProposalTitle = self.dock.cb_ProposalsList.currentText()
 
         self.proposalsManager.setCurrentProposal(newProposalID)
@@ -329,7 +325,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         # Set the project variable
 
         QMessageBox.information(
-            self.iface.mainWindow(),
+            iface.mainWindow(),
             "Information",
             "All changes will be rolled back",
             QMessageBox.Ok,
@@ -350,9 +346,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
             self.proposalsManager.currentProposalObject().getProposalRecord()
         )
 
-        self.proposalDialog = self.iface.getFeatureForm(
-            self.proposals, self.newProposal
-        )
+        self.proposalDialog = iface.getFeatureForm(self.proposals, self.newProposal)
 
         # self.proposalDialog.attributeForm().disconnectButtonBox()
         self.buttonBox = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
@@ -395,7 +389,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         for currIndex in range(self.dock.cb_ProposalsList.count()):
             currProposalID = self.dock.cb_ProposalsList.itemData(currIndex)
-            # TOMsMessageLog.logMessage("In onNewProposalSaved. checking index = " + str(currIndex), level=Qgis.Info)
             if currProposalID == proposal:
                 TOMsMessageLog.logMessage(
                     "In onNewProposalCreated. index found as " + str(currIndex),
@@ -432,9 +425,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
         self.currProposal = (
             self.proposalsManager.currentProposalObject().getProposalRecord()
         )
-        self.proposalDialog = self.iface.getFeatureForm(
-            self.proposals, self.currProposal
-        )
+        self.proposalDialog = iface.getFeatureForm(self.proposals, self.currProposal)
 
         self.buttonBox = self.proposalDialog.findChild(QDialogButtonBox, "button_box")
 
@@ -468,9 +459,6 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
     def onProposalListIndexChanged(self):
         TOMsMessageLog.logMessage("In onProposalListIndexChanged.", level=Qgis.Info)
-        # currProposal = self.proposalsManager.currentProposal()
-        # currProposalIdx = self.dock.cb_ProposalsList.findData(currProposal)
-        # self.dock.cb_ProposalsList.setCurrentIndex(currProposalIdx)
 
         currProposalCbIndex = self.dock.cb_ProposalsList.currentIndex()
         TOMsMessageLog.logMessage(
@@ -478,7 +466,7 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
             + str(currProposalCbIndex),
             level=Qgis.Info,
         )
-        currProposalID = self.dock.cb_ProposalsList.itemData(currProposalCbIndex)
+        currProposalID = self.dock.cb_ProposalsList.currentData()
         self.proposalsManager.setCurrentProposal(currProposalID)
 
         TOMsMessageLog.logMessage(
@@ -491,9 +479,9 @@ class ProposalsPanel(RestrictionTypeUtilsMixin):
 
         # Can we check to see if there are any outstanding edits?!!
 
-        currProposalCbIndex = self.dock.cb_ProposalsList.currentIndex()
-        currProposalID = self.dock.cb_ProposalsList.itemData(currProposalCbIndex)
-        self.proposalsManager.setCurrentProposal(currProposalID)
+        self.proposalsManager.setCurrentProposal(
+            self.dock.cb_ProposalsList.currentData()
+        )
 
     def onDateChanged(self):
         TOMsMessageLog.logMessage("In onDateChanged.", level=Qgis.Info)

@@ -32,6 +32,7 @@ from qgis.PyQt.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
+from qgis.utils import iface
 
 from .ui.uiPrintDialog import UiInstantPrintDialog
 
@@ -52,10 +53,8 @@ class InstantPrintDialog(QDialog):
 
 
 class InstantPrintTool(QgsMapTool, InstantPrintDialog):
-    def __init__(self, iface, populateCompositionFz=None):
+    def __init__(self, populateCompositionFz=None):
         QgsMapTool.__init__(self, iface.mapCanvas())
-
-        self.iface = iface
 
         projectInstance = QgsProject.instance()
         self.projectLayoutManager = projectInstance.layoutManager()
@@ -66,7 +65,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.mapitem = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = InstantPrintDialog(self.iface.mainWindow())
+        self.dialog = InstantPrintDialog(iface.mainWindow())
         self.dialogui = UiInstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
         self.dialogui.addScale.setIcon(QIcon(":/images/themes/default/mActionAdd.svg"))
@@ -84,8 +83,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         # self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
         self.dialogui.comboBoxFileFormat.addItem("PNG", self.tr("PNG Image (*.png);;"))
         self.dialogui.comboBoxFileFormat.addItem("SVG", self.tr("SVG Image (*.svg);;"))
-        self.iface.layoutDesignerOpened.connect(lambda view: self.__reloadLayouts())
-        self.iface.layoutDesignerWillBeClosed.connect(self.__reloadLayouts)
+        iface.layoutDesignerOpened.connect(lambda view: self.__reloadLayouts())
+        iface.layoutDesignerWillBeClosed.connect(self.__reloadLayouts)
         self.dialogui.comboBoxLayouts.currentIndexChanged.connect(self.__selectLayout)
         self.dialogui.comboBoxScale.lineEdit().textChanged.connect(
             self.__changeScale
@@ -114,12 +113,12 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __onDialogHidden(self):  # pylint: disable=invalid-name
         self.setEnabled(False)
-        self.iface.mapCanvas().unsetMapTool(self)
+        iface.mapCanvas().unsetMapTool(self)
         QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
         myList = []
         for i in range(self.dialogui.comboBoxScale.count()):
             myList.append(self.dialogui.comboBoxScale.itemText(i))
-        QSettings().setValue("instantprint/scales", ";".join(list))
+        QSettings().setValue("instantprint/scales", ";".join(myList))
 
     def retrieveScales(self, checkScale):
         if self.dialogui.comboBoxScale.findText(checkScale) == -1:
@@ -140,10 +139,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if enabled:
             self.dialog.setVisible(True)
             self.__reloadLayouts()
-            self.iface.mapCanvas().setMapTool(self)
+            iface.mapCanvas().setMapTool(self)
         else:
             self.dialog.setVisible(False)
-            self.iface.mapCanvas().unsetMapTool(self)
+            iface.mapCanvas().unsetMapTool(self)
 
     def __changeScale(self):  # pylint: disable=invalid-name
         if not self.mapitem:
@@ -181,12 +180,12 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
                 maps.append(item)
         if len(maps) != 1:
             QMessageBox.warning(
-                self.iface.mainWindow(),
+                iface.mainWindow(),
                 self.tr("Invalid layout"),
                 self.tr("The layout must have exactly one map item."),
             )
             self.exportButton.setEnabled(False)
-            self.iface.mapCanvas().scene().removeItem(self.rubberband)
+            iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
             self.dialogui.comboBoxScale.setEnabled(False)
             return
@@ -202,7 +201,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __createRubberBand(self):  # pylint: disable=invalid-name
         self.__cleanup()
         extent = self.mapitem.extent()
-        center = self.iface.mapCanvas().extent().center()
+        center = iface.mapCanvas().extent().center()
         self.corner = QPointF(
             center.x() - 0.5 * extent.width(), center.y() - 0.5 * extent.height()
         )
@@ -210,9 +209,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.corner.x(), self.corner.y(), extent.width(), extent.height()
         )
         self.mapitem.setExtent(QgsRectangle(self.rect))
-        self.rubberband = QgsRubberBand(
-            self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry
-        )
+        self.rubberband = QgsRubberBand(iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
@@ -220,9 +217,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __cleanup(self):  # pylint: disable=invalid-name
         if self.rubberband:
-            self.iface.mapCanvas().scene().removeItem(self.rubberband)
+            iface.mapCanvas().scene().removeItem(self.rubberband)
         if self.oldrubberband:
-            self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
+            iface.mapCanvas().scene().removeItem(self.oldrubberband)
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
@@ -235,17 +232,17 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         ):
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(
-                self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry
+                iface.mapCanvas(), QgsWkbTypes.PolygonGeometry
             )
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
-            self.iface.mapCanvas().setCursor(Qt.ClosedHandCursor)
+            iface.mapCanvas().setCursor(Qt.ClosedHandCursor)
 
     def canvasMoveEvent(self, e):
         if not self.pressPos:
             return
-        mup = self.iface.mapCanvas().mapSettings().mapUnitsPerPixel()
+        mup = iface.mapCanvas().mapSettings().mapUnitsPerPixel()
         x = self.corner.x() + (e.x() - self.pressPos[0]) * mup
         y = self.corner.y() + (self.pressPos[1] - e.y()) * mup
 
@@ -276,14 +273,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if e.button() == Qt.LeftButton and self.pressPos:
             self.corner = QPointF(self.rect.x(), self.rect.y())
             self.pressPos = None
-            self.iface.mapCanvas().setCursor(Qt.OpenHandCursor)
-            self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
+            iface.mapCanvas().setCursor(Qt.OpenHandCursor)
+            iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.oldrect = None
             self.oldrubberband = None
             self.mapitem.setExtent(QgsRectangle(self.rect))
 
     def __canvasRect(self, rect):  # pylint: disable=invalid-name
-        mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
+        mtp = iface.mapCanvas().mapSettings().mapToPixel()
         point1 = mtp.transform(
             QgsPoint(rect.left(), rect.top())
         )  # pylint: disable=invalid-name
@@ -291,7 +288,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             QgsPoint(rect.right(), rect.bottom())
         )  # pylint: disable=invalid-name
         return QRect(
-            point1.x(), point1.y(), point2.x() - point1.x(), point2.y() - point1.y()
+            int(point1.x()),
+            int(point1.y()),
+            int(point2.x() - point1.x()),
+            int(point2.y() - point1.y()),
         )
 
     def __export(self):  # pylint: disable=invalid-name
@@ -300,7 +300,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.dialogui.comboBoxFileFormat.currentIndex()
         )
         filepath = QFileDialog.getSaveFileName(
-            self.iface.mainWindow(),
+            iface.mainWindow(),
             self.tr("Export Layout"),
             settings.value("/instantprint/lastfile", ""),
             myFormat,
@@ -333,14 +333,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             )
         if success != 0:
             QMessageBox.warning(
-                self.iface.mainWindow(),
+                iface.mainWindow(),
                 self.tr("Export Failed"),
                 self.tr("Failed to export the layout."),
             )
 
         # Added (TH 20-10-22)
         QMessageBox.information(
-            self.iface.mainWindow(), "Information", ("Printing completed")
+            iface.mainWindow(), "Information", ("Printing completed")
         )
 
     def __reloadLayouts(self, removed=None):  # pylint: disable=invalid-name

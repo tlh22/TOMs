@@ -39,7 +39,7 @@ class TOMsTile(QObject):
         self.revisionNrForProposal = None
 
     def setTilesLayer(self):
-        self.tilesLayer = self.tableNames.setLayer("MapGrid")
+        self.tilesLayer = self.tableNames.getLayer("MapGrid")
         if self.tilesLayer is None:
             TOMsMessageLog.logMessage(
                 "In TOMsTile:setTilesLayer. tilesLayer layer NOT set !!!",
@@ -58,7 +58,7 @@ class TOMsTile(QObject):
             "In TOMsTile:setTilesLayer... MapGrid ", level=Qgis.Warning
         )
 
-        self.tilesInAcceptedProposalsLayer = self.tableNames.setLayer(
+        self.tilesInAcceptedProposalsLayer = self.tableNames.getLayer(
             "TilesInAcceptedProposals"
         )
         if self.tilesInAcceptedProposalsLayer is None:

@@ -14,6 +14,7 @@ import functools
 from qgis.core import Qgis, QgsTransactionGroup
 from qgis.PyQt.QtCore import QObject
 from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.utils import iface
 
 from ..constants import singleton
 from .tomsMessageLog import TOMsMessageLog
@@ -27,11 +28,9 @@ class TOMsTransaction(QObject):
     NOT SURE IF THIS IS THE BEST WAY ...
     """
 
-    def __init__(self, iface, proposalsManager):
+    def __init__(self, proposalsManager):
 
         QObject.__init__(self)
-
-        self.iface = iface
 
         self.proposalsManager = (
             proposalsManager  # included to allow call to updateMapCanvas
@@ -42,7 +41,6 @@ class TOMsTransaction(QObject):
         self.setTransactionGroup = []
         self.tableNames = self.proposalsManager.tableNames
         self.errorOccurred = False
-        self.modified = False
         self.errorMessage = ""
 
         self.tomsTransactionList = [
@@ -85,11 +83,7 @@ class TOMsTransaction(QObject):
         )
 
         for layer in self.tomsTransactionList:
-            # currRestrictionLayerName = layer[idxRestrictionsLayerName]
-
-            # restrictionLayer = QgsProject.instance().mapLayersByName(currRestrictionLayerName)[0]
-
-            self.setTransactionGroup.append(self.tableNames.setLayer(layer))
+            self.setTransactionGroup.append(self.tableNames.getLayer(layer))
             TOMsMessageLog.logMessage(
                 "In TOMsTransaction.prepareLayerSet. Adding " + layer, level=Qgis.Info
             )
@@ -119,20 +113,9 @@ class TOMsTransaction(QObject):
                     + str(layer.name()),
                     level=Qgis.Info,
                 )
-
-                # layer.beforeCommitChanges.connect(functools.partial(self.printMessage, layer, "beforeCommitChanges"))
-                # layer.layerModified.connect(functools.partial(self.printMessage, layer, "layerModified"))
-                # layer.editingStopped.connect(functools.partial(self.printMessage, layer, "editingStopped"))
-                # layer.attributeValueChanged.connect(self.printAttribChanged)
                 layer.raiseError.connect(functools.partial(self.printRaiseError, layer))
-                # layer.editCommandEnded.connect(functools.partial(self.printMessage, layer, "editCommandEnded"))
 
-            self.modified = False
             self.errorOccurred = False
-
-            # self.transactionCompleted.connect(self.proposalsManager.updateMapCanvas)
-
-            return
 
     def startTransactionGroup(self):
 
@@ -147,7 +130,7 @@ class TOMsTransaction(QObject):
             )
             self.createTransactionGroup()
 
-        status = self.tableNames.setLayer(
+        status = self.tableNames.getLayer(
             self.tomsTransactionList[0]
         ).startEditing()  # could be any table ...
         if not status:
@@ -162,25 +145,10 @@ class TOMsTransaction(QObject):
             )
         return status
 
-    def layerModified(self):
-        self.modified = True
-
-    def isTransactionGroupModified(self):
-        # indicates whether or not there has been any change within the transaction
-        return self.modified
-
-    def printMessage(self, layer, message):
-        TOMsMessageLog.logMessage(
-            "In TOMsTransaction:printMessage. "
-            + str(message)
-            + " ... "
-            + str(layer.name()),
-            level=Qgis.Info,
-        )
-
     def printRaiseError(self, layer, message):
+        message += f" from layer {layer.name()}"
         TOMsMessageLog.logMessage(
-            "TOMsTransaction: Error from " + str(layer.name()) + ": " + str(message),
+            "TOMsTransaction: Error: " + str(message),
             level=Qgis.Info,
         )
         self.errorOccurred = True
@@ -193,10 +161,10 @@ class TOMsTransaction(QObject):
         )
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        # currMapTool = self.iface.mapCanvas().mapTool()
-        # currMapTool.deactivate()
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-        # self.mapTool = None
+        #  iface.mapCanvas().unsetMapTool(iface.mapCanvas().mapTool())
+
+        if not self.currTransactionGroup.modified():
+            return
 
         if not self.currTransactionGroup:
             TOMsMessageLog.logMessage(
@@ -212,42 +180,24 @@ class TOMsTransaction(QObject):
             self.rollBackTransactionGroup()
             return False
 
-        for layer in self.setTransactionGroup:
-
-            TOMsMessageLog.logMessage(
-                "In TOMsTransaction:commitTransactionGroup. Considering: "
-                + layer.name(),
-                level=Qgis.Warning,
+        layer = list(self.currTransactionGroup.layers())[0]
+        if not layer.commitChanges():
+            QMessageBox.information(
+                None,
+                "Error",
+                "Changes to " + layer.name() + " failed: " + str(layer.commitErrors()),
+                QMessageBox.Ok,
             )
+            TOMsMessageLog.logMessage(
+                "In TOMsTransaction:commitTransactionGroup. Changes to "
+                + layer.name()
+                + " failed: "
+                + str(layer.commitErrors()),
+                level=Qgis.Critical,
+            )
+            layer.rollBack()
 
-            commitStatus = layer.commitChanges()
-
-            if not commitStatus:
-                QMessageBox.information(
-                    None,
-                    "Error",
-                    "Changes to "
-                    + layer.name()
-                    + " failed: "
-                    + str(layer.commitErrors()),
-                    QMessageBox.Ok,
-                )
-                TOMsMessageLog.logMessage(
-                    "In TOMsTransaction:commitTransactionGroup. Changes to "
-                    + layer.name()
-                    + " failed: "
-                    + str(layer.commitErrors()),
-                    level=Qgis.Critical,
-                )
-                layer.rollBack()
-
-            break
-
-        self.modified = False
         self.errorOccurred = False
-
-        # signal for redraw ...
-        # self.transactionCompleted.emit()
 
         try:
             self.proposalsManager.updateMapCanvas()
@@ -256,8 +206,6 @@ class TOMsTransaction(QObject):
                 "In TOMsTransaction:commitTransactionGroup. Issue updating map canvas *** ...",
                 level=Qgis.Warning,
             )
-
-        return commitStatus
 
     def layersInTransaction(self):
         return self.setTransactionGroup
@@ -292,10 +240,10 @@ class TOMsTransaction(QObject):
         )
 
         # unset map tool. I don't understand why this is required, but ... without it QGIS crashes
-        self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
+        iface.mapCanvas().unsetMapTool(iface.mapCanvas().mapTool())
 
         try:
-            self.tableNames.setLayer(
+            self.tableNames.getLayer(
                 self.tomsTransactionList[0]
             ).rollBack()  # could be any table ...
             TOMsMessageLog.logMessage(
@@ -310,7 +258,6 @@ class TOMsTransaction(QObject):
                 level=Qgis.Warning,
             )
 
-        self.modified = False
         self.errorOccurred = False
         self.errorMessage = None
 

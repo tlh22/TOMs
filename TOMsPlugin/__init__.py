@@ -19,4 +19,4 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
 
-    return TOMs(iface)
+    return TOMs()

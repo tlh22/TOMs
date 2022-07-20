@@ -10,6 +10,7 @@
 # Oslandia 2022
 
 from qgis.core import Qgis, QgsMessageLog
+from qgis.utils import iface
 
 from .core.tomsMessageLog import TOMsMessageLog
 
@@ -21,13 +22,12 @@ from .proposalsPanel import ProposalsPanel
 class TOMs:
     """Main plugin class"""
 
-    def __init__(self, iface):
+    def __init__(self):
 
         QgsMessageLog.logMessage(
             "Starting TOMs... ", tag="TOMs Panel", level=Qgis.Warning
         )
 
-        self.iface = iface
         TOMsMessageLog.setLogFile()
 
         TOMsMessageLog.logMessage(
@@ -46,9 +46,9 @@ class TOMs:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         # Add toolbar
-        self.tomsToolbar = self.iface.addToolBar("TOMs Toolbar")
+        self.tomsToolbar = iface.addToolBar("TOMs Toolbar")
         self.tomsToolbar.setObjectName("TOMs Toolbar")
-        self.doProposalsPanel = ProposalsPanel(self.iface, self.tomsToolbar)
+        self.doProposalsPanel = ProposalsPanel(self.tomsToolbar)
 
     def unload(self) -> None:
         """Removes the plugin menu item and icon from QGIS GUI."""

@@ -15,13 +15,9 @@ from .core.tomsMessageLog import TOMsMessageLog
 
 
 class ProposalTypeUtilsMixin:
-    def __init__(self):
-        # self.iface = iface
-        pass
-
     def getRestrictionLayersList(self):
 
-        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.getLayer("RestrictionLayers")
 
         layerTypeList = []
         for layerType in self.restrictionLayers.getFeatures():
@@ -54,12 +50,12 @@ class ProposalTypeUtilsMixin:
         # return the layer given the row in "RestrictionLayers"
         # TOMsMessageLog.logMessage("In getRestrictionsLayerFromID.", level=Qgis.Info)
 
-        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.getLayer("RestrictionLayers")
 
         request = QgsFeatureRequest().setFilterExpression(f'"Code"={layerID}')
 
         for layer in self.restrictionLayers.getFeatures(request):
-            return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
+            return self.tableNames.getLayer(layer.attribute("RestrictionLayerName"))
 
         return None
 
@@ -67,13 +63,13 @@ class ProposalTypeUtilsMixin:
         TOMsMessageLog.logMessage("In getRestrictionLayerTableID.", level=Qgis.Info)
         # find the ID for the layer within the table "
 
-        self.restrictionLayers = self.tableNames.setLayer("RestrictionLayers")
+        self.restrictionLayers = self.tableNames.getLayer("RestrictionLayers")
 
         request = QgsFeatureRequest().setFilterExpression(
             f'"RestrictionLayerName"={currLayer.name()}'
         )
 
         for layer in self.restrictionLayers.getFeatures(request):
-            return self.tableNames.setLayer(layer.attribute("RestrictionLayerName"))
+            return self.tableNames.getLayer(layer.attribute("RestrictionLayerName"))
 
         return None

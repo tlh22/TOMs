@@ -679,9 +679,7 @@ class TOMsExpressions:
         return demandPoints
 
     def registerFunctions(self):
-
         tomsList = QgsExpression.Functions()
-
         for func in self.functions:
             TOMsMessageLog.logMessage(
                 "Considering function {}".format(func.name()), level=Qgis.Info
@@ -706,5 +704,3 @@ class TOMsExpressions:
                 "Unregistered expression function {}".format(func.name()),
                 level=Qgis.Info,
             )
-
-        # QgsExpression.cleanRegisteredFunctions()  # this seems to crash the reload ...

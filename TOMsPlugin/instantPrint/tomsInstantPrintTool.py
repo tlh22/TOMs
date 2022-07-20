@@ -25,6 +25,7 @@ from qgis.PyQt.QtWidgets import (
     QListWidgetItem,
     QMessageBox,
 )
+from qgis.utils import iface
 
 from ..constants import ProposalStatus
 from ..core.tomsMessageLog import TOMsMessageLog
@@ -35,9 +36,8 @@ from .ui.printListDialog import PrintListDialog as printListDialogUI
 
 
 class TOMsInstantPrintTool(InstantPrintTool):
-    def __init__(self, iface, proposalsManager):
+    def __init__(self, proposalsManager):
 
-        self.iface = iface
         self.proposalsManager = proposalsManager
         self.tableNames = self.proposalsManager.tableNames
 
@@ -150,7 +150,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             )
 
             # tidy - if required
-            self.iface.mapCanvas().scene().removeItem(self.rubberband)
+            iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
 
             # set to scale for layout
@@ -228,9 +228,9 @@ class TOMsInstantPrintTool(InstantPrintTool):
         )
         if layout.atlas().enabled():
             if self.rubberband:
-                self.iface.mapCanvas().scene().removeItem(self.rubberband)
+                iface.mapCanvas().scene().removeItem(self.rubberband)
             if self.oldrubberband:
-                self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
+                iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.rubberband = None
             TOMsMessageLog.logMessage(
                 "In TOMsChangeScale .. scale box notEnabled ...", level=Qgis.Info
@@ -272,14 +272,10 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 if result:
 
                     # Take the output from the form and set the current Proposal
-                    indexProposal = (
-                        self.acceptedProposalDialog.cb_AcceptedProposalsList.currentIndex()
-                    )
                     proposalNrForPrinting = (
-                        self.acceptedProposalDialog.cb_AcceptedProposalsList.itemData(
-                            indexProposal
-                        )
+                        self.acceptedProposalDialog.cb_AcceptedProposalsList.currentData()
                     )
+
                     TOMsMessageLog.logMessage(
                         "In TOMsExport. Choosing " + str(proposalNrForPrinting),
                         level=Qgis.Info,
@@ -367,7 +363,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         # get the output location
         dirName = QFileDialog.getExistingDirectory(
-            self.iface.mainWindow(),
+            iface.mainWindow(),
             self.tr("Export Composition"),
             settings.value("/instantprint/lastdir", ""),
             QFileDialog.ShowDirsOnly,
@@ -399,7 +395,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             composerProposalStatus.setText(self.proposalForPrintingStatusText)
         else:
             QMessageBox.warning(
-                self.iface.mainWindow(),
+                iface.mainWindow(),
                 self.tr("Missing label in Layout"),
                 self.tr("Missing label 'proposalStatus'"),
             )
@@ -409,7 +405,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             composerPrintTypeDetails.setText(self.proposalPrintTypeDetails)
         else:
             QMessageBox.warning(
-                self.iface.mainWindow(),
+                iface.mainWindow(),
                 self.tr("Missing label in Layout"),
                 self.tr("Missing label 'printTypeDetails'"),
             )
@@ -443,7 +439,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     level=Qgis.Info,
                 )
                 QMessageBox.warning(
-                    self.iface.mainWindow(),
+                    iface.mainWindow(),
                     self.tr("Print Failed"),
                     self.tr("Could not find details for " + str(currTileNr)),
                 )
@@ -454,11 +450,11 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 + str(currTileNr)
                 + " CurrRevisionNr: "
                 + str(  # str(tileWithDetails["CurrRevisionNr"]) +
-                    tileWithDetails.getRevisionNr_AtDate()
+                    tileWithDetails.getRevisionNrAtDate()
                 )
                 + " RevisionDate: "
                 + str(  # str(tileWithDetails["LastRevisionDate"])  +
-                    tileWithDetails.getLastRevisionDate_AtDate()
+                    tileWithDetails.getLastRevisionDateAtDate()
                 )
                 + " lastUpdateDate: "
                 + currProposalOpenDate.toString("dd-MMM-yyyy"),
@@ -466,10 +462,10 @@ class TOMsInstantPrintTool(InstantPrintTool):
             )
 
             if self.proposalForPrintingStatusText == "CONFIRMED":
-                composerRevisionNr.setText(str(tileWithDetails.getRevisionNr_AtDate()))
+                composerRevisionNr.setText(str(tileWithDetails.getRevisionNrAtDate()))
                 composerEffectiveDate.setText(
                     "{date}".format(
-                        date=tileWithDetails.getLastRevisionDate_AtDate().toString(
+                        date=tileWithDetails.getLastRevisionDateAtDate().toString(
                             "dd-MMM-yyyy"
                         )
                     )
@@ -529,14 +525,14 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 )
             else:
                 QMessageBox.warning(
-                    self.iface.mainWindow(),
+                    iface.mainWindow(),
                     self.tr("Print Failed"),
                     self.tr("No type choosen " + exporter.errorFile()),
                 )
 
             if result != QgsLayoutExporter.Success:
                 QMessageBox.warning(
-                    self.iface.mainWindow(),
+                    iface.mainWindow(),
                     self.tr("Print Failed"),
                     self.tr("Failed to print " + exporter.errorFile()),
                 )
@@ -547,7 +543,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
         currLayoutAtlas.endRender()
 
         QMessageBox.information(
-            self.iface.mainWindow(), "Information", ("Printing completed")
+            iface.mainWindow(), "Information", ("Printing completed")
         )
 
     def tomsReloadLayouts(self, removed=None):
@@ -561,7 +557,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             prev = self.dialogui.comboBoxLayouts.currentText()
         self.dialogui.comboBoxLayouts.clear()
         active = 0
-        for composer in self.iface.activeComposers():
+        for composer in iface.activeComposers():
             if composer != removed and composer.composerWindow():
                 cur = composer.composerWindow().windowTitle()
                 self.dialogui.comboBoxLayouts.addItem(cur, composer)
@@ -616,7 +612,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 + " CurrRevisionNr: "
                 + str(currTile.getCurrentRevisionNr())
                 + " RevisionDate: "
-                + str(currTile.getRevisionNr_AtDate()),
+                + str(currTile.getRevisionNrAtDate()),
                 level=Qgis.Info,
             )
             # tileSet.add(tile)

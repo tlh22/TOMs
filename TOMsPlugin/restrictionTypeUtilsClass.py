@@ -25,7 +25,7 @@ from qgis.core import (
     QgsProject,
     QgsSettings,
 )
-from qgis.PyQt.QtCore import QObject, pyqtSignal
+from qgis.PyQt.QtCore import NULL, QObject, pyqtSignal
 from qgis.PyQt.QtGui import QPixmap
 from qgis.PyQt.QtWidgets import (
     QDialogButtonBox,
@@ -34,6 +34,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QPushButton,
 )
+from qgis.utils import iface
 
 from .constants import ProposalStatus, RestrictionAction
 from .core.tomsMessageLog import TOMsMessageLog
@@ -164,12 +165,21 @@ class TOMsConfigFile(QObject):
             TOMsMessageLog.logMessage(
                 "In getTOMsConfigFile. TOMs_CONFIG_PATH not found ...", level=Qgis.Info
             )
-            # config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_path')
 
         if configPath is None:
             configPath = QgsExpressionContextUtils.projectScope(
                 QgsProject.instance()
             ).variable("project_home")
+
+        if configPath == NULL:
+            QMessageBox.information(
+                None,
+                "Information",
+                "Project probably not opened",
+                QMessageBox.Ok,
+            )
+            self.tomsConfigFileNotFound.emit()
+            return
 
         TOMsMessageLog.logMessage(
             "In getTOMsConfigFile. config_path: {}".format(configPath), level=Qgis.Info
@@ -225,10 +235,8 @@ class TOMsLayers(QObject):
     tomsLayersSet = pyqtSignal()
     """ signal will be emitted if everything is OK with opening TOMs """
 
-    def __init__(self, iface):
+    def __init__(self):
         QObject.__init__(self)
-
-        self.iface = iface
 
         TOMsMessageLog.logMessage("In TOMSLayers.init ...", level=Qgis.Info)
 
@@ -251,7 +259,7 @@ class TOMsLayers(QObject):
         formPath = configFileObject.getTOMsConfigElement("TOMsLayers", "form_path")
         return formPath
 
-    def getLayers(self, configFileObject):
+    def setLayers(self, configFileObject):
 
         TOMsMessageLog.logMessage("In TOMSLayers.getLayers ...", level=Qgis.Info)
         found = True
@@ -260,18 +268,16 @@ class TOMsLayers(QObject):
         project = QgsProject.instance()
 
         if len(project.fileName()) == 0:
-            QMessageBox.information(
-                self.iface.mainWindow(), "ERROR", ("Project not yet open")
-            )
+            QMessageBox.information(iface.mainWindow(), "ERROR", "Project not yet open")
             found = False
 
         else:
 
             if not self.getTOMsLayerListFromConfigFile(configFileObject):
                 QMessageBox.information(
-                    self.iface.mainWindow(),
+                    iface.mainWindow(),
                     "ERROR",
-                    ("Problem with TOMs config file ..."),
+                    "Problem with TOMs config file ...",
                 )
                 self.tomsLayersNotFound.emit()
                 found = False
@@ -285,9 +291,9 @@ class TOMsLayers(QObject):
             # check that path exists
             if not os.path.isdir(self.formPath):
                 QMessageBox.information(
-                    self.iface.mainWindow(),
+                    iface.mainWindow(),
                     "ERROR",
-                    ("Form path in config file was not found ..."),
+                    "Form path in config file was not found ...",
                 )
                 self.tomsLayersNotFound.emit()
                 found = False
@@ -336,9 +342,9 @@ class TOMsLayers(QObject):
 
                 else:
                     QMessageBox.information(
-                        self.iface.mainWindow(),
+                        iface.mainWindow(),
                         "ERROR",
-                        ("Table " + layer + " is not present"),
+                        "Table " + layer + " is not present",
                     )
                     found = False
                     break
@@ -359,7 +365,7 @@ class TOMsLayers(QObject):
 
         if len(project.fileName()) == 0:
             QMessageBox.information(
-                self.iface.mainWindow(), "ERROR", ("Project not yet open")
+                iface.mainWindow(), "ERROR", ("Project not yet open")
             )
 
         else:
@@ -387,18 +393,13 @@ class TOMsLayers(QObject):
 
                 else:
                     QMessageBox.information(
-                        self.iface.mainWindow(),
+                        iface.mainWindow(),
                         "ERROR",
                         ("Table " + layer + " is not present"),
                     )
                     break
 
-            # project = QgsProject.instance()
-            # project.write()
-
-            # TODO: need to deal with any errors arising ...
-
-    def setLayer(self, layer):
+    def getLayer(self, layer):
         return self.tomsLayerDict.get(layer)
 
 
@@ -433,8 +434,7 @@ class OriginalFeature:
 
 
 class RestrictionTypeUtilsMixin:
-    def __init__(self, iface):
-        self.iface = iface
+    def __init__(self):
         self.currTransaction = None
         self.cameraNr = None
         self.settings = QgsSettings()
@@ -449,18 +449,20 @@ class RestrictionTypeUtilsMixin:
             "RestrictionsInProposals"
         )[0]
 
-        restrictionFound = False
-
-        # not sure if there is better way to search for something, .e.g., using SQL ??
-
-        for restrictionInProposal in restrictionsInProposalsLayer.getFeatures():
-            if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
-                if (
-                    restrictionInProposal.attribute("RestrictionTableID")
-                    == currRestrictionLayerID
-                ):
-                    if restrictionInProposal.attribute("ProposalID") == proposalID:
-                        restrictionFound = True
+        restrictionFound = (
+            len(
+                list(
+                    restrictionsInProposalsLayer.getFeatures(
+                        QgsFeatureRequest().setFilterExpression(
+                            f"\"RestrictionID\" = '{currRestrictionID}' and "
+                            f'"RestrictionTableID" = {currRestrictionLayerID} and '
+                            f'"ProposalID" = {proposalID}'
+                        )
+                    )
+                )
+            )
+            == 1
+        )
 
         TOMsMessageLog.logMessage(
             "In restrictionInProposal. restrictionFound: " + str(restrictionFound),
@@ -617,8 +619,6 @@ class RestrictionTypeUtilsMixin:
             "RestrictionsInProposals"
         )[0]
 
-        # RestrictionsInProposalsLayer.startEditing()
-
         for restrictionInProposal in restrictionsInProposalsLayer.getFeatures():
             if restrictionInProposal.attribute("RestrictionID") == currRestrictionID:
                 if (
@@ -648,8 +648,6 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        # currRestrictionLayer.startEditing()
-
         currProposalID = int(
             QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable(
                 "CurrentProposal"
@@ -677,8 +675,6 @@ class RestrictionTypeUtilsMixin:
                     + str(currRestriction.attribute("GeometryID")),
                     level=Qgis.Info,
                 )
-
-                # res = dialog.save()
                 currRestrictionLayer.updateFeature(currRestriction)
                 dialog.attributeForm().save()
 
@@ -877,11 +873,11 @@ class RestrictionTypeUtilsMixin:
         dialog.close()
         currRestrictionLayer.removeSelection()
 
-        self.proposalPanel = self.iface.mainWindow().findChild(
+        self.proposalPanel = iface.mainWindow().findChild(
             QDockWidget, "ProposalPanelDockWidgetBase"
         )
 
-        self.setupPanelTabs(self.iface, self.proposalPanel)
+        self.setupPanelTabs(self.proposalPanel)
 
     def setDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
         # FIXME: tellement de commentaire, au final pas de date settée ?
@@ -992,78 +988,6 @@ class RestrictionTypeUtilsMixin:
         )
         return self.settings.value(entry, default)
 
-    def updateDefaultRestrictionDetails(self, currRestriction, currRestrictionLayer):
-        # FIXME: tellement de commentaire, au final pas de date settée ?
-        TOMsMessageLog.logMessage(
-            "In updateDefaultRestrictionDetails. currLayer: "
-            + currRestrictionLayer.name(),
-            level=Qgis.Info,
-        )
-
-        GenerateGeometryUtils.setRoadName(currRestriction)
-        if currRestrictionLayer.geometryType() == 1:  # Line or Bay
-            GenerateGeometryUtils.setAzimuthToRoadCentreLine(currRestriction)
-
-            currentCPZ, _ = GenerateGeometryUtils.getCurrentCPZDetails(currRestriction)
-            (
-                currentED,
-                _,
-            ) = GenerateGeometryUtils.getCurrentEventDayDetails(currRestriction)
-
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("CPZ"),
-                currentCPZ,
-            )
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("MatchDayEventDayZone"),
-                currentED,
-            )
-
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName(
-                    "ComplianceRoadMarkingsFaded"
-                ),
-                None,
-            )
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName(
-                    "ComplianceRestrictionSignIssue"
-                ),
-                None,
-            )
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("Photos_01"),
-                None,
-            )
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("Photos_02"),
-                None,
-            )
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("Photos_03"),
-                None,
-            )
-
-        if currRestrictionLayer.name() == "Bays":
-
-            (
-                currentPTA,
-                _,
-                _,
-            ) = GenerateGeometryUtils.getCurrentPTADetails(currRestriction)
-            currRestrictionLayer.changeAttributeValue(
-                currRestriction.id(),
-                currRestrictionLayer.fields().indexFromName("ParkingTariffArea"),
-                currentPTA,
-            )
-
     def setupRestrictionDialog(
         self,
         restrictionDialog,
@@ -1124,11 +1048,11 @@ class RestrictionTypeUtilsMixin:
 
         restrictionTransaction.rollBackTransactionGroup()
 
-        self.proposalPanel = self.iface.mainWindow().findChild(
+        self.proposalPanel = iface.mainWindow().findChild(
             QDockWidget, "ProposalPanelDockWidgetBase"
         )
 
-        self.setupPanelTabs(self.iface, self.proposalPanel)
+        self.setupPanelTabs(self.proposalPanel)
 
     def onAttributeChangedClass2(self, currFeature, layer, fieldName, value):
         TOMsMessageLog.logMessage(
@@ -1143,7 +1067,7 @@ class RestrictionTypeUtilsMixin:
 
         try:
 
-            currFeature[layer.fields().indexFromName(fieldName)] = value
+            currFeature[fieldName] = value
 
         except Exception as e:
 
@@ -1511,9 +1435,6 @@ class RestrictionTypeUtilsMixin:
             level=Qgis.Info,
         )
 
-        # Trying to unset map tool to force updates ...
-        # self.iface.mapCanvas().unsetMapTool(self.iface.mapCanvas().mapTool())
-
         proposalTransaction.commitTransactionGroup()
 
         proposalsDialog.close()
@@ -1596,12 +1517,11 @@ class RestrictionTypeUtilsMixin:
 
         return None
 
-    def setupPanelTabs(self, iface, parent):
+    def setupPanelTabs(self, parent):
 
         # https://gis.stackexchange.com/questions/257603/activate-a-panel-in-tabbed-panels?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
         dws = iface.mainWindow().findChildren(QDockWidget)
-        # parent = iface.mainWindow().findChild(QDockWidget, 'ProposalPanel')
         dockstate = iface.mainWindow().dockWidgetArea(parent)
         for dockWid in dws:
             if dockWid is not parent:

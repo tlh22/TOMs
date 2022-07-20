@@ -16,6 +16,7 @@ from qgis.core import (
     QgsProject,
 )
 from qgis.PyQt.QtCore import QDate, QObject, pyqtSignal
+from qgis.utils import iface
 
 from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
@@ -31,12 +32,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
      - Current proposal
     """
 
-    # TH: orig code has reference to iface. Need to include ***
-
     dateChanged = pyqtSignal()
     #  Signal will be emitted, when the current date is changed
-    proposalChanged = pyqtSignal()
-    #  Signal will be emitted when the current proposal is changed
     proposal = newProposalCreated = pyqtSignal(int)
     #  Signal will be emitted when the current proposal is changed
 
@@ -46,19 +43,18 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
     tomsActivated = pyqtSignal()
     # Signal will be emitted when TOMs tools are activated
 
-    def __init__(self, iface):  # pylint: disable=super-init-not-called
+    def __init__(self):  # pylint: disable=super-init-not-called
 
         QObject.__init__(self)
         # ProposalTypeUtilsMixin.__init__(self)
 
-        self.iface = iface
-        self.tableNames = TOMsLayers(self.iface)
+        self.tableNames = TOMsLayers()
         # self.tableNames.TOMsLayersSet.connect(self.setRestrictionLayers)
 
         self.__date = QDate.currentDate()  # pylint: disable=invalid-name
         self.currProposalFeature = None
 
-        self.canvas = self.iface.mapCanvas()
+        self.canvas = iface.mapCanvas()
 
         self.currProposalObject = TOMsProposal(self)
 
@@ -120,27 +116,11 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         self.currProposalObject.setProposal(self.currentProposal())
 
-        self.proposalChanged.emit()
         self.updateMapCanvas()
 
         box = self.currProposalObject.getProposalBoundingBox()
         if not box.isNull():
             self.canvas.setExtent(box)
-
-    #  def __queryStringForCurrentRestrictions(
-    #      self, filterDate=None
-    #  ):  # pylint: disable=invalid-name
-    #
-    #      if filterDate is None:
-    #          filterDate = self.__date()
-    #
-    #      dateString = filterDate.toString("dd-MM-yyyy")
-    #      filterString = (
-    #          f"\"OpenDate\" \u003C\u003D to_date('{dateString}', 'dd-MM-yyyy') "
-    #          + f"AND ((\"CloseDate\" \u003E to_date('{dateString}', 'dd-MM-yyyy')  OR \"CloseDate\" IS NULL)"
-    #      )
-    #
-    #      return filterString
 
     def updateMapCanvas(self):
         """
@@ -156,10 +136,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             f"\"OpenDate\" \u003C\u003D to_date('{dateString}', 'dd-MM-yyyy') "
             + f"AND ((\"CloseDate\" \u003E to_date('{dateString}', 'dd-MM-yyyy')  OR \"CloseDate\" IS NULL)"
         )
-        # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-        #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
-        for (layerID, layerName) in self.getRestrictionLayersList():
+        for layerID, layerName in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage(
                 f"updateMapCanvas: Considering layer: {layerName}",
                 level=Qgis.Info,
@@ -192,7 +170,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 level=Qgis.Info,
             )
             try:
-                self.tableNames.setLayer(layerName).dataProvider().setSubsetString(
+                self.tableNames.getLayer(layerName).dataProvider().setSubsetString(
                     layerFilterString
                 )
             except Exception as e:
@@ -261,7 +239,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
                 f"Clearing filter for layer: {layerName}", level=Qgis.Info
             )
             try:
-                self.tableNames.setLayer(layerName).dataProvider().setSubsetString(None)
+                self.tableNames.getLayer(layerName).dataProvider().setSubsetString(None)
             except Exception as e:
                 TOMsMessageLog.logMessage(
                     f"clearRestrictionFilters: error in layer {layerName}: {e}",
@@ -360,7 +338,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
     def getProposalsListWithStatus(self, proposalStatus=None):
 
-        self.proposalsLayer = self.tableNames.setLayer("Proposals")
+        self.proposalsLayer = self.tableNames.getLayer("Proposals")
 
         query = ""
 

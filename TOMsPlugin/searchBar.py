@@ -18,24 +18,24 @@ from qgis.PyQt.QtWidgets import (
     QLineEdit,
     QToolBar,
 )
+from qgis.utils import iface
 
 from .core.tomsMessageLog import TOMsMessageLog
 
 
 class SearchBar:
-    def __init__(self, iface, tomsSearchBar: QToolBar):
+    def __init__(self, tomsSearchBar):
 
         TOMsMessageLog.logMessage("In searchBar", level=Qgis.Info)
         # Save reference to the QGIS interface
-        self.iface = iface
-        self.canvas = self.iface.mapCanvas()
+        self.canvas = iface.mapCanvas()
         self.tomsSearchBar = tomsSearchBar
         self.initialPass = True
         self.gazetteerStringList: list[str] = []
         self.gazetteerLayer = None
 
         # Create & add a textbox
-        self.searchTextbox = QLineEdit(self.iface.mainWindow())
+        self.searchTextbox = QLineEdit(iface.mainWindow())
         # Set width
         self.searchTextbox.setFixedWidth(250)
         # Add textbox to toolbar
@@ -47,7 +47,7 @@ class SearchBar:
         self.actionGoToItem = QAction(
             QIcon(":/plugins/TOMs/resources/magnifyingGlass.png"),
             QCoreApplication.translate("MyPlugin", "Lookup"),
-            self.iface.mainWindow(),
+            iface.mainWindow(),
         )
         self.tomsSearchBar.addAction(self.actionGoToItem)
         self.actionGoToItem.triggered.connect(self.doGoToItem)
@@ -172,5 +172,5 @@ class SearchBar:
     def unload(self) -> None:
         # self.tool.setEnabled(False)
         # self.tool = None
-        # self.iface.TOMsSearchBar().removeAction(self.printButtonAction)
-        self.iface.TOMsSearchBar().removeAction(self.actionGoToItem)
+        # iface.TOMsSearchBar().removeAction(self.printButtonAction)
+        iface.TOMsSearchBar().removeAction(self.actionGoToItem)

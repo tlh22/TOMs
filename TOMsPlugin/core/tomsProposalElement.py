@@ -98,8 +98,8 @@ class TOMsProposalElement(QObject):
 
         TOMsMessageLog.logMessage("In getTilesForRestriction. ", level=Qgis.Info)
 
-        self.tilesLayer = self.tableNames.setLayer("MapGrid")
-        self.tableNames.setLayer("MapGrid").fields().indexFromName("id")
+        self.tilesLayer = self.tableNames.getLayer("MapGrid")
+        self.tableNames.getLayer("MapGrid").fields().indexFromName("id")
 
         dictTilesInRestriction = {}
 
