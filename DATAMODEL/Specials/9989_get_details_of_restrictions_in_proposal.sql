@@ -2,7 +2,7 @@
  * Restrictions within Proposals and the tiles effected
  ***/
 
-DROP FUNCTION IF EXISTS toms."get_details_of_restrictions_in_proposal" (map_tile INTEGER);
+DROP FUNCTION IF EXISTS toms."get_details_of_restrictions_in_proposal" (proposal_nr INTEGER);
 
 CREATE OR REPLACE FUNCTION toms."get_details_of_restrictions_in_proposal" (proposal_nr INTEGER)
 RETURNS TABLE("ProposalID" INTEGER, "ProposalTitle" TEXT, "Table" TEXT, "GeometryID" TEXT, "RestrictionDescription" TEXT, "RoadName" TEXT,
