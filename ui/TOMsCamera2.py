@@ -15,7 +15,7 @@ import os
 import datetime
 import time
 #from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtMultimedia import QCamera, QCameraImageCapture, QCameraInfo, QImageEncoderSettings, QCameraViewfinderSettings
+from PyQt5.QtMultimedia import QMediaCaptureSession, QCamera, QCameraImageCapture, QImageCapture, QCameraInfo, QImageEncoderSettings, QCameraViewfinderSettings
 from PyQt5.QtMultimediaWidgets import QCameraViewfinder
 
 from qgis.PyQt.QtCore import QSize, pyqtSignal, pyqtSlot
@@ -163,13 +163,19 @@ class TOMsCameraWidget(QWidget):
     # method to select camera
     def select_camera(self, i):
         # getting the selected camera
-        self.camera = QCamera(self.available_cameras[i])
+        captureSession = QMediaCaptureSession()
+        self.camera = QCamera()
+
+        captureSession.setCamera(self.available_cameras[i])
+
+        self.imageCapture = QImageCapture()
+        captureSession.setImageCapture(self.imageCapture)
 
         # setting view finder to the camera
         self.camera.setViewfinder(self.viewfinder)
 
         # setting capture mode to the camera
-        self.camera.setCaptureMode(QCamera.CaptureStillImage)
+        #self.camera.setCaptureMode(QCamera.CaptureStillImage)
 
         # if any error occur show the alert
         self.camera.error.connect(lambda: self.alert(self.camera.errorString()))
@@ -178,17 +184,20 @@ class TOMsCameraWidget(QWidget):
         self.camera.start()
 
         # creating a QCameraImageCapture object
-        self.capture = QCameraImageCapture(self.camera)
+        #self.capture = QCameraImageCapture(self.camera)
         TOMsMessageLog.logMessage(
             "In TOMsCameraWidget: capacities: {}".format(self.capture.imageCodecDescription), level=Qgis.Warning)
 
         # showing alert if error occur
-        self.capture.error.connect(lambda error_msg, error,
+        #self.capture.error.connect(lambda error_msg, error,
+        #                                  msg: self.alert(msg))
+
+        self.imageCapture.error.connect(lambda error_msg, error,
                                           msg: self.alert(msg))
 
         # when image captured showing message
         self.capture.imageCaptured.connect(lambda d, i: QMessageBox.information(None, "Information", "Photo captured.", QMessageBox.Ok))
-
+        self.imageCapture.imageCaptured.connect(lambda d, i: QMessageBox.information(None, "Information", "Photo captured.", QMessageBox.Ok))
         # getting current camera name
         self.current_camera_name = self.available_cameras[i].description()
 
@@ -223,7 +232,7 @@ class TOMsCameraWidget(QWidget):
         #self.capture.setEncodingSettings(imageSettings)
 
         # capture the image and save it on the save path
-        self.capture.capture(newPhotoFileName)
+        self.imageCapture.capture(newPhotoFileName)
 
         #reply = QMessageBox.information(None, "Information", "Photo captured.", QMessageBox.Ok)
         self.photoTaken.emit(newPhotoFileName)
