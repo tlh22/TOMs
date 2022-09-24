@@ -14,9 +14,12 @@ import os
 #import uuid
 import datetime
 import time
+import functools
 #from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtMultimedia import QCamera, QCameraImageCapture, QCameraInfo, QImageEncoderSettings, QCameraViewfinderSettings
 from PyQt5.QtMultimediaWidgets import QCameraViewfinder
+
+from qgis.PyQt.QtGui import QPixmap
 
 from qgis.PyQt.QtCore import QSize, pyqtSignal, pyqtSlot
 from qgis.PyQt.QtWidgets import (
@@ -27,7 +30,8 @@ from qgis.PyQt.QtWidgets import (
     QDockWidget,
     QPushButton,
     QApplication,
-QGridLayout, QWidget, QToolBar, QComboBox, QErrorMessage, QStatusBar
+QGridLayout, QWidget, QToolBar, QComboBox, QErrorMessage, QStatusBar,
+QStackedLayout
 )
 
 from qgis.core import (
@@ -40,17 +44,14 @@ from qgis.core import (
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.restrictionTypeUtilsClass import (TOMsConfigFile)
 
-class TOMsCameraWidget(QWidget):
+from restrictionsWithGNSS.ui.imageLabel import (imageLabel)
 
+class TOMsCameraWidget(QWidget):
     photoTaken = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(TOMsCameraWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In TOMsCameraWidget:init ... ", level=Qgis.Info)
-
-        self.path_absolute = self.getPhotoPath()
-        if self.path_absolute is None:
-            return
 
         # getting available cameras
         self.available_cameras = QCameraInfo.availableCameras()
@@ -60,6 +61,12 @@ class TOMsCameraWidget(QWidget):
             # exit the code
             return
 
+        self.path_absolute = self.getPhotoPath()
+        if self.path_absolute is None:
+            return
+
+    def setupWidget(self, imageFile=None):
+
         # setting geometry
         self.setGeometry(100, 100,
                          800, 600)
@@ -67,29 +74,50 @@ class TOMsCameraWidget(QWidget):
         # setting style sheet
         self.setStyleSheet("background : lightgrey;")
 
-        # set up different elements of widget
-        layout = self.setupWidget()
+        '''
+        Set up a stacked widget - one to view images and the other to take photos
+        '''
 
-        self.setLayout(layout)
+        mainLayout = QGridLayout()
+        self.switchLayout = QStackedLayout()
 
-        self.select_camera(0)
+        # image viewer
+        imageLayout = QGridLayout()
+        photoWidget = imageLabel(QLabel)
 
-        # showing the main window
-        self.show()
+        if imageFile:
+            self.photoFileName = os.path.join(self.path_absolute, imageFile)
+            TOMsMessageLog.logMessage("In TOMsCameraWidget:setupWidget. photo {}".format(self.photoFileName), level=Qgis.Warning)
+            thisPixmap = QPixmap(self.photoFileName)
+            photoWidget.set_Pixmap(thisPixmap)
+            photoWidget.pixmapUpdated.connect(functools.partial(self.displayPixmapUpdated, photoWidget))
 
-    def setupWidget(self):
+        else:
 
-        layout = QGridLayout()
+            TOMsMessageLog.logMessage("In TOMsCameraWidget:setupWidget. No photo provided", level=Qgis.Warning)
+
+        imageLayout.addWidget(photoWidget)
+        self.switchLayout.addLayout(imageLayout)
+
+        # Camera widget
+        cameraLayout = QGridLayout()
 
         self.viewfinder = QCameraViewfinder()
-        layout.addWidget(self.viewfinder, 0, 0)
+        cameraLayout.addWidget(self.viewfinder, 0, 0)
+
+        self.switchLayout.addLayout(cameraLayout)
 
         cameraToolbar = self.setupCameraToolbar()
 
         # adding tool bar to main window
-        layout.addWidget(cameraToolbar, 1, 0)
+        mainLayout.addWidget(cameraToolbar, 1, 0)
 
-        return layout
+        self.setLayout(mainLayout)
+        self.switchLayout.setCurrentIndex[0]
+        self.select_camera(0)
+
+        # showing the main window
+        self.show()
 
     def setupCameraToolbar(self):
         # https://www.geeksforgeeks.org/creating-a-camera-application-using-pyqt5/
@@ -113,7 +141,6 @@ class TOMsCameraWidget(QWidget):
 
         # adding this to the tool bar
         toolbar.addAction(open_action)
-
 
         #### Capture button
         # creating a photo action to take photo
@@ -154,6 +181,24 @@ class TOMsCameraWidget(QWidget):
         # adding this to tool bar
         toolbar.addWidget(camera_selector)
 
+        #### Close camera button
+        # creating a photo action to take photo
+        close_action = QAction("Close camera", self)
+
+        # adding status tip to the photo action
+        close_action.setStatusTip("This will close the camera")
+
+        # adding tool tip
+        close_action.setToolTip("Close camera")
+        #open_action.setToolTipDuration(2500)
+
+        # adding action to it
+        # calling take_photo method
+        close_action.triggered.connect(self.close_camera)
+
+        # adding this to the tool bar
+        toolbar.addAction(close_action)
+
         # setting tool bar stylesheet
         toolbar.setStyleSheet("background : white;")
 
@@ -175,7 +220,7 @@ class TOMsCameraWidget(QWidget):
         self.camera.error.connect(lambda: self.alert(self.camera.errorString()))
 
         # start the camera
-        self.camera.start()
+        #self.camera.start()
 
         # creating a QCameraImageCapture object
         self.capture = QCameraImageCapture(self.camera)
@@ -194,9 +239,17 @@ class TOMsCameraWidget(QWidget):
 
     # open current camera
     def open_camera(self):
+        # change to camera widget
+        self.switchLayout.setCurrentIndex[1]
         # start the camera
         self.camera.start()
 
+    # open current camera
+    def close_camera(self):
+        # start the camera
+        self.camera.stop()
+        # change back to image widget
+        self.switchLayout.setCurrentIndex[0]
 
     # method to take photo
     def click_photo(self):
@@ -269,3 +322,10 @@ class TOMsCameraWidget(QWidget):
             res = QMessageBox.information(None, "Information", "Please set value for camera resolution.", QMessageBox.Ok)
             return 0, 0
         return int(frameWidth), int(frameHeight)
+
+    @pyqtSlot(QPixmap)
+    def displayPixmapUpdated(self, FIELD, pixmap):
+        TOMsMessageLog.logMessage("In utils::displayPixmapUpdated ... ", level=Qgis.Info)
+        FIELD.setPixmap(pixmap)
+        FIELD.setScaledContents(True)
+        QApplication.processEvents()  # processes the event queue - https://stackoverflow.com/questions/43094589/opencv-imshow-prevents-qt-python-crashing
