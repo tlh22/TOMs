@@ -62,6 +62,14 @@ class TOMsCameraWidget(QWidget):
             TOMsMessageLog.logMessage("In TOMsCameraWidget:init. No cameras found. Exiting ", level=Qgis.Info)
             return
 
+        try:
+            self.cameraNr = int(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('CameraNr'))
+        except Exception as e:
+            TOMsMessageLog.logMessage("In photoDetails_camera: cameraNr issue: {}".format(e), level=Qgis.Warning)
+            QMessageBox.information(None, "Information", "No value for CameraNr.", QMessageBox.Ok)
+            #self.cameraNr = QMessageBox.information(None, "Information", "Please set value for CameraNr.", QMessageBox.Ok)
+            return
+            
         self.path_absolute = self.getPhotoPath()
         if self.path_absolute is None:
             TOMsMessageLog.logMessage("In TOMsCameraWidget:init. Path not found. Exiting ", level=Qgis.Info)
@@ -109,7 +117,6 @@ class TOMsCameraWidget(QWidget):
 
             TOMsMessageLog.logMessage("In TOMsCameraWidget:setupWidget. No photo provided", level=Qgis.Warning)
 
-
         self.switchWidget.addWidget(photoWidget)
         self.photoIndex = self.switchWidget.indexOf(photoWidget)
         
@@ -134,7 +141,6 @@ class TOMsCameraWidget(QWidget):
         #if len(self.available_cameras) > 0:
         self.select_camera(0)
 
-        
         #QMessageBox.information(None, "Information", "In setupWidget. Current stack {}.".format(self.switchWidget.currentIndex()), QMessageBox.Ok)
         
         # showing the main window
@@ -165,7 +171,7 @@ class TOMsCameraWidget(QWidget):
 
         #### Capture button
         # creating a photo action to take photo
-        click_action = QAction("Click photo", self)
+        click_action = QAction("Take photo", self)
 
         # adding status tip to the photo action
         click_action.setStatusTip("This will capture picture")
@@ -199,6 +205,7 @@ class TOMsCameraWidget(QWidget):
         # adding this to the tool bar
         toolbar.addAction(close_action)
 
+        '''
         ### Select camera
         # creating a combo box for selecting camera
         camera_selector = QComboBox()
@@ -219,7 +226,7 @@ class TOMsCameraWidget(QWidget):
 
         # adding this to tool bar
         toolbar.addWidget(camera_selector)
-
+        '''
 
         # setting tool bar stylesheet
         toolbar.setStyleSheet("background : white;")
@@ -247,7 +254,7 @@ class TOMsCameraWidget(QWidget):
         self.camera.error.connect(lambda: self.alert(self.camera.errorString()))
 
         # start the camera
-        self.open_camera()
+        #self.open_camera()
 
         # creating a QCameraImageCapture object
         self.capture = QCameraImageCapture(self.camera)
