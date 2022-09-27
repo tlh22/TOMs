@@ -139,7 +139,7 @@ class TOMsCameraWidget(QWidget):
             TOMsMessageLog.logMessage("In TOMsCameraWidget:setupWidget. No photo. Going to camera ...", level=Qgis.Warning)
         
         #if len(self.available_cameras) > 0:
-        self.select_camera(0)
+        self.select_camera(self.cameraNr)
 
         #QMessageBox.information(None, "Information", "In setupWidget. Current stack {}.".format(self.switchWidget.currentIndex()), QMessageBox.Ok)
         
