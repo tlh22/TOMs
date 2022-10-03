@@ -16,6 +16,7 @@ DECLARE
 	 fieldCheck boolean := false;
 	 NrCorners INTEGER := 0;
 	 availableLength real := 0;
+	 narrow_length real := 0;
 BEGIN
 
     select "Value" into vehicleLength
@@ -135,18 +136,27 @@ BEGIN
                      FROM mhtc_operations."Corners" AS c
                      WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
 
-                     availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners * cornerProtectionDistance;
+                     availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners::numeric * cornerProtectionDistance;
 
                      -- TODO: Need to take account of perpendicular/echelon parking
-                     
-                     CASE WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
-                          NEW."Capacity" = 1;
-                          WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(availableLength/vehicleWidth);
+
+                     -- Consider narrow roads
+
+                     narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + COALESCE(NEW."IntersectionWithin67m"/2.0, 0);
+
+                     availableLength = availableLength - COALESCE(narrow_length, 0.0);
+
+                     CASE WHEN availableLength <= (vehicleLength*0.9) THEN
+                            NEW."Capacity" = 0;
+                          WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
+                            NEW."Capacity" = 1;
+                          WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
+                          WHEN NEW."NrBays" = -2 THEN NEW."Capacity" = FLOOR(availableLength/vehicleWidth);
                           --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
                           END CASE;
 
-                     RAISE NOTICE '***** GeometryID (%); length %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, NrCorners, NEW."Capacity";
+                     RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
 
                  ELSE NEW."Capacity" = 0;
                  END CASE;
