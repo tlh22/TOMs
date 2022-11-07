@@ -6,3 +6,5 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (646, 'Mon-Fri 10.00am-6.00pm', 'Mon-Fri 10.00am-6.00pm');
 
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (647, 'Mon-Sat 11.00am-6.30pm', 'Mon-Sat 11.00am-6.30pm');
+
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (648, 'Mon-Fri 1.00pm-3.00pm', 'Mon-Fri 1.00pm-3.00pm');
