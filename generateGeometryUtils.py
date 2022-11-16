@@ -353,13 +353,8 @@ class generateGeometryUtils (QObject):
 
         # Get the mid point of the line - https://gis.stackexchange.com/questions/58079/finding-middle-point-midpoint-of-line-in-qgis
 
-        testPt = feature.geometry().centroid().asPoint()        #lineGeom = QgsGeometry.fromPolyline((line[::])
-        #lineLength = lineGeom.length()
-        #TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine(helper): lineLength: " + str(lineLength), level=Qgis.Info)
-        #testPt = lineGeom.interpolate(lineLength / 2.0)
-        #testPt = line[0]  # choose second point to (try to) move away from any "ends" (may be best to get midPoint ...)
-
-        #TOMsMessageLog.logMessage("In setAzimuthToRoadCentreLine: secondPt: " + str(testPt.x()), level=Qgis.Info)
+        #testPt = feature.geometry().centroid().asPoint()
+        testPt = QgsPointXY(feature.geometry().vertexAt(0))      # Now using first point
 
         # Find all Road Centre Line features within a "reasonable" distance and then check each one to find the shortest distance
 
