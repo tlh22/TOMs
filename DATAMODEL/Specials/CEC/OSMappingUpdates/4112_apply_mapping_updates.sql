@@ -40,3 +40,72 @@ END;
 $do$;
 
 
+
+-- Move mapping updates to different proposal
+
+DO
+$do$
+DECLARE
+    proposal_details RECORD;
+    restriction_details RECORD;
+	result BOOLEAN;
+	curr_proposal_id INTEGER := 170;
+	new_proposal_id INTEGER := 329;
+	tile_nr INTEGER := 2209;
+BEGIN
+
+    -- ** Bays
+    FOR proposal_details IN
+        SELECT DISTINCT p."ProposalID", p."ProposalTitle"
+        FROM toms."Proposals" p
+        WHERE p."ProposalID" = curr_proposal_id
+
+    LOOP
+
+		RAISE NOTICE '***** Moving mapping updates currently in proposal id % (%) to proposal id (%)', proposal_details."ProposalTitle", proposal_details."ProposalID", new_proposal_id;
+
+        FOR restriction_details IN
+            SELECT RiS."RestrictionID"
+            FROM toms."RestrictionsInProposals" RiS
+            WHERE RiS."ProposalID" = curr_proposal_id
+            AND RiS."RestrictionID" IN (
+                SELECT "RestrictionID"
+                FROM topography_updates."MappingUpdateMasks" ma, toms."MapGrid" m
+                WHERE m.id = tile_nr
+                AND ST_Within(ma.geom, m.geom))
+
+        LOOP
+
+            RAISE NOTICE '***** Moving  % ', restriction_details."RestrictionID";
+
+            UPDATE toms."RestrictionsInProposals"
+            SET "ProposalID" = new_proposal_id
+            WHERE "RestrictionID" = restriction_details."RestrictionID";
+
+        END LOOP;
+
+        FOR restriction_details IN
+            SELECT RiS."RestrictionID"
+            FROM toms."RestrictionsInProposals" RiS
+            WHERE RiS."ProposalID" = curr_proposal_id
+            AND RiS."RestrictionID" IN (
+                SELECT "RestrictionID"
+                FROM topography_updates."MappingUpdates" mu, toms."MapGrid" m
+                WHERE m.id = tile_nr
+                AND ST_Within(mu.geom, m.geom))
+
+        LOOP
+
+            RAISE NOTICE '***** Moving  % ', restriction_details."RestrictionID";
+
+            UPDATE toms."RestrictionsInProposals"
+            SET "ProposalID" = new_proposal_id
+            WHERE "RestrictionID" = restriction_details."RestrictionID";
+
+        END LOOP;
+
+    END LOOP;
+
+END;
+$do$;
+
