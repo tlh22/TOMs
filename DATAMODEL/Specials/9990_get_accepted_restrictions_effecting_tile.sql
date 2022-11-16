@@ -2,7 +2,9 @@
  * Get all restrictions within a Proposal
  ***/
 
+DROP FUNCTION IF EXISTS toms."get_details_of_restrictions_in_proposal" (map_tile INTEGER);
 
+CREATE OR REPLACE FUNCTION toms."get_details_of_restrictions_in_proposal" (proposal_nr INTEGER)
 SELECT "Table", "RestrictionID", c."ProposalID", "ProposalTitle"
 FROM toms."Proposals" p,
 (
@@ -72,3 +74,24 @@ WHERE RiP."ProposalID" IN (79)
 AND ST_Intersects(a.geom, m.geom)
 --GROUP BY "RestrictionDescription", "CPZ", "NoWaitingTime", "NoLoadingTime", "AdditionalCondition"
 ;
+
+-- Example
+SELECT * FROM toms."get_details_of_restrictions_in_proposal" (299);
+
+DO
+$do$
+DECLARE
+   map_grid_details RECORD;
+   rev INTEGER;
+BEGIN
+
+    FOR map_grid_details IN SELECT id::INT FROM toms."MapGrid" WHERE "CurrRevisionNr" IS NOT NULL ORDER BY id::INT
+      LOOP
+
+        SELECT MAX("RevisionNr") INTO rev FROM toms."get_accepted_restrictions_effecting_tile" (map_grid_details.id);
+		RAISE NOTICE 'Tile: %; RevNr: %', map_grid_details.id, rev;
+
+      END LOOP;
+
+END
+$do$;
