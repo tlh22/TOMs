@@ -11,6 +11,7 @@ DECLARE
 	 vehicleLength real := 0.0;
 	 vehicleWidth real := 0.0;
 	 motorcycleWidth real := 0.0;
+	 cycleWidth real := 0.1;
 	 cornerProtectionDistance real := 0.0;
 	 restrictionLength real := 0.0;
 	 fieldCheck boolean := false;
@@ -30,6 +31,10 @@ BEGIN
     select "Value" into motorcycleWidth
         from "mhtc_operations"."project_parameters"
         where "Field" = 'MotorcycleWidth';
+
+    select "Value" into cycleWidth
+        from "mhtc_operations"."project_parameters"
+        where "Field" = 'CycleWidth';
 
     select "Value" into cornerProtectionDistance
         from "mhtc_operations"."project_parameters"
@@ -83,6 +88,7 @@ BEGIN
         **/
 
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
+        WHEN NEW."RestrictionTypeID" IN (168,169) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/cycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
             CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
                  ELSE
@@ -158,7 +164,9 @@ BEGIN
 
                      RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
 
-                 ELSE NEW."Capacity" = 0;
+                 ELSE
+                    RAISE NOTICE '-- Considering GeometryID (%); RestrictionTypeID: (%)', NEW."GeometryID", NEW."RestrictionTypeID";
+                    NEW."Capacity" = 0;
                  END CASE;
 
         END CASE;
