@@ -90,10 +90,9 @@ BEGIN
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" IN (168,169) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/cycleWidth);
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
-            CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
+            CASE WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 146, 147, 150, 151) THEN NEW."Capacity" = 0;
                  ELSE
-                     CASE WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 146, 147, 150, 151) THEN
-                        NEW."Capacity" = 0;
+                    CASE WHEN NEW."NrBays" >= 0 THEN NEW."Capacity" = NEW."NrBays";
                      ELSE
                          CASE
                              WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
@@ -133,36 +132,42 @@ BEGIN
 
                  WHEN NEW."RestrictionTypeID" IN (1000) THEN   -- sections
 
-                    IF cornerProtectionDistance IS NULL THEN
-                        RAISE EXCEPTION 'Capacity parameters not available ...';
-                        RETURN OLD;
+                    IF NEW."NrBays" >= 0 THEN
+                        NEW."Capacity" = NEW."NrBays";
+                    ELSE
+
+                        IF cornerProtectionDistance IS NULL THEN
+                            RAISE EXCEPTION 'Capacity parameters not available ...';
+                            RETURN OLD;
+                        END IF;
+
+                         SELECT COUNT(c.id) INTO NrCorners
+                         FROM mhtc_operations."Corners" AS c
+                         WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
+
+                         availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners::numeric * cornerProtectionDistance;
+
+                         -- TODO: Need to take account of perpendicular/echelon parking
+
+                         -- Consider narrow roads
+
+                         narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + COALESCE(NEW."IntersectionWithin67m"/2.0, 0);
+
+                         availableLength = availableLength - COALESCE(narrow_length, 0.0);
+
+                         CASE WHEN availableLength <= (vehicleLength*0.9) THEN
+                                NEW."Capacity" = 0;
+                              WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
+                                NEW."Capacity" = 1;
+                              WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
+                              WHEN NEW."NrBays" = -2 THEN NEW."Capacity" = FLOOR(availableLength/vehicleWidth);
+                              --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                              ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
+                              END CASE;
+
+                         RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
+
                     END IF;
-
-                     SELECT COUNT(c.id) INTO NrCorners
-                     FROM mhtc_operations."Corners" AS c
-                     WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
-
-                     availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners::numeric * cornerProtectionDistance;
-
-                     -- TODO: Need to take account of perpendicular/echelon parking
-
-                     -- Consider narrow roads
-
-                     narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + COALESCE(NEW."IntersectionWithin67m"/2.0, 0);
-
-                     availableLength = availableLength - COALESCE(narrow_length, 0.0);
-
-                     CASE WHEN availableLength <= (vehicleLength*0.9) THEN
-                            NEW."Capacity" = 0;
-                          WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
-                            NEW."Capacity" = 1;
-                          WHEN NEW."NrBays" > 0 THEN NEW."Capacity" = NEW."NrBays";
-                          WHEN NEW."NrBays" = -2 THEN NEW."Capacity" = FLOOR(availableLength/vehicleWidth);
-                          --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
-                          END CASE;
-
-                     RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
 
                  ELSE
                     RAISE NOTICE '-- Considering GeometryID (%); RestrictionTypeID: (%)', NEW."GeometryID", NEW."RestrictionTypeID";
