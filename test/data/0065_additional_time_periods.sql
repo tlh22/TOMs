@@ -37,4 +37,6 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (671, 'Mon-Sat 11.00am-6.30pm', 'Mon-Sat 11.00am-6.30pm');
 
+-- City of London
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (672, 'Mon-Fri 7.00am-7.00pm Sat 7.00am-11.00am', 'Mon-Fri 7.00am-7.00pm Sat 7.00am-11.00am');
 
