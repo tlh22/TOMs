@@ -40,3 +40,5 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 -- City of London
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (672, 'Mon-Fri 7.00am-7.00pm Sat 7.00am-11.00am', 'Mon-Fri 7.00am-7.00pm Sat 7.00am-11.00am');
 
+-- Arnos Grove
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (673, 'Mon-Fri 8.15am-9.15pm 11.30am-1.30pm 2.45pm-4.00pm', 'Mon-Fri 8.15am-9.15pm 11.30am-1.30pm 2.45pm-4.00pm');
