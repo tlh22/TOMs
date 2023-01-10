@@ -1,4 +1,4 @@
-FROM postgis/postgis:12-3.0
+FROM postgis/postgis:14-3.1
 RUN apt-get update && apt-get install -y postgresql-plpython3-$PG_MAJOR
 RUN mkdir /io
 # Deal with line endings
