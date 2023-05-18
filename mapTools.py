@@ -604,7 +604,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
         TOMsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent"), level=Qgis.Info)
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButtons.LeftButton:
             if not self.isCapturing():
                 self.startCapturing()
             #self.result = self.addVertex(self.toMapCoordinates(event.pos()))
@@ -671,7 +671,7 @@ class CreateRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
 
             TOMsMessageLog.logMessage(("In Create - cadCanvasReleaseEvent (AddVertex/Line) Result: " + str(self.result) + " X:" + str(self.currPoint.x()) + " Y:" + str(self.currPoint.y())), level=Qgis.Info)
 
-        elif (event.button() == Qt.RightButton):
+        elif event.button() == Qt.MouseButtons.RightButton:
             # Stop capture when right button or escape key is pressed
             #points = self.getCapturedPoints()
             self.getPointsCaptured()
@@ -839,7 +839,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
         QgsMapToolCapture.cadCanvasReleaseEvent(self, event)
         TOMsMessageLog.logMessage(("In TOMsSplitRestrictionTool - cadCanvasReleaseEvent"), level=Qgis.Info)
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButtons.LeftButton:
             if not self.isCapturing():
                 self.startCapturing()
 
@@ -852,7 +852,7 @@ class TOMsSplitRestrictionTool(RestrictionTypeUtilsMixin, QgsMapToolCapture):
             TOMsMessageLog.logMessage("In TOMsSplitRestrictionTool - added pt: " + str(self.size()) + " X: " +str(self.currPoint.x()) + " Y: " + str(self.currPoint.y()), level=Qgis.Info)
             #QgsMapToolCapture.addVertex(self.toMapCoordinates(event.pos()))
 
-        elif (event.button() == Qt.RightButton):
+        elif event.button() == Qt.MouseButtons.RightButton:
             # Stop capture when right button or escape key is pressed
             # points = self.getCapturedPoints()
 
@@ -1304,14 +1304,14 @@ class EditRestrictionTool(QgsMapTool, MapToolMixin):
         vertex = self.findVertexAt(feature, event.pos())
         if vertex == None: return
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButtons.LeftButton:
             # Left click -> move vertex.
             self.dragging = True
             self.feature  = feature
             self.vertex   = vertex
             self.moveVertexTo(event.pos())
             self.canvas().refresh()
-        elif event.button() == Qt.RightButton:
+        elif event.button() == Qt.MouseButtons.RightButton:
             # Right click -> delete vertex.
             self.deleteVertex(feature, vertex)
             self.canvas().refresh()
