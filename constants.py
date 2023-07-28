@@ -50,6 +50,12 @@ class RestrictionGeometryTypes(object):
     OUTLINE_BAY_POLYGON = 28
     ECHELON_ON_PAVEMENT_POLYGON = 29
     CROSSOVER = 35
+    
+    PARALLEL_BAY_OFFSET = 101
+    PARALLEL_BAY_POLYGON_OFFSET = 121
+    PARALLEL_LINE_OFFSET = 110
+    ZIG_ZAG_OFFSET = 112
+    CROSSOVER_OFFSET = 135
 
 def singleton(myClass):
     # From https://www.youtube.com/watch?v=6IV_FYx6MQA
