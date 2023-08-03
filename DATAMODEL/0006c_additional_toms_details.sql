@@ -69,11 +69,17 @@ AS $BODY$
 		--RAISE NOTICE  '% is geom_shape_group_type', geom_shape_group_type;
 		--RAISE NOTICE  '% is geom_shape_id 1', geom_shape_id;
 
-		IF (NEW."GeomShapeID" > 20 AND geom_shape_group_type = 'LineString') THEN
+		IF (NEW."GeomShapeID" > 20 AND NEW."GeomShapeID" < 100 AND geom_shape_group_type = 'LineString') THEN
 		    geom_shape_id = geom_shape_id - 20;
 		ELSIF (NEW."GeomShapeID" < 20 AND geom_shape_group_type = 'Polygon') THEN
 		    geom_shape_id = geom_shape_id + 20;
+		ELSEIF (NEW."GeomShapeID" = 101 AND geom_shape_group_type = 'Polygon') THEN
+			geom_shape_id = 121;
+		ELSEIF (NEW."GeomShapeID" = 121 AND geom_shape_group_type = 'LineString') THEN
+			geom_shape_id = 101;
 		END IF;
+		
+		-- TODO: deal with offset types
 
 		--RAISE NOTICE  '% is geom_shape_id 2', geom_shape_id;
 

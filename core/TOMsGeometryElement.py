@@ -56,9 +56,16 @@ class TOMsGeometryElement(QObject):
         self.BayOffsetFromKerb = float(params.setParam("BayOffsetFromKerb"))
         self.LineOffsetFromKerb = float(params.setParam("LineOffsetFromKerb"))
         self.CrossoverShapeWidth = float(params.setParam("CrossoverShapeWidth"))
+        self.CarriagewayOffset = float(params.setParam("CarriagewayOffset"))
 
         self.currRestGeomType = currFeature.attribute("GeomShapeID")
-
+        
+        # check for offset type
+        if self.currRestGeomType > 100:
+            self.BayOffsetFromKerb = self.BayOffsetFromKerb + self.CarriagewayOffset
+            self.LineOffsetFromKerb = self.LineOffsetFromKerb + self.CarriagewayOffset
+            self.BayWidth = self.BayWidth + self.CarriagewayOffset
+            
         try:
             self.currAzimuthToCentreLine = float(currFeature.attribute("AzimuthToRoadCentreLine"))
         except Exception as e:
@@ -118,7 +125,7 @@ class TOMsGeometryElement(QObject):
 
     def checkFeatureIsBay(self, restGeomType):   # possibly put at Element level ...
         #TOMsMessageLog.logMessage("In TOMsGeometryElement.checkFeatureIsBay: restGeomType = " + str(restGeomType), level=Qgis.Info)
-        if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30):
+        if restGeomType < 10 or (restGeomType >=20 and restGeomType < 30) or (restGeomType == 101 or restGeomType == 121):
             return True
         else:
             return False
@@ -1225,6 +1232,23 @@ class ElementGeometryFactory():
             elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER:
                 return generatedGeometryCrossoverPolygonType(currFeature).getElementGeometry()
 
+            # Offsets
+            
+            elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY_OFFSET:
+                return generatedGeometryBayLineType(currFeature).getElementGeometry()
+
+            elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY_POLYGON_OFFSET:
+                return generatedGeometryBayPolygonType(currFeature).getElementGeometry()
+                
+            elif currRestGeomType == RestrictionGeometryTypes.PARALLEL_LINE_OFFSET:
+                return generatedGeometryLineType(currFeature).getElementGeometry()
+
+            elif currRestGeomType == RestrictionGeometryTypes.ZIG_ZAG_OFFSET:
+                return generatedGeometryZigZagType(currFeature).getElementGeometry()
+
+            elif currRestGeomType == RestrictionGeometryTypes.CROSSOVER_OFFSET:
+                return generatedGeometryCrossoverPolygonType(currFeature).getElementGeometry()
+                
             raise AssertionError("Restriction Geometry Type NOT found")
 
         except AssertionError as _e:

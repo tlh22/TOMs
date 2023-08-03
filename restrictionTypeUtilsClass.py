@@ -99,7 +99,8 @@ class TOMsParams(QObject):
                           "PhotoPath",
                           "MinimumTextDisplayScale",
                           "TOMsDebugLevel",
-                          "AllowZoneEditing"
+                          "AllowZoneEditing",
+                          "CarriagewayOffset"
                         ]
 
         self.TOMsParamsDict = {}
