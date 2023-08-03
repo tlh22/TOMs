@@ -887,12 +887,16 @@ class generateGeometryUtils (QObject):
         if currScale > minScale:
             return None, None, None
 
-        maxStayID = feature.attribute("MaxStayID")
-        noReturnID = feature.attribute("NoReturnID")
-        timePeriodID = feature.attribute("TimePeriodID")
-        matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
-        additionalConditionID = feature.attribute("AdditionalConditionID")
-        permitCode = feature.attribute("PermitCode")
+        try:
+            maxStayID = feature.attribute("MaxStayID")
+            noReturnID = feature.attribute("NoReturnID")
+            timePeriodID = feature.attribute("TimePeriodID")
+            matchDayTimePeriodID = feature.attribute("MatchDayTimePeriodID")
+            additionalConditionID = feature.attribute("AdditionalConditionID")
+            permitCode = feature.attribute("PermitCode")
+            geometryID = feature.attribute("GeometryID")
+        except Exception as e:
+            return None, None, None
 
         lengthOfTimeLayer = QgsProject.instance().mapLayersByName("LengthOfTime")[0]
         TimePeriodsLayer = QgsProject.instance().mapLayersByName("TimePeriodsInUse_View")[0]
@@ -969,6 +973,9 @@ class generateGeometryUtils (QObject):
                 timePeriodDesc = "{};{}".format(timePeriodDesc, additionalConditionDesc)
             else:
                 timePeriodDesc = "{}".format(additionalConditionDesc)
+
+        if timePeriodDesc == 'None':
+            timePeriodDesc = None
 
         TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
 
