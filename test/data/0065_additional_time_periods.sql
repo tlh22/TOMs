@@ -50,3 +50,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (675, 'Mon-Fri 7.00am-10.00am 4.00pm-6.30pm', 'Mon-Fri 7.00am-10.00am 4.00pm-6.30pm');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (676, 'Mon-Fri 10.00am-4.00pm Sat 9.00am-7.00pm', 'Mon-Fri 10.00am-4.00pm Sat 9.00am-7.00pm');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (677, 'Mon-Sat 9.00am-7.00pm', 'Mon-Sat 9.00am-7.00pm');
+
+-- Brighton
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (678, '9.00am-8.00pm', '9.00am-8.00pm');
+
