@@ -59,3 +59,8 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Cambridge
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (680, 'Mon-Fri 9.00am-Noon', 'Mon-Fri 9.00am-Noon');
+
+-- Southwark
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (681, 'Mon-Sun 11.00pm-Midnight Midnight-6.00am', 'Mon-Sun 11.00pm-Midnight Midnight-6.00am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (682, 'Mon-Fri 7.00am-4.00pm Sat 7.00am-6.00pm', 'Mon-Fri 7.00am-4.00pm Sat 7.00am-6.00pm');
+
