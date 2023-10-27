@@ -64,3 +64,8 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (681, 'Mon-Sun 11.00pm-Midnight Midnight-6.00am', 'Mon-Sun 11.00pm-Midnight Midnight-6.00am');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (682, 'Mon-Fri 7.00am-4.00pm Sat 7.00am-6.00pm', 'Mon-Fri 7.00am-4.00pm Sat 7.00am-6.00pm');
 
+-- Gillingham
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (683, 'Mon-Fri 8.00am-9.30am 3.00pm-4.00pm', 'Mon-Fri 8.00am-9.30am 3.00pm-4.00pm');
+
+-- Enfield
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (684, 'Mon-Fri 8.00am-7.00pm Sat 8.00am-1.00pm', 'Mon-Fri 8.00am-7.00pm Sat 8.00am-1.00pm');
