@@ -69,3 +69,4 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Enfield
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (684, 'Mon-Fri 8.00am-7.00pm Sat 8.00am-1.00pm', 'Mon-Fri 8.00am-7.00pm Sat 8.00am-1.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (685, '10.00am-3.00pm 7.00pm-7.00am', '10.00am-3.00pm 7.00pm-7.00am');
