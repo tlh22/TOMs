@@ -529,8 +529,8 @@ class TOMsGeometryElement(QObject):
             QgsPointXY(line[0].x() + (float(offset) * cosa), line[0].y() + (float(offset) * cosb)))
 
         ptsList.append(
-            QgsPointXY(line[0].x() + (float(shpExtent) * cosa),
-                     line[0].y() + (float(shpExtent) * cosb)))
+            QgsPointXY(line[0].x() + ((float(shpExtent)+float(offset)) * cosa),
+                     line[0].y() + ((float(shpExtent)+float(offset)) * cosb)))
 
         distanceAlongLine = 0.0
         countSegments = 0
@@ -555,8 +555,8 @@ class TOMsGeometryElement(QObject):
 
             # TOMsMessageLog.logMessage("In getZigZag. PtD = " + interpolatedPointD.asWkt() + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
 
-            ptsList.append(QgsPointXY(interpolatedPointD.x() + (float(shpExtent) * cosa),
-                     interpolatedPointD.y() + (float(shpExtent) * cosb)))
+            ptsList.append(QgsPointXY(interpolatedPointD.x() + ((float(shpExtent)+float(offset)) * cosa),
+                     interpolatedPointD.y() + ((float(shpExtent)+float(offset)) * cosb)))
 
         # deal with last point
         ptsList.append(
