@@ -72,3 +72,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Southwark
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (685, 'Mon-Fri 8.00am-10.00am 3.00pm-5.00pm', 'Mon-Fri 8.00am-10.00am 3.00pm-5.00pm');
+
+-- Hayes
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (686, 'Mon-Fri 8.00am-10.00am 2.30pm-4.30pm', 'Mon-Fri 8.00am-10.00am 2.30pm-4.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (687, 'Wed and Fri 9.00am-4.00pm', '9.00am-4.00pm;Wednesday and Friday');
