@@ -23,7 +23,7 @@ AS $BODY$
 		-- RAISE NOTICE  '% is restrictionLength', restrictionLength;
 		-- RAISE NOTICE  '% is geom_shape_id 1', geom_shape_id;
 
-		IF (restriction_type_id >= 209 AND restriction_type_id <= 215 AND restrictionLength > 5.0) THEN
+		IF (restriction_type_id >= 209 AND restriction_type_id <= 215 AND restrictionLength > 5.0 AND geom_shape_id < 100) THEN
 		    geom_shape_id = 12;
 		END IF;
 
