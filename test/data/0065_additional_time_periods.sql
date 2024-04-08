@@ -77,5 +77,14 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (686, 'Mon-Fri 8.00am-10.00am 2.30pm-4.30pm', 'Mon-Fri 8.00am-10.00am 2.30pm-4.30pm');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (687, 'Wed and Fri 9.00am-4.00pm', '9.00am-4.00pm;Wednesday and Friday');
 
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (685, '10.00am-3.00pm 7.00pm-7.00am', '10.00am-3.00pm 7.00pm-7.00am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (688, '10.00am-3.00pm 7.00pm-7.00am', '10.00am-3.00pm 7.00pm-7.00am');
 
+-- Harringey
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (689, 'Mon-Fri 9.30am-8:30pm Sat-Sun 9.30am-8:00pm', 'Mon-Fri 9.30am-8:30pm Sat-Sun 9.30am-8.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (690, '6.00am-6.30pm', '6.00am-6.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (691, 'Mon-Sat 8.00am-10.00pm Sun 1.00pm-10.00pm', 'Mon-Sat 8.00am-10:00pm Sun 1.00pm-10.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (692, 'Mon-Fri 5.00pm-8.30pm Sat-Sun Noon-8.00pm', 'Mon-Fri 5.00pm-8.30pm Sat-Sun Noon-8.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (693, 'Mon-Sat 8.00am-7.30pm', 'Mon-Sat 8.00am-7.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (694, '8.00am-9.30am 4.30pm-6.30pm', '8.00am-9.30am 4.30pm-6.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (695, 'Mon-Fri 8.00am-8.30pm Sat-Sun 8.00am-8.00pm', 'Mon-Fri 8.00am-8.30pm Sat-Sun 8.00am-8.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (696, 'Mon-Fri 8.00am-8.30pm', 'Mon-Fri 8.00am-8.30pm');
