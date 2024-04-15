@@ -98,7 +98,7 @@ class TOMsParams(QObject):
                           "CrossoverShapeWidth",
                           "PhotoPath",
                           "MinimumTextDisplayScale",
-                          "TOMsDebugLevel",
+                          "TOMs_Logging_Level",
                           "AllowZoneEditing",
                           "CarriagewayOffset"
                         ]
