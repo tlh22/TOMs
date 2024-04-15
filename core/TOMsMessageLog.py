@@ -49,7 +49,8 @@ class TOMsMessageLog(QgsMessageLog):
             try:
                 currLoggingLevel = int(QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('TOMs_Logging_Level'))
             except Exception as e:
-                QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... {}".format(e), tag="TOMs Panel")
+                #QgsMessageLog.logMessage("Error in TOMsMessageLog. TOMs_logging_Level not found ... {}".format(e), tag="TOMs Panel")
+                currLoggingLevel = int(Qgis.Info)
 
             return currLoggingLevel
 
@@ -59,12 +60,12 @@ class TOMsMessageLog(QgsMessageLog):
             try:
                 messageLevel = int(kwargs.get('level'))
             except Exception as e:
-                QgsMessageLog.logMessage("Error in TOMsMessageLog. Level in message not found...{}".format(e), tag="TOMs Panel")
+                #QgsMessageLog.logMessage("Error in TOMsMessageLog. Level in message not found...{}".format(e), tag="TOMs Panel")
                 messageLevel = Qgis.Info
 
             #QgsMessageLog.logMessage('{}: messageLevel: {}; debug_level: {}'.format(args[0], messageLevel, debug_level), tag="TOMs panel")
 
-            if messageLevel >= debug_level:
+            if int(messageLevel) >= int(debug_level):
                 QgsMessageLog.logMessage(*args, **kwargs, tag="TOMs Panel")
                 #TOMsMessageLog.write_log_message(args[0], messageLevel, "TOMs Panel", debug_level)
                 with open(TOMsMessageLog.filename, 'a') as logfile:
