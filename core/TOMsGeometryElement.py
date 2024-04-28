@@ -447,7 +447,7 @@ class TOMsGeometryElement(QObject):
                                       level=Qgis.Info)
 
             for testVertexNr in range(currStartVertexNr + 1, nrPts - 1):
-                print("StartPt {}: EndPt: {}".format(testVertexNr, testVertexNr + 1))
+                #print("StartPt {}: EndPt: {}".format(testVertexNr, testVertexNr + 1))
                 testLine = QgsGeometry.fromPolylineXY([ptsList[testVertexNr], ptsList[testVertexNr + 1]])
                 intersectPt = currLine.intersection(testLine)
                 if intersectPt:
