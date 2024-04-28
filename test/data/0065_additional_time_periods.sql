@@ -88,3 +88,6 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (694, '8.00am-9.30am 4.30pm-6.30pm', '8.00am-9.30am 4.30pm-6.30pm');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (695, 'Mon-Fri 8.00am-8.30pm Sat-Sun 8.00am-8.00pm', 'Mon-Fri 8.00am-8.30pm Sat-Sun 8.00am-8.00pm');
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (696, 'Mon-Fri 8.00am-8.30pm', 'Mon-Fri 8.00am-8.30pm');
+
+-- Enfield
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (697, 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm', 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm');
