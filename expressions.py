@@ -405,7 +405,7 @@ class TOMsExpressions():
     def getBayLabelText(feature, parent):
         # Returns the text to label the feature
 
-        TOMsMessageLog.logMessage("In getBayLabelText:", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayLabelText: {}".format(feature.attribute("GeometryID")), level=Qgis.Info)
         try:
             maxStayText, noReturnText, timePeriodText = generateGeometryUtils.getBayRestrictionLabelText(feature)
         except Exception as e:
@@ -428,14 +428,14 @@ class TOMsExpressions():
         if maxStayText:
             if timePeriodText:
                 labelText = labelText + ';'
-            labelText = '{origText} Max Stay: {text}'.format(origText=labelText, text=maxStayText)
+            labelText = '{origText}Max Stay: {text}'.format(origText=labelText, text=maxStayText)
 
         if noReturnText:
             if timePeriodText or maxStayText:
                 labelText = labelText + ';'
-            labelText = '{origText} No Return: {text}'.format(origText=labelText, text=noReturnText)
+            labelText = '{origText}No Return: {text}'.format(origText=labelText, text=noReturnText)
 
-        #TOMsMessageLog.logMessage("In getBayLabelText: " + str(labelText), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayLabelText: {}. text: {}".format(feature.attribute("GeometryID"), labelText), level=Qgis.Info)
 
         return labelText
 

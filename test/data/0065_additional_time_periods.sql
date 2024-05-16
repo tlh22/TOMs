@@ -91,3 +91,9 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Enfield
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (697, 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm', 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm');
+
+-- Harringey
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (698, 'Mon-Fri 2.00pm-4.00pm', 'Mon-Fri 2.00pm-4.00pm');
+
+-- Lewisham
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (699, 'Mon-Thu 8.30am-9.15am 3.15pm-4.00pm Fri 8.30am-9.15am 2.15pm-3.00pm', 'Mon-Thu 8.30am-9.15am 3.15pm-4.00pm;Fri 8.30am-9.15am 2.15pm-3.00pm');

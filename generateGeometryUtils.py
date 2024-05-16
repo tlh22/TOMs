@@ -920,13 +920,13 @@ class generateGeometryUtils (QObject):
         TOMsMessageLog.logMessage(
             "In getBayRestrictionLabelText (1): " + str(CPZWaitingTimeID) + " PTA hours: " + str(TariffZoneTimePeriodID),
             level=Qgis.Info)
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: " + str(timePeriodID), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. bay hours: {}: {}".format(timePeriodID, timePeriodDesc), level=Qgis.Info)
 
         if timePeriodID == 1:  # 'At Any Time'
             timePeriodDesc = None
 
         if CPZWaitingTimeID:
-            TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
+            TOMsMessageLog.logMessage("In getBayRestrictionLabelText. control hours: " + str(CPZWaitingTimeID) + " " + str(timePeriodID),
                                      level=Qgis.Info)
             if CPZWaitingTimeID == timePeriodID:
                 timePeriodDesc = None
@@ -936,14 +936,16 @@ class generateGeometryUtils (QObject):
                 timePeriodDesc = None
 
             if TariffZoneMaxStayID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
-                                         level=Qgis.Info)"""
+                TOMsMessageLog.logMessage("In getBayRestrictionLabelText. max stay: " + str(TariffZoneMaxStayID) + " " + str(maxStayID),
+                                         level=Qgis.Info)
                 if TariffZoneMaxStayID == maxStayID:
                     maxStayDesc = None
 
+                TOMsMessageLog.logMessage("In getBayRestrictionLabelText. max stay desc: {}".format(maxStayDesc), level=Qgis.Info)
+
             if TariffZoneNoReturnID:
-                """TOMsMessageLog.logMessage("In getBayRestrictionLabelText: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
-                                         level=Qgis.Info)"""
+                TOMsMessageLog.logMessage("In getBayRestrictionLabelText. no return: " + str(TariffZoneNoReturnID) + " " + str(noReturnID),
+                                         level=Qgis.Info)
                 if TariffZoneNoReturnID == noReturnID:
                     noReturnDesc = None
 
@@ -977,7 +979,7 @@ class generateGeometryUtils (QObject):
         if timePeriodDesc == 'None':
             timePeriodDesc = None
 
-        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. timePeriodDesc (2): " + str(timePeriodDesc), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getBayRestrictionLabelText. finish: {}; {}; {}".format(timePeriodDesc, maxStayDesc, noReturnDesc), level=Qgis.Info)
 
         return maxStayDesc, noReturnDesc, timePeriodDesc
 
@@ -1208,7 +1210,7 @@ class generateGeometryUtils (QObject):
     @staticmethod
     def getTariffZoneDetails(tpaNr):
 
-        TOMsMessageLog.logMessage("In getTariffZoneDetails", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getTariffZoneDetails - {}".format(tpaNr), level=Qgis.Info)
 
         try:
             tpaLayer = QgsProject.instance().mapLayersByName("ParkingTariffAreas")[0]
