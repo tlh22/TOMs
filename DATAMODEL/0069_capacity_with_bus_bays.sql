@@ -134,11 +134,15 @@ BEGIN
 
             CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229, 203, 207, 208) THEN
                      -- Consider only short bays, i.e., < 5.0m
-                     CASE WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
-                          NEW."Capacity" = 1;
-                          --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                     CASE WHEN NEW."UnacceptableTypeID" IN (1,4,11) THEN
+                              NEW."Capacity" = 0;
+                              NEW."NrBays" = 0;
+                          WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
+                              NEW."Capacity" = 1;
+                              --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
-                          END CASE;
+
+                     END CASE;
 
                  WHEN NEW."RestrictionTypeID" IN (1000) THEN   -- sections
 
