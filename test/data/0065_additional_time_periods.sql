@@ -103,3 +103,6 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- LBHF
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (701, 'Mon-Fri 8.00am-9.15am 3.00pm-5.15pm', 'Mon-Fri 8.00am-9.15am 3.00pm-5.15pm');
+
+-- Havering
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (702, 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm', 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm');
