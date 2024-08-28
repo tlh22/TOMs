@@ -106,3 +106,8 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Havering
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (702, 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm', 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm');
+
+-- RBKC
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (703, 'midnight-12.00pm', 'midnight-12.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (704, 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm', 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (705, 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm and Sat 7.00am-1.30pm', 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm;Sat 7.00am-1.30pm');

@@ -90,7 +90,7 @@ class TOMsParams(QObject):
         QObject.__init__(self)
         self.iface = iface
 
-        TOMsMessageLog.logMessage("In TOMSParams.init ...", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMSParams.init ...", level=Qgis.Info)
         self.TOMsParamsList = ["BayWidth",
                           "BayLength",
                           "BayOffsetFromKerb",
@@ -107,7 +107,7 @@ class TOMsParams(QObject):
 
     def getParams(self):
 
-        TOMsMessageLog.logMessage("In TOMsParams.getParams ...", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsParams.getParams ...", level=Qgis.Info)
         found = True
 
         # Check for project being open
@@ -122,7 +122,7 @@ class TOMsParams(QObject):
             # TOMsMessageLog.logMessage("In TOMSLayers.getParams ... starting to get", level=Qgis.Info)
 
             for param in self.TOMsParamsList:
-                TOMsMessageLog.logMessage("In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In TOMsParams.getParams ... getting " + str(param), level=Qgis.Info)
 
                 """if QgsExpressionContextUtils.projectScope(currProject).hasVariable(param):
                     currParam = QgsExpressionContextUtils.projectScope(currProject).variable(param)"""
@@ -134,7 +134,7 @@ class TOMsParams(QObject):
 
                 if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
+                    #TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False
@@ -161,7 +161,7 @@ class TOMsConfigFile(QObject):
         QObject.__init__(self)
         #self.iface = iface
 
-        TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsConfigFile.init ...", level=Qgis.Info)
 
     def initialiseTOMsConfigFile(self):
 
@@ -178,10 +178,10 @@ class TOMsConfigFile(QObject):
         if config_path is None:
             config_path = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_home')
 
-        TOMsMessageLog.logMessage("In getTOMsConfigFile. config_path: {}".format(config_path), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getTOMsConfigFile. config_path: {}".format(config_path), level=Qgis.Info)
 
         config_file = os.path.abspath(os.path.join(config_path, 'TOMs.conf'))
-        TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getTOMsConfigFile. TOMs_CONFIG_PATH: {}".format(config_file), level=Qgis.Info)
 
         if not os.path.isfile(config_file):
             reply = QMessageBox.information(None, "Information", "TOMs configuration file not found. Stopping ...",
