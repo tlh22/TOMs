@@ -61,18 +61,13 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
     TOMsActivated = pyqtSignal()
     """ signal will be emitted when TOMs tools are activated"""
-    #TOMsStartupFailure = pyqtSignal()
-    """ signal will be emitted with there is a problem with opening TOMs - typically a layer missing """
-    #TOMsSplitRestrictionSaved = pyqtSignal()
 
     def __init__(self, iface):
 
         QObject.__init__(self)
-        #ProposalTypeUtilsMixin.__init__(self)
 
         self.iface = iface
         self.tableNames = TOMsLayers(self.iface)
-        #self.tableNames.TOMsLayersSet.connect(self.setRestrictionLayers)
 
         self.__date = QDate.currentDate()
         self.currProposalFeature = None
@@ -141,11 +136,8 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
             filterDate = self.__date()
 
         dateString = filterDate.toString('dd-MM-yyyy')
-        #currProposalID = self.currentProposal()
 
         dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
-
-        #filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
 
         filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(dateChoosenFormatted=dateChoosenFormatted)
 
@@ -163,11 +155,7 @@ class TOMsProposalsManager(RestrictionTypeUtilsMixin, ProposalTypeUtilsMixin, QO
 
         dateChoosenFormatted = "'{dateString}'".format(dateString=dateString)
 
-        #filterString = '"OpenDate" <= to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy') AND ((" + '"CloseDate" > to_date(' + dateChoosenFormatted + ", 'dd-MM-yyyy')  OR " + '"CloseDate"  IS  NULL)'
-
         filterString = u'"OpenDate" \u003C\u003D to_date({dateChoosenFormatted}, \'dd-MM-yyyy\') AND (("CloseDate" \u003E to_date({dateChoosenFormatted}, \'dd-MM-yyyy\')  OR "CloseDate" IS NULL)'.format(dateChoosenFormatted=dateChoosenFormatted)
-        # if QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers"):
-        #     self.RestrictionLayers = QgsMapLayerRegistry.instance().mapLayersByName("RestrictionLayers")[0]
 
         for (layerID, layerName) in self.getRestrictionLayersList():
             TOMsMessageLog.logMessage("updateMapCanvas: Considering layer: {}".format(layerName), level=Qgis.Info)

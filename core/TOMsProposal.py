@@ -85,14 +85,8 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         self.thisProposal = QgsFeature(self.proposalsLayer.fields())
         self.thisProposal.setGeometry(QgsGeometry())
-        #self.proposalsLayer.addFeature(self.thisProposal)  # TH (added for v3)
 
-        """self.setProposalTitle('')   #str(uuid.uuid4())
-        self.setProposalOpenDate = self.proposalsManager.date()
-        self.setProposalCreateDate = self.proposalsManager.date()
-        self.setProposalStatusID = ProposalStatus.IN_PREPARATION"""
-
-        self.thisProposal[self.idxProposalTitle] = ''   #str(uuid.uuid4())
+        self.thisProposal[self.idxProposalTitle] = ''
         self.thisProposal[self.idxCreateDate] = self.proposalsManager.date()
         self.thisProposal[self.idxOpenDate] = self.proposalsManager.date()
         self.thisProposal[self.idxProposalStatusID] = ProposalStatus.IN_PREPARATION
@@ -125,7 +119,6 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
         return self.thisProposal.attribute("ProposalStatusID")
 
     def setProposalStatusID(self, value):
-        #result = self.thisProposal.setAttribute("ProposalStatusID", value)   # this does not update. TODO: Understand why
         result = self.proposalsLayer.changeAttributeValue(self.thisProposal.id(), self.idxProposalStatusID, value)   # this does update ??
         return result
 
@@ -345,7 +338,6 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
 
         if status:
             TOMsMessageLog.logMessage("In TOMsProposal.rejectProposal.  Proposal Rejected ... ", level=Qgis.Info)
-            #self.proposalsManager.newProposalCreated.emit(0)
 
         return status
 

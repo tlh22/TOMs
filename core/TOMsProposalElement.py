@@ -65,23 +65,14 @@ class TOMsProposalElement(QObject):
 
     def setElement(self, restrictionID):
         self.thisRestrictionID = restrictionID
-        #self.setThisLayer()
 
         # need to save and then clear the current filter
-        """
-        TOMsMessageLog.logMessage(
-            "In TOMsProposalElement.setElement. filter is now: {}. ".format(
-                self.thisLayer.subsetString()), level=Qgis.Info)
-                """
 
         query = '\"RestrictionID\" = \'{restrictionID}\''.format(restrictionID=restrictionID)
-        #context = QgsExpressionContext()
-        #context.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.thisLayer))
 
         request = QgsFeatureRequest().setFilterExpression(query)
 
         for element in self.thisLayer.getFeatures(request):
-            #context.setFeature(element)
             self.thisElement = element  # make assumption that only one row
             TOMsMessageLog.logMessage("In TOMsProposalElement:setElement ... " + str(self.getGeometryID()), level=Qgis.Info)
             return True
