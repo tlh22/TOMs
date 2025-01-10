@@ -109,3 +109,6 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Southwark
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (703, 'Sat 8.00am-7.00pm Sun 8.00am-6.00pm', 'Sat 8.00am-7.00pm Sun 8.00am-6.00pm');
+
+-- Lewisham
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (704, 'Mon-Fri 9.00am-7.00pm', 'Mon-Fri 9.00am-7.00pm');
