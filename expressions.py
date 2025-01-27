@@ -30,7 +30,7 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
-    QgsExpression, QgsGeometry, QgsPointXY,
+    QgsExpression, QgsGeometry, QgsPointXY, QgsMultiPolygon, QgsPolygon,
     QgsFeature
 )
 import math
