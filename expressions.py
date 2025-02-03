@@ -30,8 +30,9 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
-    QgsExpression, QgsGeometry, QgsPointXY,
-    QgsFeature
+    QgsExpression, QgsGeometry, QgsPointXY, QgsPolygon,
+    QgsFeature, QgsGeometryCollection, QgsMultiPolygon,
+    QgsLineString, QgsPoint, QgsRectangle, QgsWkbTypes
 )
 import math
 import random
@@ -665,51 +666,36 @@ class TOMsExpressions():
         # deal with split geometries - half on/half off
         if feature.attribute("GeomShapeID") == 22:
             for i in range(capacity, (capacity * 2)):  # NB: range stops one before end ...
-                listBaysToDelete.append(i)
+                for bay in listBaysToDelete:
+                    if (i-capacity) in listBaysToDelete:
+                        listBaysToDelete.append(i)
 
         TOMsMessageLog.logMessage('generateDemandShapes: bays to delete {}'.format(listBaysToDelete),
                                   level=Qgis.Info)
 
-        newGeom = QgsGeometry()
-        currPolyNr = 0
-
         counter = 0
 
-        TOMsMessageLog.logMessage('generateDemandShapes: geomShowingSpaces {}'.format(geomShowingSpaces.asWkt()),
+        TOMsMessageLog.logMessage('generateDemandShapes: type: {} geomShowingSpaces {}'.format(QgsWkbTypes.displayString(geomShowingSpaces.wkbType()), geomShowingSpaces.asWkt()),
                                   level=Qgis.Info)
-        # newGeom1 = geomShowingSpaces
 
+        multiPolyGeom = QgsGeometryCollection()
         for polygonGeom in geomShowingSpaces.parts():
-            TOMsMessageLog.logMessage('generateDemandShapes: considering part {}'.format(counter),
-                                      level=Qgis.Info)
 
-            if not counter in listBaysToDelete:
-
-                TOMsMessageLog.logMessage(
-                    'generateDemandShapes: adding poly for {}: {}'.format(counter, polygonGeom.asWkt()),
-                    level=Qgis.Info)
-
+            if counter not in listBaysToDelete:
+                TOMsMessageLog.logMessage('generateDemandShapes: considering part {} {}'.format(counter, polygonGeom.asWkt()),
+                                          level=Qgis.Info)
                 try:
-
-                    newGeom.addPart(polygonGeom)
-
+                    test = multiPolyGeom.addGeometry(polygonGeom.clone())
                 except Exception as e:
                     TOMsMessageLog.logMessage(
-                        'generateDemandShapes: error adding lists for counter {}: {}'.format(counter, e),
+                        'generateDemandShapes: error adding {}: {}'.format(counter, e),
                         level=Qgis.Warning)
             counter = counter + 1
 
-        try:
-            # demandPolys = QgsMultiPolygon(polyGeomList)
-            # demandPolys = newGeom.asMultiPolygon()
-            TOMsMessageLog.logMessage('generateDemandShapes: DemandPolys {}'.format(newGeom.asWkt()),
-                                      level=Qgis.Warning)
+        TOMsMessageLog.logMessage('generateDemandShapes: poly list {}'.format(multiPolyGeom),
+                                  level=Qgis.Info)
 
-        except Exception as e:
-            TOMsMessageLog.logMessage('generateDemandShapes: error creating final geom: {}'.format(e),
-                                      level=Qgis.Warning)
-
-        return None
+        return QgsGeometry(multiPolyGeom)
 
     def registerFunctions(self):
 
