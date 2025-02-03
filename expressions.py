@@ -666,9 +666,9 @@ class TOMsExpressions():
         # deal with split geometries - half on/half off
         if feature.attribute("GeomShapeID") == 22:
             for i in range(capacity, (capacity * 2)):  # NB: range stops one before end ...
-                for bay in listBaysToDelete:
-                    if (i-capacity) in listBaysToDelete:
-                        listBaysToDelete.append(i)
+                bayCheck = capacity * 2 - 1 - i
+                if bayCheck in listBaysToDelete:
+                    listBaysToDelete.append(i)
 
         TOMsMessageLog.logMessage('generateDemandShapes: bays to delete {}'.format(listBaysToDelete),
                                   level=Qgis.Info)
