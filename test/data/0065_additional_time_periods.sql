@@ -113,5 +113,14 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 -- Lewisham
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (704, 'Mon-Fri 9.00am-7.00pm', 'Mon-Fri 9.00am-7.00pm');
 
+-- Bexley
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (705, 'Mon-Fri 1.00pm-3.00pm', 'Mon-Fri 1.00pm-3.00pm');
+
+-- Ealing
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (706, 'Mon-Fri 9.00am-10.00am 2.00pm-3.00pm', 'Mon-Fri;9-10 am;2-3 pm');
+
+-- Cambridge
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (707, 'Mon-Fri 9.30am-3.00pm', 'Mon-Fri 9.30am-3.00pm');
+
 -- Southwark
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (705, '6.30pm-midnight midnight-8.00am', '6.30pm-midnight midnight-8.00am');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (708, '6.30pm-midnight midnight-8.00am', '6.30pm-midnight midnight-8.00am');

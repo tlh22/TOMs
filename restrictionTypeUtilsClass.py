@@ -134,7 +134,7 @@ class TOMsParams(QObject):
 
                 if len(str(currParam))>0:
                     self.TOMsParamsDict[param] = currParam
-                    TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
+                    #TOMsMessageLog.logMessage("In TOMsParams.getParams ... set " + str(param) + " as " + str(currParam), level=Qgis.Info)
                 else:
                     QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Property " + param + " is not present"))
                     found = False

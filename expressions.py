@@ -77,7 +77,9 @@ class TOMsExpressions():
             self.getPTA, self.prepareSignLine,
             self.prepareSignIconLocation,
             self.prepareSignIcon, self.prepareSignOrientation,
-            self.generateDemandPoints
+            self.generateDemandPoints,
+            self.generateDemandShapes,
+            self.generateAvailableSpacesShapes
         ]
 
     @qgsfunction(args='auto', group='TOMs2', usesgeometry=True, register=True)
@@ -623,6 +625,155 @@ class TOMsExpressions():
                                       level=Qgis.Warning)
 
         return demandPoints
+    @qgsfunction(args='auto', group='TOMsDemand', usesgeometry=False, register=True)
+    def generateDemandShapes(feature, parent):
+        # Returns the location of points representing demand
+
+        TOMsMessageLog.logMessage('generateDemandShapes: {}'.format(feature.attribute("GeometryID")),
+                                  level=Qgis.Info)
+
+        demand = math.ceil(float(feature.attribute("Demand")))
+
+        TOMsMessageLog.logMessage(
+            'generateDemandShapes: demand: {}'.format(demand),
+            level=Qgis.Info)
+
+        if demand == 0:
+            return None
+
+        capacity = int(feature.attribute("NrBays"))
+
+        nrSpaces = capacity - demand
+        if nrSpaces < 0:
+            nrSpaces = 0
+
+        TOMsMessageLog.logMessage(
+            'generateDemandShapes: capacity: {}; nrSpaces: {}; demand: {}'.format(capacity, nrSpaces, demand),
+            level=Qgis.Info)
+
+        # now get geometry for demand locations
+        try:
+            geomShowingSpaces = ElementGeometryFactory.getElementGeometry(feature)
+        except Exception as e:
+            TOMsMessageLog.logMessage('generateDemandShapes: error in expression function: {}'.format(e),
+                                      level=Qgis.Warning)
+            return None
+
+        random.seed(
+            1234)  # need to ramdomise, but it needs to be repeatable?!?, i.e., when you pan, they stay in the same place
+        listBaysToDelete = []
+        listBaysToDelete = random.sample(range(capacity), k=math.ceil(nrSpaces))
+
+        # deal with split geometries - half on/half off
+        if feature.attribute("GeomShapeID") == 22:
+            for i in range(capacity, (capacity * 2)):  # NB: range stops one before end ...
+                bayCheck = capacity * 2 - 1 - i
+                if bayCheck in listBaysToDelete:
+                    listBaysToDelete.append(i)
+
+        TOMsMessageLog.logMessage('generateDemandShapes: bays to delete {}'.format(listBaysToDelete),
+                                  level=Qgis.Info)
+
+        counter = 0
+
+        TOMsMessageLog.logMessage('generateDemandShapes: type: {} geomShowingSpaces {}'.format(QgsWkbTypes.displayString(geomShowingSpaces.wkbType()), geomShowingSpaces.asWkt()),
+                                  level=Qgis.Info)
+
+        multiPolyGeom = QgsGeometryCollection()
+        for polygonGeom in geomShowingSpaces.parts():
+
+            if counter not in listBaysToDelete:
+                TOMsMessageLog.logMessage('generateDemandShapes: considering part {} {}'.format(counter, polygonGeom.asWkt()),
+                                          level=Qgis.Info)
+                try:
+                    test = multiPolyGeom.addGeometry(polygonGeom.clone())
+                except Exception as e:
+                    TOMsMessageLog.logMessage(
+                        'generateDemandShapes: error adding {}: {}'.format(counter, e),
+                        level=Qgis.Warning)
+            counter = counter + 1
+
+        TOMsMessageLog.logMessage('generateDemandShapes: poly list {}'.format(multiPolyGeom),
+                                  level=Qgis.Info)
+
+        return QgsGeometry(multiPolyGeom)
+
+    @qgsfunction(args='auto', group='TOMsDemand', usesgeometry=False, register=True)
+    def generateAvailableSpacesShapes(feature, parent):
+        # Returns the location of points representing demand
+
+        TOMsMessageLog.logMessage('generateAvailableSpacesShapes: {}'.format(feature.attribute("GeometryID")),
+                                  level=Qgis.Info)
+
+        capacity = int(feature.attribute("Capacity"))
+
+        if capacity == 0:
+            return None
+
+        demand = math.ceil(float(feature.attribute("Demand")))
+        nrBays = int(feature.attribute("NrBays"))
+
+        nrSpaces = nrBays - demand
+        if nrSpaces < 0:
+            nrSpaces = 0
+
+        if nrSpaces == 0:
+            return None
+
+        TOMsMessageLog.logMessage(
+            'generateAvailableSpacesShapes: nrSpaces: {}'.format(nrSpaces),
+            level=Qgis.Info)
+
+        TOMsMessageLog.logMessage(
+            'generateAvailableSpacesShapes: nrBays: {}; nrSpaces: {}; demand: {}'.format(nrBays, nrSpaces, demand),
+            level=Qgis.Info)
+
+        # now get geometry for demand locations
+        try:
+            geomShowingSpaces = ElementGeometryFactory.getElementGeometry(feature)
+        except Exception as e:
+            TOMsMessageLog.logMessage('generateAvailableSpacesShapes: error in expression function: {}'.format(e),
+                                      level=Qgis.Warning)
+            return None
+
+        random.seed(
+            1234)  # need to ramdomise, but it needs to be repeatable?!?, i.e., when you pan, they stay in the same place
+        listBaysToDelete = []
+        listBaysToDelete = random.sample(range(nrBays), k=math.ceil(nrSpaces))
+
+        # deal with split geometries - half on/half off
+        if feature.attribute("GeomShapeID") == 22:
+            for i in range(nrBays, (nrBays * 2)):  # NB: range stops one before end ...
+                bayCheck = nrBays * 2 - 1 - i
+                if bayCheck in listBaysToDelete:
+                    listBaysToDelete.append(i)
+
+        TOMsMessageLog.logMessage('generateAvailableSpacesShapes: bays to delete {}'.format(listBaysToDelete),
+                                  level=Qgis.Info)
+
+        counter = 0
+
+        TOMsMessageLog.logMessage('generateAvailableSpacesShapes: type: {} geomShowingSpaces {}'.format(QgsWkbTypes.displayString(geomShowingSpaces.wkbType()), geomShowingSpaces.asWkt()),
+                                  level=Qgis.Info)
+
+        multiPolyGeom = QgsGeometryCollection()
+        for polygonGeom in geomShowingSpaces.parts():
+
+            if counter in listBaysToDelete:
+                TOMsMessageLog.logMessage('generateAvailableSpacesShapes: considering part {} {}'.format(counter, polygonGeom.asWkt()),
+                                          level=Qgis.Info)
+                try:
+                    test = multiPolyGeom.addGeometry(polygonGeom.clone())
+                except Exception as e:
+                    TOMsMessageLog.logMessage(
+                        'generateAvailableSpacesShapes: error adding {}: {}'.format(counter, e),
+                        level=Qgis.Warning)
+            counter = counter + 1
+
+        TOMsMessageLog.logMessage('generateAvailableSpacesShapes: poly list {}'.format(multiPolyGeom),
+                                  level=Qgis.Info)
+
+        return QgsGeometry(multiPolyGeom)
 
     def registerFunctions(self):
 
