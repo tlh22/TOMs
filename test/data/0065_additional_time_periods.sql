@@ -107,7 +107,26 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 -- Havering
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (702, 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm', 'Mon-Fri 8.00am-9.30am 2.00pm-4.00pm');
 
+-- Southwark
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (703, 'Sat 8.00am-7.00pm Sun 8.00am-6.00pm', 'Sat 8.00am-7.00pm Sun 8.00am-6.00pm');
+
+-- Lewisham
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (704, 'Mon-Fri 9.00am-7.00pm', 'Mon-Fri 9.00am-7.00pm');
+
+-- Bexley
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (705, 'Mon-Fri 1.00pm-3.00pm', 'Mon-Fri 1.00pm-3.00pm');
+
+-- Ealing
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (706, 'Mon-Fri 9.00am-10.00am 2.00pm-3.00pm', 'Mon-Fri;9-10 am;2-3 pm');
+
+-- Cambridge
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (707, 'Mon-Fri 9.30am-3.00pm', 'Mon-Fri 9.30am-3.00pm');
+
+-- Southwark
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (708, '6.30pm-midnight midnight-8.00am', '6.30pm-midnight midnight-8.00am');
+
 -- RBKC
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (703, 'midnight-12.00pm', 'midnight-12.00pm');
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (704, 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm', 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm');
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (705, 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm and Sat 7.00am-1.30pm', 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm;Sat 7.00am-1.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (709, 'midnight-12.00pm', 'midnight-12.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (710, 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm', 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (711, 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm and Sat 7.00am-1.30pm', 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm;Sat 7.00am-1.30pm');
+
