@@ -124,3 +124,9 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Southwark
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (708, '6.30pm-midnight midnight-8.00am', '6.30pm-midnight midnight-8.00am');
+
+-- RBKC
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (709, 'midnight-12.00pm', 'midnight-12.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (710, 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm', 'Mon-Fri 8.00am-9.30am 2.30pm-5.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (711, 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm and Sat 7.00am-1.30pm', 'Mon-Thu 7.00am-8.30am Fri 7.00am-6.30pm;Sat 7.00am-1.30pm');
+

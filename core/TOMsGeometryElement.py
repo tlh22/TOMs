@@ -42,7 +42,7 @@ class TOMsGeometryElement(QObject):
     def __init__(self, currFeature):
         super().__init__()
 
-        TOMsMessageLog.logMessage("In TOMsGeometryElement.init: " + str(currFeature.attribute("GeometryID")), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsGeometryElement.init: " + str(currFeature.attribute("GeometryID")), level=Qgis.Info)
 
         params = TOMsParams()
         params.getParams()
@@ -74,7 +74,7 @@ class TOMsGeometryElement(QObject):
         self.nrBays = 0
         self.currBayOrientation = 0.0
 
-        TOMsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsGeometryElement.init: checking for bay ", level=Qgis.Info)
 
         if self.checkFeatureIsBay(self.currRestGeomType) == True:
             # NrBays
@@ -111,7 +111,7 @@ class TOMsGeometryElement(QObject):
                 TOMsMessageLog.logMessage("In TOMsGeometryElement.init: changing BayWidth to {}".format(thisBayWidth),
                                           level=Qgis.Info)
 
-        TOMsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsGeometryElement.init: finished ", level=Qgis.Info)
 
     @abstractmethod
     def getElementGeometry(self):
@@ -133,19 +133,19 @@ class TOMsGeometryElement(QObject):
     def generatePolygon(self, listGeometryPairs):
         # ... and combine the two paired geometries. NB: May be more than one pair
 
-        TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In generatePolygon ... nr pairs: {}".format(len(listGeometryPairs)), level=Qgis.Info)
 
         #outputGeometry = QgsGeometry()
 
         for (shape, line) in listGeometryPairs:
 
-            TOMsMessageLog.logMessage("In generatePolygon:  shape ********: " + shape.asWkt(), level=Qgis.Info)
-            TOMsMessageLog.logMessage("In generatePolygon:  line ********: " + line.asWkt(),
-                                     level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In generatePolygon:  shape ********: " + shape.asWkt(), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In generatePolygon:  line ********: " + line.asWkt(),
+            #                         level=Qgis.Info)
 
             newGeometry = shape.combine(line)
-            TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} ".format(QgsWkbTypes.displayString(newGeometry.wkbType())),
-                                     level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In generatePolygon:  newGeometry type: {} ".format(QgsWkbTypes.displayString(newGeometry.wkbType())),
+            #                         level=Qgis.Info)
 
             #TOMsMessageLog.logMessage("In generatePolygon:  new geom type ********: {}: {}".format(newGeometry.wkbType(), newGeometry.asWkt()),
             #                         level=Qgis.Info)
@@ -188,8 +188,8 @@ class TOMsGeometryElement(QObject):
                     TOMsMessageLog.logMessage(
                         "In generatePolygon: NOT able to add part  ...", level=Qgis.Info)
                 """
-                TOMsMessageLog.logMessage(
-                    "In generatePolygon: after creating single  ...", level=Qgis.Info)
+                #TOMsMessageLog.logMessage(
+                #    "In generatePolygon: after creating single  ...", level=Qgis.Info)
 
         #TOMsMessageLog.logMessage(
         #    "In generatePolygon:  outputGeometry ********: {}".format(outputGeometry.asWkt()),
@@ -199,7 +199,7 @@ class TOMsGeometryElement(QObject):
     def generateMultiLineShape(self, listGeometries):
         # ... and combine the geometries. NB: May be more than one
 
-        TOMsMessageLog.logMessage("In generateMultiLineShape ... nr pairs: {}".format(len(listGeometries)), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In generateMultiLineShape ... nr pairs: {}".format(len(listGeometries)), level=Qgis.Info)
 
         outputGeometry = listGeometries[0]
         outputGeometry.convertToMultiType()
@@ -213,7 +213,7 @@ class TOMsGeometryElement(QObject):
 
     def getLine(self, AzimuthToCentreLine=None):
 
-        TOMsMessageLog.logMessage("In getLine ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getLine ... ", level=Qgis.Info)
 
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
@@ -221,7 +221,7 @@ class TOMsGeometryElement(QObject):
 
     def getShape(self, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
-        TOMsMessageLog.logMessage("In getShape ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getShape ... ", level=Qgis.Info)
 
         feature = self.currFeature
         restGeomType = self.currRestGeomType
@@ -430,8 +430,8 @@ class TOMsGeometryElement(QObject):
         """
         nrPts = len(ptsList)
         #print("Nr pts: {}".format(nrPts))
-        TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Nr pts: {}".format(nrPts),
-                                  level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Nr pts: {}".format(nrPts),
+        #                          level=Qgis.Info)
         currStartVertexNr = 0
         currLineStartVertex = ptsList[0]
         newPtsList = []
@@ -443,8 +443,8 @@ class TOMsGeometryElement(QObject):
             intersectLineStartVertexNr = -1
 
             #print("Starting {} ... ".format(currStartVertexNr))
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Starting {} ... ".format(currStartVertexNr),
-                                      level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Starting {} ... ".format(currStartVertexNr),
+            #                          level=Qgis.Info)
 
             for testVertexNr in range(currStartVertexNr + 1, nrPts - 1):
                 print("StartPt {}: EndPt: {}".format(testVertexNr, testVertexNr + 1))
@@ -472,16 +472,16 @@ class TOMsGeometryElement(QObject):
                 currLineStartVertex = ptsList[currStartVertexNr]
 
             #print("Added {} ...".format(currStartVertexNr))
-            TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Added {} ...".format(currStartVertexNr),
-                                      level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In TOMsGeometryElement.resolveSelfIntersections: Added {} ...".format(currStartVertexNr),
+            #                          level=Qgis.Info)
 
             if currStartVertexNr == nrPts - 1:  # check to see if the end point of the test line is the end of the line ...
                 break
 
         #print("Finished checking ...")
-        TOMsMessageLog.logMessage(
-            "In TOMsGeometryElement.resolveSelfIntersections: Finished checking ...",
-            level=Qgis.Info)
+        #TOMsMessageLog.logMessage(
+        #    "In TOMsGeometryElement.resolveSelfIntersections: Finished checking ...",
+        #    level=Qgis.Info)
 
         newGeom = QgsGeometry.fromPolylineXY(newPtsList)
 
@@ -489,7 +489,7 @@ class TOMsGeometryElement(QObject):
 
     def getZigZag(self, wavelength=None, shpExtent=None):
 
-        TOMsMessageLog.logMessage("In getZigZag ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getZigZag ... ", level=Qgis.Info)
 
         if not wavelength:
             wavelength = 3.0
@@ -508,11 +508,11 @@ class TOMsGeometryElement(QObject):
         NrSegments = int(length / wavelength)    # e.g., length = 33, wavelength = 4
         if NrSegments == 0:
             NrSegments = 1
-            TOMsMessageLog.logMessage(
-                "In getZigZag. NrSegments is 0 for geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
+            #TOMsMessageLog.logMessage(
+            #    "In getZigZag. NrSegments is 0 for geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
         interval = int(length/float(NrSegments) * 10000) / 10000
 
-        TOMsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getZigZag. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
 
         Az = line[0].azimuth(line[1])
 
@@ -542,10 +542,10 @@ class TOMsGeometryElement(QObject):
 
             interpolatedPointC = self.currFeature.geometry().interpolate(distanceAlongLine).asPoint()
 
-            TOMsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getZigZag. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
             # TOMsMessageLog.logMessage("In getZigZag. offset = " + str(float(offset)) + "; cosa = " + str(cosa) + "; cosb = " + str(cosb), level=Qgis.Info)
 
-            TOMsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getZigZag. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Info)
 
             ptsList.append(QgsPointXY(interpolatedPointC.x() + (float(offset) * cosa), interpolatedPointC.y() + (float(offset) * cosb)))
 
@@ -572,8 +572,8 @@ class TOMsGeometryElement(QObject):
 
         # returns list of bay dividing lines
 
-        TOMsMessageLog.logMessage(
-                "In getBayDividers. geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
+        #TOMsMessageLog.logMessage(
+        #        "In getBayDividers. geometry {}".format(self.currFeature.attribute("GeometryID")), level=Qgis.Info)
 
         if shpExtent is None:
             shpExtent = self.BayWidth
@@ -582,8 +582,8 @@ class TOMsGeometryElement(QObject):
         if AzimuthToCentreLine is None:
             AzimuthToCentreLine = self.currAzimuthToCentreLine
 
-        TOMsMessageLog.logMessage(
-                "In getBayDividers. AzimuthToCentreLine {}".format(AzimuthToCentreLine), level=Qgis.Info)
+        #TOMsMessageLog.logMessage(
+        #        "In getBayDividers. AzimuthToCentreLine {}".format(AzimuthToCentreLine), level=Qgis.Info)
 
         # slightly extend the length of the dividers to deal with any rounding errors in the split process
         #shpExtent = shpExtent + 0.0001
@@ -594,8 +594,8 @@ class TOMsGeometryElement(QObject):
         outsideBayShapeLine = bayShapeLine[1:len(bayShapeLine) - 1]
         outsideBayShapeLineGeom = QgsGeometry.fromPolylineXY(outsideBayShapeLine)
 
-        TOMsMessageLog.logMessage(
-                "In getBayDividers. outsideBayShapeLineGeom {}".format(outsideBayShapeLineGeom.asWkt()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage(
+        #        "In getBayDividers. outsideBayShapeLineGeom {}".format(outsideBayShapeLineGeom.asWkt()), level=Qgis.Info)
 
         feature = self.currFeature
         restGeomType = self.currRestGeomType
@@ -626,7 +626,7 @@ class TOMsGeometryElement(QObject):
 
         interval = int(length/float(NrSegments) * 10000) / 10000
 
-        TOMsMessageLog.logMessage("In getBayDividers. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In getBayDividers. LengthLine: " + str(length) + " NrSegments = " + str(NrSegments) + "; interval: " + str(interval), level=Qgis.Info)
 
         distanceAlongLine = 0.0
         countSegments = 0
@@ -655,8 +655,8 @@ class TOMsGeometryElement(QObject):
 
             cosa, cosb = generateGeometryUtils.cosdir_azim(newAz)
 
-            TOMsMessageLog.logMessage("In getBayDividers. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
-            TOMsMessageLog.logMessage("In getBayDividers. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getBayDividers. PtC = " + str(interpolatedPointC.x()) + ": " + str(interpolatedPointC.y()) + "; distanceAlongLine = " + str(distanceAlongLine), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getBayDividers. newC x = " + str(interpolatedPointC.x() + (float(offset) * cosa)) + "; y = " + str(interpolatedPointC.y() + (float(offset) * cosb)), level=Qgis.Info)
 
             #ptsList.append(
             #    QgsPointXY(closestPt.x() + (float(offset) * cosa), closestPt.y() + (float(offset) * cosb)))
@@ -669,7 +669,7 @@ class TOMsGeometryElement(QObject):
                          closestPt.y() + (float(shpExtent) * cosb))
 
             testPointGeom = QgsGeometry.fromPointXY(testEndPoint)
-            TOMsMessageLog.logMessage("In getBayDividers. testPt x = {}; y = {}".format(testEndPoint.x(), testEndPoint.y()), level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In getBayDividers. testPt x = {}; y = {}".format(testEndPoint.x(), testEndPoint.y()), level=Qgis.Info)
 
             testLineGeom = QgsGeometry.fromPolylineXY([testStartPoint, testEndPoint])
 
@@ -677,21 +677,21 @@ class TOMsGeometryElement(QObject):
 
             if parallelShapeGeom.intersects(testLineGeom):
                 startPoint = testStartPoint
-                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects startPoint ...", level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In getBayDividers. testLine intersects startPoint ...", level=Qgis.Info)
             else:
                 # get point on bay shape from testPoint
                 startPoint = parallelShapeGeom.nearestPoint(QgsGeometry.fromPointXY(testStartPoint)).asPoint()
-                TOMsMessageLog.logMessage(
-                    "In getBayDividers. *** new startPt x = {}; y = {}".format(startPoint.x(), startPoint.y()), level=Qgis.Info)
+                #TOMsMessageLog.logMessage(
+                #    "In getBayDividers. *** new startPt x = {}; y = {}".format(startPoint.x(), startPoint.y()), level=Qgis.Info)
 
             if outsideBayShapeLineGeom.intersects(testLineGeom):
                 endPoint = testEndPoint
-                TOMsMessageLog.logMessage("In getBayDividers. testLine intersects endPoint ...", level=Qgis.Info)
+                #TOMsMessageLog.logMessage("In getBayDividers. testLine intersects endPoint ...", level=Qgis.Info)
             else:
                 # get point on bay shape from testPoint
                 endPoint = outsideBayShapeLineGeom.nearestPoint(QgsGeometry.fromPointXY(testEndPoint)).asPoint()
-                TOMsMessageLog.logMessage(
-                    "In getBayDividers. *** new endPt x = {}; y = {}".format(endPoint.x(), endPoint.y()), level=Qgis.Info)
+                #TOMsMessageLog.logMessage(
+                #    "In getBayDividers. *** new endPt x = {}; y = {}".format(endPoint.x(), endPoint.y()), level=Qgis.Info)
 
             newLine = QgsGeometry.fromPolylineXY([startPoint, endPoint]).extendLine(0.0001, 0.0001)
             newLines.append(newLine)
@@ -713,9 +713,9 @@ class TOMsGeometryElement(QObject):
 
     def addBayPolygonDividers(self, outputGeometry, bayShapeGeom, parallelShapeGeom, shpExtent=None, AzimuthToCentreLine=None, offset=None):
 
-        TOMsMessageLog.logMessage(
-            "In factory. addBayPolygonDividers ... shpExtent: {}; Az: {} ".format(shpExtent, AzimuthToCentreLine),
-            level=Qgis.Info)
+        #TOMsMessageLog.logMessage(
+        #    "In factory. addBayPolygonDividers ... shpExtent: {}; Az: {} ".format(shpExtent, AzimuthToCentreLine),
+        #    level=Qgis.Info)
 
         # split output polygon(s) to show bay dividers
         bayDividers = self.getBayDividers(bayShapeGeom=bayShapeGeom, parallelShapeGeom=parallelShapeGeom, shpExtent=shpExtent, AzimuthToCentreLine=AzimuthToCentreLine, offset=offset)
@@ -729,9 +729,9 @@ class TOMsGeometryElement(QObject):
             for divider in bayDividers:
                 # divGeometry = QgsGeometry()
                 # res = divGeometry.addPointsXY(divider.asPolyline(), QgsWkbTypes.LineGeometry)
-                TOMsMessageLog.logMessage(
-                    "In factory. divider : {}".format(divider.asWkt()),
-                    level=Qgis.Info)
+                #TOMsMessageLog.logMessage(
+                #    "In factory. divider : {}".format(divider.asWkt()),
+                #    level=Qgis.Info)
 
                 newGeomsList = []
                 for outGeom in outputGeometries:
@@ -741,10 +741,10 @@ class TOMsGeometryElement(QObject):
                     for geom in extraGeometriesList:
                         newGeomsList.append(geom)
                 outputGeometries = newGeomsList
-                TOMsMessageLog.logMessage(
-                    "In factory. addBayPolygonDividers ... nr outputGeometries: {}".format(
-                        len(outputGeometries)),
-                    level=Qgis.Info)
+                #TOMsMessageLog.logMessage(
+                #    "In factory. addBayPolygonDividers ... nr outputGeometries: {}".format(
+                #        len(outputGeometries)),
+                #    level=Qgis.Info)
 
             # now combine all the output polygons
             newGeom = QgsGeometry()
@@ -754,9 +754,9 @@ class TOMsGeometryElement(QObject):
 
             outputGeometry = newGeom
 
-            TOMsMessageLog.logMessage(
-                "In addPolygonDividers ... split geom: {}".format(outputGeometry.asWkt()),
-                level=Qgis.Info)
+            #TOMsMessageLog.logMessage(
+            #    "In addPolygonDividers ... split geom: {}".format(outputGeometry.asWkt()),
+            #    level=Qgis.Info)
 
         return outputGeometry
 
@@ -765,7 +765,7 @@ class TOMsGeometryElement(QObject):
 class generatedGeometryBayLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryBayLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape()
@@ -779,7 +779,7 @@ class generatedGeometryBayLineType(TOMsGeometryElement):
 class generatedGeometryHalfOnHalfOffLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffLineType ... ", level=Qgis.Info)
+       # TOMsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -797,7 +797,7 @@ class generatedGeometryHalfOnHalfOffLineType(TOMsGeometryElement):
 class generatedGeometryOnPavementLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryOnPavementLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryOnPavementLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayWidth, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -812,7 +812,7 @@ class generatedGeometryOnPavementLineType(TOMsGeometryElement):
 class generatedGeometryPerpendicularLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
@@ -826,7 +826,7 @@ class generatedGeometryPerpendicularLineType(TOMsGeometryElement):
 class generatedGeometryEchelonLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength)
@@ -840,7 +840,7 @@ class generatedGeometryEchelonLineType(TOMsGeometryElement):
 class generatedGeometryPerpendicularOnPavementLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -854,7 +854,7 @@ class generatedGeometryPerpendicularOnPavementLineType(TOMsGeometryElement):
 class generatedGeometryOutlineShape(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryOutlineShape ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryOutlineShape ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         return self.currFeature.geometry()
@@ -863,7 +863,7 @@ class generatedGeometryOutlineShape(TOMsGeometryElement):
 class generatedGeometryEchelonOnPavementLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getShape(self.BayLength, generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -878,7 +878,7 @@ class generatedGeometryEchelonOnPavementLineType(TOMsGeometryElement):
 class generatedGeometryLineType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryLineType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryLineType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         outputGeometry, parallelLine = self.getLine()
@@ -888,7 +888,7 @@ class generatedGeometryLineType(TOMsGeometryElement):
 class generatedGeometryZigZagType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryZigZagType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryZigZagType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -900,7 +900,7 @@ class generatedGeometryZigZagType(TOMsGeometryElement):
 class generatedGeometryBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -912,7 +912,7 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
         if self.nrBays > 0:
             outputGeometry = self.addBayPolygonDividers(outputGeometry, outputGeometry1, parallelLine1)
 
-        TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryBayPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
 
         return outputGeometry
         #return self.generatePolygon([(outputGeometry1, parallelLine1)])
@@ -921,7 +921,7 @@ class generatedGeometryBayPolygonType(TOMsGeometryElement):
 class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryHalfOnHalfOffPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
         bayShape1, parallelLine1 = self.getShape((self.BayWidth)/2)
@@ -931,7 +931,7 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
         outputGeometry2 = self.generatePolygon([(bayShape2, parallelLine2)])
 
         if self.nrBays > 0:
-            TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... getting bay divisions ", level=Qgis.Info)
+            #TOMsMessageLog.logMessage("In generatedGeometryHalfOnHalfOffPolygonType ... getting bay divisions ", level=Qgis.Info)
             outputGeometry1 = self.addBayPolygonDividers(outputGeometry=outputGeometry1, bayShapeGeom=bayShape1, parallelShapeGeom=parallelLine1, shpExtent=self.BayWidth/2)
             outputGeometry2 = self.addBayPolygonDividers(outputGeometry=outputGeometry2, bayShapeGeom=bayShape2, parallelShapeGeom=parallelLine2, shpExtent=self.BayWidth/2,
                               AzimuthToCentreLine=generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
@@ -944,7 +944,7 @@ class generatedGeometryHalfOnHalfOffPolygonType(TOMsGeometryElement):
 class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryOnPavementPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryOnPavementPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -965,7 +965,7 @@ class generatedGeometryOnPavementPolygonType(TOMsGeometryElement):
 class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -985,7 +985,7 @@ class generatedGeometryPerpendicularPolygonType(TOMsGeometryElement):
 class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -1005,7 +1005,7 @@ class generatedGeometryEchelonPolygonType(TOMsGeometryElement):
 class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -1014,14 +1014,14 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
         #return self.generatePolygon([(outputGeometry1, parallelLine1)])
         outputGeometry = self.generatePolygon([(outputGeometry1, parallelLine1)])
 
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... Az: {}".format(self.currAzimuthToCentreLine),
-                                  level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... Az: {}".format(self.currAzimuthToCentreLine),
+        #                          level=Qgis.Info)
 
         if self.nrBays > 0:
             outputGeometry = self.addBayPolygonDividers(outputGeometry, outputGeometry1, parallelLine1, self.BayLength,
                                                         generateGeometryUtils.getReverseAzimuth(self.currAzimuthToCentreLine))
 
-        TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryPerpendicularOnPavementPolygonType ... polygon(s): {}".format(outputGeometry.asWkt()), level=Qgis.Info)
 
         return outputGeometry
 
@@ -1029,7 +1029,7 @@ class generatedGeometryPerpendicularOnPavementPolygonType(TOMsGeometryElement):
 class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryOutlineBayPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryOutlineBayPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -1038,7 +1038,7 @@ class generatedGeometryOutlineBayPolygonType(TOMsGeometryElement):
 class generatedGeometryEchelonOnPavementPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryEchelonOnPavementPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -1059,7 +1059,7 @@ class generatedGeometryEchelonOnPavementPolygonType(TOMsGeometryElement):
 class generatedGeometryCrossoverPolygonType(TOMsGeometryElement):
     def __init__(self, currFeature):
         super().__init__(currFeature)
-        TOMsMessageLog.logMessage("In factory. generatedGeometryCrossoverPolygonType ... ", level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. generatedGeometryCrossoverPolygonType ... ", level=Qgis.Info)
 
     def getElementGeometry(self):
 
@@ -1169,7 +1169,7 @@ class ElementGeometryFactory():
             currRestGeomType = restGeomType
         else:
             currRestGeomType = currFeature.attribute("GeomShapeID")
-        TOMsMessageLog.logMessage("In factory. getElementGeometry " + str(currFeature.attribute("GeometryID")) + ":" + str(currRestGeomType), level=Qgis.Info)
+        #TOMsMessageLog.logMessage("In factory. getElementGeometry " + str(currFeature.attribute("GeometryID")) + ":" + str(currRestGeomType), level=Qgis.Info)
 
         try:
             if currRestGeomType == RestrictionGeometryTypes.PARALLEL_BAY:
