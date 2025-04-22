@@ -447,8 +447,9 @@ class GeometryInfoMapTool(MapToolMixin, RestrictionTypeUtilsMixin, QgsMapToolIde
                             featureList.append(title)
 
                 else:
-                    title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))), GeometryID=currGeometryID)
-                    featureList.append(title)
+                    if layerType <= RestrictionLayers.PTAS:  # want to ignore the mapping update layers
+                        title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=str(self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))), GeometryID=currGeometryID)
+                        featureList.append(title)
 
         return featureList
 
