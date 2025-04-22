@@ -134,8 +134,8 @@ BEGIN
                      CASE WHEN NEW."UnacceptableTypeID" IN (1,4,11) THEN
                               NEW."Capacity" = 0;
                               NEW."NrBays" = 0;
-                          WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
-                              NEW."Capacity" = 1;
+                          /** WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
+                              NEW."Capacity" = 1; **/
                               --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
 
@@ -152,8 +152,8 @@ BEGIN
                      CASE WHEN NEW."UnacceptableTypeID" > 0 THEN
                               NEW."Capacity" = 0;
                               NEW."NrBays" = 0;
-                          WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
-                              NEW."Capacity" = 1;
+                          /** WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
+                              NEW."Capacity" = 1; **/
                               --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
 

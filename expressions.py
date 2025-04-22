@@ -30,9 +30,8 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
-    QgsExpression, QgsGeometry, QgsPointXY, QgsPolygon,
-    QgsFeature, QgsGeometryCollection, QgsMultiPolygon,
-    QgsLineString, QgsPoint, QgsRectangle, QgsWkbTypes
+    QgsExpression, QgsGeometry, QgsPointXY, QgsMultiPolygon, QgsPolygon,
+    QgsFeature
 )
 import math
 import random
