@@ -271,7 +271,7 @@ class TOMsProposal(ProposalTypeUtilsMixin, QObject):
                     dictTilesInProposal[currTileObject.tileNr()] = currTileObject
 
         for thisTileNr, thisTile in dictTilesInProposal.items():
-            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(thisTileNr) + " RevisionNr: " + str(thisTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(thisTile.getLastRevisionDate_AtDate()), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsProposal.getProposalTileDictionaryForDate: " + str(thisTileNr) + " mapsheet: " + thisTile.getMapSheetName()+ " RevisionNr: " + str(thisTile.getRevisionNr_AtDate()) + " RevisionDate: " + str(thisTile.getLastRevisionDate_AtDate()), level=Qgis.Info)
 
         return dictTilesInProposal
 
