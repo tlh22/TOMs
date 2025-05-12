@@ -279,7 +279,6 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.TOMsSetAtlasValues(currPrintLayout)
 
-
         if printProposalObject.thisProposalNr == 0:
             formatted_currProposalTitle = "CurrentRestrictions_({date})".format(
                 date=self.proposalsManager.date().toString('yyyyMMMdd'))
@@ -321,17 +320,19 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         settings.setValue("/instantprint/lastdir", dirName)
 
+        # TODO: What happens if mapsheetname is not set
+        
         tileIDList = ""
         firstTile = True
-        for tile in self.tilesToPrint:
+        for tileNr, tile in self.tilesToPrint.items():
             if firstTile:
-                tileIDList = str(tile)
+                tileIDList = '\'' + str(tile.getMapSheetName()) + '\''
                 firstTile = False
             else:
-                tileIDList = tileIDList + ',' + str(tile)
+                tileIDList = tileIDList + ',\'' + str(tile.getMapSheetName()) + '\''
 
         currLayoutAtlas.setFilterFeatures(True)
-        currLayoutAtlas.setFilterExpression(' "id" in ({tileList})'.format(tileList=tileIDList))
+        currLayoutAtlas.setFilterExpression(' "mapsheetname" in ({tileList})'.format(tileList=tileIDList))
 
         composerRevisionNr = currPrintLayout.itemById('revisionNr')
         composerEffectiveDate = currPrintLayout.itemById('effectiveDate')
@@ -362,19 +363,23 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         while altasFeatureFound:
 
-            currTileNr = int(currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber()))
+            currMapSheetName = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
 
             currLayoutAtlas.refreshCurrentFeature()
-
-            tileWithDetails = proposalTileDictionaryForDate[currTileNr]
+            tileWithDetails = None
+            #tileWithDetails = proposalTileDictionaryForDate[currTileNr]  # self.tilesToPrint.get(
+            for tileNr, tile in self.tilesToPrint.items():
+                if tile.getMapSheetName() == currMapSheetName:
+                    tileWithDetails = tile
 
             if tileWithDetails == None:
                 TOMsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", level=Qgis.Info)
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
-                                    self.tr("Could not find details for " + str(currTileNr)))
+                                    self.tr("Could not find details for " + str(currMapSheetName)))
                 break
 
-            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(currTileNr) +
+            currMapSheetName = tileWithDetails.getMapSheetName()
+            TOMsMessageLog.logMessage("In TOMsExportAtlas. tile nr: " + str(tileWithDetails.tileNr()) + ":" + currMapSheetName +
                                       " CurrRevisionNr: " + #str(tileWithDetails["CurrRevisionNr"]) +
                                             str(tileWithDetails.getRevisionNr_AtDate()) +
                                       " RevisionDate: " + #str(tileWithDetails["LastRevisionDate"])  +
@@ -400,8 +405,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                                      level=Qgis.Info)
 
 
-            filename = formatted_currProposalTitle + "_" + str(
-                currTileNr) + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+            filename = formatted_currProposalTitle + "_" + currMapSheetName + "." + self.dialogui.comboBox_fileformat.currentText().lower()
 
             outputFile = os.path.join(dirName, filename)
 
@@ -492,7 +496,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         #tileSet = set()
         for currTileNr, currTile in tileDictionary.items():
-            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(currTileNr) + ":" +str(currTile.tileNr()) + " CurrRevisionNr: " + str(currTile.getCurrentRevisionNr()) + " RevisionDate: " + str(currTile.getRevisionNr_AtDate()), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In TOMsChooseTiles: " + str(currTileNr) + ":" +str(currTile.tileNr()) + " mapsheet: " + currTile.getMapSheetName() + " CurrRevisionNr: " + str(currTile.getCurrentRevisionNr()) + " RevisionNrAtDate: " + str(currTile.getRevisionNr_AtDate()), level=Qgis.Info)
             #tileSet.add(tile)
 
         self.tileListDialog = printListDialog(tileDictionary)
@@ -555,21 +559,21 @@ class printListDialog(printListDialog, QDialog):
 
     def addFeatureToSet(self, valueToAdd):
 
-        for feature in sorted(self.initValuesDict):
-            if int(feature) == int(valueToAdd):
-                self.tilesToPrint[feature] = self.initValuesDict[feature]
+        for featureNr, feature in sorted(self.initValuesDict.items()):
+            if feature.getMapSheetName() == valueToAdd:
+                self.tilesToPrint[feature.tileNr()] = feature
                 TOMsMessageLog.logMessage(
-                    "In TOMsTileListDialog. Adding: " + str(feature) + " ; " + str(len(self.tilesToPrint)),
+                    "In TOMsTileListDialog. Adding: " + feature.getMapSheetName() + " ; " + str(len(self.tilesToPrint)),
                     level=Qgis.Info)
                 return
 
     def removedFeatureFromSet(self, valueToRemove):
 
-        for feature in sorted(self.initValuesDict):
-            if int(feature) == int(valueToRemove):
-                del self.tilesToPrint[feature]
+        for featureNr, feature in sorted(self.initValuesDict.items()):
+            if feature.getMapSheetName() == valueToRemove:
+                del self.tilesToPrint[feature.tileNr()]
                 TOMsMessageLog.logMessage(
-                    "In TOMsTileListDialog. Removing: " + str(feature) + " ; " + str(len(self.tilesToPrint)) ,
+                    "In TOMsTileListDialog. Removing: " + feature.getMapSheetName() + " ; " + str(len(self.tilesToPrint)) ,
                     level=Qgis.Info)
                 return
 
@@ -603,9 +607,10 @@ class printListDialog(printListDialog, QDialog):
         self.LIST.clear()
         #for feature in sorted(self.initValues, key=lambda f: f[self.idxValue]):
 
-        for feature in sorted(self.initValuesDict):
-            element = QListWidgetItem(str(feature))
-            element.setData(Qt.UserRole, str(feature))
+        for featureNr, feature in sorted(self.initValuesDict.items()):
+            element = QListWidgetItem(str(feature.tileNr()))
+            element.setData(Qt.UserRole, feature)
+            element.setText(str(feature.getMapSheetName()))
 
             #self.tilesToPrint.add(feature)
             element.setCheckState(Qt.Checked)
@@ -618,8 +623,8 @@ class printListDialog(printListDialog, QDialog):
         TOMsMessageLog.logMessage("In TOMsTileListDialog. In getValues. Len List = " + str(len(self.tilesToPrint)),
                                  level=Qgis.Info)
 
-        for feature in sorted(self.tilesToPrint):
-            TOMsMessageLog.logMessage("In Choose tiles form ... Returning " + str(feature),
+        for featureNr, feature in sorted(self.tilesToPrint.items()):
+            TOMsMessageLog.logMessage("In Choose tiles form ... Returning " + str(feature.getMapSheetName()),
                                      level=Qgis.Info)
 
         return self.tilesToPrint

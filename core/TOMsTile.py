@@ -47,6 +47,7 @@ class TOMsTile(QObject):
         else:
             self.tileLayerFields = self.tilesLayer.fields()
             self.idxTileNr = self.tilesLayer.fields().indexFromName("id")
+            self.idxMapSheetName = self.tilesLayer.fields().indexFromName("mapsheetname")
             self.idxRevisionNr = self.tilesLayer.fields().indexFromName("CurrRevisionNr")
             self.idxLastRevisionDate = self.tilesLayer.fields().indexFromName("LastRevisionDate")
         TOMsMessageLog.logMessage("In TOMsTile:setTilesLayer... MapGrid ", level=Qgis.Warning)
@@ -81,6 +82,9 @@ class TOMsTile(QObject):
 
     def tileNr(self):
         return self.thisTileNr
+
+    def getMapSheetName(self):
+        return self.thisTile.attribute("mapsheetname")
 
     def getCurrentRevisionNr(self):
         return self.thisTile.attribute("CurrRevisionNr")
