@@ -363,19 +363,18 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         while altasFeatureFound:
 
-            currMapSheetName = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
+            currTileNr = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
 
             currLayoutAtlas.refreshCurrentFeature()
             tileWithDetails = None
-            #tileWithDetails = proposalTileDictionaryForDate[currTileNr]  # self.tilesToPrint.get(
             for tileNr, tile in self.tilesToPrint.items():
-                if tile.getMapSheetName() == currMapSheetName:
+                if int(tileNr) == int(currTileNr):
                     tileWithDetails = tile
 
             if tileWithDetails == None:
                 TOMsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", level=Qgis.Info)
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
-                                    self.tr("Could not find details for " + str(currMapSheetName)))
+                                    self.tr("Could not find details for " + str(currTileNr)))
                 break
 
             currMapSheetName = tileWithDetails.getMapSheetName()
