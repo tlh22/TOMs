@@ -30,8 +30,8 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from qgis.core import (
     Qgis,
     QgsMessageLog,
-    QgsExpression, QgsGeometry, QgsPointXY, QgsMultiPolygon, QgsPolygon,
-    QgsFeature
+    QgsExpression, QgsGeometry, QgsPointXY, QgsMultiPolygon, QgsPolygon, QgsGeometryCollection,
+    QgsFeature, QgsWkbTypes
 )
 import math
 import random
@@ -682,7 +682,7 @@ class TOMsExpressions():
         multiPolyGeom = QgsGeometryCollection()
         for polygonGeom in geomShowingSpaces.parts():
 
-            if counter not in listBaysToDelete:
+            if not counter in listBaysToDelete:
                 TOMsMessageLog.logMessage('generateDemandShapes: considering part {} {}'.format(counter, polygonGeom.asWkt()),
                                           level=Qgis.Info)
                 try:
@@ -752,11 +752,15 @@ class TOMsExpressions():
                                   level=Qgis.Info)
 
         counter = 0
-
+                                  
         TOMsMessageLog.logMessage('generateAvailableSpacesShapes: type: {} geomShowingSpaces {}'.format(QgsWkbTypes.displayString(geomShowingSpaces.wkbType()), geomShowingSpaces.asWkt()),
                                   level=Qgis.Info)
 
         multiPolyGeom = QgsGeometryCollection()
+
+        #TOMsMessageLog.logMessage('generateAvailableSpacesShapes: check {} {}'.format(feature.attribute("GeometryID"), counter),
+        #                          level=Qgis.Info)
+
         for polygonGeom in geomShowingSpaces.parts():
 
             if counter in listBaysToDelete:
@@ -769,6 +773,9 @@ class TOMsExpressions():
                         'generateAvailableSpacesShapes: error adding {}: {}'.format(counter, e),
                         level=Qgis.Warning)
             counter = counter + 1
+
+        #TOMsMessageLog.logMessage('generateAvailableSpacesShapes: check2 {} {}'.format(feature.attribute("GeometryID"), counter),
+        #                          level=Qgis.Info)
 
         TOMsMessageLog.logMessage('generateAvailableSpacesShapes: poly list {}'.format(multiPolyGeom),
                                   level=Qgis.Info)
