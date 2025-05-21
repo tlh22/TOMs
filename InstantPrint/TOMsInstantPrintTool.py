@@ -120,11 +120,15 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         layout_name = self.dialogui.comboBox_layouts.currentText()
         self.layoutView = self.projectLayoutManager.layoutByName(layout_name)
-        self.layoutInterface = self.projectLayoutManager.layoutByName(layout_name)
+        #self.layoutInterface = self.projectLayoutManager.layoutByName(layout_name)
 
         layout = self.dialogui.comboBox_layouts.itemData(activeIndex)
-        self.mapitem = layout.referenceMap()
-        layoutScale = self.mapitem.scale()
+        try:
+            self.mapitem = layout.referenceMap()
+            layoutScale = self.mapitem.scale()
+        except Exception as e:
+            # assume that this is the legend layout
+            return
 
         self.exportButton.setEnabled(True)
 
@@ -220,7 +224,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         # self.Proposals = self.tableNames.setLayer("Proposals")
 
-        if currPrintLayout.atlas():
+        if currPrintLayout.atlas().enabled():
 
             if self.proposalsManager.currentProposal() == 0:
 
@@ -248,7 +252,9 @@ class TOMsInstantPrintTool(InstantPrintTool):
                     # self.openDateForPrintProposal = self.proposalsManager.getProposalOpenDate(proposalNrForPrinting)
                     self.openDateForPrintProposal = printProposal.getProposalOpenDate()
                     TOMsMessageLog.logMessage("In TOMsExport. Open date for printing is {}".format(self.openDateForPrintProposal), level=Qgis.Info)
+
                 else:
+
                     return
 
             else:
@@ -260,7 +266,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         else:
 
-            self.__export()
+            self._InstantPrintTool__export()
 
     def TOMsExportAtlas(self, printProposalObject):
 
@@ -368,7 +374,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
             currLayoutAtlas.refreshCurrentFeature()
             tileWithDetails = None
             for tileNr, tile in self.tilesToPrint.items():
-                if int(tileNr) == int(currTileNr):
+                if str(tile.getMapSheetName()) == currTileNr:
                     tileWithDetails = tile
 
             if tileWithDetails == None:
