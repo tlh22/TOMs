@@ -337,6 +337,9 @@ class TOMsInstantPrintTool(InstantPrintTool):
             else:
                 tileIDList = tileIDList + ',\'' + str(tile.getMapSheetName()) + '\''
 
+        TOMsMessageLog.logMessage('"mapsheetname" in ({tileList})'.format(tileList=tileIDList),
+                                 level=Qgis.Info)
+
         currLayoutAtlas.setFilterFeatures(True)
         currLayoutAtlas.setFilterExpression(' "mapsheetname" in ({tileList})'.format(tileList=tileIDList))
 
@@ -357,7 +360,6 @@ class TOMsInstantPrintTool(InstantPrintTool):
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Missing label in Layout"),
                                 self.tr("Missing label 'printTypeDetails'"))
 
-
         TOMsMessageLog.logMessage("In TOMsExportAtlas. Now printing " + str(currLayoutAtlas.count()) + " items ....",
                                  level=Qgis.Info)
 
@@ -371,10 +373,13 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
             currTileNr = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
 
+            TOMsMessageLog.logMessage('Considering tile {}'.format(currTileNr),
+                                      level=Qgis.Info)
+
             currLayoutAtlas.refreshCurrentFeature()
             tileWithDetails = None
             for tileNr, tile in self.tilesToPrint.items():
-                if str(tile.getMapSheetName()) == currTileNr:
+                if int(tileNr) == int(currTileNr):
                     tileWithDetails = tile
 
             if tileWithDetails == None:
