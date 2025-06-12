@@ -344,7 +344,7 @@ class TOMsExpressions():
             #labelText = "No Loading: " + loadingText
             labelText = loadingText
 
-            #TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getLoadingRestrictionLabelText: passing " + str(labelText), level=Qgis.Info)
             return labelText
 
         return None

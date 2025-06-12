@@ -35,6 +35,7 @@ from qgis.gui import (
 import os
 import re
 import sys, traceback
+from datetime import date
 
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
@@ -220,7 +221,8 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.proposalForPrintingStatusText = "PROPOSED"
         self.proposalPrintTypeDetails = "Print Date"
-        self.openDateForPrintProposal = self.proposalsManager.date()
+        #self.openDateForPrintProposal = self.proposalsManager.date()
+        self.openDateForPrintProposal = date.today()
 
         # self.Proposals = self.tableNames.setLayer("Proposals")
 
@@ -371,21 +373,24 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         while altasFeatureFound:
 
-            currTileNr = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
+            currTileName = currLayoutAtlas.nameForPage(currLayoutAtlas.currentFeatureNumber())
 
-            TOMsMessageLog.logMessage('Considering tile {}'.format(currTileNr),
+            TOMsMessageLog.logMessage('Considering tile {}'.format(currTileName),
                                       level=Qgis.Info)
 
             currLayoutAtlas.refreshCurrentFeature()
             tileWithDetails = None
             for tileNr, tile in self.tilesToPrint.items():
-                if int(tileNr) == int(currTileNr):
-                    tileWithDetails = tile
+                try:
+                    if tile.getMapSheetName() == currTileName:
+                        tileWithDetails = tile
+                except Exception as e:
+                    TOMsMessageLog.logMessage('In TOMsExportAtlas. Error with map sheet details {} {} ....'.format(tile.getMapSheetName(), currTileName), level=Qgis.Info)
 
             if tileWithDetails == None:
                 TOMsMessageLog.logMessage("In TOMsExportAtlas. Tile with details not found ....", level=Qgis.Info)
                 QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"),
-                                    self.tr("Could not find details for " + str(currTileNr)))
+                                    self.tr("Could not find details for " + str(currTileName)))
                 break
 
             currMapSheetName = tileWithDetails.getMapSheetName()
@@ -402,10 +407,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
                 composerEffectiveDate.setText(
                     '{date}'.format(date=tileWithDetails.getLastRevisionDate_AtDate().toString('dd-MMM-yyyy')))
             else:
-                try:
-                    composerRevisionNr.setText(str(int(tileWithDetails.getCurrentRevisionNr()) + 1))
-                except Exception as e:
-                    composerRevisionNr.setText('1')
+                composerRevisionNr.setText('')
 
                 # For the Proposal, use the current view date
                 composerEffectiveDate.setText(
