@@ -12,7 +12,7 @@
 
 
 from PyQt5.QtCore import (
-    Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale, QMetaObject
+    Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale, QMetaObject, QDate
     )
 from PyQt5.QtGui import (
     QColor, QDesktopServices, QIcon)
@@ -35,7 +35,6 @@ from qgis.gui import (
 import os
 import re
 import sys, traceback
-from datetime import date
 
 from .InstantPrintTool import InstantPrintTool
 from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMsLayers
@@ -221,8 +220,7 @@ class TOMsInstantPrintTool(InstantPrintTool):
 
         self.proposalForPrintingStatusText = "PROPOSED"
         self.proposalPrintTypeDetails = "Print Date"
-        #self.openDateForPrintProposal = self.proposalsManager.date()
-        self.openDateForPrintProposal = date.today()
+        self.openDateForPrintProposal = self.proposalsManager.date()
 
         # self.Proposals = self.tableNames.setLayer("Proposals")
 
@@ -294,7 +292,8 @@ class TOMsInstantPrintTool(InstantPrintTool):
         else:
             currProposalTitle = printProposalObject.getProposalTitle()
             formatted_currProposalTitle = re.sub(r'[^\w]', '_', currProposalTitle)
-            currRevisionDate = printProposalObject.getProposalOpenDate()
+            #currRevisionDate = printProposalObject.getProposalOpenDate()
+            currRevisionDate = QDate.currentDate()
 
         currProposalOpenDate = currRevisionDate  # TODO:Need to check if this is needed ...
 
