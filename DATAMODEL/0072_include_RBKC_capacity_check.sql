@@ -108,22 +108,37 @@ BEGIN
                      ELSE
                          CASE
                              WHEN RBKC_formula > 0.0 THEN  -- RBKC formula to be used if value set to > 0
+							 
                                  CASE
-
-                                     WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
+                                     WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN 
+										CASE WHEN public.ST_Length (NEW."geom") <=(vehicleWidth) THEN NEW."Capacity" = 1;
+										     ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
+										END CASE;
                                      WHEN NEW."RestrictionLength" >=(vehicleLength*4) THEN
-                                         CASE WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
-                                              WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
+                                         CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength-1.0) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                                               ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                                          END CASE;
-                                     WHEN public.ST_Length (NEW."geom") <=(vehicleLength-1.0) THEN NEW."Capacity" = 1;
+                                     WHEN public.ST_Length (NEW."geom") <=(vehicleLength) THEN NEW."Capacity" = 1;
                                      ELSE
                                          CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                                               ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
                                          END CASE;
                                  END CASE;
-                             ELSE
-                                 NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+								 
+                             ELSE  -- using strict vehicle length/width values
+							 						 
+                                 CASE
+                                     WHEN NEW."GeomShapeID" IN (4,5, 6, 24, 25, 26) THEN 
+										CASE WHEN public.ST_Length (NEW."geom") <=(vehicleWidth) THEN NEW."Capacity" = 1;
+										     ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleWidth);
+										END CASE;
+                                     WHEN public.ST_Length (NEW."geom") <=(vehicleLength) THEN NEW."Capacity" = 1;
+                                     ELSE
+										NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                                 END CASE; 
+								 
+								 --RAISE NOTICE '***** GeometryID (%); length %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, NEW."Capacity";
+								 
                          END CASE;
                      END CASE;
             END CASE;
