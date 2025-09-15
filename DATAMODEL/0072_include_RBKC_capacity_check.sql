@@ -100,7 +100,7 @@ BEGIN
 
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
         WHEN NEW."RestrictionTypeID" IN (119,168,169) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/cycleWidth);
-		WHEN NEW."RestrictionTypeID" IN (109) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/busLength);
+		--- WHEN NEW."RestrictionTypeID" IN (109) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/busLength);  --- treat bus only bays the same as any other bays (mainly because they can be used outside of hours by anyone)
         WHEN NEW."RestrictionTypeID" < 200 THEN  -- May need to specify the bay types to be used
             CASE WHEN NEW."RestrictionTypeID" IN (107, 116, 122, 144, 146, 147, 149, 150, 151) THEN NEW."Capacity" = 0;
                  ELSE
@@ -155,15 +155,46 @@ BEGIN
              229 = Unmarked Kerbline within PPZ
              **/
 
-            CASE WHEN NEW."RestrictionTypeID" IN (201, 216, 217, 224, 225, 226, 227, 229) THEN
+            CASE WHEN NEW."RestrictionTypeID" IN (201, 203, 207, 208, 216, 217, 224, 225, 226, 227, 229) THEN
                      -- Consider only short bays, i.e., < 5.0m
                      CASE WHEN COALESCE(NEW."UnacceptableTypeID", 0) > 0 THEN
                               NEW."Capacity" = 0;
-                              NEW."NrBays" = 0;
+                              --NEW."NrBays" = 0;
                           /** WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
                               NEW."Capacity" = 1; **/
                               --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE --NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+
+							 SELECT COUNT(c.id) INTO NrCorners
+							 FROM mhtc_operations."Corners" AS c
+							 WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
+
+							 availableLength = public.ST_Length (NEW."geom")::numeric - NrCorners::numeric * cornerProtectionDistance;
+
+							 -- Consider narrow roads
+							 
+							SELECT TRUE INTO fieldCheck
+							FROM information_schema.columns
+							WHERE table_schema = TG_TABLE_SCHEMA
+							AND table_name = TG_TABLE_NAME
+							AND column_name = 'IntersectionWithin49m';
+
+							IF fieldCheck THEN
+							
+								narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + (COALESCE(NEW."IntersectionWithin67m", 0) - COALESCE(NEW."IntersectionWithin49m", 0))/2.0;
+								availableLength = availableLength - COALESCE(narrow_length, 0.0);
+							
+							END IF;
+
+							 CASE WHEN availableLength <= (vehicleLength*0.9) THEN
+									NEW."Capacity" = 0;
+								  WHEN availableLength < vehicleLength AND availableLength > (vehicleLength*0.9) THEN
+									NEW."Capacity" = 1;
+								  ELSE NEW."Capacity" = FLOOR(availableLength/vehicleLength);
+								  END CASE;
+
+							 RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
+
 
                      END CASE;
 
@@ -172,19 +203,16 @@ BEGIN
 				 207 = ZigZag - Hospital
 				 208 = ZigZag - Yellow (Other)
 				 **/
-			 
+				/***
 				 WHEN NEW."RestrictionTypeID" IN (203, 207, 208) THEN
                      -- Consider only short bays, i.e., < 5.0m
                      CASE WHEN COALESCE(NEW."UnacceptableTypeID", 0) > 0 THEN
                               NEW."Capacity" = 0;
                               NEW."NrBays" = 0;
-                          /** WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
-                              NEW."Capacity" = 1; **/
-                              --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
                           ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
 
                      END CASE;
-
+				***/
 
                  WHEN NEW."RestrictionTypeID" IN (1000) THEN   -- sections
 
@@ -205,11 +233,20 @@ BEGIN
 
                          -- TODO: Need to take account of perpendicular/echelon parking
 
-                         -- Consider narrow roads
+						-- Consider narrow roads
+						 
+						SELECT TRUE INTO fieldCheck
+						FROM information_schema.columns
+						WHERE table_schema = TG_TABLE_SCHEMA
+						AND table_name = TG_TABLE_NAME
+						AND column_name = 'IntersectionWithin49m';
 
-                         narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + COALESCE(NEW."IntersectionWithin67m"/2.0, 0);
-
-                         availableLength = availableLength - COALESCE(narrow_length, 0.0);
+						IF fieldCheck THEN
+						
+							narrow_length = COALESCE(NEW."IntersectionWithin49m", 0) + (COALESCE(NEW."IntersectionWithin67m", 0) - COALESCE(NEW."IntersectionWithin49m", 0))/2.0;
+							availableLength = availableLength - COALESCE(narrow_length, 0.0);
+						
+						END IF;
 
                          CASE WHEN availableLength <= (vehicleLength*0.9) THEN
                                 NEW."Capacity" = 0;
