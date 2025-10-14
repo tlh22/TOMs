@@ -199,3 +199,13 @@ UPDATE "toms_lookups"."TimePeriods" SET "Description" = 'Mon-Fri 8.30am-6.30pm S
 -- Staithes
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (746, 'Mon-Sun 6.00am-8.00pm', 'Mon-Sun 6.00am-8.00pm');
 
+-- Camden
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (747, 'midnight-9.00am', 'midnight-9.00am');
+DELETE FROM "toms_lookups"."TimePeriods" WHERE "Code" = 483; -- duplicate of 0
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (748, 'Mon-Fri 7.30am-5.30pm', 'Mon-Fri 7.30am-5.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (749, 'Mon-Fri 7.30am-9.00am 3.00pm-5.30pm', 'Mon-Fri 7.30am-9.00am 3.00pm-5.30pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (750, 'Wed-Fri 8.30am-3.00pm', 'Wed-Fri 8.30am-3.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (751, 'Mon-Tue 8.30am-6.30pm Wed-Fri 3.00pm-6.30pm Sat 8.30am-1.30pm', 'Mon-Tue 8.30am-6.30pm;Wed-Fri 3.00pm-6.30pm;Sat 8.30am-1.30pm');
+
+-- Croydon
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (752, 'Mon-Sat 7.00am-10.00am 3.00pm-7.00pm', 'Mon-Sat 7.00am-10.00am 3.00pm-7.00pm');
