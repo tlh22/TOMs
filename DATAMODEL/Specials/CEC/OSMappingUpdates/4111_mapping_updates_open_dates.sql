@@ -21,14 +21,22 @@ BEGIN
         "ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID")
     SELECT proposal_id, 101, 1, "RestrictionID"
     FROM topography_updates."MappingUpdates"
-    WHERE "ProposalID" = proposal_id;
+    WHERE "ProposalID" = proposal_id
+	AND "RestrictionID" NOT IN (SELECT "RestrictionID"
+								FROM toms."RestrictionsInProposals"
+								WHERE "RestrictionTableID" = 101
+								AND "ProposalID" = proposal_id);
 
     INSERT INTO toms."RestrictionsInProposals"(
         "ProposalID", "RestrictionTableID", "ActionOnProposalAcceptance", "RestrictionID")
     SELECT proposal_id, 102, 1, "RestrictionID"
     FROM topography_updates."MappingUpdateMasks"
-    WHERE "ProposalID" = proposal_id;
-
+    WHERE "ProposalID" = proposal_id
+	AND "RestrictionID" NOT IN (SELECT "RestrictionID"
+								FROM toms."RestrictionsInProposals"
+								WHERE "RestrictionTableID" = 102
+								AND "ProposalID" = proposal_id);
+								
     -- set open dates for mapping updates in proposals already accepted
 
     SELECT "ProposalOpenDate", "ProposalStatusID"

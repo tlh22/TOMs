@@ -96,6 +96,8 @@ BEGIN
         147 = Cycle Hangar
         150 = Parklet
         151 = Market trading Bay
+		168 = E-scooter and Dockless Bicycle Bay
+		169 = Shared Use Bicycle and Motorcycle Permit Holders Bay
         **/
 
         WHEN NEW."RestrictionTypeID" IN (117,118) THEN NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/motorcycleWidth);
@@ -163,8 +165,9 @@ BEGIN
                           /** WHEN public.ST_Length (NEW."geom")::numeric < vehicleLength AND public.ST_Length (NEW."geom")::numeric > (vehicleLength*0.9) THEN
                               NEW."Capacity" = 1; **/
                               --  /** this considers "just short" lengths **/ CASE WHEN MOD(public.ST_Length (NEW."geom")::numeric, vehicleLength::numeric) > (vehicleLength*0.9) THEN NEW."Capacity" = CEILING(public.ST_Length (NEW."geom")/vehicleLength);
-                          ELSE --NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
+                          ELSE NEW."Capacity" = FLOOR(public.ST_Length (NEW."geom")/vehicleLength);
 
+							 /***
 							 SELECT COUNT(c.id) INTO NrCorners
 							 FROM mhtc_operations."Corners" AS c
 							 WHERE ST_Intersects(ST_Buffer(c.geom, 0.001), NEW.geom);
@@ -194,7 +197,7 @@ BEGIN
 								  END CASE;
 
 							 RAISE NOTICE '***** GeometryID (%); length %; avail %; cnrs: %; capacity: %', NEW."GeometryID", public.ST_Length (NEW."geom")::numeric, availableLength, NrCorners, NEW."Capacity";
-
+							***/
 
                      END CASE;
 

@@ -90,7 +90,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (696, 'Mon-Fri 8.00am-8.30pm', 'Mon-Fri 8.00am-8.30pm');
 
 -- Enfield
-INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (697, 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm', 'Mon-Fri 8.15.00am-9.15am 11.30am-1.30pm 2.45pm-4.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (697, 'Mon-Fri 8.15am-9.15am 11.30am-1.30pm 2.45pm-4.00pm', 'Mon-Fri 8.15am-9.15am 11.30am-1.30pm 2.45pm-4.00pm');
 
 -- Harringey
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (698, 'Mon-Fri 2.00pm-4.00pm', 'Mon-Fri 2.00pm-4.00pm');
@@ -209,3 +209,9 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Croydon
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (752, 'Mon-Sat 7.00am-10.00am 3.00pm-7.00pm', 'Mon-Sat 7.00am-10.00am 3.00pm-7.00pm');
+
+-- Enfield
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (753, '8.00am-10.00am', '8.00am-10.00am');
+
+-- Farnham
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (754, 'Mon-Fri 8.15am-9.15pm 2.30pm-4.00pm', 'Mon-Fri 8.15am-9.15pm 2.30pm-4.00pm');
