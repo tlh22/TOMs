@@ -5,9 +5,9 @@ services:
         volumes:
         - ./qwc/prod-trdc:/usr/share/nginx/html
         environment:
-        - 'LETSENCRYPT_EMAIL=thancock@mhtc.co.uk'
-        - 'LETSENCRYPT_HOST=qwc.mhtc.co.uk'
-        - 'VIRTUAL_HOST=qwc.mhtc.co.uk'
+        - "LETSENCRYPT_EMAIL=thancock@mhtc.co.uk"
+        - "LETSENCRYPT_HOST=qwc.mhtc.co.uk"
+        - "VIRTUAL_HOST=qwc.mhtc.co.uk"
 
 networks:
   default:
