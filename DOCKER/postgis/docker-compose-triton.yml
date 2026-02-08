@@ -1,0 +1,37 @@
+version: "3.8"
+
+# setup for linux NB: line ends for .sh files
+
+services:
+
+  postgis:
+    image: "postgis/postgis:16-3.5"
+    hostname: triton_postgis
+    restart: always
+    command: postgres -c config_file=/io/pg_config/postgresql.conf
+    environment:
+      - POSTGRES_PASSWORD=postgis
+      - POSTGRES_DBNAME=gis
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    volumes:
+      #- ../../DATAMODEL:/io/DATAMODEL
+      #- ../../test/data:/io/test/data
+      #- ./toms_test_db_init_scripts:/docker-entrypoint-initdb.d
+      - ./config:/io/pg_config
+      - ./pg_data:/var/lib/postgresql/data
+
+    ports:
+      - 5435:5432
+    networks:
+      toms-net:
+        aliases:
+          - triton_postgis
+        ipv4_address: 172.20.0.2
+
+networks:
+  toms-net:
+    name: toms_net
+    ipam:
+        driver: default
+        config:
+          - subnet: 172.20.0.0/16
