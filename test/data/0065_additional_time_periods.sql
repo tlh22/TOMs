@@ -215,3 +215,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 
 -- Farnham
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (754, 'Mon-Fri 8.15am-9.15pm 2.30pm-4.00pm', 'Mon-Fri 8.15am-9.15pm 2.30pm-4.00pm');
+
+-- Rickmansworth
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (755, 'Mon-Fri 8.00am-9.30am 2.30pm-4.30pm term time only', 'Mon-Fri 8.00am-9.30am 2.30pm-4.30pm;term time only');
+
