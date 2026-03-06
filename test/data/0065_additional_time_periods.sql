@@ -219,3 +219,7 @@ INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VA
 -- Rickmansworth
 INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (755, 'Mon-Fri 8.00am-9.30am 2.30pm-4.30pm term time only', 'Mon-Fri 8.00am-9.30am 2.30pm-4.30pm;term time only');
 
+-- Waltham Forest
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (756, 'Mon-Sat 8.00am-9.00pm', 'Mon-Sat 8.00am-9.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (757, 'Mon-Fri 8.00am-9.00pm', 'Mon-Fri 8.00am-9.00pm');
+INSERT INTO "toms_lookups"."TimePeriods" ("Code", "Description", "LabelText") VALUES (758, 'Mon-Fri 10.00am-4.00pm Sat 8.00am-6.30pm', 'Mon-Fri 10.00am-4.00pm;Sat 8.00am-6.30pm');
